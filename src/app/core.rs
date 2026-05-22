@@ -695,8 +695,6 @@ fn build_ui_with_startup_request(app: &adw::Application, startup_request: Startu
     status_bar
         .action_group
         .prepend(&fake_transaction_widgets.button);
-    let page_actions_button = build_page_actions_menu_button("app");
-    status_bar.action_group.append(&page_actions_button);
     root.append(&status_bar.container);
 
     let ui = Rc::new(UiHandles {

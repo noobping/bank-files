@@ -35,6 +35,13 @@ pub(in crate::app) fn show_configuration_dialog(
 
     let status_bar = build_status_bar();
     connect_embedded_status_bar(parent, &status_bar, Rc::clone(&ui_handles.status_autohide));
+    connect_static_page_actions(
+        &status_bar.page_actions_button,
+        "configuration",
+        &status_bar.label,
+        ui_handles,
+        configuration_page_snapshot(),
+    );
     status_bar
         .label
         .set_text(&tr("Configuration actions report progress here."));
@@ -71,6 +78,42 @@ pub(in crate::app) fn show_configuration_dialog(
     connect_preference_search(&search_entry, search_groups);
 
     dialog.present(Some(parent));
+}
+
+fn configuration_page_snapshot() -> StaticPageSnapshot {
+    StaticPageSnapshot::new(
+        "configuration",
+        "Configuration",
+        "Configuration actions report progress here.",
+        &["Group", "Action", "Description"],
+        vec![
+            vec![
+                tr("Configuration Backup"),
+                tr("Back Up Current Configuration"),
+                tr("Replace the existing backup in the config folder."),
+            ],
+            vec![
+                tr("Configuration Backup"),
+                tr("Restore Configuration Backup"),
+                tr("Restore rules, budgets, and field names from the backup."),
+            ],
+            vec![
+                tr("Automatic Configuration"),
+                tr("Generate Budgets from Transactions"),
+                tr("Replace the budget list with budgets detected from imported spending."),
+            ],
+            vec![
+                tr("Automatic Configuration"),
+                tr("Use Default Configuration"),
+                tr("Replace rules, budgets, and field names with the built-in defaults."),
+            ],
+            vec![
+                tr("Automatic Configuration"),
+                tr("Use Empty Configuration"),
+                tr("Remove all rules and budget codes while keeping CSV field names for imports."),
+            ],
+        ],
+    )
 }
 
 fn archive_group(

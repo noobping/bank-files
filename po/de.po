@@ -3129,3 +3129,9 @@ msgstr "Notizen"
 
 msgid "No rows to print."
 msgstr "Keine Zeilen zum Drucken."
+
+msgid "Preference"
+msgstr "Einstellung"
+
+msgid "Action"
+msgstr "Aktion"

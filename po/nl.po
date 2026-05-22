@@ -3129,3 +3129,9 @@ msgstr "Notities"
 
 msgid "No rows to print."
 msgstr "Geen rijen om te printen."
+
+msgid "Preference"
+msgstr "Voorkeur"
+
+msgid "Action"
+msgstr "Actie"

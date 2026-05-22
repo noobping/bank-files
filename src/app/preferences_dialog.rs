@@ -117,6 +117,13 @@ pub(in crate::app) fn show_preferences_dialog(parent: &adw::ApplicationWindow, u
 
     let status_bar = build_status_bar();
     connect_embedded_status_bar(parent, &status_bar, Rc::clone(&ui.status_autohide));
+    connect_static_page_actions(
+        &status_bar.page_actions_button,
+        "preferences",
+        &status_bar.label,
+        ui,
+        preferences_page_snapshot(ui.advanced_features.get(), &ui.preferences),
+    );
     status_bar
         .label
         .set_text(&tr("Preference changes are applied immediately."));
@@ -142,6 +149,102 @@ pub(in crate::app) fn show_preferences_dialog(parent: &adw::ApplicationWindow, u
     connect_preference_search(&search_entry, search_groups);
 
     dialog.present(Some(parent));
+}
+
+fn preferences_page_snapshot(
+    advanced_features: bool,
+    preferences: &Preferences,
+) -> StaticPageSnapshot {
+    let mut rows = Vec::new();
+    add_preference_snapshot_rows(
+        &mut rows,
+        "Interface",
+        &[
+            (
+                "Autohide Status Bar",
+                "Hide status messages automatically after a short delay.",
+                "app.autohide-status",
+            ),
+            (
+                "Always Show Full Lists",
+                "Show every item immediately and hide More buttons.",
+                "app.show-all",
+            ),
+        ],
+        advanced_features,
+        preferences,
+    );
+    add_preference_snapshot_rows(
+        &mut rows,
+        "Insights",
+        &[
+            (
+                "Smart Insights",
+                "Show forecast cards and detect transaction patterns from imported transactions.",
+                "app.show-predictions",
+            ),
+            (
+                "Compare Spending with Previous Period",
+                "Compare spending cards with the previous month or year.",
+                "app.compare-categories-previous-period",
+            ),
+        ],
+        advanced_features,
+        preferences,
+    );
+    add_preference_snapshot_rows(
+        &mut rows,
+        "Forms and Data",
+        &[
+            (
+                "Advanced Features",
+                "Allow rule editing and budget direction controls.",
+                "app.advanced-features",
+            ),
+            (
+                "Smart Autofill",
+                "Let forms fill related fields from context, such as matching categories and budget codes.",
+                "app.advanced-autofill",
+            ),
+            (
+                "Auto Clean Config",
+                "Remove orphaned rules automatically during reload and import.",
+                "app.auto-clean-config",
+            ),
+            (
+                "Hide Refunded Transactions",
+                "Requires Smart Insights. Exclude detected refunds and offsetting groups from normal views.",
+                "app.hide-canceled-transactions",
+            ),
+        ],
+        advanced_features,
+        preferences,
+    );
+
+    StaticPageSnapshot::new(
+        "preferences",
+        "Preferences",
+        "Preference changes are applied immediately.",
+        &["Group", "Preference", "Description"],
+        rows,
+    )
+}
+
+fn add_preference_snapshot_rows(
+    rows: &mut Vec<Vec<String>>,
+    group_title: &str,
+    specs: &[(&str, &str, &str)],
+    advanced_features: bool,
+    preferences: &Preferences,
+) {
+    for (title, subtitle, action_name) in specs {
+        let writable = Preferences::key_for_action(action_name)
+            .map(|key| preferences.is_writable(key))
+            .unwrap_or(true);
+        if preference_row_visible(writable, advanced_features) {
+            rows.push(vec![tr(group_title), tr(title), tr(subtitle)]);
+        }
+    }
 }
 
 struct PreferenceSpec<'a> {

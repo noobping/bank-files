@@ -21,6 +21,7 @@ pub(in crate::app) struct StatusBar {
     pub(in crate::app) action_group: gtk::Box,
     pub(in crate::app) copy_button: gtk::Button,
     pub(in crate::app) history_button: gtk::Button,
+    pub(in crate::app) page_actions_button: gtk::MenuButton,
     pub(in crate::app) hide_button: gtk::Button,
 }
 
@@ -52,6 +53,7 @@ pub(in crate::app) fn build_status_bar() -> StatusBar {
 
     let copy_button = status_button(COPY_ICON, "Copy message");
     let history_button = status_button("document-open-recent-symbolic", "Show message history");
+    let page_actions_button = build_page_actions_menu_button("app");
     let hide_button = status_button("window-close-symbolic", "Hide message");
     let action_group = ui::linked_button_group();
     action_group.set_margin_top(2);
@@ -59,6 +61,7 @@ pub(in crate::app) fn build_status_bar() -> StatusBar {
     action_group.set_margin_end(2);
     action_group.append(&copy_button);
     action_group.append(&history_button);
+    action_group.append(&page_actions_button);
     action_group.append(&hide_button);
 
     container.append(&status_icon);
@@ -74,6 +77,7 @@ pub(in crate::app) fn build_status_bar() -> StatusBar {
         action_group,
         copy_button,
         history_button,
+        page_actions_button,
         hide_button,
     }
 }
@@ -84,6 +88,15 @@ pub(in crate::app) fn build_page_actions_menu_button(action_namespace: &str) -> 
         .tooltip_text(tr("Page actions"))
         .build();
     menu_button.add_css_class("flat");
+    set_page_actions_menu_namespace(&menu_button, action_namespace);
+    menu_button
+}
+
+pub(in crate::app) fn set_page_actions_menu_namespace(
+    menu_button: &gtk::MenuButton,
+    action_namespace: &str,
+) {
+    menu_button.set_tooltip_text(Some(&tr("Page actions")));
 
     let menu = gtk::gio::Menu::new();
     menu.append(
@@ -99,7 +112,195 @@ pub(in crate::app) fn build_page_actions_menu_button(action_namespace: &str) -> 
         Some(&format!("{action_namespace}.export-csv")),
     );
     menu_button.set_menu_model(Some(&menu));
-    menu_button
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::app) struct StaticPageSnapshot {
+    key: String,
+    title: String,
+    subtitle: String,
+    columns: Vec<String>,
+    rows: Vec<Vec<String>>,
+}
+
+impl StaticPageSnapshot {
+    pub(in crate::app) fn new(
+        key: &str,
+        title: &str,
+        subtitle: &str,
+        columns: &[&str],
+        rows: Vec<Vec<String>>,
+    ) -> Self {
+        Self {
+            key: key.to_string(),
+            title: title.to_string(),
+            subtitle: subtitle.to_string(),
+            columns: columns.iter().map(|column| (*column).to_string()).collect(),
+            rows,
+        }
+    }
+}
+
+pub(in crate::app) fn connect_static_page_actions(
+    page_actions_button: &gtk::MenuButton,
+    action_namespace: &str,
+    status: &gtk::Label,
+    ui_handles: &Rc<UiHandles>,
+    snapshot: StaticPageSnapshot,
+) {
+    set_page_actions_menu_namespace(page_actions_button, action_namespace);
+    let action_group = gtk::gio::SimpleActionGroup::new();
+
+    let snapshot_for_copy = snapshot.clone();
+    let status_for_copy = status.clone();
+    let ui_for_copy = Rc::clone(ui_handles);
+    let copy_action = gtk::gio::SimpleAction::new("copy-page", None);
+    copy_action.connect_activate(move |_, _| {
+        ui_for_copy
+            .window
+            .clipboard()
+            .set_text(&static_page_text(&snapshot_for_copy));
+        status_for_copy.set_text(&trf(
+            "Copied {page}.",
+            &[("page", tr(&snapshot_for_copy.title))],
+        ));
+    });
+    action_group.add_action(&copy_action);
+
+    let snapshot_for_print = snapshot.clone();
+    let status_for_print = status.clone();
+    let ui_for_print = Rc::clone(ui_handles);
+    let print_action = gtk::gio::SimpleAction::new("print-page", None);
+    print_action.connect_activate(move |_, _| {
+        status_for_print.set_text(&trf(
+            "Printing {page}...",
+            &[("page", tr(&snapshot_for_print.title))],
+        ));
+        let report = table_print_report(
+            &snapshot_for_print.title,
+            &snapshot_for_print.subtitle,
+            &snapshot_for_print.columns,
+            &snapshot_for_print.rows,
+        );
+        print_report(&ui_for_print, report);
+    });
+    action_group.add_action(&print_action);
+
+    let snapshot_for_export = snapshot;
+    let status_for_export = status.clone();
+    let export_action = gtk::gio::SimpleAction::new("export-csv", None);
+    export_action.connect_activate(move |action, _| {
+        if !action.is_enabled() {
+            return;
+        }
+        export_static_page_snapshot(action, &status_for_export, snapshot_for_export.clone());
+    });
+    action_group.add_action(&export_action);
+
+    page_actions_button.insert_action_group(action_namespace, Some(&action_group));
+}
+
+fn static_page_text(snapshot: &StaticPageSnapshot) -> String {
+    let mut lines = vec![tr(&snapshot.title), tr(&snapshot.subtitle), String::new()];
+    lines.push(
+        snapshot
+            .columns
+            .iter()
+            .map(|column| tr(column))
+            .collect::<Vec<_>>()
+            .join("\t"),
+    );
+    lines.extend(snapshot.rows.iter().map(|row| {
+        row.iter()
+            .map(|value| compact_status_cell(value))
+            .collect::<Vec<_>>()
+            .join("\t")
+    }));
+    lines.join("\n")
+}
+
+fn static_page_csv(snapshot: &StaticPageSnapshot) -> anyhow::Result<String> {
+    let mut writer = csv::WriterBuilder::new().from_writer(Vec::new());
+    let columns = snapshot
+        .columns
+        .iter()
+        .map(|column| tr(column))
+        .collect::<Vec<_>>();
+    writer.write_record(columns.iter().map(String::as_str))?;
+    for row in &snapshot.rows {
+        writer.write_record(row.iter().map(String::as_str))?;
+    }
+    let bytes = writer.into_inner()?;
+    Ok(String::from_utf8(bytes)?)
+}
+
+fn compact_status_cell(value: &str) -> String {
+    value.replace(['\t', '\n', '\r'], " ")
+}
+
+fn export_static_page_snapshot(
+    action: &gtk::gio::SimpleAction,
+    status: &gtk::Label,
+    snapshot: StaticPageSnapshot,
+) {
+    action.set_enabled(false);
+    status.set_text(&tr("Opening the file portal to save the CSV export..."));
+
+    let action = action.clone();
+    let status = status.clone();
+    gtk::glib::MainContext::default().spawn_local(async move {
+        let handle = rfd::AsyncFileDialog::new()
+            .set_title(tr("Save CSV export"))
+            .add_filter(tr("CSV files"), &["csv"])
+            .set_file_name(static_page_export_file_name(&snapshot.key))
+            .save_file()
+            .await;
+
+        let Some(handle) = handle else {
+            action.set_enabled(true);
+            status.set_text(&tr("CSV export canceled."));
+            return;
+        };
+
+        let contents = match static_page_csv(&snapshot) {
+            Ok(contents) => contents,
+            Err(err) => {
+                action.set_enabled(true);
+                status.set_text(&trf(
+                    "Export error: {error}",
+                    &[("error", format!("{err:#}"))],
+                ));
+                return;
+            }
+        };
+        let path = handle.path().to_path_buf();
+        status.set_text(&tr("Saving CSV export..."));
+        let task = gtk::gio::spawn_blocking(move || {
+            std::fs::write(&path, contents)?;
+            anyhow::Ok(path)
+        });
+        match task.await {
+            Ok(Ok(path)) => status.set_text(&trf(
+                "Export saved: {path}",
+                &[("path", path.display().to_string())],
+            )),
+            Ok(Err(err)) => status.set_text(&trf(
+                "Export error: {error}",
+                &[("error", format!("{err:#}"))],
+            )),
+            Err(_) => status.set_text(&tr(
+                "CSV export canceled: the background task stopped unexpectedly.",
+            )),
+        }
+        action.set_enabled(true);
+    });
+}
+
+fn static_page_export_file_name(key: &str) -> String {
+    format!(
+        "bank_files_{key}_{}.csv",
+        chrono::Local::now().format("%Y%m%d-%H%M%S")
+    )
 }
 
 pub(in crate::app) fn connect_embedded_status_bar(
@@ -109,7 +310,8 @@ pub(in crate::app) fn connect_embedded_status_bar(
 ) {
     let generation = Rc::new(Cell::new(0u64));
     let copy_feedback_generation = Rc::new(Cell::new(0u64));
-    status_bar.history_button.set_visible(false);
+    let history = Rc::new(RefCell::new(Vec::<StatusLogEntry>::new()));
+    let history_popover = Rc::new(RefCell::new(None::<gtk::Popover>));
 
     let label_for_copy = status_bar.label.clone();
     let window_for_copy = window.clone();
@@ -118,6 +320,18 @@ pub(in crate::app) fn connect_embedded_status_bar(
     status_bar.copy_button.connect_clicked(move |_| {
         window_for_copy.clipboard().set_text(&label_for_copy.text());
         show_copy_feedback(&copy_button_for_copy, &copy_feedback_for_copy);
+    });
+
+    let window_for_history = window.clone();
+    let history_for_button = Rc::clone(&history);
+    let history_popover_for_button = Rc::clone(&history_popover);
+    status_bar.history_button.connect_clicked(move |button| {
+        show_status_history_popover(
+            &window_for_history,
+            &history_for_button,
+            button,
+            &history_popover_for_button,
+        );
     });
 
     let container_for_hide = status_bar.container.clone();
@@ -130,12 +344,15 @@ pub(in crate::app) fn connect_embedded_status_bar(
     let container_for_label = status_bar.container.clone();
     let generation_for_label = Rc::clone(&generation);
     let status_autohide_for_label = Rc::clone(&status_autohide);
+    let history_for_label = Rc::clone(&history);
     status_bar.label.connect_label_notify(move |label| {
-        if label.text().is_empty() {
+        let message = label.text().trim().to_string();
+        if message.is_empty() {
             container_for_label.set_visible(false);
             return;
         }
 
+        push_status_history_entry(&history_for_label, &message);
         let current = generation_for_label.get().wrapping_add(1);
         generation_for_label.set(current);
         container_for_label.set_visible(true);
@@ -172,10 +389,16 @@ pub(in crate::app) fn connect_status_actions(
     app.add_action(&copy_status_action);
     copy_button.set_action_name(Some("app.copy-status"));
 
-    let ui_for_history = Rc::clone(ui);
+    let window_for_history = ui.window.clone();
+    let history_for_history = Rc::clone(&ui.status_history);
     let history_popover = Rc::new(RefCell::new(None::<gtk::Popover>));
     history_button.connect_clicked(move |button| {
-        show_status_history_popover(&ui_for_history, button, &history_popover);
+        show_status_history_popover(
+            &window_for_history,
+            &history_for_history,
+            button,
+            &history_popover,
+        );
     });
 
     let ui_for_hide = Rc::clone(ui);
@@ -225,19 +448,33 @@ pub(in crate::app) fn show_status(ui: &UiHandles, message: &str) {
 }
 
 fn push_status_history(ui: &UiHandles, message: &str) {
+    push_status_history_entry(&ui.status_history, message);
+}
+
+fn push_status_history_entry(history: &Rc<RefCell<Vec<StatusLogEntry>>>, message: &str) {
     let message = message.trim();
     if message.is_empty() {
         return;
     }
 
-    ui.status_history.borrow_mut().push(StatusLogEntry {
+    let mut history = history.borrow_mut();
+    if history
+        .last()
+        .map(|entry| entry.message.as_str())
+        .is_some_and(|last_message| last_message == message)
+    {
+        return;
+    }
+
+    history.push(StatusLogEntry {
         timestamp: chrono::Local::now().format("%H:%M:%S").to_string(),
         message: message.to_string(),
     });
 }
 
 fn show_status_history_popover(
-    ui: &Rc<UiHandles>,
+    window: &adw::ApplicationWindow,
+    history: &Rc<RefCell<Vec<StatusLogEntry>>>,
     button: &gtk::Button,
     active_popover: &Rc<RefCell<Option<gtk::Popover>>>,
 ) {
@@ -275,8 +512,8 @@ fn show_status_history_popover(
     empty_label.set_margin_end(10);
     content.append(&empty_label);
 
-    let entries = ui.status_history.borrow().clone();
-    let rows = append_status_history_rows(&list, &entries);
+    let entries = history.borrow().clone();
+    let rows = append_status_history_rows(window, &list, &entries);
     if rows.is_empty() {
         empty_label.set_text(&tr("No messages yet."));
         empty_label.set_visible(true);
@@ -380,12 +617,13 @@ struct StatusHistoryRow {
 }
 
 fn append_status_history_rows(
+    window: &adw::ApplicationWindow,
     list: &gtk::ListBox,
     entries: &[StatusLogEntry],
 ) -> Vec<StatusHistoryRow> {
     let mut rows = Vec::with_capacity(entries.len());
     for entry in entries.iter().rev() {
-        let row = status_history_row(entry);
+        let row = status_history_row(window, entry);
         list.append(&row);
         rows.push(StatusHistoryRow {
             widget: row.upcast::<gtk::Widget>(),
@@ -395,30 +633,45 @@ fn append_status_history_rows(
     rows
 }
 
-fn status_history_row(entry: &StatusLogEntry) -> gtk::ListBoxRow {
+fn status_history_row(window: &adw::ApplicationWindow, entry: &StatusLogEntry) -> gtk::ListBoxRow {
     let row = gtk::ListBoxRow::builder()
         .activatable(false)
         .selectable(false)
         .build();
-    let content = gtk::Box::new(gtk::Orientation::Vertical, 2);
+    let content = gtk::Box::new(gtk::Orientation::Horizontal, 8);
     content.set_margin_top(8);
     content.set_margin_bottom(8);
     content.set_margin_start(10);
     content.set_margin_end(10);
 
+    let text_box = gtk::Box::new(gtk::Orientation::Vertical, 2);
+    text_box.set_hexpand(true);
     let message = gtk::Label::new(Some(&entry.message));
     message.set_selectable(false);
     message.set_xalign(0.0);
     message.set_width_chars(1);
     message.set_max_width_chars(34);
     message.set_ellipsize(gtk::pango::EllipsizeMode::End);
-    content.append(&message);
+    text_box.append(&message);
 
     let timestamp = gtk::Label::new(Some(&entry.timestamp));
     timestamp.add_css_class("dim-label");
     timestamp.set_selectable(false);
     timestamp.set_xalign(0.0);
-    content.append(&timestamp);
+    text_box.append(&timestamp);
+    content.append(&text_box);
+
+    let copy_button = status_button(COPY_ICON, "Copy message");
+    copy_button.set_valign(gtk::Align::Center);
+    let window_for_copy = window.clone();
+    let message_for_copy = entry.message.clone();
+    let copy_button_for_copy = copy_button.clone();
+    let copy_feedback_generation = Rc::new(Cell::new(0u64));
+    copy_button.connect_clicked(move |_| {
+        window_for_copy.clipboard().set_text(&message_for_copy);
+        show_copy_feedback(&copy_button_for_copy, &copy_feedback_generation);
+    });
+    content.append(&copy_button);
 
     row.set_child(Some(&content));
     row

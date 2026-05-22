@@ -134,9 +134,10 @@ use shell::{
 use shortcuts::{build_shortcuts_dialog, install_action_accelerators};
 use smart::{effective_hide_canceled_transactions, smart_pattern_detection_enabled};
 use status::{
-    build_page_actions_menu_button, build_status_bar, connect_embedded_status_bar,
+    build_status_bar, connect_embedded_status_bar, connect_static_page_actions,
     connect_status_actions, register_page_copy_feedback_button,
-    schedule_status_autohide_after_loading, show_page_copy_feedback, show_status, StatusLogEntry,
+    schedule_status_autohide_after_loading, set_page_actions_menu_namespace,
+    show_page_copy_feedback, show_status, StaticPageSnapshot, StatusLogEntry,
 };
 use text::truncate;
 use transactions::{
