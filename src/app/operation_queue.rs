@@ -45,7 +45,7 @@ pub(in crate::app) struct OperationQueueWidgets {
     pub(in crate::app) summary: gtk::Label,
     pub(in crate::app) apply_all_button: gtk::Button,
     pub(in crate::app) clear_done_button: gtk::Button,
-    pub(in crate::app) list: gtk::Box,
+    pub(in crate::app) list: gtk::ListBox,
 }
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
@@ -256,13 +256,11 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     header.append(&header_actions);
     root.append(&header);
 
-    let list = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    let scroll = gtk::ScrolledWindow::builder()
-        .child(&list)
-        .max_content_height(420)
-        .propagate_natural_height(true)
-        .hscrollbar_policy(gtk::PolicyType::Never)
-        .build();
+    let list = gtk::ListBox::new();
+    list.add_css_class("boxed-list");
+    list.set_selection_mode(gtk::SelectionMode::None);
+    list.set_hexpand(true);
+    let scroll = ui::compact_popover_scroll(&list);
     root.append(&scroll);
 
     let popover = gtk::Popover::new();
@@ -350,12 +348,12 @@ fn refresh_operation_queue_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) 
         .summary
         .set_text(&queue_summary(&ui.operation_queue));
 
-    ui::clear_box(&widgets.list);
+    ui::clear_list_box(&widgets.list);
     let operations = ui.operation_queue.operations();
     if operations.is_empty() {
         widgets
             .list
-            .append(&queue_text_card(&tr("No queued operations.")));
+            .append(&queue_text_row(&tr("No queued operations.")));
         return;
     }
 
@@ -364,22 +362,19 @@ fn refresh_operation_queue_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) 
     }
 }
 
-fn queue_text_card(text: &str) -> gtk::Box {
-    let card = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    card.add_css_class("card");
-    card.set_margin_top(4);
-    card.set_margin_bottom(4);
-    card.set_margin_start(4);
-    card.set_margin_end(4);
-
+fn queue_text_row(text: &str) -> gtk::ListBoxRow {
+    let row = gtk::ListBoxRow::builder()
+        .activatable(false)
+        .selectable(false)
+        .build();
     let label = ui::wrapped_label(text);
     label.set_selectable(false);
-    label.set_margin_top(12);
-    label.set_margin_bottom(12);
-    label.set_margin_start(12);
-    label.set_margin_end(12);
-    card.append(&label);
-    card
+    label.set_margin_top(10);
+    label.set_margin_bottom(10);
+    label.set_margin_start(10);
+    label.set_margin_end(10);
+    row.set_child(Some(&label));
+    row
 }
 
 fn queue_summary(queue: &OperationQueue) -> String {
@@ -414,32 +409,32 @@ fn operation_row(
     state: &Rc<RefCell<AppData>>,
     ui: &Rc<UiHandles>,
     operation: QueuedOperation,
-) -> gtk::Box {
-    let row = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    row.add_css_class("card");
-    row.set_margin_top(2);
-    row.set_margin_bottom(2);
-    row.set_margin_start(2);
-    row.set_margin_end(2);
+) -> gtk::ListBoxRow {
+    let row = gtk::ListBoxRow::builder()
+        .activatable(false)
+        .selectable(false)
+        .build();
 
-    let content = gtk::Box::new(gtk::Orientation::Vertical, 6);
-    content.set_margin_top(10);
-    content.set_margin_bottom(10);
+    let content = gtk::Box::new(gtk::Orientation::Horizontal, 10);
+    content.set_margin_top(8);
+    content.set_margin_bottom(8);
     content.set_margin_start(10);
     content.set_margin_end(10);
 
-    let header = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+    let labels = gtk::Box::new(gtk::Orientation::Vertical, 2);
+    labels.set_hexpand(true);
+    let header = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     header.set_hexpand(true);
     let title = gtk::Label::new(Some(&operation_title(&operation.kind)));
-    title.add_css_class("heading");
     title.set_selectable(false);
     title.set_xalign(0.0);
+    title.set_ellipsize(gtk::pango::EllipsizeMode::End);
     title.set_hexpand(true);
     header.append(&title);
 
     if matches!(operation.status, QueuedOperationStatus::Applying) {
         let spinner = ui::loading_spinner();
-        spinner.set_size_request(18, 18);
+        spinner.set_size_request(16, 16);
         header.append(&spinner);
     }
     let status = gtk::Label::new(Some(&operation_status_text(&operation.status)));
@@ -447,19 +442,24 @@ fn operation_row(
     status.set_selectable(false);
     status.set_xalign(1.0);
     header.append(&status);
-    content.append(&header);
+    labels.append(&header);
 
-    let subtitle = ui::wrapped_label(&operation_subtitle(&operation.kind));
+    let subtitle = gtk::Label::new(Some(&operation_subtitle(&operation.kind)));
     subtitle.set_selectable(false);
     subtitle.add_css_class("dim-label");
-    content.append(&subtitle);
+    subtitle.set_xalign(0.0);
+    subtitle.set_ellipsize(gtk::pango::EllipsizeMode::End);
+    labels.append(&subtitle);
 
     if let QueuedOperationStatus::Failed(message) = &operation.status {
-        let error = ui::wrapped_label(message);
+        let error = gtk::Label::new(Some(message));
         error.set_selectable(false);
         error.add_css_class("error");
-        content.append(&error);
+        error.set_xalign(0.0);
+        error.set_ellipsize(gtk::pango::EllipsizeMode::End);
+        labels.append(&error);
     }
+    content.append(&labels);
 
     let actions = ui::linked_button_group();
     actions.set_halign(gtk::Align::End);
@@ -493,7 +493,7 @@ fn operation_row(
     actions.append(&apply_button);
     actions.append(&remove_button);
     content.append(&actions);
-    row.append(&content);
+    row.set_child(Some(&content));
     row
 }
 

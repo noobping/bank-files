@@ -130,6 +130,15 @@ pub fn scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
         .build()
 }
 
+pub fn compact_popover_scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
+    gtk::ScrolledWindow::builder()
+        .child(child)
+        .max_content_height(360)
+        .propagate_natural_height(true)
+        .hscrollbar_policy(gtk::PolicyType::Never)
+        .build()
+}
+
 pub fn linked_button_group() -> gtk::Box {
     let group = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     group.add_css_class("linked");
@@ -146,6 +155,12 @@ pub fn page_box() -> gtk::Box {
 }
 
 pub fn clear_box(container: &gtk::Box) {
+    while let Some(child) = container.first_child() {
+        container.remove(&child);
+    }
+}
+
+pub fn clear_list_box(container: &gtk::ListBox) {
     while let Some(child) = container.first_child() {
         container.remove(&child);
     }

@@ -6,6 +6,8 @@ use std::collections::BTreeSet;
 const FAKE_TRANSACTION_SOURCE: &str = "Runtime fake transaction";
 const DEFAULT_FAKE_ACCOUNT: &str = "Fake";
 const DEFAULT_FAKE_CURRENCY: &str = "EUR";
+const FAKE_TRANSACTIONS_LIST_PAGE: &str = "list";
+const FAKE_TRANSACTIONS_FORM_PAGE: &str = "form";
 
 #[derive(Debug, Clone)]
 pub(in crate::app) struct FakeTransaction {
@@ -26,9 +28,13 @@ pub(in crate::app) struct FakeTransactionWidgets {
     pub(in crate::app) summary: gtk::Label,
     pub(in crate::app) busy_box: gtk::Box,
     pub(in crate::app) busy_label: gtk::Label,
+    pub(in crate::app) back_button: gtk::Button,
     pub(in crate::app) add_button: gtk::Button,
     pub(in crate::app) clear_button: gtk::Button,
-    pub(in crate::app) list: gtk::Box,
+    pub(in crate::app) list_actions: gtk::Box,
+    pub(in crate::app) form_actions: gtk::Box,
+    pub(in crate::app) stack: gtk::Stack,
+    pub(in crate::app) list: gtk::ListBox,
     pub(in crate::app) form_box: gtk::Box,
     pub(in crate::app) popover: gtk::Popover,
 }
@@ -121,7 +127,7 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     root.set_margin_bottom(10);
     root.set_margin_start(10);
     root.set_margin_end(10);
-    root.set_size_request(460, -1);
+    root.set_size_request(420, -1);
 
     let header = gtk::Box::new(gtk::Orientation::Horizontal, 8);
     header.set_hexpand(true);
@@ -138,13 +144,19 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     title_box.append(&title);
     title_box.append(&summary);
 
+    let back_button = ui::icon_button("go-previous-symbolic", "Back to fake transactions");
+    back_button.set_visible(false);
     let add_button = ui::icon_button("list-add-symbolic", "Add fake transaction");
     let clear_button = ui::icon_button("edit-clear-all-symbolic", "Clear fake transactions");
-    let header_actions = ui::linked_button_group();
-    header_actions.append(&add_button);
-    header_actions.append(&clear_button);
+    let list_actions = ui::linked_button_group();
+    list_actions.append(&add_button);
+    list_actions.append(&clear_button);
+    let form_actions = ui::linked_button_group();
+    form_actions.set_visible(false);
+    header.append(&back_button);
     header.append(&title_box);
-    header.append(&header_actions);
+    header.append(&list_actions);
+    header.append(&form_actions);
     root.append(&header);
 
     let busy_box = gtk::Box::new(gtk::Orientation::Horizontal, 6);
@@ -160,17 +172,23 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     busy_box.append(&busy_label);
     root.append(&busy_box);
 
-    let form_box = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    form_box.set_visible(false);
-    root.append(&form_box);
-
-    let list = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    let scroll = gtk::ScrolledWindow::builder()
-        .child(&list)
-        .max_content_height(420)
-        .propagate_natural_height(true)
-        .hscrollbar_policy(gtk::PolicyType::Never)
+    let stack = gtk::Stack::builder()
+        .transition_type(gtk::StackTransitionType::SlideLeftRight)
         .build();
+    stack.set_hexpand(true);
+
+    let list = gtk::ListBox::new();
+    list.add_css_class("boxed-list");
+    list.set_selection_mode(gtk::SelectionMode::None);
+    list.set_hexpand(true);
+    stack.add_named(&list, Some(FAKE_TRANSACTIONS_LIST_PAGE));
+
+    let form_box = gtk::Box::new(gtk::Orientation::Vertical, 8);
+    form_box.set_hexpand(true);
+    stack.add_named(&form_box, Some(FAKE_TRANSACTIONS_FORM_PAGE));
+    stack.set_visible_child_name(FAKE_TRANSACTIONS_LIST_PAGE);
+
+    let scroll = ui::compact_popover_scroll(&stack);
     root.append(&scroll);
 
     let popover = gtk::Popover::builder().autohide(true).build();
@@ -191,8 +209,12 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
         summary,
         busy_box,
         busy_label,
+        back_button,
         add_button,
         clear_button,
+        list_actions,
+        form_actions,
+        stack,
         list,
         form_box,
         popover,
@@ -200,6 +222,13 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
 }
 
 pub(in crate::app) fn connect_fake_transactions(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
+    let ui_for_back = Rc::clone(ui);
+    ui.fake_transaction_widgets
+        .back_button
+        .connect_clicked(move |_| {
+            show_fake_transaction_list(&ui_for_back.fake_transaction_widgets)
+        });
+
     let state_for_add = Rc::clone(state);
     let ui_for_add = Rc::clone(ui);
     ui.fake_transaction_widgets
@@ -217,6 +246,7 @@ pub(in crate::app) fn connect_fake_transactions(state: &Rc<RefCell<AppData>>, ui
                 "Clearing fake transactions...",
                 |_, ui| {
                     if ui.fake_transactions.clear() > 0 {
+                        show_fake_transaction_list(&ui.fake_transaction_widgets);
                         FakeTransactionUpdateOutcome::Render("Fake transactions cleared.")
                     } else {
                         FakeTransactionUpdateOutcome::Skip
@@ -293,6 +323,24 @@ pub(in crate::app) fn real_transactions(transactions: &[Transaction]) -> Vec<Tra
         .collect()
 }
 
+fn show_fake_transaction_list(widgets: &FakeTransactionWidgets) {
+    widgets
+        .stack
+        .set_visible_child_name(FAKE_TRANSACTIONS_LIST_PAGE);
+    widgets.back_button.set_visible(false);
+    widgets.list_actions.set_visible(true);
+    widgets.form_actions.set_visible(false);
+}
+
+fn show_fake_transaction_form_page(widgets: &FakeTransactionWidgets) {
+    widgets
+        .stack
+        .set_visible_child_name(FAKE_TRANSACTIONS_FORM_PAGE);
+    widgets.back_button.set_visible(true);
+    widgets.list_actions.set_visible(false);
+    widgets.form_actions.set_visible(true);
+}
+
 fn refresh_fake_transactions_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
     let widgets = &ui.fake_transaction_widgets;
     let count = ui.fake_transactions.count();
@@ -303,18 +351,21 @@ fn refresh_fake_transactions_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>
         "Fake transactions: {count}",
         &[("count", count.to_string())],
     )));
+    widgets.back_button.set_sensitive(!busy);
     widgets.add_button.set_sensitive(!busy);
+    widgets.form_actions.set_sensitive(!busy);
     widgets.clear_button.set_sensitive(count > 0 && !busy);
+    widgets.stack.set_sensitive(!busy);
     widgets.form_box.set_sensitive(!busy);
     widgets.list.set_sensitive(!busy);
     widgets.summary.set_text(&fake_transaction_summary(count));
 
-    ui::clear_box(&widgets.list);
+    ui::clear_list_box(&widgets.list);
     let fake_transactions = ui.fake_transactions.list();
     if fake_transactions.is_empty() {
         widgets
             .list
-            .append(&fake_transaction_text_card(&tr("No fake transactions.")));
+            .append(&fake_transaction_text_row(&tr("No fake transactions.")));
         return;
     }
 
@@ -334,50 +385,52 @@ fn fake_transaction_summary(count: usize) -> String {
     }
 }
 
-fn fake_transaction_text_card(text: &str) -> gtk::Box {
-    let card = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    card.add_css_class("card");
-    card.set_margin_top(4);
-    card.set_margin_bottom(4);
-    card.set_margin_start(4);
-    card.set_margin_end(4);
-
+fn fake_transaction_text_row(text: &str) -> gtk::ListBoxRow {
+    let row = gtk::ListBoxRow::builder()
+        .activatable(false)
+        .selectable(false)
+        .build();
     let label = ui::wrapped_label(text);
     label.set_selectable(false);
-    label.set_margin_top(12);
-    label.set_margin_bottom(12);
-    label.set_margin_start(12);
-    label.set_margin_end(12);
-    card.append(&label);
-    card
+    label.set_margin_top(10);
+    label.set_margin_bottom(10);
+    label.set_margin_start(10);
+    label.set_margin_end(10);
+    row.set_child(Some(&label));
+    row
 }
 
 fn fake_transaction_row(
     state: &Rc<RefCell<AppData>>,
     ui: &Rc<UiHandles>,
     fake: FakeTransaction,
-) -> gtk::Box {
-    let row = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    row.add_css_class("card");
-    row.set_margin_top(2);
-    row.set_margin_bottom(2);
-    row.set_margin_start(2);
-    row.set_margin_end(2);
+) -> gtk::ListBoxRow {
+    let row = gtk::ListBoxRow::builder()
+        .activatable(false)
+        .selectable(false)
+        .build();
 
-    let content = gtk::Box::new(gtk::Orientation::Vertical, 6);
-    content.set_margin_top(10);
-    content.set_margin_bottom(10);
+    let content = gtk::Box::new(gtk::Orientation::Horizontal, 10);
+    content.set_margin_top(8);
+    content.set_margin_bottom(8);
     content.set_margin_start(10);
     content.set_margin_end(10);
 
-    let header = gtk::Box::new(gtk::Orientation::Horizontal, 8);
-    header.set_hexpand(true);
+    let labels = gtk::Box::new(gtk::Orientation::Vertical, 2);
+    labels.set_hexpand(true);
     let title = gtk::Label::new(Some(&fake_transaction_title(&fake.transaction)));
-    title.add_css_class("heading");
     title.set_selectable(false);
     title.set_xalign(0.0);
-    title.set_hexpand(true);
-    header.append(&title);
+    title.set_ellipsize(gtk::pango::EllipsizeMode::End);
+    labels.append(&title);
+
+    let subtitle = gtk::Label::new(Some(&fake_transaction_subtitle(&fake.transaction)));
+    subtitle.set_selectable(false);
+    subtitle.add_css_class("dim-label");
+    subtitle.set_xalign(0.0);
+    subtitle.set_ellipsize(gtk::pango::EllipsizeMode::End);
+    labels.append(&subtitle);
+    content.append(&labels);
 
     let amount = gtk::Label::new(Some(&signed_money(fake.transaction.amount)));
     amount.add_css_class(if fake.transaction.amount >= Decimal::ZERO {
@@ -386,13 +439,8 @@ fn fake_transaction_row(
         "error"
     });
     amount.set_selectable(false);
-    header.append(&amount);
-    content.append(&header);
-
-    let subtitle = ui::wrapped_label(&fake_transaction_subtitle(&fake.transaction));
-    subtitle.set_selectable(false);
-    subtitle.add_css_class("dim-label");
-    content.append(&subtitle);
+    amount.set_xalign(1.0);
+    content.append(&amount);
 
     let actions = ui::linked_button_group();
     actions.set_halign(gtk::Align::End);
@@ -426,7 +474,7 @@ fn fake_transaction_row(
     actions.append(&edit_button);
     actions.append(&remove_button);
     content.append(&actions);
-    row.append(&content);
+    row.set_child(Some(&content));
     row
 }
 
@@ -441,7 +489,7 @@ fn show_fake_transaction_form(
 
     let widgets = &ui.fake_transaction_widgets;
     ui::clear_box(&widgets.form_box);
-    widgets.form_box.set_visible(true);
+    show_fake_transaction_form_page(widgets);
 
     let title = gtk::Label::new(Some(&tr(if edit_id.is_some() {
         "Edit Fake Transaction"
@@ -510,23 +558,13 @@ fn show_fake_transaction_form(
     status.set_selectable(false);
     widgets.form_box.append(&status);
 
-    let actions = ui::linked_button_group();
-    actions.set_halign(gtk::Align::End);
+    ui::clear_box(&widgets.form_actions);
     let save_button =
         ui::primary_text_icon_button("document-save-symbolic", "Save", "Save fake transaction");
-    let cancel_button = ui::icon_button("window-close-symbolic", "Cancel fake transaction edit");
-    actions.append(&save_button);
-    actions.append(&cancel_button);
-    widgets.form_box.append(&actions);
-
-    let form_box_for_cancel = widgets.form_box.clone();
-    cancel_button.connect_clicked(move |_| {
-        form_box_for_cancel.set_visible(false);
-    });
+    widgets.form_actions.append(&save_button);
 
     let state_for_save = Rc::clone(state);
     let ui_for_save = Rc::clone(ui);
-    let form_box_for_save = widgets.form_box.clone();
     save_button.connect_clicked(move |_| {
         let Some(transaction) = ({
             let data = state_for_save.borrow();
@@ -549,7 +587,6 @@ fn show_fake_transaction_form(
             return;
         };
 
-        let form_box_after_save = form_box_for_save.clone();
         let status_for_save = status.clone();
         queue_fake_transaction_update(
             &state_for_save,
@@ -568,7 +605,7 @@ fn show_fake_transaction_form(
                     "Fake transaction added."
                 };
 
-                form_box_after_save.set_visible(false);
+                show_fake_transaction_list(&ui.fake_transaction_widgets);
                 FakeTransactionUpdateOutcome::Render(message)
             },
         );
@@ -611,10 +648,13 @@ fn set_fake_transactions_busy(ui: &Rc<UiHandles>, busy: bool, message: &str) {
     } else {
         widgets.busy_label.set_text("");
     }
+    widgets.back_button.set_sensitive(!busy);
     widgets.add_button.set_sensitive(!busy);
+    widgets.form_actions.set_sensitive(!busy);
     widgets
         .clear_button
         .set_sensitive(!busy && ui.fake_transactions.count() > 0);
+    widgets.stack.set_sensitive(!busy);
     widgets.form_box.set_sensitive(!busy);
     widgets.list.set_sensitive(!busy);
 }
