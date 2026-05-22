@@ -190,13 +190,13 @@
   dest-filename: .cargo-checksum.json
 - type: archive
   archive-type: tar-gzip
-  url: https://static.crates.io/crates/autocfg/autocfg-1.5.0.crate
-  sha256: c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8
-  dest: cargo/vendor/autocfg-1.5.0
+  url: https://static.crates.io/crates/autocfg/autocfg-1.5.1.crate
+  sha256: f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53
+  dest: cargo/vendor/autocfg-1.5.1
 - type: inline
-  contents: '{"package": "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8",
+  contents: '{"package": "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53",
     "files": {}}'
-  dest: cargo/vendor/autocfg-1.5.0
+  dest: cargo/vendor/autocfg-1.5.1
   dest-filename: .cargo-checksum.json
 - type: archive
   archive-type: tar-gzip
