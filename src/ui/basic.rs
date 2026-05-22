@@ -1,5 +1,7 @@
 use super::*;
 
+const POPOVER_SIZE: i32 = 320;
+
 pub fn month_label(month: MonthKey) -> String {
     format!("{} {}", month_name(month.month), month.year)
 }
@@ -133,8 +135,8 @@ pub fn scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
 pub fn compact_popover_scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
     gtk::ScrolledWindow::builder()
         .child(child)
-        .max_content_width(380)
-        .max_content_height(320)
+        .max_content_width(POPOVER_SIZE)
+        .max_content_height(POPOVER_SIZE)
         .propagate_natural_width(true)
         .propagate_natural_height(true)
         .hscrollbar_policy(gtk::PolicyType::Never)
