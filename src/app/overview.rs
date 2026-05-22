@@ -164,6 +164,13 @@ pub(in crate::app) fn render_overview(
 }
 
 fn append_overview_sections(container: &gtk::Box, mut sections: Vec<gtk::Box>) {
+    if sections.iter().any(ui::is_card_list_section) {
+        for section in sections {
+            container.append(&section);
+        }
+        return;
+    }
+
     match sections.len() {
         0 => {}
         1 => container.append(&sections.remove(0)),
@@ -542,7 +549,7 @@ pub(in crate::app) fn render_overview_search(
         let mut annual_sections = Vec::new();
         if !budgets.is_empty() {
             has_results = true;
-            let section = ui::section_group(
+            let section = ui::card_list_section_group(
                 "Annual Budgets",
                 &trf("Filtered on {year}.", &[("year", year.to_string())]),
             );

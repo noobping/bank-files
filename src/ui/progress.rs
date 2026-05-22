@@ -123,6 +123,8 @@ fn progress_subtitle_with_parts<'a>(parts: impl IntoIterator<Item = &'a str>) ->
         .join(" · ");
     let label = wrapped_label(&text);
     label.add_css_class("dim-label");
+    label.set_width_chars(1);
+    label.set_max_width_chars(34);
     label.set_vexpand(true);
     label.set_valign(gtk::Align::Start);
     label

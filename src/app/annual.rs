@@ -30,7 +30,7 @@ pub(in crate::app) fn annual_budgets_section(
             &[("year", year.to_string())],
         )
     };
-    let section = ui::section_group("Annual Budgets", &subtitle);
+    let section = ui::card_list_section_group("Annual Budgets", &subtitle);
     let budgets_box = ui::card_grid(Vec::new(), 2);
     let show_all = ui_handles.show_all.get();
     let visible_budgets = if show_all {
@@ -197,7 +197,7 @@ pub(in crate::app) fn annual_spending_section_from_rows(
     ui_handles: &Rc<UiHandles>,
     state: &Rc<RefCell<AppData>>,
 ) -> gtk::Box {
-    let section = ui::section_group("Annual Spending", subtitle);
+    let section = ui::card_list_section_group("Annual Spending", subtitle);
     let categories_box = ui::card_grid(Vec::new(), 2);
     let show_all = ui_handles.show_all.get();
     let preview = categories

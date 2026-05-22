@@ -296,7 +296,7 @@ fn append_budget_detail_sections_now(
             data.budgets.len().saturating_sub(visible_budgets.len())
         };
         let section_subtitle = budget_room_subtitle(data.search_active, &data.month_label);
-        let section = ui::section_group("Budget Room", &section_subtitle);
+        let section = ui::card_list_section_group("Budget Room", &section_subtitle);
         let box_ = ui::card_grid(Vec::new(), 2);
         if visible_budgets.is_empty() {
             ui::append_card_to_grid(
@@ -340,7 +340,9 @@ fn append_budget_detail_sections_now(
         return false;
     }
 
-    container.append(&ui::responsive_columns_three_or_one(sections));
+    for section in sections {
+        container.append(&section);
+    }
     true
 }
 
@@ -547,7 +549,8 @@ pub(in crate::app) fn monthly_categories_section(
     ui_handles: &Rc<UiHandles>,
     state: &Rc<RefCell<AppData>>,
 ) -> gtk::Box {
-    let section = ui::section_group("Monthly Spending", &monthly_spending_subtitle(month_label));
+    let section =
+        ui::card_list_section_group("Monthly Spending", &monthly_spending_subtitle(month_label));
     let categories_box = ui::card_grid(Vec::new(), 2);
     let expense_categories = categories
         .into_iter()

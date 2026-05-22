@@ -196,6 +196,16 @@ pub fn section_group(title: &str, subtitle: &str) -> gtk::Box {
     section
 }
 
+pub fn card_list_section_group(title: &str, subtitle: &str) -> gtk::Box {
+    let section = section_group(title, subtitle);
+    section.add_css_class("card-list-section");
+    section
+}
+
+pub fn is_card_list_section(section: &gtk::Box) -> bool {
+    section.has_css_class("card-list-section")
+}
+
 pub fn loading_section_group(title: &str, subtitle: &str) -> gtk::Box {
     let section = section_group(title, subtitle);
     section.append(&loading_status_card("Loading data..."));
