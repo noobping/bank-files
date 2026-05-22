@@ -411,6 +411,9 @@ fn load_management_forms(load: ManagementFormsLoad) {
         &load.status,
     );
     set_management_form_action_buttons_sensitive(&load.buttons, true);
+    for button in &load.buttons {
+        register_loading_sensitive_widget(&load.ui_handles, button);
+    }
     load.page_actions_button.set_sensitive(true);
     register_loading_sensitive_widget(&load.ui_handles, &load.page_actions_button);
 }

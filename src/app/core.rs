@@ -489,6 +489,7 @@ fn set_background_loading(ui: &UiHandles, loading: bool) {
     }
     update_header_navigation_button(ui);
     refresh_write_actions(ui);
+    refresh_active_operation_queue_ui();
 }
 
 fn set_period_controls_enabled(ui: &UiHandles, enabled: bool) {

@@ -319,6 +319,14 @@ fn refresh_operation_queue_ui_for_active_session(ui: &Rc<UiHandles>) {
     });
 }
 
+pub(in crate::app) fn refresh_active_operation_queue_ui() {
+    ACTIVE_SESSION.with(|active| {
+        if let Some(session) = active.borrow().clone() {
+            refresh_operation_queue_ui(&session.state, &session.ui);
+        }
+    });
+}
+
 fn refresh_operation_queue_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
     let widgets = &ui.operation_queue_widgets;
     let actionable = ui.operation_queue.actionable_count();
@@ -329,7 +337,10 @@ fn refresh_operation_queue_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) 
         "Processing queue: {count} pending",
         &[("count", actionable.to_string())],
     )));
-    let idle = !ui.operation_queue.is_processing() && ui.loading_count.get() == 0;
+    let idle = operation_queue_actions_are_idle(
+        ui.operation_queue.is_processing(),
+        ui.loading_count.get(),
+    );
     match config_write_availability(ui.as_ref()) {
         ActionAvailability::Available => {
             widgets.apply_all_button.set_visible(true);
@@ -467,9 +478,11 @@ fn operation_row(
     match config_write_availability(ui.as_ref()) {
         ActionAvailability::Available => {
             apply_button.set_visible(true);
-            apply_button.set_sensitive(
-                operation.status.is_actionable() && !ui.operation_queue.is_processing(),
-            );
+            apply_button.set_sensitive(operation_apply_button_sensitive(
+                &operation.status,
+                ui.operation_queue.is_processing(),
+                ui.loading_count.get(),
+            ));
         }
         availability => apply_action_availability(&apply_button, &availability),
     }
@@ -505,6 +518,18 @@ fn operation_title(kind: &QueuedOperationKind) -> String {
             OperationSource::MarkTransfer => "Mark transfer",
         }),
     }
+}
+
+fn operation_queue_actions_are_idle(processing: bool, loading_count: u32) -> bool {
+    !processing && loading_count == 0
+}
+
+fn operation_apply_button_sensitive(
+    status: &QueuedOperationStatus,
+    processing: bool,
+    loading_count: u32,
+) -> bool {
+    status.is_actionable() && operation_queue_actions_are_idle(processing, loading_count)
 }
 
 fn operation_subtitle(kind: &QueuedOperationKind) -> String {
@@ -813,6 +838,30 @@ mod tests {
         assert!(queue.mark_applying(id));
         assert!(!queue.remove(id));
         assert_eq!(queue.operations().len(), 1);
+    }
+
+    #[test]
+    fn apply_buttons_are_disabled_while_loading_or_processing() {
+        assert!(operation_apply_button_sensitive(
+            &QueuedOperationStatus::Pending,
+            false,
+            0,
+        ));
+        assert!(!operation_apply_button_sensitive(
+            &QueuedOperationStatus::Pending,
+            true,
+            0,
+        ));
+        assert!(!operation_apply_button_sensitive(
+            &QueuedOperationStatus::Pending,
+            false,
+            1,
+        ));
+        assert!(!operation_apply_button_sensitive(
+            &QueuedOperationStatus::Applied,
+            false,
+            0,
+        ));
     }
 
     #[test]

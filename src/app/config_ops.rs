@@ -12,7 +12,10 @@ pub(in crate::app) fn config_operation_is_active(
     ui_handles: &Rc<UiHandles>,
     busy_message: &str,
 ) -> bool {
-    if ui_handles.management_dialog_active.get() {
+    if ui_handles.loading_count.get() > 0 {
+        show_status(ui_handles, "Data is still loading.");
+        true
+    } else if ui_handles.management_dialog_active.get() {
         show_status(ui_handles, busy_message);
         true
     } else {
@@ -32,6 +35,10 @@ pub(in crate::app) fn try_begin_config_operation(
                 .borrow()
                 .config_write_reason(),
         );
+        return false;
+    }
+    if ui_handles.loading_count.get() > 0 {
+        show_status(ui_handles, "Data is still loading.");
         return false;
     }
     if ui_handles.management_dialog_active.get() {

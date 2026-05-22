@@ -115,8 +115,8 @@ use money::{
     planned_budget_label,
 };
 use operation_queue::{
-    build_operation_queue_widgets, connect_operation_queue, enqueue_rule_operation, OperationQueue,
-    OperationQueueWidgets, OperationSource,
+    build_operation_queue_widgets, connect_operation_queue, enqueue_rule_operation,
+    refresh_active_operation_queue_ui, OperationQueue, OperationQueueWidgets, OperationSource,
 };
 use overview::render_overview;
 use preferences::Preferences;
