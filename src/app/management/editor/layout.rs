@@ -5,6 +5,7 @@ const MANAGEMENT_DIALOG_MIN_WIDTH: i32 = 320;
 const MANAGEMENT_DIALOG_MIN_HEIGHT: i32 = 360;
 const MANAGEMENT_DIALOG_FALLBACK_WIDTH: i32 = 1040;
 const MANAGEMENT_DIALOG_FALLBACK_HEIGHT: i32 = 760;
+const MANAGEMENT_FORM_RENDER_BATCH_SIZE: usize = 18;
 
 pub(in crate::app) fn show_management_dialog(
     window: &adw::ApplicationWindow,
@@ -241,7 +242,9 @@ pub(in crate::app) fn show_management_dialog(
     connect_embedded_status_bar(window, &status_bar, Rc::clone(&ui_handles.status_autohide));
     set_page_actions_menu_namespace(&status_bar.page_actions_button, "management");
     status_bar.page_actions_button.set_sensitive(false);
-    status_bar.label.set_text(&tr("Loading management data..."));
+    let status_handle = StatusHandle::from_status_bar(&status_bar);
+    status_handle.set_text(&tr("Loading management data..."));
+    status_handle.set_loading(true);
     root.append(&status_bar.container);
     let status = status_bar.label.clone();
 
@@ -353,6 +356,7 @@ pub(in crate::app) fn show_management_dialog(
         ui_handles: Rc::clone(ui_handles),
         buttons: management_form_action_buttons,
         page_actions_button: status_bar.page_actions_button.clone(),
+        status_handle,
     });
     true
 }
@@ -372,6 +376,27 @@ struct ManagementFormsLoad {
     ui_handles: Rc<UiHandles>,
     buttons: Vec<gtk::Button>,
     page_actions_button: gtk::MenuButton,
+    status_handle: StatusHandle,
+}
+
+struct ManagementLoadedForms {
+    rules: Result<std::collections::VecDeque<EditableRule>, String>,
+    budgets: Result<std::collections::VecDeque<EditableBudget>, String>,
+    aliases: Result<std::collections::VecDeque<EditableAlias>, String>,
+}
+
+struct ManagementFormsRender {
+    load: ManagementFormsLoad,
+    loaded: ManagementLoadedForms,
+    stage: ManagementFormsRenderStage,
+}
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+enum ManagementFormsRenderStage {
+    Rules,
+    Budgets,
+    Aliases,
+    Done,
 }
 
 fn append_management_loading(container: &gtk::Box, message: &str) {
@@ -391,18 +416,217 @@ fn append_management_loading(container: &gtk::Box, message: &str) {
 }
 
 fn schedule_management_forms_load(load: ManagementFormsLoad) {
-    gtk::glib::timeout_add_local_once(std::time::Duration::from_millis(50), move || {
-        if load.dialog_closed.get() {
-            return;
+    gtk::glib::MainContext::default().spawn_local(async move {
+        let task = gtk::gio::spawn_blocking(load_management_forms_data);
+        match task.await {
+            Ok(loaded) => {
+                if load.dialog_closed.get() {
+                    return;
+                }
+                start_management_forms_render(load, loaded);
+            }
+            Err(_) => {
+                load.status_handle.set_loading(false);
+                load.status.set_text(&tr(
+                    "Management loading canceled: the background task stopped unexpectedly.",
+                ));
+            }
         }
-        load_management_forms(load);
     });
 }
 
-fn load_management_forms(load: ManagementFormsLoad) {
-    load_editable_rule_forms(&load);
-    load_editable_budget_forms(&load);
-    load_editable_alias_forms(&load);
+fn load_management_forms_data() -> ManagementLoadedForms {
+    ManagementLoadedForms {
+        rules: data::load_editable_rules()
+            .map(std::collections::VecDeque::from)
+            .map_err(|err| format!("{err:#}")),
+        budgets: data::load_editable_budgets()
+            .map(ordered_management_budgets)
+            .map(std::collections::VecDeque::from)
+            .map_err(|err| format!("{err:#}")),
+        aliases: data::load_editable_aliases()
+            .map(std::collections::VecDeque::from)
+            .map_err(|err| format!("{err:#}")),
+    }
+}
+
+fn ordered_management_budgets(budgets: Vec<EditableBudget>) -> Vec<EditableBudget> {
+    let (planned_income_budget, mut regular_budgets) = partition_planned_income_budget(budgets);
+    let mut ordered =
+        Vec::with_capacity(regular_budgets.len() + usize::from(planned_income_budget.is_some()));
+    if let Some(planned_income_budget) = planned_income_budget {
+        ordered.push(planned_income_budget);
+    }
+    ordered.append(&mut regular_budgets);
+    ordered
+}
+
+fn start_management_forms_render(load: ManagementFormsLoad, loaded: ManagementLoadedForms) {
+    ui::clear_box(&load.rules_list);
+    load.rules_forms.borrow_mut().clear();
+    ui::clear_box(&load.budgets_list);
+    load.budgets_forms.borrow_mut().clear();
+    ui::clear_box(&load.aliases_list);
+    load.aliases_forms.borrow_mut().clear();
+    load.status_handle
+        .set_text(&tr("Loading management data..."));
+    let render = Rc::new(RefCell::new(ManagementFormsRender {
+        load,
+        loaded,
+        stage: ManagementFormsRenderStage::Rules,
+    }));
+    schedule_management_forms_render(render);
+}
+
+fn schedule_management_forms_render(render: Rc<RefCell<ManagementFormsRender>>) {
+    gtk::glib::timeout_add_local_once(std::time::Duration::from_millis(1), move || {
+        if render.borrow().load.dialog_closed.get() {
+            return;
+        }
+        if render_management_forms_batch(&render) {
+            schedule_management_forms_render(render);
+        }
+    });
+}
+
+fn render_management_forms_batch(render: &Rc<RefCell<ManagementFormsRender>>) -> bool {
+    let mut render = render.borrow_mut();
+    let mut remaining = MANAGEMENT_FORM_RENDER_BATCH_SIZE;
+    while remaining > 0 {
+        match render.stage {
+            ManagementFormsRenderStage::Rules => {
+                if render_rule_forms_batch(&mut render, &mut remaining) {
+                    continue;
+                }
+            }
+            ManagementFormsRenderStage::Budgets => {
+                if render_budget_forms_batch(&mut render, &mut remaining) {
+                    continue;
+                }
+            }
+            ManagementFormsRenderStage::Aliases => {
+                if render_alias_forms_batch(&mut render, &mut remaining) {
+                    continue;
+                }
+            }
+            ManagementFormsRenderStage::Done => {
+                finish_management_forms_render(&render.load);
+                return false;
+            }
+        }
+    }
+    true
+}
+
+fn render_rule_forms_batch(render: &mut ManagementFormsRender, remaining: &mut usize) -> bool {
+    match &mut render.loaded.rules {
+        Ok(rules) => {
+            while *remaining > 0 {
+                let Some(rule) = rules.pop_front() else {
+                    render.stage = ManagementFormsRenderStage::Budgets;
+                    return true;
+                };
+                append_rule_form(
+                    &render.load.rules_list,
+                    &render.load.rules_forms,
+                    rule,
+                    true,
+                    &render.load.advanced_autofill,
+                );
+                *remaining -= 1;
+            }
+            false
+        }
+        Err(err) => {
+            render
+                .load
+                .rules_list
+                .append(&ui::selectable_wrapped_label(&trf(
+                    "Could not read rules: {error}",
+                    &[("error", err.clone())],
+                )));
+            render.stage = ManagementFormsRenderStage::Budgets;
+            true
+        }
+    }
+}
+
+fn render_budget_forms_batch(render: &mut ManagementFormsRender, remaining: &mut usize) -> bool {
+    match &mut render.loaded.budgets {
+        Ok(budgets) => {
+            while *remaining > 0 {
+                let Some(budget) = budgets.pop_front() else {
+                    render.stage = ManagementFormsRenderStage::Aliases;
+                    return true;
+                };
+                if planned_income::is_budget_code(&budget.code) {
+                    append_planned_income_budget_form(
+                        &render.load.budgets_list,
+                        &render.load.budgets_forms,
+                        budget,
+                        render.load.advanced_features,
+                    );
+                } else {
+                    append_budget_form(
+                        &render.load.budgets_list,
+                        &render.load.budgets_forms,
+                        budget,
+                        true,
+                        &render.load.advanced_autofill,
+                        render.load.advanced_features,
+                    );
+                }
+                *remaining -= 1;
+            }
+            false
+        }
+        Err(err) => {
+            let message = if render.load.advanced_features {
+                "Could not read budget codes: {error}"
+            } else {
+                "Could not read budgets: {error}"
+            };
+            render
+                .load
+                .budgets_list
+                .append(&ui::selectable_wrapped_label(&trf(
+                    message,
+                    &[("error", err.clone())],
+                )));
+            render.stage = ManagementFormsRenderStage::Aliases;
+            true
+        }
+    }
+}
+
+fn render_alias_forms_batch(render: &mut ManagementFormsRender, remaining: &mut usize) -> bool {
+    match &mut render.loaded.aliases {
+        Ok(aliases) => {
+            while *remaining > 0 {
+                let Some(alias) = aliases.pop_front() else {
+                    render.stage = ManagementFormsRenderStage::Done;
+                    return true;
+                };
+                append_alias_form(&render.load.aliases_list, &render.load.aliases_forms, alias);
+                *remaining -= 1;
+            }
+            false
+        }
+        Err(err) => {
+            render
+                .load
+                .aliases_list
+                .append(&ui::selectable_wrapped_label(&trf(
+                    "Could not read field names: {error}",
+                    &[("error", err.clone())],
+                )));
+            render.stage = ManagementFormsRenderStage::Done;
+            true
+        }
+    }
+}
+
+fn finish_management_forms_render(load: &ManagementFormsLoad) {
     apply_management_filter(
         &load.filter_entry.text(),
         &load.rules_forms.borrow(),
@@ -416,105 +640,12 @@ fn load_management_forms(load: ManagementFormsLoad) {
     }
     load.page_actions_button.set_sensitive(true);
     register_loading_sensitive_widget(&load.ui_handles, &load.page_actions_button);
-}
-
-fn load_editable_rule_forms(load: &ManagementFormsLoad) {
-    ui::clear_box(&load.rules_list);
-    load.rules_forms.borrow_mut().clear();
-    match data::load_editable_rules() {
-        Ok(rules) => {
-            for rule in rules {
-                append_rule_form(
-                    &load.rules_list,
-                    &load.rules_forms,
-                    rule,
-                    true,
-                    &load.advanced_autofill,
-                );
-            }
-        }
-        Err(err) => load.rules_list.append(&ui::selectable_wrapped_label(&trf(
-            "Could not read rules: {error}",
-            &[("error", format!("{err:#}"))],
-        ))),
-    }
-}
-
-fn load_editable_budget_forms(load: &ManagementFormsLoad) {
-    ui::clear_box(&load.budgets_list);
-    load.budgets_forms.borrow_mut().clear();
-    match data::load_editable_budgets() {
-        Ok(budgets) => {
-            append_loaded_budget_forms(
-                &load.budgets_list,
-                &load.budgets_forms,
-                budgets,
-                &load.advanced_autofill,
-                load.advanced_features,
-            );
-        }
-        Err(err) => {
-            let message = if load.advanced_features {
-                "Could not read budget codes: {error}"
-            } else {
-                "Could not read budgets: {error}"
-            };
-            load.budgets_list.append(&ui::selectable_wrapped_label(&trf(
-                message,
-                &[("error", format!("{err:#}"))],
-            )));
-        }
-    }
-}
-
-fn load_editable_alias_forms(load: &ManagementFormsLoad) {
-    ui::clear_box(&load.aliases_list);
-    load.aliases_forms.borrow_mut().clear();
-    match data::load_editable_aliases() {
-        Ok(aliases) => {
-            for alias in aliases {
-                append_alias_form(&load.aliases_list, &load.aliases_forms, alias);
-            }
-        }
-        Err(err) => load.aliases_list.append(&ui::selectable_wrapped_label(&trf(
-            "Could not read field names: {error}",
-            &[("error", format!("{err:#}"))],
-        ))),
-    }
+    load.status_handle.set_loading(false);
 }
 
 fn set_management_form_action_buttons_sensitive(buttons: &[gtk::Button], sensitive: bool) {
     for button in buttons {
         button.set_sensitive(sensitive);
-    }
-}
-
-fn append_loaded_budget_forms(
-    container: &gtk::Box,
-    forms: &Rc<RefCell<Vec<BudgetForm>>>,
-    budgets: Vec<EditableBudget>,
-    advanced_autofill: &Rc<Cell<bool>>,
-    advanced_features: bool,
-) {
-    let (planned_income_budget, regular_budgets) = partition_planned_income_budget(budgets);
-
-    if let Some(planned_income_budget) = planned_income_budget {
-        append_planned_income_budget_form(
-            container,
-            forms,
-            planned_income_budget,
-            advanced_features,
-        );
-    }
-    for budget in regular_budgets {
-        append_budget_form(
-            container,
-            forms,
-            budget,
-            true,
-            advanced_autofill,
-            advanced_features,
-        );
     }
 }
 

@@ -2608,6 +2608,9 @@ msgstr "Veldnamen laden..."
 msgid "Loading management data..."
 msgstr "Beheer laden..."
 
+msgid "Management loading canceled: the background task stopped unexpectedly."
+msgstr "Beheer laden geannuleerd: de achtergrondtaak stopte onverwacht."
+
 msgid "Grouping compatible rules..."
 msgstr "Compatibele regels groeperen..."
 

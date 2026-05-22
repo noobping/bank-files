@@ -2608,6 +2608,9 @@ msgstr "Feldnamen werden geladen..."
 msgid "Loading management data..."
 msgstr "Verwaltung wird geladen..."
 
+msgid "Management loading canceled: the background task stopped unexpectedly."
+msgstr "Laden der Verwaltung abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
 msgid "Grouping compatible rules..."
 msgstr "Kompatible Regeln werden gruppiert..."
 
