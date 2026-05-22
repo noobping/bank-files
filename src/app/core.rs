@@ -165,6 +165,12 @@ pub(in crate::app) fn trf(message: &str, replacements: &[(&str, String)]) -> Str
 }
 
 #[derive(Clone)]
+pub(in crate::app) struct LoadingSensitiveWidget {
+    widget: gtk::Widget,
+    base_sensitive: bool,
+}
+
+#[derive(Clone)]
 pub(in crate::app) struct UiHandles {
     pub(in crate::app) window: adw::ApplicationWindow,
     pub(in crate::app) stack: adw::ViewStack,
@@ -205,6 +211,7 @@ pub(in crate::app) struct UiHandles {
     pub(in crate::app) management_dialog_active: Rc<Cell<bool>>,
     pub(in crate::app) management_actions: Rc<RefCell<Vec<gtk::gio::SimpleAction>>>,
     pub(in crate::app) config_widgets: Rc<RefCell<Vec<ConfigWidget>>>,
+    pub(in crate::app) loading_sensitive_widgets: Rc<RefCell<Vec<LoadingSensitiveWidget>>>,
     pub(in crate::app) hide_canceled_transactions: Rc<Cell<bool>>,
     pub(in crate::app) status_generation: Rc<Cell<u64>>,
     pub(in crate::app) render_generation: Rc<Cell<u64>>,
@@ -290,7 +297,13 @@ pub(in crate::app) fn set_storage_capabilities(
 
 pub(in crate::app) fn refresh_write_actions(ui: &UiHandles) {
     let capabilities = ui.storage_capabilities.borrow().clone();
-    let idle = ui.loading_count.get() == 0 && !ui.management_dialog_active.get();
+    let not_loading = loading_sensitive_items_enabled(ui.loading_count.get());
+    let idle = not_loading && !ui.management_dialog_active.get();
+    set_app_action_enabled(ui, "reload", not_loading);
+    set_app_action_enabled(ui, "reload-all", not_loading);
+    set_app_action_enabled(ui, "copy-page", not_loading);
+    set_app_action_enabled(ui, "print-page", not_loading);
+    set_app_action_enabled(ui, "export-csv", not_loading);
     set_app_action_enabled(ui, "import-csv", capabilities.data_writable && idle);
     set_app_action_enabled(ui, "configuration", capabilities.config_writable && idle);
     set_app_action_enabled(
@@ -302,6 +315,35 @@ pub(in crate::app) fn refresh_write_actions(ui: &UiHandles) {
     set_app_action_enabled(ui, "manage-aliases", capabilities.config_writable && idle);
     set_app_action_enabled(ui, "preferences", ui.preferences.any_writable());
     update_config_action_widgets(ui);
+    update_loading_sensitive_widgets(ui);
+}
+
+fn loading_sensitive_items_enabled(loading_count: u32) -> bool {
+    loading_count == 0
+}
+
+pub(in crate::app) fn register_loading_sensitive_widget<W: IsA<gtk::Widget>>(
+    ui: &Rc<UiHandles>,
+    widget: &W,
+) {
+    let widget = widget.clone().upcast::<gtk::Widget>();
+    let base_sensitive = widget.is_sensitive();
+    widget.set_sensitive(base_sensitive && loading_sensitive_items_enabled(ui.loading_count.get()));
+    ui.loading_sensitive_widgets
+        .borrow_mut()
+        .push(LoadingSensitiveWidget {
+            widget,
+            base_sensitive,
+        });
+}
+
+fn update_loading_sensitive_widgets(ui: &UiHandles) {
+    let sensitive = loading_sensitive_items_enabled(ui.loading_count.get());
+    let mut widgets = ui.loading_sensitive_widgets.borrow_mut();
+    widgets.retain(|item| item.widget.root().is_some());
+    for item in widgets.iter() {
+        item.widget.set_sensitive(item.base_sensitive && sensitive);
+    }
 }
 
 fn set_app_action_enabled(ui: &UiHandles, name: &str, enabled: bool) {
@@ -744,6 +786,7 @@ fn build_ui_with_startup_request(app: &adw::Application, startup_request: Startu
         management_dialog_active: Rc::new(Cell::new(false)),
         management_actions: Rc::new(RefCell::new(Vec::new())),
         config_widgets: Rc::new(RefCell::new(Vec::new())),
+        loading_sensitive_widgets: Rc::new(RefCell::new(Vec::new())),
         hide_canceled_transactions: Rc::new(Cell::new(preferences.hide_canceled_transactions())),
         status_generation: Rc::new(Cell::new(0)),
         render_generation: Rc::new(Cell::new(0)),
@@ -755,6 +798,7 @@ fn build_ui_with_startup_request(app: &adw::Application, startup_request: Startu
         preferences: preferences.clone(),
         storage_capabilities: Rc::new(RefCell::new(initial_storage_capabilities)),
     });
+    register_loading_sensitive_widget(&ui, &status_bar.page_actions_button);
     connect_navigation_history(&ui);
     connect_preference_sync(&ui);
 
@@ -872,6 +916,13 @@ mod tests {
             write_action_available(false, true, "Locked"),
             ActionAvailability::Disabled("Locked".to_string())
         );
+    }
+
+    #[test]
+    fn loading_sensitive_items_are_enabled_only_when_idle() {
+        assert!(loading_sensitive_items_enabled(0));
+        assert!(!loading_sensitive_items_enabled(1));
+        assert!(!loading_sensitive_items_enabled(3));
     }
 
     #[test]

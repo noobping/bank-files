@@ -24,6 +24,32 @@ pub(in crate::app) struct StatusBar {
     pub(in crate::app) hide_button: gtk::Button,
 }
 
+#[derive(Clone)]
+pub(in crate::app) struct StatusHandle {
+    icon: gtk::Image,
+    spinner: adw::Spinner,
+    label: gtk::Label,
+}
+
+impl StatusHandle {
+    pub(in crate::app) fn from_status_bar(status_bar: &StatusBar) -> Self {
+        Self {
+            icon: status_bar.icon.clone(),
+            spinner: status_bar.spinner.clone(),
+            label: status_bar.label.clone(),
+        }
+    }
+
+    pub(in crate::app) fn set_text(&self, message: &str) {
+        self.label.set_text(message);
+    }
+
+    pub(in crate::app) fn set_loading(&self, loading: bool) {
+        self.icon.set_visible(!loading);
+        self.spinner.set_visible(loading);
+    }
+}
+
 pub(in crate::app) fn build_status_bar() -> StatusBar {
     let container = gtk::Box::new(gtk::Orientation::Horizontal, 8);
     container.add_css_class("toolbar");
@@ -135,6 +161,7 @@ pub(in crate::app) fn connect_static_page_actions(
     snapshot: StaticPageSnapshot,
 ) {
     set_page_actions_menu_namespace(page_actions_button, action_namespace);
+    register_loading_sensitive_widget(ui_handles, page_actions_button);
     let action_group = gtk::gio::SimpleActionGroup::new();
 
     let snapshot_for_copy = snapshot.clone();

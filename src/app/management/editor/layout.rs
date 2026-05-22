@@ -350,6 +350,7 @@ pub(in crate::app) fn show_management_dialog(
         status,
         dialog_closed,
         advanced_autofill: Rc::clone(&ui_handles.advanced_autofill),
+        ui_handles: Rc::clone(ui_handles),
         buttons: management_form_action_buttons,
         page_actions_button: status_bar.page_actions_button.clone(),
     });
@@ -368,6 +369,7 @@ struct ManagementFormsLoad {
     status: gtk::Label,
     dialog_closed: Rc<Cell<bool>>,
     advanced_autofill: Rc<Cell<bool>>,
+    ui_handles: Rc<UiHandles>,
     buttons: Vec<gtk::Button>,
     page_actions_button: gtk::MenuButton,
 }
@@ -410,6 +412,7 @@ fn load_management_forms(load: ManagementFormsLoad) {
     );
     set_management_form_action_buttons_sensitive(&load.buttons, true);
     load.page_actions_button.set_sensitive(true);
+    register_loading_sensitive_widget(&load.ui_handles, &load.page_actions_button);
 }
 
 fn load_editable_rule_forms(load: &ManagementFormsLoad) {

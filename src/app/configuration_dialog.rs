@@ -42,10 +42,8 @@ pub(in crate::app) fn show_configuration_dialog(
         ui_handles,
         configuration_page_snapshot(),
     );
-    status_bar
-        .label
-        .set_text(&tr("Configuration actions report progress here."));
-    let status = status_bar.label.clone();
+    let status = StatusHandle::from_status_bar(&status_bar);
+    status.set_text(&tr("Configuration actions report progress here."));
 
     let (group, search_group) = archive_group(state, ui_handles, &status);
     page.add(&group);
@@ -119,7 +117,7 @@ fn configuration_page_snapshot() -> StaticPageSnapshot {
 fn archive_group(
     state: &Rc<RefCell<AppData>>,
     ui_handles: &Rc<UiHandles>,
-    status: &gtk::Label,
+    status: &StatusHandle,
 ) -> (adw::PreferencesGroup, SearchablePreferencesGroup) {
     let title = "Configuration Backup";
     let description = "Back up or restore the current rules, budgets, and CSV field names.";
@@ -147,7 +145,10 @@ fn archive_group(
     let ui_for_archive = Rc::clone(ui_handles);
     let status_for_archive = status.clone();
     let restore_row_for_archive = restore_row.clone();
-    archive_row.connect_activated(move |_| {
+    archive_row.connect_activated(move |row| {
+        if !row.is_sensitive() {
+            return;
+        }
         archive_configuration(
             Rc::clone(&ui_for_archive),
             status_for_archive.clone(),
@@ -158,7 +159,10 @@ fn archive_group(
     let state_for_restore = Rc::clone(state);
     let ui_for_restore = Rc::clone(ui_handles);
     let status_for_restore = status.clone();
-    restore_row.connect_activated(move |_| {
+    restore_row.connect_activated(move |row| {
+        if !row.is_sensitive() {
+            return;
+        }
         restore_configuration_archive(
             Rc::clone(&state_for_restore),
             Rc::clone(&ui_for_restore),
@@ -172,7 +176,7 @@ fn archive_group(
 fn automatic_configuration_group(
     state: &Rc<RefCell<AppData>>,
     ui_handles: &Rc<UiHandles>,
-    status: gtk::Label,
+    status: StatusHandle,
 ) -> (adw::PreferencesGroup, SearchablePreferencesGroup) {
     let title = "Automatic Configuration";
     let description =
@@ -216,7 +220,10 @@ fn automatic_configuration_group(
     let state_for_generate = Rc::clone(state);
     let ui_for_generate = Rc::clone(ui_handles);
     let status_for_generate = status.clone();
-    generate_row.connect_activated(move |_| {
+    generate_row.connect_activated(move |row| {
+        if !row.is_sensitive() {
+            return;
+        }
         generate_configuration_from_transactions_with_status(
             &state_for_generate,
             &ui_for_generate,
@@ -227,7 +234,10 @@ fn automatic_configuration_group(
     let state_for_defaults = Rc::clone(state);
     let ui_for_defaults = Rc::clone(ui_handles);
     let status_for_defaults = status.clone();
-    defaults_row.connect_activated(move |_| {
+    defaults_row.connect_activated(move |row| {
+        if !row.is_sensitive() {
+            return;
+        }
         restore_default_configuration(
             Rc::clone(&state_for_defaults),
             Rc::clone(&ui_for_defaults),
@@ -238,7 +248,10 @@ fn automatic_configuration_group(
     let state_for_empty = Rc::clone(state);
     let ui_for_empty = Rc::clone(ui_handles);
     let status_for_empty = status.clone();
-    empty_row.connect_activated(move |_| {
+    empty_row.connect_activated(move |row| {
+        if !row.is_sensitive() {
+            return;
+        }
         restore_empty_configuration(
             Rc::clone(&state_for_empty),
             Rc::clone(&ui_for_empty),
@@ -261,7 +274,7 @@ fn action_row(icon_name: &str, title: &str, subtitle: &str) -> adw::ActionRow {
 
 fn archive_configuration(
     ui_handles: Rc<UiHandles>,
-    status: gtk::Label,
+    status: StatusHandle,
     restore_row: adw::ActionRow,
 ) {
     let busy_message = "Another edit or save is already running.";
@@ -274,6 +287,7 @@ fn archive_configuration(
         &status,
         "Backing up current configuration...",
     );
+    status.set_loading(true);
     begin_background_operation(ui_handles.as_ref());
 
     gtk::glib::MainContext::default().spawn_local(async move {
@@ -300,6 +314,7 @@ fn archive_configuration(
                 "Configuration backup canceled: the background task stopped unexpectedly.",
             ),
         }
+        status.set_loading(false);
         finish_background_operation(ui_handles.as_ref());
         finish_config_operation(&ui_handles);
     });
@@ -308,7 +323,7 @@ fn archive_configuration(
 fn restore_configuration_archive(
     state: Rc<RefCell<AppData>>,
     ui_handles: Rc<UiHandles>,
-    status: gtk::Label,
+    status: StatusHandle,
 ) {
     run_configuration_reload_task(
         state,
@@ -327,7 +342,7 @@ fn restore_configuration_archive(
 fn restore_default_configuration(
     state: Rc<RefCell<AppData>>,
     ui_handles: Rc<UiHandles>,
-    status: gtk::Label,
+    status: StatusHandle,
 ) {
     run_configuration_reload_task(
         state,
@@ -347,7 +362,7 @@ fn restore_default_configuration(
 fn restore_empty_configuration(
     state: Rc<RefCell<AppData>>,
     ui_handles: Rc<UiHandles>,
-    status: gtk::Label,
+    status: StatusHandle,
 ) {
     run_configuration_reload_task(
         state,
@@ -374,7 +389,7 @@ struct ConfigurationTaskMessages {
 fn run_configuration_reload_task<F>(
     state: Rc<RefCell<AppData>>,
     ui_handles: Rc<UiHandles>,
-    status: gtk::Label,
+    status: StatusHandle,
     messages: ConfigurationTaskMessages,
     operation: F,
 ) where
@@ -390,6 +405,7 @@ fn run_configuration_reload_task<F>(
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
     let scope = current_transaction_load_scope(&state.borrow(), ui_handles.as_ref());
     show_dialog_status(ui_handles.as_ref(), &status, messages.progress);
+    status.set_loading(true);
     begin_background_operation(ui_handles.as_ref());
 
     gtk::glib::MainContext::default().spawn_local(async move {
@@ -410,17 +426,18 @@ fn run_configuration_reload_task<F>(
             }
             Err(_) => show_dialog_status(ui_handles.as_ref(), &status, messages.canceled),
         }
+        status.set_loading(false);
         finish_background_operation(ui_handles.as_ref());
         finish_config_operation(&ui_handles);
     });
 }
 
-fn show_dialog_status(ui_handles: &UiHandles, status: &gtk::Label, message: &str) {
+fn show_dialog_status(ui_handles: &UiHandles, status: &StatusHandle, message: &str) {
     let message = tr(message);
     show_dialog_status_text(ui_handles, status, &message);
 }
 
-fn show_dialog_status_text(ui_handles: &UiHandles, status: &gtk::Label, message: &str) {
+fn show_dialog_status_text(ui_handles: &UiHandles, status: &StatusHandle, message: &str) {
     status.set_text(message);
     show_status(ui_handles, message);
 }

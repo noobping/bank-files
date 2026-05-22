@@ -5,6 +5,7 @@ pub(in crate::app) struct ConfigWidget {
     widget: gtk::Widget,
     base_sensitive: bool,
     base_visible: bool,
+    was_rooted: Rc<Cell<bool>>,
 }
 
 pub(in crate::app) fn config_operation_is_active(
@@ -186,12 +187,19 @@ pub(in crate::app) fn register_exclusive_config_widget<W: IsA<gtk::Widget>>(
     let widget = widget.clone().upcast::<gtk::Widget>();
     let base_sensitive = widget.is_sensitive();
     let base_visible = widget.is_visible();
-    ui_handles.config_widgets.borrow_mut().push(ConfigWidget {
+    let was_rooted = widget.root().is_some();
+    let item = ConfigWidget {
         widget,
         base_sensitive,
         base_visible,
-    });
-    update_config_action_widgets(ui_handles.as_ref());
+        was_rooted: Rc::new(Cell::new(was_rooted)),
+    };
+    apply_registered_widget_state(
+        ui_handles.as_ref(),
+        &item,
+        !config_actions_are_busy(ui_handles.as_ref()),
+    );
+    ui_handles.config_widgets.borrow_mut().push(item);
 }
 
 pub(in crate::app) fn register_config_widget<W: IsA<gtk::Widget>>(
@@ -231,23 +239,39 @@ pub(in crate::app) fn update_config_action_widgets(ui_handles: &UiHandles) {
 }
 
 fn set_registered_widgets_sensitive(ui_handles: &UiHandles, sensitive: bool) {
-    let availability = config_write_availability(ui_handles);
     let mut widgets = ui_handles.config_widgets.borrow_mut();
-    widgets.retain(|item| item.widget.root().is_some());
+    widgets.retain(config_widget_should_remain_registered);
     for item in widgets.iter() {
-        match &availability {
-            ActionAvailability::Available => {
-                item.widget.set_visible(item.base_visible);
-                item.widget.set_sensitive(item.base_sensitive && sensitive);
-                item.widget.set_tooltip_text(None);
-            }
-            ActionAvailability::Hidden => {
-                apply_action_availability(&item.widget, &availability);
-            }
-            ActionAvailability::Disabled(_) => {
-                apply_action_availability(&item.widget, &availability);
-                item.widget.set_visible(item.base_visible);
-            }
+        apply_registered_widget_state(ui_handles, item, sensitive);
+    }
+}
+
+fn config_widget_should_remain_registered(item: &ConfigWidget) -> bool {
+    let rooted = item.widget.root().is_some();
+    if rooted {
+        item.was_rooted.set(true);
+    }
+    config_widget_registration_is_live(rooted, item.was_rooted.get())
+}
+
+fn config_widget_registration_is_live(rooted: bool, was_rooted: bool) -> bool {
+    rooted || !was_rooted
+}
+
+fn apply_registered_widget_state(ui_handles: &UiHandles, item: &ConfigWidget, sensitive: bool) {
+    let availability = config_write_availability(ui_handles);
+    match &availability {
+        ActionAvailability::Available => {
+            item.widget.set_visible(item.base_visible);
+            item.widget.set_sensitive(item.base_sensitive && sensitive);
+            item.widget.set_tooltip_text(None);
+        }
+        ActionAvailability::Hidden => {
+            apply_action_availability(&item.widget, &availability);
+        }
+        ActionAvailability::Disabled(_) => {
+            apply_action_availability(&item.widget, &availability);
+            item.widget.set_visible(item.base_visible);
         }
     }
 }
@@ -282,6 +306,13 @@ mod tests {
         assert!(config_actions_are_busy_for(true, 0));
         assert!(config_actions_are_busy_for(false, 1));
         assert!(config_actions_are_busy_for(true, 2));
+    }
+
+    #[test]
+    fn unrooted_config_widgets_stay_registered_until_first_root() {
+        assert!(config_widget_registration_is_live(false, false));
+        assert!(config_widget_registration_is_live(true, false));
+        assert!(!config_widget_registration_is_live(false, true));
     }
 
     #[test]

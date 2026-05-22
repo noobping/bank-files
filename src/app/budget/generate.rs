@@ -3,12 +3,12 @@ use super::*;
 pub(in crate::app) fn generate_configuration_from_transactions_with_status(
     state: &Rc<RefCell<AppData>>,
     ui: &Rc<UiHandles>,
-    dialog_status: Option<gtk::Label>,
+    dialog_status: Option<StatusHandle>,
 ) {
     let busy_message = "Another edit or save is already running.";
     if !try_begin_config_operation(ui, busy_message) {
-        if let Some(label) = dialog_status.as_ref() {
-            label.set_text(&tr(busy_message));
+        if let Some(status) = dialog_status.as_ref() {
+            status.set_text(&tr(busy_message));
         }
         return;
     }
@@ -24,6 +24,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
         dialog_status.as_ref(),
         "Generating configuration from transactions...",
     );
+    set_config_status_loading(dialog_status.as_ref(), true);
     begin_background_operation(ui.as_ref());
 
     gtk::glib::MainContext::default().spawn_local(async move {
@@ -83,6 +84,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 "Configuration generation canceled: the background task stopped unexpectedly.",
             ),
         }
+        set_config_status_loading(dialog_status.as_ref(), false);
         finish_background_operation(ui_for_generate.as_ref());
         finish_config_operation(&ui_for_generate);
     });
@@ -100,16 +102,22 @@ fn generation_app_data(
     }
 }
 
-fn show_config_status(ui: &UiHandles, dialog_status: Option<&gtk::Label>, message: &str) {
+fn show_config_status(ui: &UiHandles, dialog_status: Option<&StatusHandle>, message: &str) {
     let message = tr(message);
     show_config_status_text(ui, dialog_status, &message);
 }
 
-fn show_config_status_text(ui: &UiHandles, dialog_status: Option<&gtk::Label>, message: &str) {
-    if let Some(label) = dialog_status {
-        label.set_text(message);
+fn show_config_status_text(ui: &UiHandles, dialog_status: Option<&StatusHandle>, message: &str) {
+    if let Some(status) = dialog_status {
+        status.set_text(message);
     }
     show_status(ui, message);
+}
+
+fn set_config_status_loading(dialog_status: Option<&StatusHandle>, loading: bool) {
+    if let Some(status) = dialog_status {
+        status.set_loading(loading);
+    }
 }
 
 enum GeneratedConfigurationOutcome {

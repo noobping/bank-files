@@ -106,7 +106,10 @@ pub(in crate::app) fn connect_actions(
     let state_for_reload = Rc::clone(state);
     let ui_for_reload = Rc::clone(ui);
     let reload_action = gtk::gio::SimpleAction::new("reload", None);
-    reload_action.connect_activate(move |_, _| {
+    reload_action.connect_activate(move |action, _| {
+        if !action.is_enabled() {
+            return;
+        }
         reload_state(&state_for_reload, &ui_for_reload);
     });
     app.add_action(&reload_action);
@@ -168,7 +171,10 @@ pub(in crate::app) fn connect_actions(
     let state_for_copy_page = Rc::clone(state);
     let ui_for_copy_page = Rc::clone(ui);
     let copy_page_action = gtk::gio::SimpleAction::new("copy-page", None);
-    copy_page_action.connect_activate(move |_, _| {
+    copy_page_action.connect_activate(move |action, _| {
+        if !action.is_enabled() {
+            return;
+        }
         let snapshot = current_page_snapshot(&state_for_copy_page.borrow(), &ui_for_copy_page);
         ui_for_copy_page.window.clipboard().set_text(&snapshot.text);
         show_page_copy_feedback(&ui_for_copy_page);
@@ -178,7 +184,10 @@ pub(in crate::app) fn connect_actions(
     let state_for_print_page = Rc::clone(state);
     let ui_for_print_page = Rc::clone(ui);
     let print_page_action = gtk::gio::SimpleAction::new("print-page", None);
-    print_page_action.connect_activate(move |_, _| {
+    print_page_action.connect_activate(move |action, _| {
+        if !action.is_enabled() {
+            return;
+        }
         let report = current_print_report(&state_for_print_page.borrow(), &ui_for_print_page);
         print_report(&ui_for_print_page, report);
     });
