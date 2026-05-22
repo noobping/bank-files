@@ -17,6 +17,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 const MODEL_ROOT: &str = "models/ai";
+#[cfg(target_os = "linux")]
+const INSTALLED_MODEL_ROOT: &str = "bank-files/models/ai";
 const MANIFEST_FILE: &str = "model.json";
 const MODEL_FILES: [&str; 5] = [
     "classifier.onnx",
@@ -56,8 +58,22 @@ impl LocalAiAvailability {
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum LocalAiModelSource {
     Sidecar(PathBuf),
+    #[cfg(target_os = "linux")]
+    Installed(PathBuf),
     #[cfg(feature = "embedded-ai-model")]
     Extracted(PathBuf),
+}
+
+impl LocalAiModelSource {
+    fn path(&self) -> &Path {
+        match self {
+            Self::Sidecar(path) => path,
+            #[cfg(target_os = "linux")]
+            Self::Installed(path) => path,
+            #[cfg(feature = "embedded-ai-model")]
+            Self::Extracted(path) => path,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -438,16 +454,16 @@ fn local_ai_availability(smart_insights_enabled: bool) -> LocalAiAvailability {
         return LocalAiAvailability::Disabled;
     }
 
-    match sidecar_model_dir()
-        .and_then(|dir| model_dir_availability(LocalAiModelSource::Sidecar(dir)))
-    {
-        Some(LocalAiAvailability::Available { source }) => {
-            return LocalAiAvailability::Available { source }
+    for source in local_ai_model_sources() {
+        match model_dir_availability(source) {
+            Some(LocalAiAvailability::Available { source }) => {
+                return LocalAiAvailability::Available { source }
+            }
+            Some(LocalAiAvailability::RuntimeError(error)) => {
+                return LocalAiAvailability::RuntimeError(error)
+            }
+            _ => {}
         }
-        Some(LocalAiAvailability::RuntimeError(error)) => {
-            return LocalAiAvailability::RuntimeError(error)
-        }
-        _ => {}
     }
 
     #[cfg(feature = "embedded-ai-model")]
@@ -457,9 +473,23 @@ fn local_ai_availability(smart_insights_enabled: bool) -> LocalAiAvailability {
 
     #[cfg(not(feature = "embedded-ai-model"))]
     LocalAiAvailability::MissingModel(format!(
-        "model files were not found in {} next to the executable",
+        "model files were not found next to the executable or in the installed data directories ({})",
         MODEL_ROOT
     ))
+}
+
+fn local_ai_model_sources() -> Vec<LocalAiModelSource> {
+    let mut sources = Vec::new();
+    if let Some(dir) = sidecar_model_dir() {
+        sources.push(LocalAiModelSource::Sidecar(dir));
+    }
+    #[cfg(target_os = "linux")]
+    sources.extend(
+        installed_model_dirs()
+            .into_iter()
+            .map(LocalAiModelSource::Installed),
+    );
+    sources
 }
 
 fn sidecar_model_dir() -> Option<PathBuf> {
@@ -468,12 +498,41 @@ fn sidecar_model_dir() -> Option<PathBuf> {
         .and_then(|path| path.parent().map(|parent| parent.join(MODEL_ROOT)))
 }
 
+#[cfg(target_os = "linux")]
+fn installed_model_dirs() -> Vec<PathBuf> {
+    let mut dirs = Vec::new();
+
+    if let Some(datadir) = option_env!("BANK_FILES_DATADIR") {
+        push_installed_model_dir(&mut dirs, Path::new(datadir));
+    }
+
+    if let Some(data_dirs) = std::env::var_os("XDG_DATA_DIRS") {
+        for data_dir in std::env::split_paths(&data_dirs) {
+            push_installed_model_dir(&mut dirs, &data_dir);
+        }
+    } else {
+        push_installed_model_dir(&mut dirs, Path::new("/usr/local/share"));
+        push_installed_model_dir(&mut dirs, Path::new("/usr/share"));
+    }
+
+    dirs
+}
+
+#[cfg(target_os = "linux")]
+fn push_installed_model_dir(dirs: &mut Vec<PathBuf>, data_dir: &Path) {
+    let dir = installed_model_dir_from_data_dir(data_dir);
+    if !dirs.iter().any(|existing| existing == &dir) {
+        dirs.push(dir);
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn installed_model_dir_from_data_dir(data_dir: &Path) -> PathBuf {
+    data_dir.join(INSTALLED_MODEL_ROOT)
+}
+
 fn model_dir_availability(source: LocalAiModelSource) -> Option<LocalAiAvailability> {
-    let dir = match &source {
-        LocalAiModelSource::Sidecar(path) => path,
-        #[cfg(feature = "embedded-ai-model")]
-        LocalAiModelSource::Extracted(path) => path,
-    };
+    let dir = source.path();
     if !MODEL_FILES.iter().all(|file| dir.join(file).is_file()) {
         return None;
     }
@@ -790,6 +849,15 @@ mod tests {
         let availability = model_dir_availability(LocalAiModelSource::Sidecar(dir))
             .expect("complete model dir should produce an availability value");
         assert!(matches!(availability, LocalAiAvailability::MissingModel(_)));
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn installed_model_dir_uses_linux_data_layout() {
+        assert_eq!(
+            installed_model_dir_from_data_dir(std::path::Path::new("/usr/share")),
+            std::path::PathBuf::from("/usr/share/bank-files/models/ai")
+        );
     }
 
     #[test]

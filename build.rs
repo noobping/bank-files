@@ -15,6 +15,8 @@ impl ResourceFileEntry {
 }
 
 fn main() {
+    configure_linux_install_paths();
+
     let data_dir = Path::new("data");
     let mut resource_files = Vec::new();
     collect_icon_assets(data_dir, data_dir, &mut resource_files);
@@ -44,6 +46,16 @@ fn main() {
     println!("cargo:rerun-if-changed=data/symbolic/apps");
     println!("cargo:rerun-if-changed=data/ai");
     println!("cargo:rerun-if-changed=data/bank-files.ico");
+}
+
+fn configure_linux_install_paths() {
+    println!("cargo:rerun-if-env-changed=BANK_FILES_DATADIR");
+    if let Some(datadir) = env::var_os("BANK_FILES_DATADIR") {
+        println!(
+            "cargo:rustc-env=BANK_FILES_DATADIR={}",
+            datadir.to_string_lossy()
+        );
+    }
 }
 
 fn copy_local_ai_assets_to_profile(data_dir: &Path) {

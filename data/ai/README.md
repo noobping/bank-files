@@ -16,10 +16,16 @@ These files are placeholders. Bank Files treats local AI as unavailable while
 - `LICENSE`: license text for the real model assets. Only bundle assets that are
   allowed to be redistributed with Bank Files.
 
-## Build Modes
+## Build And Install Modes
 
 - `cargo build --features local-ai` copies `data/ai` beside the executable as
-  `models/ai`.
+  `models/ai` for local development.
+- Linux Meson installs with `local-ai` and without `setup` install the model
+  bundle to `$datadir/bank-files/models/ai` and compile the binary with that
+  data directory as an additional lookup path.
+- At runtime on Linux, Bank Files also checks `XDG_DATA_DIRS` plus the standard
+  `/usr/local/share` and `/usr/share` locations for
+  `bank-files/models/ai`.
 - `cargo build --features embedded-ai-model` embeds the files in the executable.
 - `cargo build --features setup` enables embedded model assets for a
   self-contained build.

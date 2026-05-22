@@ -5,6 +5,7 @@ project(
 )
 
 gnome = import('gnome')
+i18n = import('i18n')
 cargo = find_program('cargo', required: false)
 flatpak_spawn = find_program('flatpak-spawn', required: false)
 shell = find_program('sh')
@@ -13,6 +14,14 @@ cargo_variant = get_option('cargo_variant')
 cargo_features = get_option('cargo_features')
 setup = get_option('setup')
 project_binary = 'bank-files'
+translation_domain = project_binary
+
+datadir_option = get_option('datadir')
+if datadir_option.startswith('/')
+  installed_datadir = datadir_option
+else
+  installed_datadir = join_paths(get_option('prefix'), datadir_option)
+endif
 
 effective_cargo_features = cargo_features
 foreach feature_name, enabled : {
@@ -48,6 +57,19 @@ if effective_cargo_features != ''
   message('Configured Meson wrapper features "@0@"'.format(effective_cargo_features))
 endif
 
+feature_tokens = []
+foreach feature_token : effective_cargo_features.replace(',', ' ').split(' ')
+  if feature_token != ''
+    feature_tokens += [feature_token]
+  endif
+endforeach
+
+local_ai_feature_enabled = feature_tokens.contains('local-ai') or feature_tokens.contains('embedded-ai-model') or feature_tokens.contains('setup')
+embedded_ai_feature_enabled = feature_tokens.contains('embedded-ai-model') or feature_tokens.contains('setup')
+install_local_ai_assets = local_ai_feature_enabled and not embedded_ai_feature_enabled
+
+message('Configured Meson install data dir "@0@"'.format(installed_datadir))
+
 cargo_wrapper_script = '''
 set -eu
 
@@ -57,7 +79,8 @@ source_root=$3
 build_root=$4
 variant=$5
 features=$6
-output=$7
+install_datadir=$7
+output=$8
 output_path=$output
 
 profile_dir=debug
@@ -72,13 +95,14 @@ case "$output_path" in
 esac
 
 cargo_target_dir="$build_root/cargo-target"
+export BANK_FILES_DATADIR="$install_datadir"
 
 if [ -n "$native_cargo" ]; then
-  set -- "$native_cargo" build "--manifest-path" "$source_root/Cargo.toml" "--target-dir" "$cargo_target_dir" "--locked"
+  set -- env "BANK_FILES_DATADIR=$install_datadir" "$native_cargo" build "--manifest-path" "$source_root/Cargo.toml" "--target-dir" "$cargo_target_dir" "--locked"
 else
   cargo_target_dir="$source_root/target/meson-toolbox"
   cd "$source_root"
-  set -- "$flatpak_spawn" --host toolbox run cargo build "--manifest-path" "$source_root/Cargo.toml" "--target-dir" "$cargo_target_dir" "--locked"
+  set -- "$flatpak_spawn" --host toolbox run env "BANK_FILES_DATADIR=$install_datadir" cargo build "--manifest-path" "$source_root/Cargo.toml" "--target-dir" "$cargo_target_dir" "--locked"
 fi
 
 if [ "$profile_dir" = "release" ]; then
@@ -105,6 +129,7 @@ cargo_wrapper_args = [
   flatpak_spawn_path,
   meson.project_source_root(),
   meson.project_build_root(),
+  installed_datadir,
 ]
 
 custom_target(
@@ -176,4 +201,18 @@ install_data(
   install_dir: join_paths(get_option('datadir'), 'glib-2.0', 'schemas'),
 )
 
-gnome.post_install(glib_compile_schemas: true)
+if install_local_ai_assets
+  install_subdir(
+    'data/ai',
+    install_dir: join_paths(get_option('datadir'), project_binary, 'models'),
+  )
+endif
+
+translation_languages = ['nl', 'de']
+subdir('po')
+
+gnome.post_install(
+  glib_compile_schemas: true,
+  gtk_update_icon_cache: true,
+  update_desktop_database: true,
+)
