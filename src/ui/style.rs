@@ -38,6 +38,16 @@ pub fn install_css() {
         .warning-card .warning-title {
             color: @warning_color;
         }
+
+        .status-page-actions button,
+        .status-page-actions button:hover,
+        .status-page-actions button:active,
+        .status-page-actions button:checked {
+            background: transparent;
+            border-color: transparent;
+            box-shadow: none;
+            outline: none;
+        }
         ",
     );
     gtk::style_context_add_provider_for_display(

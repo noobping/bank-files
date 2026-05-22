@@ -86,6 +86,7 @@ pub(in crate::app) fn build_page_actions_menu_button(action_namespace: &str) -> 
         .build();
     menu_button.add_css_class("flat");
     menu_button.add_css_class("image-button");
+    menu_button.add_css_class("status-page-actions");
     set_page_actions_menu_namespace(&menu_button, action_namespace);
     menu_button
 }
