@@ -74,9 +74,8 @@ if effective_cargo_features != ''
   message('Configured Meson wrapper features "@0@"'.format(effective_cargo_features))
 endif
 
-local_ai_feature_enabled = feature_tokens.contains('local-ai') or feature_tokens.contains('embedded-ai-model') or feature_tokens.contains('setup')
 embedded_ai_feature_enabled = feature_tokens.contains('embedded-ai-model') or feature_tokens.contains('setup')
-install_local_ai_assets = local_ai_feature_enabled and not embedded_ai_feature_enabled
+install_ai_assets = not embedded_ai_feature_enabled
 
 message('Configured Meson install data dir "@0@"'.format(installed_datadir))
 
@@ -211,7 +210,7 @@ install_data(
   install_dir: join_paths(get_option('datadir'), 'glib-2.0', 'schemas'),
 )
 
-if install_local_ai_assets
+if install_ai_assets
   install_subdir(
     'data/ai',
     install_dir: join_paths(get_option('datadir'), project_binary, 'models'),

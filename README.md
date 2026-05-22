@@ -44,6 +44,30 @@ sudo dnf install gcc pkg-config gtk4-devel libadwaita-devel
 cargo run --release
 ```
 
+## Linux Install From Source
+
+Use Meson for a normal Linux install. This installs the binary, desktop file, app metadata, GSettings schema, icons, symbolic action icons, GNOME search provider files, compiled translations, source PO/POT files, and non-embedded AI model assets in the selected prefix.
+
+```bash
+meson setup build -Dcargo_variant=release
+meson compile -C build
+sudo meson install -C build
+```
+
+For local AI as sidecar files, use a non-setup build and enable the Cargo feature:
+
+```bash
+meson setup build -Dcargo_variant=release -Dcargo_features=local-ai
+meson compile -C build
+sudo meson install -C build
+```
+
+The AI bundle is installed to `share/bank-files/models/ai`. Setup builds embed the AI assets instead of installing sidecar files:
+
+```bash
+meson setup build -Dcargo_variant=release -Dsetup=true
+```
+
 ## Usage
 
 1. Start the app with `cargo run --release`.

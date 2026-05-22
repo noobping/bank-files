@@ -25,15 +25,28 @@ modules:
 
     build-commands:
       - sed -i '/\[target.\x27cfg(target_os = "windows")\x27.*ependencies\]/,/^$/d' Cargo.toml
-      - cargo build --offline --release --features flatpak
+      - BANK_FILES_DATADIR=/app/share cargo build --offline --release --features flatpak
       - install -Dm0755 target/release/bank-files /app/bin/bank-files
       - install -Dm0644 data/scalable/apps/${FLATPAK_ID}.svg /app/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg
+      - install -Dm0644 data/symbolic/apps/${FLATPAK_ID}-symbolic.svg /app/share/icons/hicolor/symbolic/apps/${FLATPAK_ID}-symbolic.svg
+      - install -dm0755 /app/share/icons/hicolor/symbolic/actions
+      - cp -a data/symbolic/actions/. /app/share/icons/hicolor/symbolic/actions/
       - install -Dm0644 data/bank-files-search-provider.ini /app/share/gnome-shell/search-providers/${FLATPAK_ID}.search-provider.ini
       - install -Dm0644 data/bank-files-search-provider.service /app/share/dbus-1/services/${FLATPAK_ID}.SearchProvider.service
       - install -Dm0644 data/${FLATPAK_ID}.gschema.xml /app/share/glib-2.0/schemas/${FLATPAK_ID}.gschema.xml
       - glib-compile-schemas /app/share/glib-2.0/schemas
       - install -Dm0644 data/metainfo.xml /app/share/metainfo/${FLATPAK_ID}.metainfo.xml
       - install -Dm0644 data/${FLATPAK_ID}.desktop /app/share/applications/${FLATPAK_ID}.desktop
+      - install -dm0755 /app/share/bank-files/models/ai
+      - cp -a data/ai/. /app/share/bank-files/models/ai/
+      - install -Dm0644 po/nl.po /app/share/bank-files/po/nl.po
+      - install -Dm0644 po/de.po /app/share/bank-files/po/de.po
+      - install -Dm0644 po/LINGUAS /app/share/bank-files/po/LINGUAS
+      - install -Dm0644 po/POTFILES /app/share/bank-files/po/POTFILES
+      - msgattrib --no-obsolete --empty po/nl.po -o /app/share/bank-files/po/bank-files.pot
+      - install -dm0755 /app/share/locale/nl/LC_MESSAGES /app/share/locale/de/LC_MESSAGES
+      - msgfmt po/nl.po -o /app/share/locale/nl/LC_MESSAGES/bank-files.mo
+      - msgfmt po/de.po -o /app/share/locale/de/LC_MESSAGES/bank-files.mo
 
     sources:
       - type: git
