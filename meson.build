@@ -23,16 +23,33 @@ else
   installed_datadir = join_paths(get_option('prefix'), datadir_option)
 endif
 
-effective_cargo_features = cargo_features
-foreach feature_name, enabled : {
-  'setup': setup,
-}
-  if enabled
-    if effective_cargo_features == ''
-      effective_cargo_features = feature_name
-    else
-      effective_cargo_features += ' ' + feature_name
-    endif
+raw_feature_tokens = []
+foreach feature_token : cargo_features.replace(',', ' ').split(' ')
+  if feature_token != '' and not raw_feature_tokens.contains(feature_token)
+    raw_feature_tokens += [feature_token]
+  endif
+endforeach
+
+flatpak_feature_enabled = raw_feature_tokens.contains('flatpak')
+feature_tokens = []
+foreach feature_token : raw_feature_tokens
+  if not (flatpak_feature_enabled and feature_token == 'setup')
+    feature_tokens += [feature_token]
+  endif
+endforeach
+
+if setup and flatpak_feature_enabled
+  warning('Ignoring setup option because the flatpak Cargo feature disables online/setup features.')
+elif setup and not feature_tokens.contains('setup')
+  feature_tokens += ['setup']
+endif
+
+effective_cargo_features = ''
+foreach feature_token : feature_tokens
+  if effective_cargo_features == ''
+    effective_cargo_features = feature_token
+  else
+    effective_cargo_features += ' ' + feature_token
   endif
 endforeach
 
@@ -56,13 +73,6 @@ message('Configured Meson wrapper variant "@0@"'.format(cargo_variant))
 if effective_cargo_features != ''
   message('Configured Meson wrapper features "@0@"'.format(effective_cargo_features))
 endif
-
-feature_tokens = []
-foreach feature_token : effective_cargo_features.replace(',', ' ').split(' ')
-  if feature_token != ''
-    feature_tokens += [feature_token]
-  endif
-endforeach
 
 local_ai_feature_enabled = feature_tokens.contains('local-ai') or feature_tokens.contains('embedded-ai-model') or feature_tokens.contains('setup')
 embedded_ai_feature_enabled = feature_tokens.contains('embedded-ai-model') or feature_tokens.contains('setup')

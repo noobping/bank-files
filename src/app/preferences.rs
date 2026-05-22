@@ -74,11 +74,13 @@ impl Preferences {
     }
 
     pub(in crate::app) fn online_smart_insights(&self) -> bool {
-        self.boolean("online-smart-insights", false)
+        ONLINE_FEATURES_AVAILABLE && self.boolean("online-smart-insights", false)
     }
 
     pub(in crate::app) fn set_online_smart_insights(&self, enabled: bool) {
-        self.set_boolean("online-smart-insights", enabled);
+        if ONLINE_FEATURES_AVAILABLE {
+            self.set_boolean("online-smart-insights", enabled);
+        }
     }
 
     pub(in crate::app) fn compare_categories_previous_period(&self) -> bool {

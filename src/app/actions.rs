@@ -419,31 +419,33 @@ pub(in crate::app) fn connect_actions(
     );
     show_predictions_action.set_enabled(ui.preferences.action_is_writable("show-predictions"));
 
-    let ui_for_online_smart_insights = Rc::clone(ui);
-    let online_smart_insights_action = add_bool_toggle_action(
-        app,
-        "online-smart-insights",
-        ui.online_smart_insights.get(),
-        false,
-        move |enabled| {
-            ui_for_online_smart_insights
-                .online_smart_insights
-                .set(enabled);
-            ui_for_online_smart_insights
-                .preferences
-                .set_online_smart_insights(enabled);
-            show_status(
-                &ui_for_online_smart_insights,
-                if enabled {
-                    "Online Smart Insights enabled. Only privacy-filtered company labels may be used for online lookups."
-                } else {
-                    "Online Smart Insights disabled. Smart Insights use local transactions only."
-                },
-            );
-        },
-    );
-    online_smart_insights_action
-        .set_enabled(ui.preferences.action_is_writable("online-smart-insights"));
+    if ONLINE_FEATURES_AVAILABLE {
+        let ui_for_online_smart_insights = Rc::clone(ui);
+        let online_smart_insights_action = add_bool_toggle_action(
+            app,
+            "online-smart-insights",
+            ui.online_smart_insights.get(),
+            false,
+            move |enabled| {
+                ui_for_online_smart_insights
+                    .online_smart_insights
+                    .set(enabled);
+                ui_for_online_smart_insights
+                    .preferences
+                    .set_online_smart_insights(enabled);
+                show_status(
+                    &ui_for_online_smart_insights,
+                    if enabled {
+                        "Online Smart Insights enabled. Only privacy-filtered company labels may be used for online lookups."
+                    } else {
+                        "Online Smart Insights disabled. Smart Insights use local transactions only."
+                    },
+                );
+            },
+        );
+        online_smart_insights_action
+            .set_enabled(ui.preferences.action_is_writable("online-smart-insights"));
+    }
 
     let state_for_compare_categories = Rc::clone(state);
     let ui_for_compare_categories = Rc::clone(ui);

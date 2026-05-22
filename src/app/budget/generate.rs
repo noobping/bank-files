@@ -1,4 +1,5 @@
 use super::*;
+#[cfg(not(feature = "flatpak"))]
 use gtk::gio::prelude::NetworkMonitorExt;
 
 pub(in crate::app) fn generate_configuration_from_transactions_with_status(
@@ -186,7 +187,9 @@ fn set_config_status_loading(dialog_status: Option<&StatusHandle>, loading: bool
 }
 
 fn show_online_enrichment_status(ui: &UiHandles, dialog_status: Option<&StatusHandle>) {
-    let message = if !ui.show_predictions.get() {
+    let message = if !ONLINE_FEATURES_AVAILABLE {
+        "Online Smart Insights are not available in this build. Automatic Configuration uses only local transactions."
+    } else if !ui.show_predictions.get() {
         "Smart Insights are disabled. Online merchant enrichment and extra pattern hints are skipped."
     } else if !ui.online_smart_insights.get() {
         "Online Smart Insights are off by default. Automatic Configuration uses only local transactions, and no merchant names or transaction fields are sent."
@@ -198,8 +201,14 @@ fn show_online_enrichment_status(ui: &UiHandles, dialog_status: Option<&StatusHa
     show_config_status(ui, dialog_status, message);
 }
 
+#[cfg(not(feature = "flatpak"))]
 fn online_smart_insights_network_available() -> bool {
     gtk::gio::NetworkMonitor::default().is_network_available()
+}
+
+#[cfg(feature = "flatpak")]
+fn online_smart_insights_network_available() -> bool {
+    false
 }
 
 enum GeneratedConfigurationOutcome {

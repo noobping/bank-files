@@ -3318,3 +3318,6 @@ msgstr "{count} geopende CSV-bestand(en): {files}"
 
 msgid "These are remembered app copies or live CSV files for this session. Removing a live CSV only forgets it for this session."
 msgstr "Dit zijn onthouden appkopieën of live CSV-bestanden voor deze sessie. Een live CSV verwijderen vergeet die alleen voor deze sessie."
+
+msgid "Online Smart Insights are not available in this build. Automatic Configuration uses only local transactions."
+msgstr "Online Smart Insights zijn niet beschikbaar in deze build. Automatische configuratie gebruikt alleen lokale transacties."

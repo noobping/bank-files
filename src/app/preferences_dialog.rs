@@ -57,29 +57,31 @@ pub(in crate::app) fn show_preferences_dialog(
         search_groups.push(search_group);
     }
 
+    let mut insight_preferences = vec![PreferenceSpec::new(
+        "Smart Insights",
+        "Show forecast cards and detect transaction patterns from imported transactions.",
+        "app.show-predictions",
+        ui.show_predictions.get(),
+    )];
+    if ONLINE_FEATURES_AVAILABLE {
+        insight_preferences.push(PreferenceSpec::new(
+            "Online Smart Insights",
+            "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
+            "app.online-smart-insights",
+            ui.online_smart_insights.get(),
+        ));
+    }
+    insight_preferences.push(PreferenceSpec::new(
+        "Compare Spending with Previous Period",
+        "Compare spending cards with the previous month or year.",
+        "app.compare-categories-previous-period",
+        ui.compare_categories_previous_period.get(),
+    ));
+
     if let Some((group, search_group)) = preference_group(
         "Insights",
         "Control smart forecasts, pattern detection, and previous-period spending comparisons.",
-        &[
-            PreferenceSpec::new(
-                "Smart Insights",
-                "Show forecast cards and detect transaction patterns from imported transactions.",
-                "app.show-predictions",
-                ui.show_predictions.get(),
-            ),
-            PreferenceSpec::new(
-                "Online Smart Insights",
-                "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
-                "app.online-smart-insights",
-                ui.online_smart_insights.get(),
-            ),
-            PreferenceSpec::new(
-                "Compare Spending with Previous Period",
-                "Compare spending cards with the previous month or year.",
-                "app.compare-categories-previous-period",
-                ui.compare_categories_previous_period.get(),
-            ),
-        ],
+        &insight_preferences,
         ui.advanced_features.get(),
         &ui.preferences,
     ) {
@@ -191,26 +193,27 @@ fn preferences_page_snapshot(
         advanced_features,
         preferences,
     );
+    let mut insight_rows = vec![(
+        "Smart Insights",
+        "Show forecast cards and detect transaction patterns from imported transactions.",
+        "app.show-predictions",
+    )];
+    if ONLINE_FEATURES_AVAILABLE {
+        insight_rows.push((
+            "Online Smart Insights",
+            "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
+            "app.online-smart-insights",
+        ));
+    }
+    insight_rows.push((
+        "Compare Spending with Previous Period",
+        "Compare spending cards with the previous month or year.",
+        "app.compare-categories-previous-period",
+    ));
     add_preference_snapshot_rows(
         &mut rows,
         "Insights",
-        &[
-            (
-                "Smart Insights",
-                "Show forecast cards and detect transaction patterns from imported transactions.",
-                "app.show-predictions",
-            ),
-            (
-                "Online Smart Insights",
-                "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
-                "app.online-smart-insights",
-            ),
-            (
-                "Compare Spending with Previous Period",
-                "Compare spending cards with the previous month or year.",
-                "app.compare-categories-previous-period",
-            ),
-        ],
+        &insight_rows,
         advanced_features,
         preferences,
     );
