@@ -1,4 +1,5 @@
 use super::*;
+use gtk::gio::prelude::NetworkMonitorExt;
 
 pub(in crate::app) fn generate_configuration_from_transactions_with_status(
     state: &Rc<RefCell<AppData>>,
@@ -24,6 +25,25 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
         dialog_status.as_ref(),
         "Generating configuration from transactions...",
     );
+    show_config_status(
+        ui.as_ref(),
+        dialog_status.as_ref(),
+        "Automatic Configuration uses complete imported calendar years for budget amounts and ignores incomplete years.",
+    );
+    show_online_enrichment_status(ui.as_ref(), dialog_status.as_ref());
+    if matches!(snapshot.loaded_scope, TransactionLoadScope::All) {
+        show_config_status(
+            ui.as_ref(),
+            dialog_status.as_ref(),
+            "Analysing loaded transactions, yearly comparisons, recurring patterns, transfers, and field mappings...",
+        );
+    } else {
+        show_config_status(
+            ui.as_ref(),
+            dialog_status.as_ref(),
+            "Loading all imported transactions before analysing yearly comparisons and patterns...",
+        );
+    }
     set_config_status_loading(dialog_status.as_ref(), true);
     begin_background_operation(ui.as_ref());
 
@@ -54,8 +74,10 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                     &state_for_generate,
                 );
                 let message = trf(
-                    "Generated configuration: {budgets} budget(s), {rules} rule(s), {fields} field mapping(s), {hidden} hidden pattern(s).",
+                    "Generated configuration from {years} complete year(s), covering {months} month(s): {budgets} budget(s), {rules} rule(s), {fields} field mapping(s), {hidden} hidden pattern(s).",
                     &[
+                        ("years", summary.complete_years.to_string()),
+                        ("months", summary.budget_months.to_string()),
                         ("budgets", summary.budgets.to_string()),
                         ("rules", summary.rules.to_string()),
                         ("fields", summary.field_mappings.to_string()),
@@ -68,7 +90,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 show_config_status(
                     ui_for_generate.as_ref(),
                     dialog_status.as_ref(),
-                    "No configuration could be generated from imported transactions yet.",
+                    "No configuration could be generated yet. Import a complete calendar year to generate budget amounts.",
                 );
             }
             Ok(Err(error)) => {
@@ -118,6 +140,23 @@ fn set_config_status_loading(dialog_status: Option<&StatusHandle>, loading: bool
     if let Some(status) = dialog_status {
         status.set_loading(loading);
     }
+}
+
+fn show_online_enrichment_status(ui: &UiHandles, dialog_status: Option<&StatusHandle>) {
+    let message = if !ui.show_predictions.get() {
+        "Smart Insights are disabled. Online merchant enrichment and extra pattern hints are skipped."
+    } else if !ui.online_smart_insights.get() {
+        "Online Smart Insights are off by default. Automatic Configuration uses only local transactions, and no merchant names or transaction fields are sent."
+    } else if !online_smart_insights_network_available() {
+        "Online Smart Insights are enabled, but no network connection is available. External merchant lookups are skipped, and no transaction data is sent."
+    } else {
+        "Online Smart Insights are enabled, but no safe lookup provider is configured in this build. External merchant lookups are skipped, and no transaction data is sent."
+    };
+    show_config_status(ui, dialog_status, message);
+}
+
+fn online_smart_insights_network_available() -> bool {
+    gtk::gio::NetworkMonitor::default().is_network_available()
 }
 
 enum GeneratedConfigurationOutcome {

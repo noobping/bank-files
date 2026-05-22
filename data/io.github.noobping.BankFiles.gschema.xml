@@ -21,6 +21,11 @@
       <summary>Smart insights</summary>
       <description>Whether forecast cards and detected transaction patterns are shown.</description>
     </key>
+    <key name="online-smart-insights" type="b">
+      <default>false</default>
+      <summary>Online smart insights</summary>
+      <description>Whether privacy-filtered company category lookups may be used while Smart Insights are enabled. Transaction amounts, dates, accounts, descriptions, notes, and rows are never sent.</description>
+    </key>
     <key name="compare-categories-previous-period" type="b">
       <default>false</default>
       <summary>Compare spending with previous period</summary>

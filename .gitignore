@@ -6,6 +6,7 @@
 .flatpak-builder
 .flatpak/
 .vscode/
+_build/
 debug
 resources.xml
 target

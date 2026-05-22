@@ -6,11 +6,12 @@ pub(in crate::app) struct Preferences {
 }
 
 impl Preferences {
-    pub(in crate::app) const WRITABLE_KEYS: [&'static str; 15] = [
+    pub(in crate::app) const WRITABLE_KEYS: [&'static str; 16] = [
         "active-tab",
         "autohide-status-bar",
         "show-all",
         "show-predictions",
+        "online-smart-insights",
         "compare-categories-previous-period",
         "advanced-autofill",
         "advanced-features",
@@ -69,6 +70,14 @@ impl Preferences {
 
     pub(in crate::app) fn set_show_predictions(&self, enabled: bool) {
         self.set_boolean("show-predictions", enabled);
+    }
+
+    pub(in crate::app) fn online_smart_insights(&self) -> bool {
+        self.boolean("online-smart-insights", false)
+    }
+
+    pub(in crate::app) fn set_online_smart_insights(&self, enabled: bool) {
+        self.set_boolean("online-smart-insights", enabled);
     }
 
     pub(in crate::app) fn compare_categories_previous_period(&self) -> bool {
@@ -170,6 +179,7 @@ impl Preferences {
             "autohide-status" => Some("autohide-status-bar"),
             "show-all" => Some("show-all"),
             "show-predictions" => Some("show-predictions"),
+            "online-smart-insights" => Some("online-smart-insights"),
             "compare-categories-previous-period" => Some("compare-categories-previous-period"),
             "advanced-autofill" => Some("advanced-autofill"),
             "advanced-features" => Some("advanced-features"),
@@ -239,4 +249,17 @@ fn parse_month_key(input: &str) -> Option<MonthKey> {
     (1..=12)
         .contains(&month)
         .then_some(MonthKey::new(year, month))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn online_smart_insights_action_maps_to_preference_key() {
+        assert_eq!(
+            Preferences::key_for_action("app.online-smart-insights"),
+            Some("online-smart-insights")
+        );
+    }
 }

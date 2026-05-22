@@ -1,6 +1,7 @@
 use super::*;
 use crate::analytics;
 use crate::model::{BudgetDirection, FieldMap, ImportReport};
+use chrono::Datelike;
 use rust_decimal::Decimal;
 use std::cmp::Ordering;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
@@ -8,7 +9,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 const TRANSFER_CODE: &str = "TRANSFER";
 const PLANNED_INCOME_CODE: &str = "INC";
 const GENERATED_NOTE: &str =
-    "Generated from imported transactions over {count} imported months on {date}.";
+    "Generated from {count} complete imported year(s), covering {months} month(s), on {date}.";
 const GENERATED_RULE_NOTE: &str = "Generated from automatic configuration.";
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
@@ -17,6 +18,8 @@ pub struct GeneratedConfigurationSummary {
     pub rules: usize,
     pub field_mappings: usize,
     pub ignored_patterns: usize,
+    pub complete_years: usize,
+    pub budget_months: usize,
 }
 
 impl GeneratedConfigurationSummary {
@@ -40,8 +43,11 @@ pub struct GeneratedConfiguration {
 pub fn generate_automatic_configuration(data: &AppData) -> Result<GeneratedConfiguration> {
     let transactions = uncategorized_transactions(&data.transactions);
     let period = generation_period(&transactions);
-    let patterns =
-        analytics::transaction_pattern_analysis(&transactions, data.dedupe_mode.is_enabled());
+    let analysis_transactions = complete_period_transactions(&transactions, &period);
+    let patterns = analytics::transaction_pattern_analysis(
+        &analysis_transactions,
+        data.dedupe_mode.is_enabled(),
+    );
     let ignored_patterns = generated_ignored_patterns(&patterns.patterns);
     let mut excluded_keys = cancellation_pattern_keys(&patterns.patterns);
     excluded_keys.extend(transfer_pattern_keys(&patterns.patterns));
@@ -50,14 +56,14 @@ pub fn generate_automatic_configuration(data: &AppData) -> Result<GeneratedConfi
     let mut budgets = Vec::new();
     let mut rules = Vec::new();
     append_transfer_configuration(
-        &transactions,
+        &analysis_transactions,
         &patterns.patterns,
         &mut reserved_codes,
         &mut budgets,
         &mut rules,
     );
     append_grouped_transaction_configuration(
-        &transactions,
+        &analysis_transactions,
         &excluded_keys,
         &period,
         &mut reserved_codes,
@@ -76,6 +82,8 @@ pub fn generate_automatic_configuration(data: &AppData) -> Result<GeneratedConfi
         rules: rules.len(),
         field_mappings: generated_alias_count,
         ignored_patterns: ignored_patterns.len(),
+        complete_years: period.year_count(),
+        budget_months: period.month_count(),
     };
 
     Ok(GeneratedConfiguration {
@@ -149,7 +157,7 @@ fn append_transfer_configuration(
 fn append_grouped_transaction_configuration(
     transactions: &[Transaction],
     ignored_keys: &HashSet<String>,
-    period: &BTreeSet<String>,
+    period: &GenerationPeriod,
     reserved_codes: &mut BTreeSet<String>,
     budgets: &mut Vec<EditableBudget>,
     rules: &mut Vec<EditableRule>,
@@ -158,6 +166,7 @@ fn append_grouped_transaction_configuration(
     for transaction in transactions {
         if transaction.amount == Decimal::ZERO
             || ignored_keys.contains(&transaction_key(transaction))
+            || generated_transfer_hint(transaction)
         {
             continue;
         }
@@ -188,10 +197,10 @@ fn append_grouped_transaction_configuration(
             code: code.clone(),
             category: category.clone(),
             monthly_budget: group.monthly_budget(period).to_string(),
-            yearly_budget: String::new(),
+            yearly_budget: group.yearly_budget(),
             direction: direction.to_string(),
             income_basis: "real".to_string(),
-            notes: generation_note(period.len()),
+            notes: generation_note(period.year_count(), period.month_count()),
         });
 
         let labels = group.rule_labels();
@@ -323,22 +332,68 @@ fn uncategorized_transactions(transactions: &[Transaction]) -> Vec<Transaction> 
         .collect()
 }
 
-fn generation_period(transactions: &[Transaction]) -> BTreeSet<String> {
+#[derive(Debug, Default, Eq, PartialEq)]
+struct GenerationPeriod {
+    complete_years: BTreeSet<i32>,
+    months: BTreeSet<String>,
+}
+
+impl GenerationPeriod {
+    fn contains(&self, transaction: &Transaction) -> bool {
+        self.months.contains(&transaction.month_key().to_string())
+    }
+
+    fn month_count(&self) -> usize {
+        self.months.len()
+    }
+
+    fn year_count(&self) -> usize {
+        self.complete_years.len()
+    }
+}
+
+fn generation_period(transactions: &[Transaction]) -> GenerationPeriod {
+    let mut months_by_year = BTreeMap::<i32, BTreeSet<u32>>::new();
+    for transaction in transactions {
+        months_by_year
+            .entry(transaction.date.year())
+            .or_default()
+            .insert(transaction.date.month());
+    }
+
+    let complete_years = months_by_year
+        .into_iter()
+        .filter_map(|(year, months)| (months.len() == 12).then_some(year))
+        .collect::<BTreeSet<_>>();
+    let months = transactions
+        .iter()
+        .filter(|transaction| complete_years.contains(&transaction.date.year()))
+        .map(|transaction| transaction.month_key().to_string())
+        .collect::<BTreeSet<_>>();
+
+    GenerationPeriod {
+        complete_years,
+        months,
+    }
+}
+
+fn complete_period_transactions(
+    transactions: &[Transaction],
+    period: &GenerationPeriod,
+) -> Vec<Transaction> {
     transactions
         .iter()
-        .map(|transaction| transaction.month_key().to_string())
-        .collect::<BTreeSet<_>>()
-        .into_iter()
-        .rev()
-        .take(12)
+        .filter(|transaction| period.contains(transaction))
+        .cloned()
         .collect()
 }
 
-fn generation_note(month_count: usize) -> String {
+fn generation_note(year_count: usize, month_count: usize) -> String {
     crate::i18n::format(
         GENERATED_NOTE,
         &[
-            ("count", month_count.to_string()),
+            ("count", year_count.to_string()),
+            ("months", month_count.to_string()),
             ("date", chrono::Local::now().date_naive().to_string()),
         ],
     )
@@ -365,6 +420,29 @@ fn transaction_direction(amount: Decimal) -> GeneratedDirection {
     } else {
         GeneratedDirection::Expense
     }
+}
+
+fn generated_transfer_hint(transaction: &Transaction) -> bool {
+    let text = normalize_key(&format!(
+        "{} {} {} {} {}",
+        transaction.account,
+        transaction.counterparty,
+        transaction.description,
+        transaction.tags,
+        transaction.notes
+    ));
+    [
+        "transfer",
+        "transfers",
+        "internal transfer",
+        "overboeking",
+        "overboekingen",
+        "ueberweisung",
+        "uberweisung",
+        "umbuchung",
+    ]
+    .iter()
+    .any(|hint| text.contains(hint))
 }
 
 #[derive(Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -411,25 +489,29 @@ fn rule_candidate(transaction: &Transaction) -> Option<RuleCandidate> {
 
 #[derive(Default)]
 struct RuleGroupStats {
-    count: usize,
+    period_count: usize,
     period_total: Decimal,
+    year_totals: BTreeMap<i32, Decimal>,
     labels: HashMap<String, usize>,
 }
 
 impl RuleGroupStats {
-    fn push(&mut self, transaction: &Transaction, label: String, period: &BTreeSet<String>) {
-        self.count += 1;
-        if period.contains(&transaction.month_key().to_string()) {
-            self.period_total += transaction.amount.abs();
+    fn push(&mut self, transaction: &Transaction, label: String, period: &GenerationPeriod) {
+        if period.contains(transaction) {
+            let amount = transaction.amount.abs();
+            self.period_count += 1;
+            self.period_total += amount;
+            *self.year_totals.entry(transaction.date.year()).or_default() += amount;
         }
         *self.labels.entry(label).or_default() += 1;
     }
 
     fn is_balanced_candidate(&self, key: &RuleGroupKey) -> bool {
-        match key.field {
-            RuleField::Counterparty | RuleField::Tags => self.count >= 2,
-            RuleField::Description => self.count >= 3,
-        }
+        let minimum_count = match key.field {
+            RuleField::Counterparty | RuleField::Tags => 2,
+            RuleField::Description => 3,
+        };
+        self.period_count >= minimum_count && !self.year_totals.is_empty()
     }
 
     fn category(&self) -> String {
@@ -440,11 +522,25 @@ impl RuleGroupStats {
             .unwrap_or_else(|| crate::i18n::gettext("Generated budget"))
     }
 
-    fn monthly_budget(&self, period: &BTreeSet<String>) -> Decimal {
-        if period.is_empty() {
+    fn monthly_budget(&self, period: &GenerationPeriod) -> Decimal {
+        if period.month_count() == 0 {
             return Decimal::ZERO;
         }
-        (self.period_total / Decimal::from(period.len() as u64)).round_dp(2)
+        (self.period_total / Decimal::from(period.month_count() as u64)).round_dp(2)
+    }
+
+    fn yearly_budget(&self) -> String {
+        if self.year_totals.is_empty() {
+            return String::new();
+        }
+        let total = self
+            .year_totals
+            .values()
+            .copied()
+            .fold(Decimal::ZERO, |sum, amount| sum + amount);
+        (total / Decimal::from(self.year_totals.len() as u64))
+            .round_dp(2)
+            .to_string()
     }
 
     fn rule_labels(&self) -> Vec<String> {
@@ -642,6 +738,31 @@ mod tests {
 
     #[test]
     fn repeated_merchant_generates_budget_and_rule() {
+        let data = app_data(complete_year_transactions(
+            2025,
+            -100,
+            "Coffee",
+            "Coffee Shop",
+        ));
+
+        let generated = generate_automatic_configuration(&data).unwrap();
+
+        assert_eq!(generated.summary.complete_years, 1);
+        assert_eq!(generated.summary.budget_months, 12);
+        assert_eq!(generated.summary.budgets, 1);
+        assert_eq!(generated.summary.rules, 1);
+        assert_eq!(generated.budgets[0].category, "Coffee Shop");
+        assert_eq!(generated.budgets[0].code, "COFFEE-SHOP");
+        assert_eq!(generated.budgets[0].direction, "expense");
+        assert_eq!(generated.budgets[0].monthly_budget, "1.00");
+        assert_eq!(generated.budgets[0].yearly_budget, "12.00");
+        assert_eq!(generated.rules[0].field, "counterparty");
+        assert_eq!(generated.rules[0].search, "Coffee Shop");
+        assert_eq!(generated.rules[0].budget_code, "COFFEE-SHOP");
+    }
+
+    #[test]
+    fn incomplete_year_transactions_do_not_generate_budget_amounts() {
         let data = app_data(vec![
             tx("2026-01-03", -500, "Coffee", "Coffee Shop", 1),
             tx("2026-01-10", -700, "Coffee", "Coffee Shop", 2),
@@ -649,37 +770,34 @@ mod tests {
 
         let generated = generate_automatic_configuration(&data).unwrap();
 
-        assert_eq!(generated.summary.budgets, 1);
-        assert_eq!(generated.summary.rules, 1);
-        assert_eq!(generated.budgets[0].category, "Coffee Shop");
-        assert_eq!(generated.budgets[0].code, "COFFEE-SHOP");
-        assert_eq!(generated.budgets[0].direction, "expense");
-        assert_eq!(generated.budgets[0].monthly_budget, "12.00");
-        assert_eq!(generated.rules[0].field, "counterparty");
-        assert_eq!(generated.rules[0].search, "Coffee Shop");
-        assert_eq!(generated.rules[0].budget_code, "COFFEE-SHOP");
+        assert_eq!(generated.summary.complete_years, 0);
+        assert_eq!(generated.summary.budget_months, 0);
+        assert!(generated.budgets.is_empty());
+        assert!(generated.rules.is_empty());
+    }
+
+    #[test]
+    fn complete_year_budgets_compare_years_with_average_yearly_amount() {
+        let mut transactions = complete_year_transactions(2024, -100, "Coffee", "Coffee Shop");
+        transactions.extend(complete_year_transactions(
+            2025,
+            -200,
+            "Coffee",
+            "Coffee Shop",
+        ));
+        let data = app_data(transactions);
+
+        let generated = generate_automatic_configuration(&data).unwrap();
+
+        assert_eq!(generated.summary.complete_years, 2);
+        assert_eq!(generated.summary.budget_months, 24);
+        assert_eq!(generated.budgets[0].monthly_budget, "1.50");
+        assert_eq!(generated.budgets[0].yearly_budget, "18.00");
     }
 
     #[test]
     fn detected_transfer_generates_only_transfer_configuration() {
-        let data = app_data(vec![
-            account_tx(
-                "2026-01-03",
-                -10000,
-                "Transfer to savings",
-                "Savings",
-                "Checking",
-                1,
-            ),
-            account_tx(
-                "2026-01-04",
-                10000,
-                "Transfer from checking",
-                "Checking",
-                "Savings",
-                2,
-            ),
-        ]);
+        let data = app_data(complete_year_transfer_pairs(2025));
 
         let generated = generate_automatic_configuration(&data).unwrap();
 
@@ -694,31 +812,17 @@ mod tests {
 
     #[test]
     fn refund_patterns_are_ignored_but_transfers_are_not() {
-        let data = app_data(vec![
-            tx("2026-01-03", -2500, "Store purchase", "Store", 1),
-            tx("2026-01-08", 2500, "Refund Store", "Store", 2),
-            account_tx(
-                "2026-01-10",
-                -10000,
-                "Transfer to savings",
-                "Savings",
-                "Checking",
-                3,
-            ),
-            account_tx(
-                "2026-01-11",
-                10000,
-                "Transfer from checking",
-                "Checking",
-                "Savings",
-                4,
-            ),
-        ]);
+        let mut transactions = complete_year_refund_pairs(2025);
+        transactions.extend(complete_year_transfer_pairs(2025));
+        let data = app_data(transactions);
 
         let generated = generate_automatic_configuration(&data).unwrap();
 
-        assert_eq!(generated.summary.ignored_patterns, 1);
-        assert!(generated.ignored_patterns[0].key.starts_with("refund:"));
+        assert!(generated.summary.ignored_patterns > 0);
+        assert!(generated
+            .ignored_patterns
+            .iter()
+            .any(|pattern| pattern.key.starts_with("refund:")));
         assert!(!generated
             .ignored_patterns
             .iter()
@@ -753,14 +857,13 @@ mod tests {
 
     #[test]
     fn existing_transaction_category_and_code_are_not_merged() {
-        let mut first = tx("2026-01-03", -500, "Coffee", "Coffee Shop", 1);
-        first.category = "Old Category".to_string();
-        first.budget_code = "OLD".to_string();
-        let mut second = tx("2026-01-10", -700, "Coffee", "Coffee Shop", 2);
-        second.category = "Old Category".to_string();
-        second.budget_code = "OLD".to_string();
+        let mut transactions = complete_year_transactions(2025, -100, "Coffee", "Coffee Shop");
+        for transaction in &mut transactions {
+            transaction.category = "Old Category".to_string();
+            transaction.budget_code = "OLD".to_string();
+        }
 
-        let generated = generate_automatic_configuration(&app_data(vec![first, second])).unwrap();
+        let generated = generate_automatic_configuration(&app_data(transactions)).unwrap();
 
         assert!(!generated.budgets.iter().any(|budget| budget.code == "OLD"));
         assert!(!generated.rules.iter().any(|rule| rule.budget_code == "OLD"));
@@ -791,6 +894,75 @@ mod tests {
             dedupe_mode: DedupeMode::Disabled,
             ..Default::default()
         }
+    }
+
+    fn complete_year_transactions(
+        year: i32,
+        cents_per_month: i64,
+        description: &str,
+        counterparty: &str,
+    ) -> Vec<Transaction> {
+        (1..=12)
+            .map(|month| {
+                tx(
+                    &format!("{year}-{month:02}-03"),
+                    cents_per_month,
+                    description,
+                    counterparty,
+                    month as usize,
+                )
+            })
+            .collect()
+    }
+
+    fn complete_year_transfer_pairs(year: i32) -> Vec<Transaction> {
+        (1..=12)
+            .flat_map(|month| {
+                let base_row = 1_000 + month as usize * 10;
+                [
+                    account_tx(
+                        &format!("{year}-{month:02}-03"),
+                        -10000,
+                        "Transfer to savings",
+                        "Savings",
+                        "Checking",
+                        base_row + 1,
+                    ),
+                    account_tx(
+                        &format!("{year}-{month:02}-04"),
+                        10000,
+                        "Transfer from checking",
+                        "Checking",
+                        "Savings",
+                        base_row + 2,
+                    ),
+                ]
+            })
+            .collect()
+    }
+
+    fn complete_year_refund_pairs(year: i32) -> Vec<Transaction> {
+        (1..=12)
+            .flat_map(|month| {
+                let base_row = 2_000 + month as usize * 10;
+                [
+                    tx(
+                        &format!("{year}-{month:02}-06"),
+                        -2500,
+                        "Store purchase",
+                        "Store",
+                        base_row + 1,
+                    ),
+                    tx(
+                        &format!("{year}-{month:02}-08"),
+                        2500,
+                        "Refund Store",
+                        "Store",
+                        base_row + 2,
+                    ),
+                ]
+            })
+            .collect()
     }
 
     fn tx(

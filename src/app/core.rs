@@ -205,6 +205,7 @@ pub(in crate::app) struct UiHandles {
     pub(in crate::app) page_copy_feedback_generation: Rc<Cell<u64>>,
     pub(in crate::app) show_all: Rc<Cell<bool>>,
     pub(in crate::app) show_predictions: Rc<Cell<bool>>,
+    pub(in crate::app) online_smart_insights: Rc<Cell<bool>>,
     pub(in crate::app) compare_categories_previous_period: Rc<Cell<bool>>,
     pub(in crate::app) advanced_autofill: Rc<Cell<bool>>,
     pub(in crate::app) advanced_features: Rc<Cell<bool>>,
@@ -793,6 +794,7 @@ fn build_ui_with_startup_request(app: &adw::Application, startup_request: Startu
         page_copy_feedback_generation: Rc::new(Cell::new(0)),
         show_all: Rc::new(Cell::new(preferences.show_all())),
         show_predictions: Rc::new(Cell::new(preferences.show_predictions())),
+        online_smart_insights: Rc::new(Cell::new(preferences.online_smart_insights())),
         compare_categories_previous_period: Rc::new(Cell::new(
             preferences.compare_categories_previous_period(),
         )),

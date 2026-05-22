@@ -64,6 +64,12 @@ pub(in crate::app) fn show_preferences_dialog(parent: &adw::ApplicationWindow, u
                 ui.show_predictions.get(),
             ),
             PreferenceSpec::new(
+                "Online Smart Insights",
+                "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
+                "app.online-smart-insights",
+                ui.online_smart_insights.get(),
+            ),
+            PreferenceSpec::new(
                 "Compare Spending with Previous Period",
                 "Compare spending cards with the previous month or year.",
                 "app.compare-categories-previous-period",
@@ -182,6 +188,11 @@ fn preferences_page_snapshot(
                 "Smart Insights",
                 "Show forecast cards and detect transaction patterns from imported transactions.",
                 "app.show-predictions",
+            ),
+            (
+                "Online Smart Insights",
+                "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
+                "app.online-smart-insights",
             ),
             (
                 "Compare Spending with Previous Period",

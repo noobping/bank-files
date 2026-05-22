@@ -24,6 +24,7 @@ const COMMON_ACTION_ACCELERATORS: &[ActionAccelerators] = &[
     ("app.advanced-features", &["<primary><alt>A"]),
     ("app.show-all", &["<primary><alt>L"]),
     ("app.show-predictions", &["<primary><alt>S"]),
+    ("app.online-smart-insights", &["<primary><alt>O"]),
     (
         "app.compare-categories-previous-period",
         &["<primary><alt>P"],
@@ -115,6 +116,7 @@ pub(in crate::app) fn build_shortcuts_dialog(
         ShortcutSpec::action("Open Configuration", "app.configuration"),
         ShortcutSpec::action("Toggle Advanced Features", "app.advanced-features"),
         ShortcutSpec::action("Toggle Smart Insights", "app.show-predictions"),
+        ShortcutSpec::action("Toggle Online Smart Insights", "app.online-smart-insights"),
         ShortcutSpec::action("Toggle Smart Autofill", "app.advanced-autofill"),
         ShortcutSpec::action("Toggle Duplicate Filtering", "app.dedupe-enabled"),
         ShortcutSpec::action("Toggle Full Lists", "app.show-all"),
