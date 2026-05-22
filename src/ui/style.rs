@@ -39,14 +39,20 @@ pub fn install_css() {
             color: @warning_color;
         }
 
-        .status-page-actions button,
-        .status-page-actions button:hover,
-        .status-page-actions button:active,
-        .status-page-actions button:checked {
+        .status-page-actions button {
             background: transparent;
             border-color: transparent;
             box-shadow: none;
             outline: none;
+        }
+
+        .status-page-actions button:hover {
+            background: alpha(currentColor, 0.08);
+        }
+
+        .status-page-actions button:active,
+        .status-page-actions button:checked {
+            background: alpha(currentColor, 0.14);
         }
         ",
     );
