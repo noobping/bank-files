@@ -18,7 +18,7 @@ pub(in crate::app) fn annual_budgets_section(
 
     let subtitle = if ui_handles.compare_categories_previous_period.get() {
         trf(
-            "Budgets needing attention in {year}. More shows everything; gray bars show {previous_year}.",
+            "Budgets needing attention in {year}. More shows everything; faded bars show {previous_year}.",
             &[
                 ("year", year.to_string()),
                 ("previous_year", (year - 1).to_string()),

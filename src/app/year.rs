@@ -80,7 +80,7 @@ pub(in crate::app) fn render_year_comparison(
 
     let cash_flow_section = gtk::Box::new(gtk::Orientation::Vertical, 18);
     let subtitle = if ui_handles.compare_categories_previous_period.get() {
-        tr("Colored bars are the selected year; gray bars compare the previous year. Planned bars come from budgets; real bars come from transactions.")
+        tr("Colored bars are the selected year; faded bars compare the previous year. Planned bars come from budgets; real bars come from transactions.")
     } else {
         tr("Colored bars show planned and real income and expenses for the selected year.")
     };

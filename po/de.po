@@ -2223,8 +2223,8 @@ msgstr "Graue Diagrammbalken zeigen {year}"
 msgid "Only the selected year is loaded"
 msgstr "Nur das ausgewählte Jahr wird geladen"
 
-msgid "Budgets needing attention in {year}. More shows everything; gray bars show {previous_year}."
-msgstr "Budgets mit Handlungsbedarf in {year}. Mehr zeigt alles; graue Balken zeigen {previous_year}."
+msgid "Budgets needing attention in {year}. More shows everything; faded bars show {previous_year}."
+msgstr "Budgets mit Handlungsbedarf in {year}. Mehr zeigt alles; verblasste Balken zeigen {previous_year}."
 
 msgid "Budgets needing attention in {year}. More shows everything."
 msgstr "Budgets mit Handlungsbedarf in {year}. Mehr zeigt alles."
@@ -2244,8 +2244,8 @@ msgstr "Income can be gross or net. Net income is needed for budgeting and calcu
 msgid "Edit planned income budget"
 msgstr "Budget für geplante Einnahmen bearbeiten"
 
-msgid "Colored bars are the selected year; gray bars compare the previous year. Planned bars come from budgets; real bars come from transactions."
-msgstr "Farbige Balken zeigen das ausgewählte Jahr; graue Balken vergleichen das Vorjahr. Geplante Balken kommen aus Budgets; echte Balken kommen aus Transaktionen."
+msgid "Colored bars are the selected year; faded bars compare the previous year. Planned bars come from budgets; real bars come from transactions."
+msgstr "Farbige Balken zeigen das ausgewählte Jahr; verblasste Balken vergleichen das Vorjahr. Geplante Balken kommen aus Budgets; echte Balken kommen aus Transaktionen."
 
 msgid "Colored bars show planned and real income and expenses for the selected year."
 msgstr "Farbige Balken zeigen geplante und echte Einnahmen und Ausgaben für das ausgewählte Jahr."
@@ -2277,11 +2277,11 @@ msgstr "geplante Ausgaben"
 msgid "real expenses"
 msgstr "echte Ausgaben"
 
-msgid "Colored bars show {year}; gray bars show {previous_year}."
-msgstr "Farbige Balken zeigen {year}; graue Balken zeigen {previous_year}."
+msgid "Colored bars show {year}; faded bars show {previous_year}."
+msgstr "Farbige Balken zeigen {year}; verblasste Balken zeigen {previous_year}."
 
-msgid "Colored bars show {month}; gray bars show {previous}."
-msgstr "Farbige Balken zeigen {month}; graue Balken zeigen {previous}."
+msgid "Colored bars show {month}; faded bars show {previous}."
+msgstr "Farbige Balken zeigen {month}; verblasste Balken zeigen {previous}."
 
 msgid "Loading selected period..."
 msgstr "Ausgewählten Zeitraum laden..."

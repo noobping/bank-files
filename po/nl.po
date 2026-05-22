@@ -2223,8 +2223,8 @@ msgstr "Grijze grafiekbalken tonen {year}"
 msgid "Only the selected year is loaded"
 msgstr "Alleen het geselecteerde jaar wordt geladen"
 
-msgid "Budgets needing attention in {year}. More shows everything; gray bars show {previous_year}."
-msgstr "Budgetten die aandacht nodig hebben in {year}. Meer toont alles; grijze balken tonen {previous_year}."
+msgid "Budgets needing attention in {year}. More shows everything; faded bars show {previous_year}."
+msgstr "Budgetten die aandacht nodig hebben in {year}. Meer toont alles; vervaagde balken tonen {previous_year}."
 
 msgid "Budgets needing attention in {year}. More shows everything."
 msgstr "Budgetten die aandacht nodig hebben in {year}. Meer toont alles."
@@ -2244,8 +2244,8 @@ msgstr "Income kan bruto en netto zijn. Het netto income is nodig voor de begrot
 msgid "Edit planned income budget"
 msgstr "Gepland inkomstenbudget bewerken"
 
-msgid "Colored bars are the selected year; gray bars compare the previous year. Planned bars come from budgets; real bars come from transactions."
-msgstr "Gekleurde balken tonen het geselecteerde jaar; grijze balken vergelijken het vorige jaar. Geplande balken komen uit budgetten; werkelijke balken komen uit transacties."
+msgid "Colored bars are the selected year; faded bars compare the previous year. Planned bars come from budgets; real bars come from transactions."
+msgstr "Gekleurde balken tonen het geselecteerde jaar; vervaagde balken vergelijken het vorige jaar. Geplande balken komen uit budgetten; werkelijke balken komen uit transacties."
 
 msgid "Colored bars show planned and real income and expenses for the selected year."
 msgstr "Gekleurde balken tonen geplande en werkelijke inkomsten en uitgaven voor het geselecteerde jaar."
@@ -2277,11 +2277,11 @@ msgstr "geplande uitgaven"
 msgid "real expenses"
 msgstr "werkelijke uitgaven"
 
-msgid "Colored bars show {year}; gray bars show {previous_year}."
-msgstr "Gekleurde balken tonen {year}; grijze balken tonen {previous_year}."
+msgid "Colored bars show {year}; faded bars show {previous_year}."
+msgstr "Gekleurde balken tonen {year}; vervaagde balken tonen {previous_year}."
 
-msgid "Colored bars show {month}; gray bars show {previous}."
-msgstr "Gekleurde balken tonen {month}; grijze balken tonen {previous}."
+msgid "Colored bars show {month}; faded bars show {previous}."
+msgstr "Gekleurde balken tonen {month}; vervaagde balken tonen {previous}."
 
 msgid "Loading selected period..."
 msgstr "Geselecteerde periode laden..."
