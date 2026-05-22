@@ -2070,13 +2070,13 @@
   dest-filename: .cargo-checksum.json
 - type: archive
   archive-type: tar-gzip
-  url: https://static.crates.io/crates/serde_json/serde_json-1.0.149.crate
-  sha256: 83fc039473c5595ace860d8c4fafa220ff474b3fc6bfdb4293327f1a37e94d86
-  dest: cargo/vendor/serde_json-1.0.149
+  url: https://static.crates.io/crates/serde_json/serde_json-1.0.150.crate
+  sha256: e8014e44b4736ed0538adeecded0fce2a272f22dc9578a7eb6b2d9993c74cfb9
+  dest: cargo/vendor/serde_json-1.0.150
 - type: inline
-  contents: '{"package": "83fc039473c5595ace860d8c4fafa220ff474b3fc6bfdb4293327f1a37e94d86",
+  contents: '{"package": "e8014e44b4736ed0538adeecded0fce2a272f22dc9578a7eb6b2d9993c74cfb9",
     "files": {}}'
-  dest: cargo/vendor/serde_json-1.0.149
+  dest: cargo/vendor/serde_json-1.0.150
   dest-filename: .cargo-checksum.json
 - type: archive
   archive-type: tar-gzip
