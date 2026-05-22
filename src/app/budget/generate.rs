@@ -20,6 +20,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
     let sources = current_sources_for_reload(&snapshot, remember_mode);
     let auto_clean_config = ui.preferences.auto_clean_config();
     let restore_scope = current_transaction_load_scope(&snapshot, ui.as_ref());
+    let smart_insights_enabled = ui.show_predictions.get();
     let state_for_generate = Rc::clone(state);
     let ui_for_generate = Rc::clone(ui);
     show_config_status(
@@ -59,8 +60,16 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 &sources,
             )?;
             let generated = data::generate_automatic_configuration(&generation_data)?;
+            let ai_outcome = crate::local_ai::enhance_generated_configuration(
+                &generation_data,
+                generated,
+                smart_insights_enabled,
+            );
+            let generated = ai_outcome.configuration;
             if generated.summary.is_empty() {
-                return anyhow::Ok(GeneratedConfigurationOutcome::None);
+                return anyhow::Ok(GeneratedConfigurationOutcome::None {
+                    ai_status: ai_outcome.status,
+                });
             }
 
             let summary = generated.summary.clone();
@@ -73,17 +82,28 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 &sources,
             )?
             .0;
-            anyhow::Ok(GeneratedConfigurationOutcome::Generated { summary, data })
+            anyhow::Ok(GeneratedConfigurationOutcome::Generated {
+                summary,
+                data,
+                ai_status: ai_outcome.status,
+            })
         });
 
         match task.await {
-            Ok(Ok(GeneratedConfigurationOutcome::Generated { summary, data })) => {
+            Ok(Ok(GeneratedConfigurationOutcome::Generated {
+                summary,
+                data,
+                ai_status,
+            })) => {
                 *state_for_generate.borrow_mut() = data;
                 render_views(
                     &state_for_generate.borrow(),
                     &ui_for_generate,
                     &state_for_generate,
                 );
+                if let Some(status) = ai_status {
+                    show_config_status_text(ui_for_generate.as_ref(), dialog_status.as_ref(), &status);
+                }
                 let message = trf(
                     "Generated configuration from {years} complete year(s), covering {months} month(s): {budgets} budget(s), {rules} rule(s), {fields} field mapping(s), {hidden} hidden pattern(s).",
                     &[
@@ -97,7 +117,10 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 );
                 show_config_status_text(ui_for_generate.as_ref(), dialog_status.as_ref(), &message);
             }
-            Ok(Ok(GeneratedConfigurationOutcome::None)) => {
+            Ok(Ok(GeneratedConfigurationOutcome::None { ai_status })) => {
+                if let Some(status) = ai_status {
+                    show_config_status_text(ui_for_generate.as_ref(), dialog_status.as_ref(), &status);
+                }
                 show_config_status(
                     ui_for_generate.as_ref(),
                     dialog_status.as_ref(),
@@ -183,6 +206,9 @@ enum GeneratedConfigurationOutcome {
     Generated {
         summary: data::GeneratedConfigurationSummary,
         data: AppData,
+        ai_status: Option<String>,
     },
-    None,
+    None {
+        ai_status: Option<String>,
+    },
 }

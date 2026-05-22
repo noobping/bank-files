@@ -175,7 +175,7 @@ impl CsvCopyResult {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct EditableRule {
     pub priority: i32,
     pub active: bool,
@@ -208,7 +208,7 @@ impl EditableRule {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct EditableBudget {
     pub code: String,
     pub category: String,
@@ -233,13 +233,13 @@ impl EditableBudget {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct EditableAlias {
     pub canonical: String,
     pub alias: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct IgnoredTransactionPattern {
     pub key: String,
     pub label: String,

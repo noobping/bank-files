@@ -6,6 +6,7 @@ mod app_info;
 mod csv_detect;
 mod data;
 mod i18n;
+mod local_ai;
 mod model;
 mod resources;
 mod rules;

@@ -71,5 +71,88 @@ pub(crate) fn editable_aliases_to_csv(aliases: &[EditableAlias]) -> Result<Strin
     serialize_editable_aliases(aliases)
 }
 
+pub(crate) fn validate_generated_configuration(config: &GeneratedConfiguration) -> Result<()> {
+    validate_editable_budgets(&config.budgets)?;
+    validate_generated_budgets(&config.budgets)?;
+    validate_editable_rules(&config.rules)?;
+    validate_generated_rules(&config.rules)?;
+    validate_editable_aliases(&config.aliases)?;
+    validate_ignored_transaction_patterns(&config.ignored_patterns)?;
+    let _ = serialize_editable_budgets(&config.budgets)?;
+    let _ = serialize_editable_rules(&config.rules)?;
+    let _ = serialize_editable_aliases(&config.aliases)?;
+    Ok(())
+}
+
+fn validate_generated_budgets(budgets: &[EditableBudget]) -> Result<()> {
+    let mut codes = BTreeSet::<String>::new();
+    for (index, budget) in budgets.iter().enumerate() {
+        let code = budget.code.trim();
+        if code.is_empty() || budget.category.trim().is_empty() {
+            anyhow::bail!("Budget {} needs both a code and category", index + 1);
+        }
+        if !codes.insert(normalize_key(code)) {
+            anyhow::bail!("Budget {} duplicates an earlier budget code", index + 1);
+        }
+    }
+    Ok(())
+}
+
+fn validate_generated_rules(rules: &[EditableRule]) -> Result<()> {
+    for (index, rule) in rules.iter().enumerate() {
+        if rule.search.trim().is_empty()
+            || rule.category.trim().is_empty()
+            || rule.budget_code.trim().is_empty()
+        {
+            anyhow::bail!(
+                "Rule {} needs search text, category, and budget code",
+                index + 1
+            );
+        }
+        if !matches!(
+            rule.field.trim(),
+            "any" | "tags" | "description" | "counterparty" | "account" | "transaction_id"
+        ) {
+            anyhow::bail!("Rule {} has an unknown field", index + 1);
+        }
+    }
+    Ok(())
+}
+
+fn validate_editable_aliases(aliases: &[EditableAlias]) -> Result<()> {
+    let mut keys = BTreeSet::<(String, String)>::new();
+    for (index, alias) in aliases.iter().enumerate() {
+        let canonical = alias.canonical.trim();
+        let csv_alias = alias.alias.trim();
+        if canonical.is_empty() || csv_alias.is_empty() {
+            anyhow::bail!(
+                "Alias {} needs both an app field and a CSV header",
+                index + 1
+            );
+        }
+        if !keys.insert((normalize_key(canonical), normalize_key(csv_alias))) {
+            anyhow::bail!("Alias {} duplicates an earlier field mapping", index + 1);
+        }
+    }
+    Ok(())
+}
+
+fn validate_ignored_transaction_patterns(patterns: &[IgnoredTransactionPattern]) -> Result<()> {
+    let mut keys = BTreeSet::<String>::new();
+    for (index, pattern) in patterns.iter().enumerate() {
+        let key = pattern.key.trim();
+        if key.is_empty() || pattern.label.trim().is_empty() {
+            anyhow::bail!("Ignored pattern {} needs both a key and label", index + 1);
+        }
+        if !keys.insert(key.to_string()) {
+            anyhow::bail!(
+                "Ignored pattern {} duplicates an earlier pattern",
+                index + 1
+            );
+        }
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 use copy::{config_csv_from_headers, config_csv_name, copy_gio_file_to_app_storage, CsvCopyTarget};

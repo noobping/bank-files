@@ -470,6 +470,7 @@ fn append_transaction_patterns_section_async(
     let fake_transactions = ui_handles.fake_transactions.list();
     let show_all = ui_handles.show_all.get() || search.is_some();
     let hide_canceled = ui_handles.hide_canceled_transactions.get();
+    let smart_insights_enabled = ui_handles.show_predictions.get();
     let generation = ui_handles.render_generation.get();
     let state_for_patterns = Rc::clone(state);
     let ui_for_patterns = Rc::clone(ui_handles);
@@ -488,6 +489,7 @@ fn append_transaction_patterns_section_async(
                 show_all,
                 hide_canceled,
                 selected_year,
+                smart_insights_enabled,
             ))
         });
 
@@ -651,6 +653,7 @@ fn transaction_patterns_render_data(
     show_all_patterns: bool,
     hide_canceled: bool,
     selected_year: Option<i32>,
+    smart_insights_enabled: bool,
 ) -> TransactionPatternsRenderData {
     if let Some(year) = selected_year {
         data.transactions
@@ -659,6 +662,7 @@ fn transaction_patterns_render_data(
 
     let pattern_rules = data::load_editable_rules().unwrap_or_default();
     let hidden_pattern_keys = data::ignored_transaction_pattern_keys().unwrap_or_default();
+    let ai_hints = crate::local_ai::transaction_pattern_hints(&data, smart_insights_enabled).hints;
     let pattern_analysis =
         analytics::transaction_pattern_analysis(&data.transactions, data.dedupe_mode.is_enabled());
     let hidden_count = pattern_analysis.hidden_canceled_transaction_count();
@@ -674,7 +678,7 @@ fn transaction_patterns_render_data(
         .map(|pattern| {
             let hidden =
                 hidden_pattern_keys.contains(&analytics::transaction_pattern_key(&pattern));
-            let info = transaction_pattern_info(&pattern, &data, &pattern_rules, hidden);
+            let info = transaction_pattern_info(&pattern, &data, &pattern_rules, hidden, &ai_hints);
             (pattern, info)
         })
         .collect::<Vec<_>>();
@@ -1149,6 +1153,7 @@ fn transaction_pattern_info(
     data: &AppData,
     rules: &[EditableRule],
     hidden: bool,
+    ai_hints: &[crate::local_ai::LocalAiPatternHint],
 ) -> TransactionPatternInfo {
     let cancels_out = matches!(
         pattern.kind,
@@ -1171,6 +1176,12 @@ fn transaction_pattern_info(
     }
     if hidden {
         badges.push(tr("Hidden"));
+    }
+    if let Some(hint) = crate::local_ai::pattern_hint_for_label(ai_hints, &pattern.label) {
+        badges.push(trf(
+            "Local AI: {category}",
+            &[("category", hint.category.clone())],
+        ));
     }
     if covered_by_rule {
         badges.push(tr("Covered by rule"));

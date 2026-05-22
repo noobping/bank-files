@@ -1,0 +1,42 @@
+id: io.github.noobping.BankFiles
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+
+command: bank-files
+
+finish-args:
+  - --device=dri
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+
+modules:
+  - name: bank-files
+    buildsystem: simple
+
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin
+      env:
+        CARGO_HOME: /run/build/bank-files/cargo
+
+    build-commands:
+      - sed -i '/\[target.\x27cfg(target_os = "windows")\x27.*ependencies\]/,/^$/d' Cargo.toml
+      - cargo build --offline --release --features flatpak
+      - install -Dm0755 target/release/bank-files /app/bin/bank-files
+      - install -Dm0644 data/scalable/apps/${FLATPAK_ID}.svg /app/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg
+      - install -Dm0644 data/bank-files-search-provider.ini /app/share/gnome-shell/search-providers/${FLATPAK_ID}.search-provider.ini
+      - install -Dm0644 data/bank-files-search-provider.service /app/share/dbus-1/services/${FLATPAK_ID}.SearchProvider.service
+      - install -Dm0644 data/${FLATPAK_ID}.gschema.xml /app/share/glib-2.0/schemas/${FLATPAK_ID}.gschema.xml
+      - glib-compile-schemas /app/share/glib-2.0/schemas
+      - install -Dm0644 data/metainfo.xml /app/share/metainfo/${FLATPAK_ID}.metainfo.xml
+      - install -Dm0644 data/${FLATPAK_ID}.desktop /app/share/applications/${FLATPAK_ID}.desktop
+
+    sources:
+      - type: git
+        url: https://github.com/noobping/bank-files.git
+        commit: 48f5bcfc1f55498b17e71bfe61896495793854a7
+      - cargo-sources.yml

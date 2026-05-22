@@ -1,0 +1,4 @@
+Placeholder local AI model assets for Bank Files.
+
+These placeholder files are not a trained model and do not provide inference.
+Replace classifier.onnx, generator.safetensors, tokenizer.json, and model.json with a tiny model whose license permits redistribution before shipping AI-enabled releases.

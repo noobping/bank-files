@@ -1,0 +1,8 @@
+{
+  "format": "bank-files-local-ai-v1",
+  "placeholder": true,
+  "classifier": "classifier.onnx",
+  "generator": "generator.safetensors",
+  "tokenizer": "tokenizer.json",
+  "description": "Placeholder model manifest. Replace these files with a real tiny local model before enabling inference."
+}
