@@ -178,6 +178,7 @@ fn append_annual_pie_charts(
     state: &Rc<RefCell<AppData>>,
 ) {
     let mut charts = Vec::new();
+    let advanced_features = ui_handles.advanced_features.get();
 
     let real_year_income =
         analytics::totals_for_year(&data.transactions, &data.budgets, year).income;
@@ -195,7 +196,7 @@ fn append_annual_pie_charts(
             (
                 budget.code.clone(),
                 ui::PieSlice::new(
-                    format!("{} · {}", budget.code, budget.category),
+                    budget_display_title(&budget.code, &budget.category, advanced_features),
                     amount,
                     trf(
                         "{amount} planned",
@@ -251,12 +252,10 @@ fn append_annual_pie_charts(
             ui::PieSlice::new(
                 category.category.clone(),
                 category.totals.expenses,
-                trf(
-                    "{count} transactions · budget code {code}",
-                    &[
-                        ("count", category.totals.count.to_string()),
-                        ("code", category.budget_code.clone()),
-                    ],
+                category_transaction_detail(
+                    category.totals.count,
+                    &category.budget_code,
+                    advanced_features,
                 ),
             )
         })
@@ -547,7 +546,7 @@ pub(in crate::app) fn render_overview_search(
                 "Annual Budgets",
                 &trf("Filtered on {year}.", &[("year", year.to_string())]),
             );
-            let box_ = gtk::Box::new(gtk::Orientation::Vertical, 8);
+            let box_ = ui::card_grid(Vec::new(), 2);
             for budget in &budgets {
                 append_annual_budget_row(&box_, budget, year, ui_handles, state);
             }

@@ -31,7 +31,7 @@ pub(in crate::app) fn annual_budgets_section(
         )
     };
     let section = ui::section_group("Annual Budgets", &subtitle);
-    let budgets_box = annual_budget_grid();
+    let budgets_box = ui::card_grid(Vec::new(), 2);
     let show_all = ui_handles.show_all.get();
     let visible_budgets = if show_all {
         budgets.clone()
@@ -48,9 +48,12 @@ pub(in crate::app) fn annual_budgets_section(
         budgets.len().saturating_sub(visible_budgets.len())
     };
     if visible_budgets.is_empty() {
-        budgets_box.append(&ui::text_card(&tr(
-            "All annual budgets are within plan. Use More to show every budget.",
-        )));
+        ui::append_card_to_grid(
+            &budgets_box,
+            ui::text_card(&tr(
+                "All annual budgets are within plan. Use More to show every budget.",
+            )),
+        );
     } else {
         append_annual_budget_rows(&budgets_box, &visible_budgets, year, ui_handles, state);
     }
@@ -61,63 +64,29 @@ pub(in crate::app) fn annual_budgets_section(
     Some(section)
 }
 
-const ANNUAL_BUDGET_CARD_WIDTH: i32 = 320;
-const ANNUAL_BUDGET_COLUMN_SPACING: i32 = 8;
-const ANNUAL_BUDGET_LINE_SPACING: i32 = 8;
-const ANNUAL_BUDGET_NATURAL_LINE_LENGTH: i32 =
-    ANNUAL_BUDGET_CARD_WIDTH * 2 + ANNUAL_BUDGET_COLUMN_SPACING;
-
-fn annual_budget_grid() -> adw::WrapBox {
-    adw::WrapBox::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .child_spacing(ANNUAL_BUDGET_COLUMN_SPACING)
-        .child_spacing_unit(adw::LengthUnit::Px)
-        .line_spacing(ANNUAL_BUDGET_LINE_SPACING)
-        .line_spacing_unit(adw::LengthUnit::Px)
-        .natural_line_length(ANNUAL_BUDGET_NATURAL_LINE_LENGTH)
-        .natural_line_length_unit(adw::LengthUnit::Px)
-        .wrap_policy(adw::WrapPolicy::Natural)
-        .justify(adw::JustifyMode::Fill)
-        .hexpand(true)
-        .halign(gtk::Align::Fill)
-        .build()
-}
-
 fn append_annual_budget_rows(
-    container: &adw::WrapBox,
+    container: &gtk::FlowBox,
     budgets: &[analytics::AnnualBudgetUsage],
     year: i32,
     ui_handles: &Rc<UiHandles>,
     state: &Rc<RefCell<AppData>>,
 ) {
     for budget in budgets {
-        append_annual_budget_wrap_row(container, budget, year, ui_handles, state);
+        append_annual_budget_row(container, budget, year, ui_handles, state);
     }
 }
 
-fn append_annual_budget_wrap_row(
-    container: &adw::WrapBox,
-    budget: &analytics::AnnualBudgetUsage,
-    year: i32,
-    ui_handles: &Rc<UiHandles>,
-    state: &Rc<RefCell<AppData>>,
-) {
-    let row = annual_budget_row(budget, year, ui_handles, state);
-    row.set_hexpand(true);
-    row.set_halign(gtk::Align::Fill);
-    row.set_width_request(ANNUAL_BUDGET_CARD_WIDTH);
-    row.set_valign(gtk::Align::Start);
-    container.append(&row);
-}
-
 pub(in crate::app) fn append_annual_budget_row(
-    container: &gtk::Box,
+    container: &gtk::FlowBox,
     budget: &analytics::AnnualBudgetUsage,
     year: i32,
     ui_handles: &Rc<UiHandles>,
     state: &Rc<RefCell<AppData>>,
 ) {
-    container.append(&annual_budget_row(budget, year, ui_handles, state));
+    ui::append_card_to_grid(
+        container,
+        annual_budget_row(budget, year, ui_handles, state),
+    );
 }
 
 fn annual_budget_row(
@@ -146,9 +115,14 @@ fn annual_budget_row(
     let filter = TransactionFilter::budget_for_year(budget.code.clone(), year);
     let edit_button = budget_edit_button(&budget.code, &budget.category, ui_handles, state)
         .upcast::<gtk::Widget>();
+    let title = budget_display_title(
+        &budget.code,
+        &budget.category,
+        ui_handles.advanced_features.get(),
+    );
     let row = ui::comparison_progress_row_with_action(
         ui::ComparisonProgressRow {
-            title: format!("{} · {}", budget.code, budget.category),
+            title,
             subtitle: trf(
                 "Planned annual budget: {budget}",
                 &[(
@@ -176,7 +150,7 @@ fn annual_budget_row(
 
 pub(in crate::app) fn append_annual_budgets_more_button(
     section: &gtk::Box,
-    rows_box: &adw::WrapBox,
+    rows_box: &gtk::FlowBox,
     budgets: Vec<analytics::AnnualBudgetUsage>,
     year: i32,
     ui_handles: &Rc<UiHandles>,
@@ -187,7 +161,7 @@ pub(in crate::app) fn append_annual_budgets_more_button(
     let ui_for_more = Rc::clone(ui_handles);
     let state_for_more = Rc::clone(state);
     more_button.connect_clicked(move |button| {
-        rows_box.remove_all();
+        ui::clear_card_grid(&rows_box);
         append_annual_budget_rows(&rows_box, &budgets, year, &ui_for_more, &state_for_more);
         button.set_visible(false);
     });
@@ -224,7 +198,7 @@ pub(in crate::app) fn annual_spending_section_from_rows(
     state: &Rc<RefCell<AppData>>,
 ) -> gtk::Box {
     let section = ui::section_group("Annual Spending", subtitle);
-    let categories_box = gtk::Box::new(gtk::Orientation::Vertical, 8);
+    let categories_box = ui::card_grid(Vec::new(), 2);
     let show_all = ui_handles.show_all.get();
     let preview = categories
         .iter()
@@ -250,7 +224,7 @@ pub(in crate::app) fn annual_spending_section_from_rows(
 
 fn append_annual_categories_more_button(
     section: &gtk::Box,
-    rows_box: &gtk::Box,
+    rows_box: &gtk::FlowBox,
     categories: Vec<analytics::CategorySummary>,
     year: i32,
     ui_handles: &Rc<UiHandles>,
@@ -261,7 +235,7 @@ fn append_annual_categories_more_button(
     let ui_for_more = Rc::clone(ui_handles);
     let state_for_more = Rc::clone(state);
     more_button.connect_clicked(move |button| {
-        ui::clear_box(&rows_box);
+        ui::clear_card_grid(&rows_box);
         append_annual_category_rows(&rows_box, &categories, year, &ui_for_more, &state_for_more);
         button.set_visible(false);
     });
@@ -269,7 +243,7 @@ fn append_annual_categories_more_button(
 }
 
 fn append_annual_category_rows(
-    container: &gtk::Box,
+    container: &gtk::FlowBox,
     categories: &[analytics::CategorySummary],
     year: i32,
     ui_handles: &Rc<UiHandles>,
@@ -287,7 +261,7 @@ fn append_annual_category_rows(
 }
 
 fn append_annual_category_row(
-    container: &gtk::Box,
+    container: &gtk::FlowBox,
     category: &analytics::CategorySummary,
     year: i32,
     max_expense: Decimal,
@@ -302,12 +276,10 @@ fn append_annual_category_row(
             .upcast::<gtk::Widget>();
     let row = ui::progress_row_with_action(
         &category.category,
-        &trf(
-            "{count} transactions · budget code {code}",
-            &[
-                ("count", category.totals.count.to_string()),
-                ("code", category.budget_code.clone()),
-            ],
+        &category_transaction_detail(
+            category.totals.count,
+            &category.budget_code,
+            ui_handles.advanced_features.get(),
         ),
         fraction(category.totals.expenses, max_expense),
         &money(category.totals.expenses),
@@ -316,7 +288,7 @@ fn append_annual_category_row(
     let card = ui::activatable_card(row, move || {
         show_transactions_filter(&state_for_row, &ui_for_row, filter.clone())
     });
-    container.append(&card);
+    ui::append_card_to_grid(container, card);
 }
 
 pub(in crate::app) fn annual_category_matches(

@@ -72,6 +72,44 @@ pub(in crate::app) fn annual_budget_previous_state(
     }
 }
 
+pub(in crate::app) fn budget_display_title(
+    code: &str,
+    category: &str,
+    advanced_features: bool,
+) -> String {
+    let category = category.trim();
+    if advanced_features {
+        let code = code.trim();
+        if code.is_empty() {
+            category.to_string()
+        } else if category.is_empty() {
+            code.to_string()
+        } else {
+            format!("{} · {}", code, category)
+        }
+    } else {
+        category.to_string()
+    }
+}
+
+pub(in crate::app) fn category_transaction_detail(
+    count: impl ToString,
+    budget_code: &str,
+    advanced_features: bool,
+) -> String {
+    if advanced_features {
+        trf(
+            "{count} transactions · budget code {code}",
+            &[
+                ("count", count.to_string()),
+                ("code", budget_code.to_string()),
+            ],
+        )
+    } else {
+        trf("{count} transactions", &[("count", count.to_string())])
+    }
+}
+
 pub(in crate::app) fn planned_budget_label(budget: Decimal, basis: &str) -> String {
     if budget <= Decimal::ZERO {
         tr("no budget")

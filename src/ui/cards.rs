@@ -103,6 +103,10 @@ where
 }
 
 pub fn metric_grid(cards: Vec<gtk::Box>, max_children_per_line: u32) -> gtk::FlowBox {
+    card_grid(cards, max_children_per_line)
+}
+
+pub fn card_grid(cards: Vec<gtk::Box>, max_children_per_line: u32) -> gtk::FlowBox {
     let flow = gtk::FlowBox::builder()
         .column_spacing(8)
         .row_spacing(8)
@@ -114,20 +118,30 @@ pub fn metric_grid(cards: Vec<gtk::Box>, max_children_per_line: u32) -> gtk::Flo
         .build();
 
     for card in cards {
-        let is_action_card = card.has_css_class("action-card");
-        if !is_action_card {
-            card.set_can_target(false);
-            card.set_focusable(false);
-        }
-        let child = gtk::FlowBoxChild::builder()
-            .child(&card)
-            .can_target(is_action_card)
-            .focusable(false)
-            .build();
-        flow.insert(&child, -1);
+        append_card_to_grid(&flow, card);
     }
 
     flow
+}
+
+pub fn append_card_to_grid(flow: &gtk::FlowBox, card: gtk::Box) {
+    let is_action_card = card.has_css_class("action-card");
+    if !is_action_card {
+        card.set_can_target(false);
+        card.set_focusable(false);
+    }
+    let child = gtk::FlowBoxChild::builder()
+        .child(&card)
+        .can_target(is_action_card)
+        .focusable(false)
+        .build();
+    flow.insert(&child, -1);
+}
+
+pub fn clear_card_grid(flow: &gtk::FlowBox) {
+    while let Some(child) = flow.first_child() {
+        flow.remove(&child);
+    }
 }
 
 pub fn section_title(title: &str, subtitle: &str) -> gtk::Box {

@@ -297,11 +297,14 @@ fn append_budget_detail_sections_now(
         };
         let section_subtitle = budget_room_subtitle(data.search_active, &data.month_label);
         let section = ui::section_group("Budget Room", &section_subtitle);
-        let box_ = gtk::Box::new(gtk::Orientation::Vertical, 8);
+        let box_ = ui::card_grid(Vec::new(), 2);
         if visible_budgets.is_empty() {
-            box_.append(&ui::text_card(&tr(
-                "All budgets are within plan. Use More to show every budget.",
-            )));
+            ui::append_card_to_grid(
+                &box_,
+                ui::text_card(&tr(
+                    "All budgets are within plan. Use More to show every budget.",
+                )),
+            );
         } else {
             append_budget_rows(&box_, &visible_budgets, data.month, ui_handles, state);
         }
@@ -363,6 +366,7 @@ fn append_budget_pie_charts(
     let month = data.month;
     let month_label = data.month_label;
     let mut charts = Vec::new();
+    let advanced_features = ui_handles.advanced_features.get();
 
     let mut planned = budget_rows
         .iter()
@@ -371,7 +375,7 @@ fn append_budget_pie_charts(
             (
                 budget.code.clone(),
                 ui::PieSlice::new(
-                    format!("{} · {}", budget.code, budget.category),
+                    budget_display_title(&budget.code, &budget.category, advanced_features),
                     budget.budget,
                     trf(
                         "{amount} planned",
@@ -425,12 +429,10 @@ fn append_budget_pie_charts(
             ui::PieSlice::new(
                 category.category.clone(),
                 category.totals.expenses,
-                trf(
-                    "{count} transactions · budget code {code}",
-                    &[
-                        ("count", category.totals.count.to_string()),
-                        ("code", category.budget_code.clone()),
-                    ],
+                category_transaction_detail(
+                    category.totals.count,
+                    &category.budget_code,
+                    advanced_features,
                 ),
             )
         })
@@ -474,12 +476,13 @@ fn append_budget_pie_charts(
 }
 
 pub(in crate::app) fn append_budget_rows(
-    container: &gtk::Box,
+    container: &gtk::FlowBox,
     budgets: &[analytics::BudgetUsage],
     month: MonthKey,
     ui_handles: &Rc<UiHandles>,
     state: &Rc<RefCell<AppData>>,
 ) {
+    let advanced_features = ui_handles.advanced_features.get();
     for budget in budgets {
         let (detail, state_kind) = budget_progress_detail(budget);
         let state_for_row = Rc::clone(state);
@@ -487,8 +490,9 @@ pub(in crate::app) fn append_budget_rows(
         let filter = TransactionFilter::budget_for_month(budget.code.clone(), month);
         let edit_button = budget_edit_button(&budget.code, &budget.category, ui_handles, state)
             .upcast::<gtk::Widget>();
+        let title = budget_display_title(&budget.code, &budget.category, advanced_features);
         let row = ui::progress_row_with_state_and_action(
-            &format!("{} · {}", budget.code, budget.category),
+            &title,
             &trf(
                 "{amount} spent of {budget}",
                 &[
@@ -507,13 +511,13 @@ pub(in crate::app) fn append_budget_rows(
         let card = ui::activatable_card(row, move || {
             show_transactions_filter(&state_for_row, &ui_for_row, filter.clone())
         });
-        container.append(&card);
+        ui::append_card_to_grid(container, card);
     }
 }
 
 pub(in crate::app) fn append_budgets_more_button(
     section: &gtk::Box,
-    rows_box: &gtk::Box,
+    rows_box: &gtk::FlowBox,
     budgets: Vec<analytics::BudgetUsage>,
     month: MonthKey,
     ui_handles: &Rc<UiHandles>,
@@ -524,7 +528,7 @@ pub(in crate::app) fn append_budgets_more_button(
     let ui_for_more = Rc::clone(ui_handles);
     let state_for_more = Rc::clone(state);
     more_button.connect_clicked(move |button| {
-        ui::clear_box(&rows_box);
+        ui::clear_card_grid(&rows_box);
         append_budget_rows(&rows_box, &budgets, month, &ui_for_more, &state_for_more);
         button.set_visible(false);
     });
@@ -544,16 +548,19 @@ pub(in crate::app) fn monthly_categories_section(
     state: &Rc<RefCell<AppData>>,
 ) -> gtk::Box {
     let section = ui::section_group("Monthly Spending", &monthly_spending_subtitle(month_label));
-    let categories_box = gtk::Box::new(gtk::Orientation::Vertical, 8);
+    let categories_box = ui::card_grid(Vec::new(), 2);
     let expense_categories = categories
         .into_iter()
         .filter(|category| category.totals.expenses > Decimal::ZERO)
         .collect::<Vec<_>>();
     if expense_categories.is_empty() {
-        categories_box.append(&ui::text_card(&trf(
-            "No monthly expenses in {month}.",
-            &[("month", month_label.to_string())],
-        )));
+        ui::append_card_to_grid(
+            &categories_box,
+            ui::text_card(&trf(
+                "No monthly expenses in {month}.",
+                &[("month", month_label.to_string())],
+            )),
+        );
         section.append(&categories_box);
         return section;
     }
@@ -587,7 +594,7 @@ pub(in crate::app) fn monthly_categories_section(
 
 pub(in crate::app) fn append_month_categories_more_button(
     section: &gtk::Box,
-    rows_box: &gtk::Box,
+    rows_box: &gtk::FlowBox,
     categories: Vec<analytics::CategorySummary>,
     month: MonthKey,
     ui_handles: &Rc<UiHandles>,
@@ -598,7 +605,7 @@ pub(in crate::app) fn append_month_categories_more_button(
     let ui_for_more = Rc::clone(ui_handles);
     let state_for_more = Rc::clone(state);
     more_button.connect_clicked(move |button| {
-        ui::clear_box(&rows_box);
+        ui::clear_card_grid(&rows_box);
         append_month_category_rows(&rows_box, &categories, month, &ui_for_more, &state_for_more);
         button.set_visible(false);
     });
@@ -606,7 +613,7 @@ pub(in crate::app) fn append_month_categories_more_button(
 }
 
 pub(in crate::app) fn append_month_category_rows(
-    container: &gtk::Box,
+    container: &gtk::FlowBox,
     categories: &[analytics::CategorySummary],
     month: MonthKey,
     ui_handles: &Rc<UiHandles>,
@@ -618,6 +625,7 @@ pub(in crate::app) fn append_month_category_rows(
         .max()
         .unwrap_or(Decimal::ONE)
         .max(Decimal::ONE);
+    let advanced_features = ui_handles.advanced_features.get();
     for category in categories {
         let state_for_row = Rc::clone(state);
         let ui_for_row = Rc::clone(ui_handles);
@@ -627,12 +635,10 @@ pub(in crate::app) fn append_month_category_rows(
                 .upcast::<gtk::Widget>();
         let row = ui::progress_row_with_action(
             &category.category,
-            &trf(
-                "{count} transactions · budget code {code}",
-                &[
-                    ("count", category.totals.count.to_string()),
-                    ("code", category.budget_code.clone()),
-                ],
+            &category_transaction_detail(
+                category.totals.count,
+                &category.budget_code,
+                advanced_features,
             ),
             fraction(category.totals.expenses, max_expense),
             &money(category.totals.expenses),
@@ -641,7 +647,7 @@ pub(in crate::app) fn append_month_category_rows(
         let card = ui::activatable_card(row, move || {
             show_transactions_filter(&state_for_row, &ui_for_row, filter.clone())
         });
-        container.append(&card);
+        ui::append_card_to_grid(container, card);
     }
 }
 

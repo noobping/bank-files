@@ -110,8 +110,9 @@ use import::{
 };
 use management::show_management_dialog;
 use money::{
-    annual_budget_previous_state, annual_budget_progress_detail, budget_progress_detail, file_size,
-    format_size, fraction, planned_budget_label,
+    annual_budget_previous_state, annual_budget_progress_detail, budget_display_title,
+    budget_progress_detail, category_transaction_detail, file_size, format_size, fraction,
+    planned_budget_label,
 };
 use operation_queue::{
     build_operation_queue_widgets, connect_operation_queue, enqueue_rule_operation, OperationQueue,
