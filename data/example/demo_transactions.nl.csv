@@ -1,0 +1,13 @@
+Datum;Omschrijving;Tegenpartij;Bedrag;Rekening;Transactie ID
+2025-01-24;Salaris januari 2025;Werkgever BV;3200,00;NL00DEMO0123456789;demo-nl-202501-01
+2025-01-25;Huur februari;Verhuurder;-1180,00;NL00DEMO0123456789;demo-nl-202501-02
+2025-01-26;Maandelijkse boodschappen;Albert Heijn;-270,32;NL00DEMO0123456789;demo-nl-202501-03
+2025-02-24;Salaris februari 2025;Werkgever BV;3200,00;NL00DEMO0123456789;demo-nl-202502-01
+2025-02-25;Huur maart;Verhuurder;-1180,00;NL00DEMO0123456789;demo-nl-202502-02
+2025-02-26;Maandelijkse boodschappen;Jumbo;-283,21;NL00DEMO0123456789;demo-nl-202502-03
+2025-03-24;Salaris maart 2025;Werkgever BV;3200,00;NL00DEMO0123456789;demo-nl-202503-01
+2025-03-25;Huur april;Verhuurder;-1180,00;NL00DEMO0123456789;demo-nl-202503-02
+2025-03-26;Maandelijkse boodschappen;Lidl;-244,87;NL00DEMO0123456789;demo-nl-202503-03
+2025-04-24;Salaris april 2025;Werkgever BV;3200,00;NL00DEMO0123456789;demo-nl-202504-01
+2025-04-25;Huur mei;Verhuurder;-1180,00;NL00DEMO0123456789;demo-nl-202504-02
+2025-04-26;Maandelijkse boodschappen;Picnic;-259,70;NL00DEMO0123456789;demo-nl-202504-03

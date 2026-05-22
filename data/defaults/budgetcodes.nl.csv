@@ -1,0 +1,14 @@
+code,category,monthly_budget,yearly_budget,direction,income_basis,notes
+INC,Inkomen,0%,,income,real,Regelmatige inkomsten
+FOOD,Boodschappen,14%,,expense,real,Boodschappen en huishoudelijke basis
+DINING,Uit eten,4%,,expense,real,Restaurants en cafés
+TRAN,Vervoer,9%,,expense,real,"Openbaar vervoer, brandstof en parkeren"
+HOME,Wonen,28%,,expense,real,Huur/hypotheek/VvE
+UTIL,Vaste lasten,7%,,expense,real,"Energie, internet, telefoon"
+LOSS,Verliezen en kosten,0%,,expense,real,"Boetes, roodstand en verliezen"
+CARE,Zorg,7%,,expense,real,Zorgverzekering en zorgkosten
+SHOP,Winkelen,6%,,expense,real,Online en fysieke winkels
+ENT,Abonnementen en entertainment,5%,,expense,real,Streaming en entertainment
+TRANSFER,Overboekingen,0%,,transfer,real,Interne overboekingen tussen je eigen rekeningen
+OTHER,Overig,5%,,expense,real,Overige uitgaven en buffer
+INC-OTHER,Overige inkomsten,0%,,income,real,Positieve transacties zonder specifieke regel

@@ -1,0 +1,7 @@
+priority,active,field,pattern,category,budget_code,direction,amount_min,amount_max,notes
+100,true,any,"(?i)grocery|supermarket|whole foods|trader joe|aldi|lidl|jumbo|picnic|dirk",Groceries,FOOD,expense,,,Example groceries rule
+95,true,any,"(?i)netflix|spotify|disney|hbo|youtube|videoland",Subscriptions & entertainment,ENT,expense,,,Streaming and media
+90,true,any,"(?i)shell|esso|bp|train|bus|metro|taxi|uber|parking",Transport,TRAN,expense,,,Transport and parking
+88,true,any,"(?i)mismanagement|loss|fine|fee|overdraft|collection costs|casino|gambling",Losses & fees,LOSS,expense,,,Fees, overdrafts, and losses
+85,true,any,"(?i)rent|mortgage|housing|hoa",Housing,HOME,expense,,,Housing
+80,true,any,"(?i)salary|payroll|wages",Income,INC,income,,,Income

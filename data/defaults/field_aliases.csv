@@ -1,0 +1,87 @@
+canonical,alias
+date,datum
+date,date
+date,boekingsdatum
+date,transactiedatum
+date,rentedatum
+date,valutadatum
+date,transaction date
+date,booking date
+amount,bedrag
+amount,amount
+amount,mutatiebedrag
+amount,transactiebedrag
+amount,bedrag eur
+amount,waarde
+amount,amount eur
+amount,transaction amount
+debit,af
+debit,debet
+debit,debit
+debit,uit
+debit,withdrawal
+debit,betaald
+debit,debit amount
+credit,bij
+credit,credit
+credit,inkomend
+credit,ontvangen
+credit,deposit
+credit,credit amount
+description,omschrijving
+description,description
+description,mededelingen
+description,kenmerk
+description,details
+description,naam omschrijving
+description,omschrijving transactie
+description,remittance information
+description,message
+counterparty,tegenpartij
+counterparty,naam
+counterparty,begunstigde
+counterparty,opdrachtgever
+counterparty,relatie
+counterparty,counterparty
+counterparty,name
+counterparty,beneficiary
+counterparty,payer
+counterparty,payee
+counterparty,omschrijving naam
+account,rekening
+account,rekeningnummer
+account,iban
+account,account
+account,account number
+account,eigen rekening
+account,from account
+transaction_id,transactie id
+transaction_id,transaction id
+transaction_id,id
+transaction_id,referentie
+transaction_id,reference
+transaction_id,volgnummer
+transaction_id,mutatienummer
+transaction_id,booking id
+currency,valuta
+currency,currency
+currency,muntsoort
+direction,af bij
+direction,af/bij
+direction,credit debit
+direction,type
+direction,richting
+direction,direction
+direction,mutatiesoort
+tags,tag
+tags,tags
+tags,label
+tags,labels
+tags,categorie
+tags,categorieen
+tags,category
+tags,categories
+tags,rubriek
+tags,schlagwort
+tags,stichwort
+tags,kategorie

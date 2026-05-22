@@ -1,0 +1,3083 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Bank Files 0.1.0\n"
+"PO-Revision-Date: 2026-05-20 00:00+0200\n"
+"Last-Translator: Codex\n"
+"Language-Team: none\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Bank Files"
+msgstr "Bankdateien"
+
+msgid "Overview"
+msgstr "Übersicht"
+
+msgid "Budget"
+msgstr "Budget"
+
+msgid "Transactions"
+msgstr "Transaktionen"
+
+msgid "Diagnostics"
+msgstr "Diagnose"
+
+msgid "Back"
+msgstr "Zurück"
+
+msgid "Open CSV files"
+msgstr "CSV-Dateien öffnen"
+
+msgid "Search this page"
+msgstr "Diese Seite durchsuchen"
+
+msgid "Copy message"
+msgstr "Nachricht kopieren"
+
+msgid "Show message history"
+msgstr "Nachrichtenverlauf anzeigen"
+
+msgid "Message History"
+msgstr "Nachrichtenverlauf"
+
+msgid "Search messages"
+msgstr "Nachrichten suchen"
+
+msgid "Recent status bar messages from this session."
+msgstr "Aktuelle Statusleistenmeldungen aus dieser Sitzung."
+
+msgid "No messages found."
+msgstr "Keine Nachrichten gefunden."
+
+msgid "No messages yet."
+msgstr "Noch keine Nachrichten."
+
+msgid "Choose CSV Files"
+msgstr "CSV-Dateien auswählen"
+
+msgid "Search"
+msgstr "Suchen"
+
+msgid "Reload"
+msgstr "Neu laden"
+
+msgid "Quick Reload"
+msgstr "Schnell neu laden"
+
+msgid "Reload All"
+msgstr "Alles neu laden"
+
+msgid "Force reload all CSV files"
+msgstr "Alle CSV-Dateien erzwungen neu laden"
+
+msgid "Categorization Rules"
+msgstr "Kategorisierungsregeln"
+
+msgid "Budgets"
+msgstr "Budgets"
+
+msgid "Normalize CSV Fields"
+msgstr "CSV-Felder normalisieren"
+
+msgid "Install Locally"
+msgstr "Lokal installieren"
+
+msgid "Add to app menu"
+msgstr "Zum App-Menü hinzufügen"
+
+msgid "Remove from app menu"
+msgstr "Aus dem App-Menü entfernen"
+
+msgid "Keyboard Shortcuts"
+msgstr "Tastenkombinationen"
+
+msgid "Check for Updates"
+msgstr "Nach Updates suchen"
+
+msgid "About Bank Files"
+msgstr "Info zu Bankdateien"
+
+msgid "Quit"
+msgstr "Beenden"
+
+msgid "Choose bank files or drop them onto the window to review spending, budgets, and trends."
+msgstr "Wähle Bankdateien aus oder ziehe sie in das Fenster, um Ausgaben, Budgets und Trends zu prüfen."
+
+msgid "Opening the file portal for CSV import..."
+msgstr "Dateiportal für den CSV-Import wird geöffnet..."
+
+msgid "Choose one or more CSV files"
+msgstr "Eine oder mehrere CSV-Dateien auswählen"
+
+msgid "CSV import canceled."
+msgstr "CSV-Import abgebrochen."
+
+msgid "Importing CSV files..."
+msgstr "CSV-Dateien werden importiert..."
+
+msgid "Added to app menu."
+msgstr "Zum App-Menü hinzugefügt."
+
+msgid "Removed from app menu."
+msgstr "Aus dem App-Menü entfernt."
+
+msgid "Couldn't update the app menu."
+msgstr "Das App-Menü konnte nicht aktualisiert werden."
+
+msgid "No update available"
+msgstr "Kein Update verfügbar"
+
+msgid "Bank Files is already up to date."
+msgstr "Bankdateien ist bereits aktuell."
+
+msgid "Couldn't check for updates."
+msgstr "Es konnte nicht nach Updates gesucht werden."
+
+msgid "Update available"
+msgstr "Update verfügbar"
+
+msgid "Version {version} is available from GitHub Releases."
+msgstr "Version {version} ist über GitHub Releases verfügbar."
+
+msgid "Later"
+msgstr "Später"
+
+msgid "Install Update"
+msgstr "Update installieren"
+
+msgid "Couldn't download the update."
+msgstr "Das Update konnte nicht heruntergeladen werden."
+
+msgid "Downloading update"
+msgstr "Update wird heruntergeladen"
+
+msgid "Downloading version {version}."
+msgstr "Version {version} wird heruntergeladen."
+
+msgid "Preparing download..."
+msgstr "Download wird vorbereitet..."
+
+msgid "Downloaded {downloaded} of {total}"
+msgstr "{downloaded} von {total} heruntergeladen"
+
+msgid "Bank Files Update"
+msgstr "Bankdateien-Update"
+
+msgid "Close Bank Files to install the update?"
+msgstr "Bankdateien schließen, um das Update zu installieren?"
+
+msgid "Installing the update will close Bank Files. Unsaved changes will be lost."
+msgstr "Die Installation des Updates schließt Bankdateien. Nicht gespeicherte Änderungen gehen verloren."
+
+msgid "Couldn't start the installer."
+msgstr "Das Installationsprogramm konnte nicht gestartet werden."
+
+msgid "Couldn't install the update."
+msgstr "Das Update konnte nicht installiert werden."
+
+msgid "Bank Files couldn't finish installing the downloaded Linux update."
+msgstr "Bankdateien konnte die Installation des heruntergeladenen Linux-Updates nicht abschließen."
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Filter cleared. All items are shown."
+msgstr "Filter gelöscht. Alle Elemente werden angezeigt."
+
+msgid "Filter active: “{query}”. Clear the search text to show everything."
+msgstr "Filter aktiv: „{query}“. Lösche den Suchtext, um alles anzuzeigen."
+
+msgid "Review spending, budgets, and trends"
+msgstr "Ausgaben, Budgets und Trends"
+
+msgid "Navigation"
+msgstr "Navigation"
+
+msgid "Go Back"
+msgstr "Zurückgehen"
+
+msgid "Open Overview"
+msgstr "Übersicht öffnen"
+
+msgid "Open Budget"
+msgstr "Budget öffnen"
+
+msgid "Open Transactions"
+msgstr "Transaktionen öffnen"
+
+msgid "Open Diagnostics"
+msgstr "Diagnose öffnen"
+
+msgid "Files"
+msgstr "Dateien"
+
+msgid "Export CSV"
+msgstr "CSV exportieren"
+
+msgid "Reload Data"
+msgstr "Daten neu laden"
+
+msgid "Page"
+msgstr "Seite"
+
+msgid "Search or Filter"
+msgstr "Suchen oder filtern"
+
+msgid "Copy Page"
+msgstr "Seite kopieren"
+
+msgid "Copy Status Message"
+msgstr "Statusnachricht kopieren"
+
+msgid "Print Page"
+msgstr "Seite drucken"
+
+msgid "Manage"
+msgstr "Verwalten"
+
+msgid "Manage Categorization Rules"
+msgstr "Kategorisierungsregeln verwalten"
+
+msgid "Manage Budgets"
+msgstr "Budgets verwalten"
+
+msgid "Filter the Manage Window"
+msgstr "Verwaltungsfenster filtern"
+
+msgid "Open Preferences"
+msgstr "Einstellungen öffnen"
+
+msgid "Open Configuration"
+msgstr "Konfiguration öffnen"
+
+msgid "Toggle Duplicate Filtering"
+msgstr "Duplikatfilterung umschalten"
+
+msgid "Toggle Smart Insights"
+msgstr "Intelligente Einblicke umschalten"
+
+msgid "Toggle Smart Autofill"
+msgstr "Intelligentes Ausfüllen umschalten"
+
+msgid "Toggle Hide Refunded Transactions"
+msgstr "Erstattete Transaktionen ausblenden umschalten"
+
+msgid "Toggle Full Lists"
+msgstr "Vollständige Listen umschalten"
+
+msgid "Toggle Spending Comparison"
+msgstr "Ausgabenvergleich umschalten"
+
+msgid "Toggle Auto Clean Config"
+msgstr "Auto Clean Config umschalten"
+
+msgid "Toggle Status Autohide"
+msgstr "Status automatisch ausblenden umschalten"
+
+msgid "Show Keyboard Shortcuts"
+msgstr "Tastenkombinationen anzeigen"
+
+msgid "Copy this page"
+msgstr "Diese Seite kopieren"
+
+msgid "Print this page"
+msgstr "Diese Seite drucken"
+
+msgid "No transactions to export."
+msgstr "Keine Transaktionen zum Exportieren."
+
+msgid "Opening the file portal to save the CSV export..."
+msgstr "Dateiportal zum Speichern des CSV-Exports wird geöffnet..."
+
+msgid "Save CSV export"
+msgstr "CSV-Export speichern"
+
+msgid "CSV files"
+msgstr "CSV-Dateien"
+
+msgid "CSV export canceled."
+msgstr "CSV-Export abgebrochen."
+
+msgid "CSV export saved"
+msgstr "CSV-Export gespeichert"
+
+msgid "Export saved: {path}"
+msgstr "Export gespeichert: {path}"
+
+msgid "Latest month, yearly comparison, trend, and budget room based on your imported CSV files."
+msgstr "Letzter Monat, Jahresvergleich, Trend und Budgetspielraum basierend auf deinen importierten CSV-Dateien."
+
+msgid "No transactions yet"
+msgstr "Noch keine Transaktionen"
+
+msgid "Choose CSV files or drop bank files onto this window. Your data stays local."
+msgstr "Wähle CSV-Dateien aus oder ziehe Bankdateien in dieses Fenster. Deine Daten bleiben lokal."
+
+msgid "Imported after duplicate filtering"
+msgstr "Nach Duplikatfilterung importiert"
+
+msgid "Imported without duplicate filtering"
+msgstr "Ohne Duplikatfilterung importiert"
+
+msgid "Latest month"
+msgstr "Letzter Monat"
+
+msgid "Active rules"
+msgstr "Aktive Regeln"
+
+msgid "Used for categorization"
+msgstr "Für die Kategorisierung verwendet"
+
+msgid "Duplicates"
+msgstr "Duplikate"
+
+msgid "Trend"
+msgstr "Trend"
+
+msgid "Latest 24 months. Green is income, red is expenses, blue is balance; red points show a loss."
+msgstr "Letzte 24 Monate. Grün steht für Einnahmen, Rot für Ausgaben, Blau für den Saldo; rote Punkte zeigen einen Verlust."
+
+msgid "Search Results"
+msgstr "Suchergebnisse"
+
+msgid "No results"
+msgstr "Keine Ergebnisse"
+
+msgid "Adjust your search term or clear the search bar to see the full overview."
+msgstr "Passe deinen Suchbegriff an oder lösche die Suchleiste, um die vollständige Übersicht zu sehen."
+
+msgid "Compare Years"
+msgstr "Jahre vergleichen"
+
+msgid "Choose a year and see what changed compared with the previous year."
+msgstr "Wähle ein Jahr und sieh, was sich gegenüber dem Vorjahr geändert hat."
+
+msgid "Difference"
+msgstr "Differenz"
+
+msgid "Income"
+msgstr "Einnahmen"
+
+msgid "Expenses"
+msgstr "Ausgaben"
+
+msgid "Balance"
+msgstr "Saldo"
+
+msgid "Category Changes"
+msgstr "Kategorieänderungen"
+
+msgid "Annual Budgets"
+msgstr "Jahresbudgets"
+
+msgid "Annual Categories"
+msgstr "Jahreskategorien"
+
+msgid "Previous year"
+msgstr "Vorheriges Jahr"
+
+msgid "Next year"
+msgstr "Nächstes Jahr"
+
+msgid "Previous period"
+msgstr "Vorheriger Zeitraum"
+
+msgid "Next period"
+msgstr "Nächster Zeitraum"
+
+msgid "Year"
+msgstr "Jahr"
+
+msgid "Month"
+msgstr "Monat"
+
+msgid "Period"
+msgstr "Zeitraum"
+
+msgid "Choose the month and year for budgets and categories."
+msgstr "Wähle Monat und Jahr für Budgets und Kategorien."
+
+msgid "Budget period: {month}. The overview also uses {year}."
+msgstr "Budgetzeitraum: {month}. Die Übersicht verwendet außerdem {year}."
+
+msgid "Choose a month and year to see budget room and categories for that period."
+msgstr "Wähle Monat und Jahr, um Budgetspielraum und Kategorien für diesen Zeitraum zu sehen."
+
+msgid "No budget view yet"
+msgstr "Noch keine Budgetansicht"
+
+msgid "Import CSV files first. Then budgets and categories appear here as graphical rows."
+msgstr "Importiere zuerst CSV-Dateien. Danach erscheinen Budgets und Kategorien hier als grafische Zeilen."
+
+msgid "No period found"
+msgstr "Kein Zeitraum gefunden"
+
+msgid "Import CSV files to choose a month and year."
+msgstr "Importiere CSV-Dateien, um Monat und Jahr auszuwählen."
+
+msgid "Budget Room"
+msgstr "Budgetspielraum"
+
+msgid "Categories"
+msgstr "Kategorien"
+
+msgid "More"
+msgstr "Mehr"
+
+msgid "Show all categories"
+msgstr "Alle Kategorien anzeigen"
+
+msgid "Show all budgets"
+msgstr "Alle Budgets anzeigen"
+
+msgid "No budget results"
+msgstr "Keine Budgetergebnisse"
+
+msgid "No budgets or categories match this search term."
+msgstr "Keine Budgets oder Kategorien passen zu diesem Suchbegriff."
+
+msgid "Recent transactions as a scannable list. Copy this page for a text export."
+msgstr "Aktuelle Transaktionen als gut scanbare Liste. Kopiere diese Seite für einen Textexport."
+
+msgid "Import CSV files to see recent transactions here."
+msgstr "Importiere CSV-Dateien, um hier aktuelle Transaktionen zu sehen."
+
+msgid "No transactions found"
+msgstr "Keine Transaktionen gefunden"
+
+msgid "Adjust your search term or clear the search bar to show all transactions."
+msgstr "Passe deinen Suchbegriff an oder lösche die Suchleiste, um alle Transaktionen anzuzeigen."
+
+msgid "Import quality, detected fields, and warnings. Everything is local and copyable here."
+msgstr "Importqualität, erkannte Felder und Warnungen. Alles ist lokal und hier kopierbar."
+
+msgid "Rows seen"
+msgstr "Gesehene Zeilen"
+
+msgid "For import checks"
+msgstr "Für Importprüfungen"
+
+msgid "Imported"
+msgstr "Importiert"
+
+msgid "Import Settings"
+msgstr "Importeinstellungen"
+
+msgid "These settings control how CSV files are read."
+msgstr "Diese Einstellungen steuern, wie CSV-Dateien eingelesen werden."
+
+msgid "No CSV files opened"
+msgstr "Keine CSV-Dateien geöffnet"
+
+msgid "Choose CSV files or drop bank files onto the window to see import diagnostics."
+msgstr "Wähle CSV-Dateien aus oder ziehe Bankdateien in das Fenster, um Importdiagnosen zu sehen."
+
+msgid "Warnings"
+msgstr "Warnungen"
+
+msgid "You can select these messages or include them through Copy Page."
+msgstr "Du kannst diese Meldungen auswählen oder über Seite kopieren einbeziehen."
+
+msgid "No diagnostic results"
+msgstr "Keine Diagnoseergebnisse"
+
+msgid "No CSV files or warnings match this search term."
+msgstr "Keine CSV-Dateien oder Warnungen passen zu diesem Suchbegriff."
+
+msgid "Duplicate Filtering"
+msgstr "Duplikatfilterung"
+
+msgid "Exact duplicates are skipped during import."
+msgstr "Exakte Duplikate werden beim Import übersprungen."
+
+msgid "All imported rows remain visible, including possible duplicates."
+msgstr "Alle importierten Zeilen bleiben sichtbar, einschließlich möglicher Duplikate."
+
+msgid "on"
+msgstr "an"
+
+msgid "off"
+msgstr "aus"
+
+msgid "duplicate filtering {state}"
+msgstr "Duplikatfilterung {state}"
+
+msgid "all CSV files"
+msgstr "alle CSV-Dateien"
+
+msgid "Uncategorized"
+msgstr "Nicht kategorisiert"
+
+msgid "Force reload stored CSV"
+msgstr "Gespeicherte CSV erzwungen neu laden"
+
+msgid "Force reloading CSV file..."
+msgstr "CSV-Datei wird erzwungen neu geladen..."
+
+msgid "{name} was reloaded from app storage."
+msgstr "{name} wurde aus dem App-Speicher neu geladen."
+
+msgid "Could not reload {name}: {error}"
+msgstr "{name} konnte nicht neu geladen werden: {error}"
+
+msgid "Unload stored CSV"
+msgstr "Gespeicherte CSV entladen"
+
+msgid "CSV unloaded"
+msgstr "CSV entladen"
+
+msgid "Detected fields"
+msgstr "Erkannte Felder"
+
+msgid "Show detected fields"
+msgstr "Erkannte Felder anzeigen"
+
+msgid "Hide detected fields"
+msgstr "Erkannte Felder ausblenden"
+
+msgid "Not detected"
+msgstr "Nicht erkannt"
+
+msgid "Semicolon delimiter (;)"
+msgstr "Semikolon-Trennzeichen (;)"
+
+msgid "Comma delimiter (,)"
+msgstr "Komma-Trennzeichen (,)"
+
+msgid "Tab delimiter"
+msgstr "Tabulator-Trennzeichen"
+
+msgid "Delimiter {delimiter}"
+msgstr "Trennzeichen {delimiter}"
+
+msgid "no sample errors"
+msgstr "keine Beispielfehler"
+
+msgid "1 sample error"
+msgstr "1 Beispielfehler"
+
+msgid "{count} sample errors"
+msgstr "{count} Beispielfehler"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Amount"
+msgstr "Betrag"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Counterparty"
+msgstr "Gegenpartei"
+
+msgid "Account"
+msgstr "Konto"
+
+msgid "Transaction ID"
+msgstr "Transaktions-ID"
+
+msgid "Currency"
+msgstr "Währung"
+
+msgid "Direction"
+msgstr "Richtung"
+
+msgid "No transactions to draw yet."
+msgstr "Noch keine Transaktionen zum Zeichnen."
+
+msgid "No category differences for this year."
+msgstr "Keine Kategorieunterschiede für dieses Jahr."
+
+msgid "Monthly balance"
+msgstr "Monatssaldo"
+
+msgid "Rules, budgets, and fields"
+msgstr "Regeln, Budgets und Felder"
+
+msgid "New"
+msgstr "Neu"
+
+msgid "New item"
+msgstr "Neuer Eintrag"
+
+msgid "Save"
+msgstr "Speichern"
+
+msgid "Save rules, budgets, and field names"
+msgstr "Regeln, Budgets und Feldnamen speichern"
+
+msgid "Filter rules, budgets, and field names"
+msgstr "Regeln, Budgets und Feldnamen filtern"
+
+msgid "Create rules with plain search text, or turn on Regex for patterns."
+msgstr "Erstelle Regeln mit einfachem Suchtext oder aktiviere Regex für Muster."
+
+msgid "New Rule"
+msgstr "Neue Regel"
+
+msgid "Create a new rule"
+msgstr "Neue Regel erstellen"
+
+msgid "Budget Codes"
+msgstr "Budgetcodes"
+
+msgid "These codes are used in rules and compared with the latest month."
+msgstr "Diese Codes werden in Regeln verwendet und mit dem letzten Monat verglichen."
+
+msgid "New Budget"
+msgstr "Neues Budget"
+
+msgid "Create a new budget"
+msgstr "Neues Budget erstellen"
+
+msgid "Map bank columns to fixed fields such as date, amount, and description."
+msgstr "Ordne Bankspalten festen Feldern wie Datum, Betrag und Beschreibung zu."
+
+msgid "New Field Name"
+msgstr "Neuer Feldname"
+
+msgid "Create a new field name"
+msgstr "Neuen Feldnamen erstellen"
+
+msgid "Rules"
+msgstr "Regeln"
+
+msgid "Normalize"
+msgstr "Normalisieren"
+
+msgid "Changes are only applied after Save."
+msgstr "Änderungen werden erst nach dem Speichern angewendet."
+
+msgid "Saved. Updating the overview."
+msgstr "Gespeichert. Die Übersicht wird aktualisiert."
+
+msgid "Rules saved"
+msgstr "Regeln gespeichert"
+
+msgid "Save failed: {error}"
+msgstr "Speichern fehlgeschlagen: {error}"
+
+msgid "Filter active: {rules_count} rule(s), {budgets_count} budget(s), {aliases_count} field name(s) visible."
+msgstr "Filter aktiv: {rules_count} Regel(n), {budgets_count} Budget(s), {aliases_count} Feldname(n) sichtbar."
+
+msgid "Fill in the rule first. It is only saved when you press Save."
+msgstr "Fülle zuerst die Regel aus. Sie wird erst gespeichert, wenn du Speichern drückst."
+
+msgid "Add"
+msgstr "Hinzufügen"
+
+msgid "Everything"
+msgstr "Alles"
+
+msgid "All transactions"
+msgstr "Alle Transaktionen"
+
+msgid "Search Text"
+msgstr "Suchtext"
+
+msgid "Category"
+msgstr "Kategorie"
+
+msgid "Budget code"
+msgstr "Budgetcode"
+
+msgid "Active"
+msgstr "Aktiv"
+
+msgid "Priority"
+msgstr "Priorität"
+
+msgid "Field"
+msgstr "Feld"
+
+msgid "Min amount"
+msgstr "Mindestbetrag"
+
+msgid "Max amount"
+msgstr "Höchstbetrag"
+
+msgid "Note"
+msgstr "Notiz"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Not saved"
+msgstr "Nicht gespeichert"
+
+msgid "Add to changes"
+msgstr "Zu Änderungen hinzufügen"
+
+msgid "Enter search text first."
+msgstr "Gib zuerst einen Suchtext ein."
+
+msgid "Enter a category first."
+msgstr "Gib zuerst eine Kategorie ein."
+
+msgid "New rule added. Press Save to keep it."
+msgstr "Neue Regel hinzugefügt. Drücke Speichern, um sie zu behalten."
+
+msgid "Create a budget code. It is only saved when you press Save."
+msgstr "Erstelle einen Budgetcode. Er wird erst gespeichert, wenn du Speichern drückst."
+
+msgid "Monthly budget"
+msgstr "Monatsbudget"
+
+msgid "Enter a budget code first."
+msgstr "Gib zuerst einen Budgetcode ein."
+
+msgid "New budget added. Press Save to keep it."
+msgstr "Neues Budget hinzugefügt. Drücke Speichern, um es zu behalten."
+
+msgid "Map a bank column to a fixed field. It is only saved when you press Save."
+msgstr "Ordne eine Bankspalte einem festen Feld zu. Sie wird erst gespeichert, wenn du Speichern drückst."
+
+msgid "Column name from bank CSV"
+msgstr "Spaltenname aus der Bank-CSV"
+
+msgid "Fixed field"
+msgstr "Festes Feld"
+
+msgid "Bank column"
+msgstr "Bankspalte"
+
+msgid "Enter the bank column first."
+msgstr "Gib zuerst die Bankspalte ein."
+
+msgid "New field name added. Press Save to keep it."
+msgstr "Neuer Feldname hinzugefügt. Drücke Speichern, um ihn zu behalten."
+
+msgid "Delete rule"
+msgstr "Regel löschen"
+
+msgid "Delete budget"
+msgstr "Budget löschen"
+
+msgid "Delete field name"
+msgstr "Feldname löschen"
+
+msgid "CSV drop received. Import is starting..."
+msgstr "CSV-Ablage empfangen. Der Import startet..."
+
+msgid "CSV files received. Import is starting..."
+msgstr "CSV-Dateien empfangen. Der Import startet..."
+
+msgid "Drop contains no files."
+msgstr "Die Ablage enthält keine Dateien."
+
+msgid "CSV imported"
+msgstr "CSV importiert"
+
+msgid "No CSV files found. Only files with the .csv extension are imported."
+msgstr "Keine CSV-Dateien gefunden. Nur Dateien mit der Erweiterung .csv werden importiert."
+
+msgid "No files chosen."
+msgstr "Keine Dateien ausgewählt."
+
+msgid "{transactions} transaction CSV file(s) and {configs} configuration CSV file(s) were opened and applied."
+msgstr "{transactions} Transaktions-CSV-Datei(en) und {configs} Konfigurations-CSV-Datei(en) wurden geöffnet und angewendet."
+
+msgid "{count} transaction CSV file(s) were opened and imported."
+msgstr "{count} Transaktions-CSV-Datei(en) wurden geöffnet und importiert."
+
+msgid "{count} configuration CSV file(s) were opened and applied."
+msgstr "{count} Konfigurations-CSV-Datei(en) wurden geöffnet und angewendet."
+
+msgid "No CSV files were opened."
+msgstr "Es wurden keine CSV-Dateien geöffnet."
+
+msgid " {count} file(s) skipped because they were not CSV files."
+msgstr " {count} Datei(en) übersprungen, weil sie keine CSV-Dateien waren."
+
+msgid "Import canceled: the background task stopped unexpectedly."
+msgstr "Import abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Overview updated."
+msgstr "Übersicht aktualisiert."
+
+msgid "Current data reloaded."
+msgstr "Aktuelle Daten wurden neu geladen."
+
+msgid "All CSV data reloaded."
+msgstr "Alle CSV-Daten wurden neu geladen."
+
+msgid "Quick reloading current data..."
+msgstr "Aktuelle Daten werden schnell neu geladen..."
+
+msgid "Reloading all CSV data..."
+msgstr "Alle CSV-Daten werden neu geladen..."
+
+msgid "Updated"
+msgstr "Aktualisiert"
+
+msgid "Duplicate filtering on"
+msgstr "Duplikatfilterung an"
+
+msgid "Duplicate filtering off"
+msgstr "Duplikatfilterung aus"
+
+msgid "Print job started"
+msgstr "Druckauftrag gestartet"
+
+msgid "Printing failed"
+msgstr "Drucken fehlgeschlagen"
+
+msgid "Printing failed: {error}"
+msgstr "Drucken fehlgeschlagen: {error}"
+
+msgid "Export error: {error}"
+msgstr "Exportfehler: {error}"
+
+msgid "Saving CSV export..."
+msgstr "CSV-Export wird gespeichert..."
+
+msgid "CSV export canceled: the background task stopped unexpectedly."
+msgstr "CSV-Export abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Import error: {error}"
+msgstr "Importfehler: {error}"
+
+msgid "Reload error: {error}"
+msgstr "Fehler beim Neuladen: {error}"
+
+msgid "No data for this section."
+msgstr "Keine Daten für diesen Abschnitt."
+
+msgid "Continued: {title}"
+msgstr "Fortsetzung: {title}"
+
+msgid "Created on {date}"
+msgstr "Erstellt am {date}"
+
+msgid "Page {page} of {pages}"
+msgstr "Seite {page} von {pages}"
+
+msgid "January"
+msgstr "Januar"
+
+msgid "February"
+msgstr "Februar"
+
+msgid "March"
+msgstr "März"
+
+msgid "April"
+msgstr "April"
+
+msgid "May"
+msgstr "Mai"
+
+msgid "June"
+msgstr "Juni"
+
+msgid "July"
+msgstr "Juli"
+
+msgid "August"
+msgstr "August"
+
+msgid "September"
+msgstr "September"
+
+msgid "October"
+msgstr "Oktober"
+
+msgid "November"
+msgstr "November"
+
+msgid "December"
+msgstr "Dezember"
+
+msgid "Row {row}: missing date or amount"
+msgstr "Zeile {row}: Datum oder Betrag fehlt"
+
+msgid "date"
+msgstr "datum"
+
+msgid "amount"
+msgstr "betrag"
+
+msgid "debit"
+msgstr "soll"
+
+msgid "credit"
+msgstr "haben"
+
+msgid "description"
+msgstr "beschreibung"
+
+msgid "counterparty"
+msgstr "gegenpartei"
+
+msgid "account"
+msgstr "konto"
+
+msgid "transaction id"
+msgstr "transaktions-id"
+
+msgid "currency"
+msgstr "währung"
+
+msgid "direction"
+msgstr "richtung"
+
+msgid "Startup error: {error}"
+msgstr "Startfehler: {error}"
+
+msgid "Year: {year}. The budget period uses the same year."
+msgstr "Jahr: {year}. Der Budgetzeitraum verwendet dasselbe Jahr."
+
+msgid "Compares with {year}"
+msgstr "Vergleicht mit {year}"
+
+msgid "Code"
+msgstr "Code"
+
+msgid "Code, for example FOOD"
+msgstr "Code, zum Beispiel FOOD"
+
+msgid "For example: Albert Heijn"
+msgstr "Zum Beispiel: REWE"
+
+msgid "Regex"
+msgstr "Regex"
+
+msgid "Search text or regex"
+msgstr "Suchtext oder Regex"
+
+msgid "Optional"
+msgstr "Optional"
+
+msgid "Drop contains no readable files: {error}"
+msgstr "Ablage enthält keine lesbaren Dateien: {error}"
+
+msgid "Could not read drop: {error}"
+msgstr "Ablage konnte nicht gelesen werden: {error}"
+
+msgid "{count} CSV file(s) copied, but reload failed: {error}"
+msgstr "{count} CSV-Datei(en) kopiert, aber Neuladen fehlgeschlagen: {error}"
+
+msgid "{name} was unloaded. The original CSV remains where you chose it."
+msgstr "{name} wurde entladen. Die ursprüngliche CSV bleibt dort, wo du sie ausgewählt hast."
+
+msgid "{name} was removed, but reload failed: {error}"
+msgstr "{name} wurde entfernt, aber Neuladen fehlgeschlagen: {error}"
+
+msgid "Could not unload {name}: {error}"
+msgstr "{name} konnte nicht entladen werden: {error}"
+
+msgid "Duplicate filtering is {state}. {description}"
+msgstr "Duplikatfilterung ist {state}. {description}"
+
+msgid "Could not change duplicate filtering: {error}"
+msgstr "Duplikatfilterung konnte nicht geändert werden: {error}"
+
+msgid "Filter “{query}” searches annual budgets and annual categories."
+msgstr "Filter „{query}“ durchsucht Jahresbudgets und Jahreskategorien."
+
+msgid "{month} balance"
+msgstr "Saldo für {month}"
+
+msgid "Filtered on {year}; the second bar compares with {previous_year}."
+msgstr "Gefiltert nach {year}; der zweite Balken vergleicht mit {previous_year}."
+
+msgid "Filter “{query}” searches budgets and categories for {month}."
+msgstr "Filter „{query}“ durchsucht Budgets und Kategorien für {month}."
+
+msgid "Filter “{query}” searches budgets and categories."
+msgstr "Filter „{query}“ durchsucht Budgets und Kategorien."
+
+msgid "Budgets for {month}. Percentages use that month's income."
+msgstr "Budgets für {month}. Prozentsätze verwenden das Einkommen dieses Monats."
+
+msgid "Budgets needing attention in {month}. More shows everything."
+msgstr "Budgets mit Handlungsbedarf in {month}. Mehr zeigt alles."
+
+msgid "All budgets are within plan. Use More to show every budget."
+msgstr "Alle Budgets liegen im Plan. Nutze Mehr, um jedes Budget anzuzeigen."
+
+msgid "{amount} spent of {budget}"
+msgstr "{amount} von {budget} ausgegeben"
+
+msgid "Largest expense categories in {month}."
+msgstr "Größte Ausgabenkategorien in {month}."
+
+msgid "{count} transactions · budget code {code}"
+msgstr "{count} Transaktionen · Budgetcode {code}"
+
+msgid "Budgets needing attention in {year}. More shows everything; the second bar compares with {previous_year}."
+msgstr "Budgets mit Handlungsbedarf in {year}. Mehr zeigt alles; der zweite Balken vergleicht mit {previous_year}."
+
+msgid "All annual budgets are within plan. Use More to show every budget."
+msgstr "Alle Jahresbudgets liegen im Plan. Nutze Mehr, um jedes Budget anzuzeigen."
+
+msgid "Planned annual budget: {budget}"
+msgstr "Geplantes Jahresbudget: {budget}"
+
+msgid "{year} spent · {amount}"
+msgstr "{year} ausgegeben · {amount}"
+
+msgid "Largest expenses in {year}. The second bar shows the same category in {previous_year}."
+msgstr "Größte Ausgaben in {year}. Der zweite Balken zeigt dieselbe Kategorie in {previous_year}."
+
+msgid "{amount} more"
+msgstr "{amount} mehr"
+
+msgid "{amount} less"
+msgstr "{amount} weniger"
+
+msgid "Balance {year}"
+msgstr "Saldo {year}"
+
+msgid "{count} transactions"
+msgstr "{count} Transaktionen"
+
+msgid "vs. {year}"
+msgstr "ggü. {year}"
+
+msgid "more spent than {year}"
+msgstr "mehr ausgegeben als {year}"
+
+msgid "less spent than {year}"
+msgstr "weniger ausgegeben als {year}"
+
+msgid "Per category: balance in {year} minus balance in {previous_year}. “Other income” means positive transactions without a more specific rule."
+msgstr "Pro Kategorie: Saldo in {year} minus Saldo in {previous_year}. „Sonstige Einnahmen“ bedeutet positive Transaktionen ohne spezifischere Regel."
+
+msgid "Filter “{query}” searches import settings, CSV files, and warnings."
+msgstr "Filter „{query}“ durchsucht Importeinstellungen, CSV-Dateien und Warnungen."
+
+msgid "Stored"
+msgstr "Gespeichert"
+
+msgid "{count} skipped"
+msgstr "{count} übersprungen"
+
+msgid "Duplicate filtering is on"
+msgstr "Duplikatfilterung ist an"
+
+msgid "Duplicate filtering is off"
+msgstr "Duplikatfilterung ist aus"
+
+msgid "Duplicate filtering {state}. {description}"
+msgstr "Duplikatfilterung {state}. {description}"
+
+msgid "Duplicate filtering {state}"
+msgstr "Duplikatfilterung {state}"
+
+msgid "These are app copies of files you opened through the portal or drag-and-drop. Unloading only removes the stored copy."
+msgstr "Dies sind App-Kopien von Dateien, die du über das Portal oder per Drag-and-drop geöffnet hast. Entladen entfernt nur die gespeicherte Kopie."
+
+msgid "CSV Field Mapping"
+msgstr "CSV-Feldzuordnung"
+
+msgid "Map one of this file's CSV headers to {field}."
+msgstr "Ordne eine CSV-Kopfzeile dieser Datei {field} zu."
+
+msgid "This CSV report has no headers to map."
+msgstr "Dieser CSV-Bericht hat keine Kopfzeilen zum Zuordnen."
+
+msgid "This is saved to field_aliases.csv and applies to future imports."
+msgstr "Dies wird in field_aliases.csv gespeichert und auf zukünftige Importe angewendet."
+
+msgid "Choose a CSV header first."
+msgstr "Wähle zuerst eine CSV-Kopfzeile."
+
+msgid "Save field mapping"
+msgstr "Feldzuordnung speichern"
+
+msgid "App field"
+msgstr "App-Feld"
+
+msgid "CSV header"
+msgstr "CSV-Kopfzeile"
+
+msgid "Map CSV header to this field"
+msgstr "CSV-Kopfzeile diesem Feld zuordnen"
+
+msgid "{alias} is now mapped to {field}. Reloaded imports use the new field name."
+msgstr "{alias} ist jetzt {field} zugeordnet. Neu geladene Importe verwenden den neuen Feldnamen."
+
+msgid "{alias} was already mapped to {field}."
+msgstr "{alias} war bereits {field} zugeordnet."
+
+msgid "Field mapping was saved, but reload failed: {error}"
+msgstr "Feldzuordnung wurde gespeichert, aber Neuladen fehlgeschlagen: {error}"
+
+msgid "Could not save field mapping: {error}"
+msgstr "Feldzuordnung konnte nicht gespeichert werden: {error}"
+
+msgid "Use fixed amounts or percentages such as 10% of income."
+msgstr "Verwende feste Beträge oder Prozentsätze wie 10% des Einkommens."
+
+msgid "Could not read rules: {error}"
+msgstr "Regeln konnten nicht gelesen werden: {error}"
+
+msgid "Could not read budget codes: {error}"
+msgstr "Budgetcodes konnten nicht gelesen werden: {error}"
+
+msgid "Could not read field names: {error}"
+msgstr "Feldnamen konnten nicht gelesen werden: {error}"
+
+msgid "500 or 10% of income"
+msgstr "500 oder 10% des Einkommens"
+
+msgid "no budget"
+msgstr "kein Budget"
+
+msgid "fixed budget"
+msgstr "festes Budget"
+
+msgid "unconfigured budget"
+msgstr "nicht konfiguriertes Budget"
+
+msgid "{percent}% of income"
+msgstr "{percent}% des Einkommens"
+
+msgid "{amount} ({basis})"
+msgstr "{amount} ({basis})"
+
+msgid "{amount} without a budget"
+msgstr "{amount} ohne Budget"
+
+msgid "{amount} over budget"
+msgstr "{amount} über Budget"
+
+msgid "{amount} available"
+msgstr "{amount} verfügbar"
+
+msgid "{amount} spent without an annual budget"
+msgstr "{amount} ohne Jahresbudget ausgegeben"
+
+msgid "{amount} over annual budget"
+msgstr "{amount} über Jahresbudget"
+
+msgid "No period"
+msgstr "Kein Zeitraum"
+
+msgid "Choose CSV files or drop bank files onto the window to print monthly and yearly overviews."
+msgstr "Wähle CSV-Dateien aus oder ziehe Bankdateien in das Fenster, um Monats- und Jahresübersichten zu drucken."
+
+msgid "Monthly trend, yearly comparison, and budget room."
+msgstr "Monatstrend, Jahresvergleich und Budgetspielraum."
+
+msgid "Budget room and categories for {month}."
+msgstr "Budgetspielraum und Kategorien für {month}."
+
+msgid "Latest transactions with category, budget code, and description."
+msgstr "Neueste Transaktionen mit Kategorie, Budgetcode und Beschreibung."
+
+msgid "Total balance"
+msgstr "Gesamtsaldo"
+
+msgid "imported"
+msgstr "importiert"
+
+msgid "configured"
+msgstr "konfiguriert"
+
+msgid "total"
+msgstr "gesamt"
+
+msgid "stored"
+msgstr "gespeichert"
+
+msgid "for checks"
+msgstr "für Prüfungen"
+
+msgid "Months"
+msgstr "Monate"
+
+msgid "Latest 24 months with income, expenses, and balance."
+msgstr "Letzte 24 Monate mit Einnahmen, Ausgaben und Saldo."
+
+msgid "Year Comparison"
+msgstr "Jahresvergleich"
+
+msgid "{year} compared with {previous_year}."
+msgstr "{year} verglichen mit {previous_year}."
+
+msgid "Metric"
+msgstr "Kennzahl"
+
+msgid "Tx"
+msgstr "Tx"
+
+msgid "Green improves balance, red lowers balance."
+msgstr "Grün verbessert den Saldo, Rot senkt den Saldo."
+
+msgid "Effect"
+msgstr "Effekt"
+
+msgid "Meaning"
+msgstr "Bedeutung"
+
+msgid "improves balance"
+msgstr "verbessert den Saldo"
+
+msgid "lowers balance"
+msgstr "senkt den Saldo"
+
+msgid "Other difference"
+msgstr "Sonstige Differenz"
+
+msgid "Fixed monthly budgets are annualized; percentage budgets use yearly income. Compared with {previous_year}."
+msgstr "Feste Monatsbudgets werden auf ein Jahr hochgerechnet; Prozentbudgets verwenden das Jahreseinkommen. Verglichen mit {previous_year}."
+
+msgid "Annual budget"
+msgstr "Jahresbudget"
+
+msgid "Room"
+msgstr "Spielraum"
+
+msgid "Actual"
+msgstr "Ist"
+
+msgid "Transactions in Period"
+msgstr "Transaktionen im Zeitraum"
+
+msgid "Latest 40 transactions for this month."
+msgstr "Neueste 40 Transaktionen für diesen Monat."
+
+msgid "Transaction List"
+msgstr "Transaktionsliste"
+
+msgid "Latest 200 transactions."
+msgstr "Neueste 200 Transaktionen."
+
+msgid "CSV Files"
+msgstr "CSV-Dateien"
+
+msgid "Import quality per file."
+msgstr "Importqualität pro Datei."
+
+msgid "File"
+msgstr "Datei"
+
+msgid "Delimiter"
+msgstr "Trennzeichen"
+
+msgid "Seen"
+msgstr "Gesehen"
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Skipped"
+msgstr "Übersprungen"
+
+msgid "Fields"
+msgstr "Felder"
+
+msgid "Message"
+msgstr "Meldung"
+
+msgid "Messages that need attention."
+msgstr "Meldungen, die Aufmerksamkeit benötigen."
+
+msgid "{count} of {total} transactions match “{query}”."
+msgstr "{count} von {total} Transaktionen passen zu „{query}“."
+
+msgid "Menu"
+msgstr "Menü"
+
+msgid "Hide message"
+msgstr "Meldung ausblenden"
+
+msgid "Autohide Status Bar"
+msgstr "Statusleiste automatisch ausblenden"
+
+msgid "Debit"
+msgstr "Soll"
+
+msgid "Credit"
+msgstr "Haben"
+
+msgid "Budget codes"
+msgstr "Budgetcodes"
+
+msgid "Import CSV files to print budgets and categories."
+msgstr "Importiere CSV-Dateien, um Budgets und Kategorien zu drucken."
+
+msgid "Map CSV Field"
+msgstr "CSV-Feld zuordnen"
+
+msgid "Import quality, detected fields, and warnings."
+msgstr "Importqualität, erkannte Felder und Warnungen."
+
+msgid "no period"
+msgstr "kein Zeitraum"
+
+msgid "Largest expense categories in {year}."
+msgstr "Größte Ausgabenkategorien in {year}."
+
+msgid "Largest expenses in {month}."
+msgstr "Größte Ausgaben in {month}."
+
+msgid "App"
+msgstr "App"
+
+msgid "No monthly budget configured"
+msgstr "Kein Monatsbudget konfiguriert"
+
+msgid "No annual budget configured"
+msgstr "Kein Jahresbudget konfiguriert"
+
+msgid "Unconfigured budgets"
+msgstr "Nicht konfigurierte Budgets"
+
+msgid "Expense transactions with a missing or unknown budget code."
+msgstr "Ausgabentransaktionen mit fehlendem oder unbekanntem Budgetcode."
+
+msgid "Other categories"
+msgstr "Sonstige Kategorien"
+
+msgid "Transactions grouped under OTHER or INC-OTHER."
+msgstr "Transaktionen, die unter OTHER oder INC-OTHER gruppiert sind."
+
+msgid "Always Show Full Lists"
+msgstr "Immer vollständige Listen anzeigen"
+
+msgid "Full lists enabled. More buttons are hidden."
+msgstr "Vollständige Listen sind aktiviert. Mehr-Schaltflächen sind ausgeblendet."
+
+msgid "Preview mode enabled. Sections show More buttons again."
+msgstr "Vorschaumodus ist aktiviert. Abschnitte zeigen wieder Mehr-Schaltflächen."
+
+msgid "Edit budget"
+msgstr "Budget bearbeiten"
+
+msgid "Edit Budget"
+msgstr "Budget bearbeiten"
+
+msgid "Save budget"
+msgstr "Budget speichern"
+
+msgid "Changes are saved to budgetcodes.csv."
+msgstr "Änderungen werden in budgetcodes.csv gespeichert."
+
+msgid "Budget saved"
+msgstr "Budget gespeichert"
+
+msgid "Budget saved, but reload failed: {error}"
+msgstr "Budget gespeichert, aber Neuladen fehlgeschlagen: {error}"
+
+msgid "Could not save budget: {error}"
+msgstr "Budget konnte nicht gespeichert werden: {error}"
+
+msgid "Planned expenses total {expenses}, above planned income of {income} by {overage}."
+msgstr "Geplante Ausgaben ergeben {expenses} und liegen {overage} über dem geplanten Einkommen von {income}."
+
+msgid "Planned expenses total {expenses}, but this period has no planned income."
+msgstr "Geplante Ausgaben ergeben {expenses}, aber dieser Zeitraum hat kein geplantes Einkommen."
+
+msgid "Check your budget"
+msgstr "Budget prüfen"
+
+msgid "Transaction Patterns"
+msgstr "Transaktionsmuster"
+
+msgid "Repeating payments, possible refunds, and bill splits detected from imported transactions."
+msgstr "Wiederkehrende Zahlungen, mogliche Erstattungen und geteilte Rechnungen aus importierten Transaktionen erkannt."
+
+msgid "Repeating {cadence} transaction"
+msgstr "Wiederkehrende {cadence} Transaktion"
+
+msgid "Possible refund"
+msgstr "Mogliche Erstattung"
+
+msgid "Possible bill split"
+msgstr "Moglicherweise geteilte Rechnung"
+
+msgid "{count} transactions from {first} to {last}. Amount: {amount}."
+msgstr "{count} Transaktionen von {first} bis {last}. Betrag: {amount}."
+
+msgid "{count} transactions from {first} to {last}. Net effect: {net}."
+msgstr "{count} Transaktionen von {first} bis {last}. Nettoeffekt: {net}."
+
+msgid "weekly"
+msgstr "wochentlich"
+
+msgid "every two weeks"
+msgstr "zweiwochentlich"
+
+msgid "monthly"
+msgstr "monatlich"
+
+msgid "quarterly"
+msgstr "vierteljahrlich"
+
+msgid "yearly"
+msgstr "jahrlich"
+
+msgid "{count} transactions total from {first} to {last}."
+msgstr "{count} Transaktionen insgesamt von {first} bis {last}."
+
+msgid "Values: {values}"
+msgstr "Werte: {values}"
+
+msgid "{count} times {amount}"
+msgstr "{count} mal {amount}"
+
+msgid "Net effect: {net}."
+msgstr "Nettoeffekt: {net}."
+
+msgid "Tags"
+msgstr "Tags"
+
+msgid "Generate Budgets from Transactions"
+msgstr "Budgets aus Transaktionen generieren"
+
+msgid "Replace the default monthly budgets with budgets detected from imported spending."
+msgstr "Ersetze die Standard-Monatsbudgets durch aus importierten Ausgaben erkannte Budgets."
+
+msgid "Use Default Budgeting"
+msgstr "Standardbudgetierung verwenden"
+
+msgid "Replace your current budget list with the built-in defaults."
+msgstr "Ersetze deine aktuelle Budgetliste durch die eingebauten Standardbudgets."
+
+msgid "No budgets could be generated from the imported transactions yet."
+msgstr "Aus den importierten Transaktionen konnten noch keine Budgets generiert werden."
+
+msgid "Replaced default budgets with {count} budgets from transactions."
+msgstr "Standardbudgets durch {count} Budgets aus Transaktionen ersetzt."
+
+msgid "Default budgeting applied."
+msgstr "Standardbudgetierung angewendet."
+
+msgid "Could not apply default budgeting: {error}"
+msgstr "Standardbudgetierung konnte nicht angewendet werden: {error}"
+
+msgid "Generate"
+msgstr "Generieren"
+
+msgid "Generate missing budgets from transactions"
+msgstr "Fehlende Budgets aus Transaktionen generieren"
+
+msgid "Could not generate budgets: {error}"
+msgstr "Budgets konnten nicht generiert werden: {error}"
+
+msgid "Generated from transactions over {count} imported months on {date}."
+msgstr "Aus Transaktionen uber {count} importierte Monate am {date} generiert."
+
+msgid "Generated budget"
+msgstr "Generiertes Budget"
+
+msgid "Show all transaction patterns"
+msgstr "Alle Transaktionsmuster anzeigen"
+
+msgid "Show Hidden"
+msgstr "Ausgeblendete anzeigen"
+
+msgid "Show hidden transaction patterns"
+msgstr "Ausgeblendete Transaktionsmuster anzeigen"
+
+msgid "All detected transaction patterns are hidden. Use Show Hidden to review them."
+msgstr "Alle erkannten Transaktionsmuster sind ausgeblendet. Nutze Ausgeblendete anzeigen, um sie zu prufen."
+
+msgid "Hidden"
+msgstr "Ausgeblendet"
+
+msgid "Hide detected pattern"
+msgstr "Erkanntes Muster ausblenden"
+
+msgid "Reopen detected pattern"
+msgstr "Erkanntes Muster wieder einblenden"
+
+msgid "Pattern hidden. Use Show Hidden to reopen it."
+msgstr "Muster ausgeblendet. Nutze Ausgeblendete anzeigen, um es wieder einzublenden."
+
+msgid "Pattern reopened."
+msgstr "Muster wieder eingeblendet."
+
+msgid "Could not update hidden pattern: {error}"
+msgstr "Ausgeblendetes Muster konnte nicht aktualisiert werden: {error}"
+
+msgid "No transaction patterns detected yet. Import more transactions or adjust tags and categorization rules."
+msgstr "Noch keine Transaktionsmuster erkannt. Importiere mehr Transaktionen oder passe Tags und Kategorisierungsregeln an."
+
+msgid "recurring"
+msgstr "wiederkehrend"
+
+msgid "Create rule from pattern"
+msgstr "Regel aus Muster erstellen"
+
+msgid "Create Rule"
+msgstr "Regel erstellen"
+
+msgid "Save rule"
+msgstr "Regel speichern"
+
+msgid "Create a categorization rule from this detected transaction pattern."
+msgstr "Erstellt eine Kategorisierungsregel aus diesem erkannten Transaktionsmuster."
+
+msgid "Changes are saved to rules.csv."
+msgstr "Anderungen werden in rules.csv gespeichert."
+
+msgid "Generated from detected transaction pattern."
+msgstr "Aus erkanntem Transaktionsmuster generiert."
+
+msgid "Rule updated"
+msgstr "Regel aktualisiert"
+
+msgid "Rule saved"
+msgstr "Regel gespeichert"
+
+msgid "Rule saved, but reload failed: {error}"
+msgstr "Regel gespeichert, aber Neuladen fehlgeschlagen: {error}"
+
+msgid "Could not save rule: {error}"
+msgstr "Regel konnte nicht gespeichert werden: {error}"
+
+msgid "Cancels out transactions"
+msgstr "Hebt Transaktionen auf"
+
+msgid "Generated rule"
+msgstr "Generierte Regel"
+
+msgid "Covered by rule"
+msgstr "Durch Regel abgedeckt"
+
+msgid "Needs rule"
+msgstr "Braucht Regel"
+
+msgid "All detected transaction patterns are already covered. Use More to review them."
+msgstr "Alle erkannten Transaktionsmuster sind bereits abgedeckt. Verwende Mehr, um sie zu prufen."
+
+msgid "Hide Refunded Transactions"
+msgstr "Erstattete Transaktionen ausblenden"
+
+msgid "Exclude detected refunds and bill splits from normal views and totals."
+msgstr "Erkannte Erstattungen und geteilte Rechnungen aus normalen Ansichten und Summen ausschliessen."
+
+msgid "{count} refund or bill-split transactions are hidden from normal views."
+msgstr "{count} Erstattungs- oder Rechnungsteilungs-Transaktionen sind in normalen Ansichten ausgeblendet."
+
+msgid "{count} refund or bill-split transactions were detected. Enable Hide Refunded Transactions to exclude them from normal views."
+msgstr "{count} Erstattungs- oder Rechnungsteilungs-Transaktionen erkannt. Aktiviere Erstattete Transaktionen ausblenden, um sie aus normalen Ansichten auszuschliessen."
+
+msgid "Hide Refunded Transactions enabled. Refunds and bill splits are excluded from normal views."
+msgstr "Erstattete Transaktionen ausblenden aktiviert. Erstattungen und geteilte Rechnungen werden aus normalen Ansichten ausgeschlossen."
+
+msgid "Hide Refunded Transactions disabled. Refunds and bill splits are included again."
+msgstr "Erstattete Transaktionen ausblenden deaktiviert. Erstattungen und geteilte Rechnungen werden wieder einbezogen."
+
+msgid "Applying default budgeting..."
+msgstr "Standardbudgetierung anwenden..."
+
+msgid "Applying default budgeting canceled: the background task stopped unexpectedly."
+msgstr "Standardbudgetierung abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Filtered"
+msgstr "Gefiltert"
+
+msgid "Unfiltered"
+msgstr "Ungefiltert"
+
+msgid "Category transactions"
+msgstr "Kategorie-Transaktionen"
+
+msgid "Transactions for this category and year."
+msgstr "Transaktionen fur diese Kategorie und dieses Jahr."
+
+msgid "No CSV files opened. Choose CSV files or drop bank files onto the window."
+msgstr "Keine CSV-Dateien geoffnet. Wahle CSV-Dateien aus oder ziehe Bankdateien in das Fenster."
+
+msgid "{count} stored CSV file(s): {files}"
+msgstr "{count} gespeicherte CSV-Datei(en): {files}"
+
+msgid "{seen} rows seen. {imported} imported, {skipped} skipped."
+msgstr "{seen} Zeilen gesehen. {imported} importiert, {skipped} ubersprungen."
+
+msgid "{month} · {count} transactions · {income} income · {expenses} expenses · {balance} balance"
+msgstr "{month} · {count} Transaktionen · {income} Einnahmen · {expenses} Ausgaben · {balance} Saldo"
+
+msgid "Budget saved. Updating the overview..."
+msgstr "Budget gespeichert. Ubersicht wird aktualisiert..."
+
+msgid "Rule saved. Updating the overview..."
+msgstr "Regel gespeichert. Ubersicht wird aktualisiert..."
+
+msgid "CSV unloaded. Updating the overview..."
+msgstr "CSV entfernt. Ubersicht wird aktualisiert..."
+
+msgid "Field mapping saved. Updating the overview..."
+msgstr "Feldzuordnung gespeichert. Ubersicht wird aktualisiert..."
+
+msgid "Changes saved."
+msgstr "Anderungen gespeichert."
+
+msgid "Changes saved. {count} rule(s) updated for renamed budget codes."
+msgstr "Anderungen gespeichert. {count} Regel(n) für umbenannte Budgetcodes aktualisiert."
+
+msgid "Changes saved, but reload failed: {error}"
+msgstr "Anderungen gespeichert, aber Neuladen fehlgeschlagen: {error}"
+
+msgid "Filtered by “{query}”. {description}"
+msgstr "Gefiltert nach „{query}“. {description}"
+
+msgid "Latest 200 transactions matching “{query}”."
+msgstr "Letzte 200 Transaktionen passend zu „{query}“."
+
+msgid "Click to show transaction details"
+msgstr "Klicken, um Transaktionsdetails anzuzeigen"
+
+msgid "Source file"
+msgstr "Quelldatei"
+
+msgid "Not set"
+msgstr "Nicht festgelegt"
+
+msgid "Spending is over budget"
+msgstr "Ausgaben liegen über dem Budget"
+
+msgid "{count} budget(s) are over plan by {amount}."
+msgstr "{count} Budget(s) liegen insgesamt {amount} über dem Plan."
+
+msgid "Spending is above income"
+msgstr "Ausgaben liegen über dem Einkommen"
+
+msgid "Expenses are {expenses}, with no real or planned income in this period."
+msgstr "Ausgaben betragen {expenses}, ohne echtes oder geplantes Einkommen in diesem Zeitraum."
+
+msgid "Expenses are {expenses}, above real income of {income} by {loss}."
+msgstr "Ausgaben betragen {expenses} und liegen {loss} über dem echten Einkommen von {income}."
+
+msgid "Expenses are {expenses}, above planned income of {income} by {loss}."
+msgstr "Ausgaben betragen {expenses} und liegen {loss} über dem geplanten Einkommen von {income}."
+
+msgid "Expense categories show more or less spent; income categories show more or less received."
+msgstr "Ausgabenkategorien zeigen mehr oder weniger Ausgaben; Einnahmekategorien zeigen mehr oder weniger Einnahmen."
+
+msgid "less spent"
+msgstr "weniger ausgegeben"
+
+msgid "more spent"
+msgstr "mehr ausgegeben"
+
+msgid "more income"
+msgstr "mehr Einnahmen"
+
+msgid "less income"
+msgstr "weniger Einnahmen"
+
+msgid "less costs"
+msgstr "weniger Kosten"
+
+msgid "more costs"
+msgstr "mehr Kosten"
+
+msgid "{amount} less spent"
+msgstr "{amount} weniger ausgegeben"
+
+msgid "{amount} more spent"
+msgstr "{amount} mehr ausgegeben"
+
+msgid "{amount} more income"
+msgstr "{amount} mehr Einnahmen"
+
+msgid "{amount} less income"
+msgstr "{amount} weniger Einnahmen"
+
+msgid "less"
+msgstr "weniger"
+
+msgid "more"
+msgstr "mehr"
+
+msgid "Possible offsetting group"
+msgstr "Mögliche ausgleichende Gruppe"
+
+msgid "Repeating payments, possible refunds, and fully offsetting groups detected from imported transactions."
+msgstr "Wiederkehrende Zahlungen, mögliche Rückerstattungen und vollständig ausgleichende Gruppen in importierten Transaktionen erkannt."
+
+msgid "Filtered out {count} refund or offsetting transactions because Hide Refunded Transactions is enabled."
+msgstr "{count} Rückerstattungs- oder Ausgleichstransaktionen ausgeblendet, weil Erstattete Transaktionen ausblenden aktiviert ist."
+
+msgid "Budget removed"
+msgstr "Budget entfernt"
+
+msgid "Budget removed. Updating the overview..."
+msgstr "Budget entfernt. Übersicht wird aktualisiert..."
+
+msgid "Budget removed, but reload failed: {error}"
+msgstr "Budget entfernt, aber neu laden ist fehlgeschlagen: {error}"
+
+msgid "Budget was already removed."
+msgstr "Budget wurde bereits entfernt."
+
+msgid "Could not remove budget: {error}"
+msgstr "Budget konnte nicht entfernt werden: {error}"
+
+msgid "Budget distribution"
+msgstr "Budgetverteilung"
+
+msgid "Planned monthly budgets for {month}."
+msgstr "Geplante Monatsbudgets für {month}."
+
+msgid "Spending distribution"
+msgstr "Ausgabenverteilung"
+
+msgid "Actual expenses by category for {month}."
+msgstr "Tatsächliche Ausgaben nach Kategorie für {month}."
+
+msgid "No monthly expenses in {month}."
+msgstr "Keine monatlichen Ausgaben in {month}."
+
+msgid "No slices to draw yet."
+msgstr "Noch keine Segmente zum Zeichnen."
+
+msgid "{label} · {value} · {percent}% · {detail}"
+msgstr "{label} · {value} · {percent}% · {detail}"
+
+msgid "{amount} planned"
+msgstr "{amount} geplant"
+
+msgid "+ {count} more"
+msgstr "+ {count} mehr"
+
+msgid "{count} more value groups"
+msgstr "noch {count} Wertegruppen"
+
+msgid "Transfers"
+msgstr "Überweisungen"
+
+msgid "Possible transfer"
+msgstr "Mögliche Überweisung"
+
+msgid "Repeating payments, possible transfers, refunds, and fully offsetting groups detected from imported transactions."
+msgstr "Wiederkehrende Zahlungen, mögliche Überweisungen, Rückerstattungen und vollständig ausgleichende Gruppen in importierten Transaktionen erkannt."
+
+msgid "Create rule"
+msgstr "Regel erstellen"
+
+msgid "Create a categorization rule from this transaction"
+msgstr "Eine Kategorisierungsregel aus dieser Transaktion erstellen"
+
+msgid "Create or edit the budget code for this transaction"
+msgstr "Budgetcode für diese Transaktion erstellen oder bearbeiten"
+
+msgid "Mark transfer"
+msgstr "Als Überweisung markieren"
+
+msgid "Create a transfer rule from this transaction"
+msgstr "Eine Überweisungsregel aus dieser Transaktion erstellen"
+
+msgid "Mark income"
+msgstr "Als Einnahme markieren"
+
+msgid "Create an income rule from this transaction"
+msgstr "Eine Einnahmeregel aus dieser Transaktion erstellen"
+
+msgid "Mark expense"
+msgstr "Als Ausgabe markieren"
+
+msgid "Create an expense rule from this transaction"
+msgstr "Eine Ausgabenregel aus dieser Transaktion erstellen"
+
+msgid "Similar"
+msgstr "Ähnlich"
+
+msgid "Show similar transactions"
+msgstr "Ähnliche Transaktionen anzeigen"
+
+msgid "Find pattern"
+msgstr "Muster suchen"
+
+msgid "Search Diagnostics for related transaction patterns"
+msgstr "In Diagnose nach verwandten Transaktionsmustern suchen"
+
+msgid "Create a categorization rule from this transaction."
+msgstr "Eine Kategorisierungsregel aus dieser Transaktion erstellen."
+
+msgid "Generated from transaction detail."
+msgstr "Aus Transaktionsdetails generiert."
+
+msgid "Created from transaction detail."
+msgstr "Aus Transaktionsdetails erstellt."
+
+msgid "Showing similar transactions."
+msgstr "Ähnliche Transaktionen werden angezeigt."
+
+msgid "Searching Diagnostics for related patterns."
+msgstr "Diagnose sucht nach verwandten Mustern."
+
+msgid "Loading"
+msgstr "Laden"
+
+msgid "Preparing this page. Large CSV files may take a moment."
+msgstr "Diese Seite wird vorbereitet. Große CSV-Dateien können einen Moment dauern."
+
+msgid "Loading data..."
+msgstr "Daten werden geladen..."
+
+msgid "Loading saved CSV files..."
+msgstr "Gespeicherte CSV-Dateien werden geladen..."
+
+msgid "Saved CSV files loaded."
+msgstr "Gespeicherte CSV-Dateien geladen."
+
+msgid "Saving rule..."
+msgstr "Regel wird gespeichert..."
+
+msgid "Rule save canceled: the background task stopped unexpectedly."
+msgstr "Regel speichern abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Saving budget..."
+msgstr "Budget wird gespeichert..."
+
+msgid "Budget save canceled: the background task stopped unexpectedly."
+msgstr "Budget speichern abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Removing budget..."
+msgstr "Budget wird entfernt..."
+
+msgid "Budget removal canceled: the background task stopped unexpectedly."
+msgstr "Budget entfernen abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Saving field mapping..."
+msgstr "Feldzuordnung wird gespeichert..."
+
+msgid "Field mapping save canceled: the background task stopped unexpectedly."
+msgstr "Feldzuordnung speichern abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "CSV reload canceled: the background task stopped unexpectedly."
+msgstr "CSV-Neuladen abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "CSV unload canceled: the background task stopped unexpectedly."
+msgstr "CSV entfernen abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Saving changes..."
+msgstr "Änderungen werden gespeichert..."
+
+msgid "Save canceled: the background task stopped unexpectedly."
+msgstr "Speichern abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "{count} refund or offsetting transactions are hidden from normal views."
+msgstr "{count} Erstattungen oder ausgleichende Transaktionen werden in normalen Ansichten ausgeblendet."
+
+msgid "{count} refund or offsetting transactions were detected. Enable Hide Refunded Transactions to exclude them from normal views."
+msgstr "{count} Erstattungen oder ausgleichende Transaktionen wurden erkannt. Aktiviere Erstattete Transaktionen ausblenden, um sie aus normalen Ansichten auszublenden."
+
+msgid "Hide Refunded Transactions enabled. Detected refunds and offsetting groups are excluded from normal views."
+msgstr "Erstattete Transaktionen ausblenden ist aktiviert. Erkannte Erstattungen und ausgleichende Gruppen werden in normalen Ansichten ausgeblendet."
+
+msgid "Hide Refunded Transactions disabled. Detected refunds and offsetting groups are included again."
+msgstr "Erstattete Transaktionen ausblenden ist deaktiviert. Erkannte Erstattungen und ausgleichende Gruppen werden wieder angezeigt."
+
+msgid "Change code"
+msgstr "Code ändern"
+
+msgid "Change the budget code for this transaction"
+msgstr "Budgetcode für diese Transaktion ändern"
+
+msgid "Change Budget Code"
+msgstr "Budgetcode ändern"
+
+msgid "Save budget code rule"
+msgstr "Budgetcode-Regel speichern"
+
+msgid "Create a rule that maps matching transactions to this budget code."
+msgstr "Erstelle eine Regel, die passende Transaktionen diesem Budgetcode zuordnet."
+
+msgid "Matching by {field}: {value}"
+msgstr "Abgleich über {field}: {value}"
+
+msgid "Rule match"
+msgstr "Regelabgleich"
+
+msgid "This saves a categorization rule. The original bank CSV is not changed."
+msgstr "Dies speichert eine Kategorisierungsregel. Die ursprüngliche Bank-CSV wird nicht geändert."
+
+msgid "Generated from transaction budget code change."
+msgstr "Aus einer Budgetcode-Änderung einer Transaktion erzeugt."
+
+msgid "Saving budget code rule..."
+msgstr "Budgetcode-Regel wird gespeichert..."
+
+msgid "Budget code rule updated"
+msgstr "Budgetcode-Regel aktualisiert"
+
+msgid "Budget code rule saved"
+msgstr "Budgetcode-Regel gespeichert"
+
+msgid "Could not save budget code rule: {error}"
+msgstr "Budgetcode-Regel konnte nicht gespeichert werden: {error}"
+
+msgid "Budget code rule save canceled: the background task stopped unexpectedly."
+msgstr "Speichern der Budgetcode-Regel abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Page loading canceled: the background task stopped unexpectedly."
+msgstr "Seitenladen abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Detecting transaction patterns..."
+msgstr "Transaktionsmuster werden erkannt..."
+
+msgid "Could not detect transaction patterns: {error}"
+msgstr "Transaktionsmuster konnten nicht erkannt werden: {error}"
+
+msgid "Transaction pattern detection stopped unexpectedly."
+msgstr "Transaktionsmuster-Erkennung wurde unerwartet beendet."
+
+msgid "Yearly budget"
+msgstr "Jahresbudget"
+
+msgid "5000 or 10% of yearly income"
+msgstr "5000 oder 10% des Jahreseinkommens"
+
+msgid "Use monthly budgets, yearly budgets, or both. If only a yearly budget is set, monthly views divide it over 12 months."
+msgstr "Nutze Monatsbudgets, Jahresbudgets oder beides. Wenn nur ein Jahresbudget gesetzt ist, teilen Monatsansichten es durch 12."
+
+msgid "Fixed monthly budgets are annualized; yearly budgets are used as-is; percentage budgets use yearly income. Compared with {previous_year}."
+msgstr "Feste Monatsbudgets werden auf ein Jahr hochgerechnet; Jahresbudgets werden direkt genutzt; Prozentbudgets nutzen das Jahreseinkommen. Verglichen mit {previous_year}."
+
+msgid "yearly budget / 12"
+msgstr "Jahresbudget / 12"
+
+msgid "yearly budget"
+msgstr "Jahresbudget"
+
+msgid "No data for {year}"
+msgstr "Keine Daten für {year}"
+
+msgid "No previous year yet"
+msgstr "Noch kein Vorjahr"
+
+msgid "Forecast"
+msgstr "Prognose"
+
+msgid "Projected with imported transactions, budgeted income, and planned spending."
+msgstr "Prognose aus importierten Transaktionen, budgetiertem Einkommen und geplanten Ausgaben."
+
+msgid "Current month"
+msgstr "Aktueller Monat"
+
+msgid "Next month"
+msgstr "Naechster Monat"
+
+msgid "Rest of year"
+msgstr "Rest des Jahres"
+
+msgid "{status}: {income} in, {expenses} out"
+msgstr "{status}: {income} rein, {expenses} raus"
+
+msgid "Looks safe"
+msgstr "Sieht sicher aus"
+
+msgid "Tight"
+msgstr "Knapp"
+
+msgid "Short"
+msgstr "Fehlbetrag"
+
+msgid "Smart Insights"
+msgstr "Intelligente Einblicke"
+
+msgid "Smart Insights enabled. Forecast cards and transaction pattern detection are available."
+msgstr "Intelligente Einblicke aktiviert. Prognosekarten und Transaktionsmustererkennung sind verfuegbar."
+
+msgid "Smart Insights disabled. Forecast cards and transaction pattern detection are hidden."
+msgstr "Intelligente Einblicke deaktiviert. Prognosekarten und Transaktionsmustererkennung sind ausgeblendet."
+
+msgid "Prediction details"
+msgstr "Prognosedetails"
+
+msgid "This estimate uses imported transactions, budgeted income, planned spending, and recent history."
+msgstr "Diese Schaetzung nutzt importierte Transaktionen, budgetiertes Einkommen, geplante Ausgaben und aktuelle Historie."
+
+msgid "Show transactions"
+msgstr "Transaktionen anzeigen"
+
+msgid "Open the transactions used for this forecast period"
+msgstr "Oeffnet die Transaktionen fuer diesen Prognosezeitraum"
+
+msgid "Imported income"
+msgstr "Importiertes Einkommen"
+
+msgid "Expected income"
+msgstr "Erwartetes Einkommen"
+
+msgid "Projected income"
+msgstr "Prognostiziertes Einkommen"
+
+msgid "Imported expenses"
+msgstr "Importierte Ausgaben"
+
+msgid "Planned expenses"
+msgstr "Geplante Ausgaben"
+
+msgid "Projected expenses"
+msgstr "Prognostizierte Ausgaben"
+
+msgid "Projected balance"
+msgstr "Prognostizierter Saldo"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Auto Clean Config"
+msgstr "Konfiguration automatisch bereinigen"
+
+msgid "Auto Clean Config enabled. Orphaned rules are removed during reload and import."
+msgstr "Automatische Konfigurationsbereinigung aktiviert. Verwaiste Regeln werden beim Neuladen und Importieren entfernt."
+
+msgid "Auto Clean Config disabled. Orphaned rules stay visible in Diagnostics."
+msgstr "Automatische Konfigurationsbereinigung deaktiviert. Verwaiste Regeln bleiben in der Diagnose sichtbar."
+
+msgid "Orphaned Configuration"
+msgstr "Verwaiste Konfiguration"
+
+msgid "Rules that point to missing budget codes can create ghost categories or budget codes."
+msgstr "Regeln, die auf fehlende Budgetcodes zeigen, koennen Geisterkategorien oder Geister-Budgetcodes erzeugen."
+
+msgid "Remove Orphaned Rules"
+msgstr "Verwaiste Regeln entfernen"
+
+msgid "Remove rules that point to missing budget codes"
+msgstr "Regeln entfernen, die auf fehlende Budgetcodes zeigen"
+
+msgid "No orphaned configuration found."
+msgstr "Keine verwaiste Konfiguration gefunden."
+
+msgid "Could not inspect configuration: {error}"
+msgstr "Konfiguration konnte nicht geprueft werden: {error}"
+
+msgid "Rule “{search}” uses missing budget code “{code}” in category “{category}”."
+msgstr "Regel “{search}” verwendet den fehlenden Budgetcode “{code}” in Kategorie “{category}”."
+
+msgid "Removing orphaned rules..."
+msgstr "Verwaiste Regeln werden entfernt..."
+
+msgid "{count} orphaned rule(s) removed."
+msgstr "{count} verwaiste Regel(n) entfernt."
+
+msgid "Could not remove orphaned rules: {error}"
+msgstr "Verwaiste Regeln konnten nicht entfernt werden: {error}"
+
+msgid "Removing orphaned rules canceled: the background task stopped unexpectedly."
+msgstr "Entfernen verwaister Regeln abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Show all orphaned rules"
+msgstr "Alle verwaisten Regeln anzeigen"
+
+msgid "Compare Categories with Previous Year"
+msgstr "Kategorien mit Vorjahr vergleichen"
+
+msgid "Category comparison enabled. Annual categories compare with the previous year."
+msgstr "Kategorievergleich aktiviert. Jahreskategorien werden mit dem Vorjahr verglichen."
+
+msgid "Category comparison disabled. Annual categories are hidden from Overview."
+msgstr "Kategorievergleich deaktiviert. Jahreskategorien werden in der Uebersicht ausgeblendet."
+
+msgid "Annual Category Comparison"
+msgstr "Jahreskategorien vergleichen"
+
+msgid "Compares category spending in {year} with {previous_year}. Red means more spent than last year, not over budget."
+msgstr "Vergleicht Kategorieausgaben in {year} mit {previous_year}. Rot bedeutet mehr ausgegeben als im Vorjahr, nicht ueber Budget."
+
+msgid "Compare Categories with Previous Period"
+msgstr "Kategorien mit Vorperiode vergleichen"
+
+msgid "Category Comparison"
+msgstr "Kategorien vergleichen"
+
+msgid "Compares category spending in {month} with {previous}. Red means more spent than the previous period, not over budget."
+msgstr "Vergleicht Kategorieausgaben in {month} mit {previous}. Rot bedeutet mehr ausgegeben als in der Vorperiode, nicht ueber Budget."
+
+msgid "{period} spent · {amount}"
+msgstr "{period} ausgegeben · {amount}"
+
+msgid "Category comparison enabled. Categories compare with the previous period."
+msgstr "Kategorievergleich aktiviert. Kategorien werden mit der Vorperiode verglichen."
+
+msgid "Category comparison disabled. Category comparisons are hidden."
+msgstr "Kategorievergleich deaktiviert. Kategorievergleiche werden ausgeblendet."
+
+msgid "Annual budget distribution"
+msgstr "Jahresbudgetverteilung"
+
+msgid "Planned annual budgets for {year}."
+msgstr "Geplante Jahresbudgets fuer {year}."
+
+msgid "Annual spending distribution"
+msgstr "Jahresausgabenverteilung"
+
+msgid "Actual spending by category in {year}."
+msgstr "Tatsaechliche Ausgaben nach Kategorie in {year}."
+
+msgid "Actual annual spending by category in {year}."
+msgstr "Tatsaechliche Jahresausgaben nach Kategorie in {year}."
+
+msgid "Spending by category in {year}."
+msgstr "Ausgaben nach Kategorie in {year}."
+
+msgid "Filter “{query}” searches annual budgets and annual spending."
+msgstr "Filter „{query}“ durchsucht Jahresbudgets und Jahresausgaben."
+
+msgid "Filter “{query}” searches budgets and spending for {month}."
+msgstr "Filter „{query}“ durchsucht Budgets und Ausgaben fuer {month}."
+
+msgid "Filter “{query}” searches budgets and spending."
+msgstr "Filter „{query}“ durchsucht Budgets und Ausgaben."
+
+msgid "Choose the month and year for budgets and spending."
+msgstr "Waehle Monat und Jahr fuer Budgets und Ausgaben."
+
+msgid "Choose a month and year to see budget room and spending for that period."
+msgstr "Waehle Monat und Jahr, um Budgetspielraum und Ausgaben fuer diesen Zeitraum zu sehen."
+
+msgid "Import CSV files first. Then budgets and spending appear here as graphical rows."
+msgstr "Importiere zuerst CSV-Dateien. Danach erscheinen Budgets und Ausgaben hier als grafische Zeilen."
+
+msgid "Monthly Spending"
+msgstr "Monatsausgaben"
+
+msgid "Show all spending"
+msgstr "Alle Ausgaben anzeigen"
+
+msgid "Annual Spending"
+msgstr "Jahresausgaben"
+
+msgid "Largest annual expenses by category in {year}."
+msgstr "Groesste Jahresausgaben nach Kategorie in {year}."
+
+msgid "Compare Spending with Previous Period"
+msgstr "Ausgaben mit vorherigem Zeitraum vergleichen"
+
+msgid "Spending comparison enabled. Spending is compared with the previous period."
+msgstr "Ausgabenvergleich aktiviert. Ausgaben werden mit dem vorherigen Zeitraum verglichen."
+
+msgid "Spending comparison disabled. Spending comparisons are hidden."
+msgstr "Ausgabenvergleich deaktiviert. Ausgabenvergleiche werden ausgeblendet."
+
+msgid "Largest monthly expenses by category in {month}. The bar shows the share compared with the largest expense in this list."
+msgstr "Groesste Monatsausgaben nach Kategorie in {month}. Der Balken zeigt den Anteil im Vergleich zur groessten Ausgabe in dieser Liste."
+
+msgid "Actual expenses by category for {year}."
+msgstr "Tatsaechliche Ausgaben nach Kategorie fuer {year}."
+
+msgid "Preferences"
+msgstr "Einstellungen"
+
+msgid "App options"
+msgstr "App-Optionen"
+
+msgid "Choose how lists, forecasts, forms, and imported transactions are shown."
+msgstr "Lege fest, wie Listen, Prognosen, Formulare und importierte Transaktionen angezeigt werden."
+
+msgid "Interface"
+msgstr "Oberflaeche"
+
+msgid "Control how much information is visible while you browse."
+msgstr "Lege fest, wie viele Informationen beim Durchsehen sichtbar sind."
+
+msgid "Hide status messages automatically after a short delay."
+msgstr "Statusmeldungen nach kurzer Zeit automatisch ausblenden."
+
+msgid "Show every item immediately and hide More buttons."
+msgstr "Alle Eintraege sofort anzeigen und Mehr-Schaltflaechen ausblenden."
+
+msgid "Insights"
+msgstr "Einblicke"
+
+msgid "Control smart forecasts, pattern detection, and previous-period spending comparisons."
+msgstr "Intelligente Prognosen, Mustererkennung und Ausgabenvergleiche mit der vorherigen Periode steuern."
+
+msgid "Show forecast cards and detect transaction patterns from imported transactions."
+msgstr "Prognosekarten anzeigen und Transaktionsmuster aus importierten Transaktionen erkennen."
+
+msgid "Compare spending cards with the previous month or year."
+msgstr "Ausgabenkarten mit dem vorherigen Monat oder Jahr vergleichen."
+
+msgid "Forms and Data"
+msgstr "Formulare und Daten"
+
+msgid "Control autofill, cleanup, and refunded transaction visibility."
+msgstr "Autofill, Bereinigung und Sichtbarkeit erstatteter Transaktionen steuern."
+
+msgid "Let related form fields fill each other, such as transfer categories and codes."
+msgstr "Zugehoerige Formularfelder gegenseitig ausfuellen lassen, z. B. Transferkategorien und Codes."
+
+msgid "Remove orphaned rules automatically during reload and import."
+msgstr "Verwaiste Regeln beim Neuladen und Import automatisch entfernen."
+
+msgid "Requires Smart Insights. Exclude detected refunds and offsetting groups from normal views."
+msgstr "Erfordert Intelligente Einblicke. Erkannte Erstattungen und ausgleichende Gruppen aus normalen Ansichten ausblenden."
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "General"
+msgstr "Allgemein"
+
+msgid "Gray graph bars show {year}"
+msgstr "Graue Diagrammbalken zeigen {year}"
+
+msgid "Only the selected year is loaded"
+msgstr "Nur das ausgewählte Jahr wird geladen"
+
+msgid "Budgets needing attention in {year}. More shows everything; gray bars show {previous_year}."
+msgstr "Budgets mit Handlungsbedarf in {year}. Mehr zeigt alles; graue Balken zeigen {previous_year}."
+
+msgid "Budgets needing attention in {year}. More shows everything."
+msgstr "Budgets mit Handlungsbedarf in {year}. Mehr zeigt alles."
+
+msgid "Choose a year and inspect how income and expenses are built up."
+msgstr "Wähle ein Jahr und sieh, wie Einnahmen und Ausgaben aufgebaut sind."
+
+msgid "Cash Flow"
+msgstr "Cashflow"
+
+msgid "Planned Income"
+msgstr "Geplante Einnahmen"
+
+msgid "Income can be gross or net. Net income is needed for budgeting and calculations."
+msgstr "Income can be gross or net. Net income is needed for budgeting and calculations."
+
+msgid "Edit planned income budget"
+msgstr "Budget für geplante Einnahmen bearbeiten"
+
+msgid "Colored bars are the selected year; gray bars compare the previous year. Planned bars come from budgets; real bars come from transactions."
+msgstr "Farbige Balken zeigen das ausgewählte Jahr; graue Balken vergleichen das Vorjahr. Geplante Balken kommen aus Budgets; echte Balken kommen aus Transaktionen."
+
+msgid "Colored bars show planned and real income and expenses for the selected year."
+msgstr "Farbige Balken zeigen geplante und echte Einnahmen und Ausgaben für das ausgewählte Jahr."
+
+msgid "Scale"
+msgstr "Skala"
+
+msgid "Planned income"
+msgstr "Geplante Einnahmen"
+
+msgid "Real income"
+msgstr "Echte Einnahmen"
+
+msgid "Real expenses"
+msgstr "Echte Ausgaben"
+
+msgid "{label} · {kind} · {amount}"
+msgstr "{label} · {kind} · {amount}"
+
+msgid "planned income"
+msgstr "geplante Einnahmen"
+
+msgid "real income"
+msgstr "echte Einnahmen"
+
+msgid "planned expenses"
+msgstr "geplante Ausgaben"
+
+msgid "real expenses"
+msgstr "echte Ausgaben"
+
+msgid "Colored bars show {year}; gray bars show {previous_year}."
+msgstr "Farbige Balken zeigen {year}; graue Balken zeigen {previous_year}."
+
+msgid "Colored bars show {month}; gray bars show {previous}."
+msgstr "Farbige Balken zeigen {month}; graue Balken zeigen {previous}."
+
+msgid "Loading selected period..."
+msgstr "Ausgewählten Zeitraum laden..."
+
+msgid "Selected period loaded."
+msgstr "Ausgewählter Zeitraum geladen."
+
+msgid "{year} spent - {amount}"
+msgstr "{year} ausgegeben - {amount}"
+
+msgid "{period} spent - {amount}"
+msgstr "{period} ausgegeben - {amount}"
+
+msgid "Previous"
+msgstr "Zurück"
+
+msgid "Next"
+msgstr "Weiter"
+
+msgid "Load previous period"
+msgstr "Vorherigen Zeitraum laden"
+
+msgid "Load next period"
+msgstr "Nächsten Zeitraum laden"
+
+msgid "Showing transactions for {period}."
+msgstr "Transaktionen für {period}."
+
+msgid "{count} transactions in {period}."
+msgstr "{count} Transaktionen in {period}."
+
+msgid "{count} of {total} transactions match “{query}” in {year}."
+msgstr "{count} von {total} Transaktionen passen zu „{query}“ in {year}."
+
+msgid "{count} transactions in {year}."
+msgstr "{count} Transaktionen in {year}."
+
+msgid "No transactions in this year"
+msgstr "Keine Transaktionen in diesem Jahr"
+
+msgid "Choose another year or import CSV files for this period."
+msgstr "Wähle ein anderes Jahr oder importiere CSV-Dateien für diesen Zeitraum."
+
+msgid "Repeating payments, possible transfers, refunds, and offsetting groups detected in {year}."
+msgstr "Wiederkehrende Zahlungen, mögliche Umbuchungen, Erstattungen und ausgleichende Gruppen in {year} erkannt."
+
+
+msgid "Configuration"
+msgstr "Konfiguration"
+
+msgid "Configuration actions report progress here."
+msgstr "Konfigurationsaktionen zeigen hier ihren Fortschritt."
+
+msgid "Configuration Backup"
+msgstr "Konfigurationssicherung"
+
+msgid "Back up or restore the current rules, budgets, and CSV field names."
+msgstr "Aktuelle Regeln, Budgets und CSV-Feldnamen sichern oder wiederherstellen."
+
+msgid "Restore"
+msgstr "Wiederherstellen"
+
+msgid "Restore archived configuration"
+msgstr "Archivierte Konfiguration wiederherstellen"
+
+msgid "Archive"
+msgstr "Archivieren"
+
+msgid "Archive current configuration"
+msgstr "Aktuelle Konfiguration archivieren"
+
+msgid "Back Up Current Configuration"
+msgstr "Aktuelle Konfiguration sichern"
+
+msgid "Replace the existing backup in the config folder."
+msgstr "Die vorhandene Sicherung im Konfigurationsordner ersetzen."
+
+msgid "Restore Configuration Backup"
+msgstr "Konfigurationssicherung wiederherstellen"
+
+msgid "Restore rules, budgets, and field names from the backup."
+msgstr "Regeln, Budgets und Feldnamen aus der Sicherung wiederherstellen."
+
+msgid "Automatic Configuration"
+msgstr "Automatische Konfiguration"
+
+msgid "Generate budgeting from imported transactions or restore the built-in defaults."
+msgstr "Budgetierung aus importierten Transaktionen generieren oder die eingebauten Standards wiederherstellen."
+
+msgid "Generate budgets from transactions"
+msgstr "Budgets aus Transaktionen generieren"
+
+msgid "Replace the budget list with budgets detected from imported spending."
+msgstr "Budgetliste durch aus importierten Ausgaben erkannte Budgets ersetzen."
+
+msgid "Use Defaults"
+msgstr "Standards verwenden"
+
+msgid "Use default configuration"
+msgstr "Standardkonfiguration verwenden"
+
+msgid "Use Default Configuration"
+msgstr "Standardkonfiguration verwenden"
+
+msgid "Replace the budget list with the built-in defaults."
+msgstr "Budgetliste durch die eingebauten Standards ersetzen."
+
+msgid "The latest configuration message."
+msgstr "Die neueste Konfigurationsmeldung."
+
+msgid "Backing up current configuration..."
+msgstr "Aktuelle Konfiguration wird gesichert..."
+
+msgid "Configuration backed up in {path}."
+msgstr "Konfiguration in {path} gesichert."
+
+msgid "Could not back up configuration: {error}"
+msgstr "Konfiguration konnte nicht gesichert werden: {error}"
+
+msgid "Configuration backup canceled: the background task stopped unexpectedly."
+msgstr "Konfigurationssicherung abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Restoring configuration backup..."
+msgstr "Konfigurationssicherung wird wiederhergestellt..."
+
+msgid "Configuration backup restored."
+msgstr "Konfigurationssicherung wiederhergestellt."
+
+msgid "Could not restore configuration backup: {error}"
+msgstr "Konfigurationssicherung konnte nicht wiederhergestellt werden: {error}"
+
+msgid "Configuration restore canceled: the background task stopped unexpectedly."
+msgstr "Konfigurationswiederherstellung abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Preference changes are applied immediately."
+msgstr "Einstellungsaenderungen werden sofort angewendet."
+
+msgid "The latest preference message."
+msgstr "Die neueste Einstellungsmeldung."
+
+msgid "Generating budgets from transactions..."
+msgstr "Budgets aus Transaktionen werden generiert..."
+
+msgid "Budget generation canceled: the background task stopped unexpectedly."
+msgstr "Budgetgenerierung abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Another edit or save is already running."
+msgstr "Eine andere Bearbeitung oder Speicherung laeuft bereits."
+
+msgid "Applying default configuration..."
+msgstr "Standardkonfiguration wird angewendet..."
+
+msgid "Default configuration applied."
+msgstr "Standardkonfiguration angewendet."
+
+msgid "Could not apply default configuration: {error}"
+msgstr "Standardkonfiguration konnte nicht angewendet werden: {error}"
+
+msgid "Applying default configuration canceled: the background task stopped unexpectedly."
+msgstr "Anwenden der Standardkonfiguration abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Generate budgeting from imported transactions, use defaults, or start clean."
+msgstr "Budgetierung aus importierten Transaktionen generieren, Standards verwenden oder leer beginnen."
+
+msgid "Replace rules, budgets, and field names with the built-in defaults."
+msgstr "Regeln, Budgets und Feldnamen durch die eingebauten Standards ersetzen."
+
+msgid "Use Empty"
+msgstr "Leer verwenden"
+
+msgid "Use empty configuration"
+msgstr "Leere Konfiguration verwenden"
+
+msgid "Use Empty Configuration"
+msgstr "Leere Konfiguration verwenden"
+
+msgid "Remove all rules and budget codes while keeping CSV field names for imports."
+msgstr "Alle Regeln und Budgetcodes entfernen, aber CSV-Feldnamen fuer Importe behalten."
+
+msgid "Applying empty configuration..."
+msgstr "Leere Konfiguration wird angewendet..."
+
+msgid "Empty configuration applied."
+msgstr "Leere Konfiguration angewendet."
+
+msgid "Could not apply empty configuration: {error}"
+msgstr "Leere Konfiguration konnte nicht angewendet werden: {error}"
+
+msgid "Applying empty configuration canceled: the background task stopped unexpectedly."
+msgstr "Anwenden der leeren Konfiguration abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Search preferences"
+msgstr "Einstellungen suchen"
+
+msgid "Search configuration"
+msgstr "Konfiguration suchen"
+
+msgid "Percentage basis"
+msgstr "Prozentbasis"
+
+msgid "Edit details"
+msgstr "Details bearbeiten"
+
+msgid "Collapse details"
+msgstr "Details einklappen"
+
+msgid "{percent}% of real income"
+msgstr "{percent}% der echten Einnahmen"
+
+msgid "{percent}% of planned income"
+msgstr "{percent}% der geplanten Einnahmen"
+
+msgid "Use fixed amounts or percentages; choose real or planned income for percentages."
+msgstr "Verwende feste Beträge oder Prozentsätze; wähle echte oder geplante Einnahmen für Prozentsätze."
+
+msgid "Use monthly budgets, yearly budgets, or both. Percentage budgets can use real or planned income."
+msgstr "Verwende Monatsbudgets, Jahresbudgets oder beides. Prozentbudgets können echte oder geplante Einnahmen verwenden."
+
+msgid "active"
+msgstr "aktiv"
+
+msgid "inactive"
+msgstr "inaktiv"
+
+msgid "priority"
+msgstr "Priorität"
+
+msgid "text"
+msgstr "Text"
+
+msgid "regex"
+msgstr "Regex"
+
+msgid "Revert details"
+msgstr "Details zurücksetzen"
+
+msgid "Move rule"
+msgstr "Regel verschieben"
+
+msgid "Group"
+msgstr "Gruppieren"
+
+msgid "Move compatible rules next to each other before combining"
+msgstr "Kompatible Regeln vor dem Kombinieren nebeneinander verschieben"
+
+msgid "Combine"
+msgstr "Kombinieren"
+
+msgid "Combine adjacent compatible rules"
+msgstr "Benachbarte kompatible Regeln kombinieren"
+
+msgid "Loading rules..."
+msgstr "Regeln werden geladen..."
+
+msgid "Loading budgets..."
+msgstr "Budgets werden geladen..."
+
+msgid "Loading field names..."
+msgstr "Feldnamen werden geladen..."
+
+msgid "Loading management data..."
+msgstr "Verwaltung wird geladen..."
+
+msgid "Grouping compatible rules..."
+msgstr "Kompatible Regeln werden gruppiert..."
+
+msgid "Combining compatible rules..."
+msgstr "Kompatible Regeln werden kombiniert..."
+
+msgid "No adjacent compatible rules to combine. Use Group first if compatible rules are spread out."
+msgstr "Keine benachbarten kompatiblen Regeln zum Kombinieren. Verwende zuerst Gruppieren, wenn kompatible Regeln verteilt sind."
+
+msgid "No compatible rules to group."
+msgstr "Keine kompatiblen Regeln zum Gruppieren."
+
+msgid "Compatible rules are already grouped. Use Combine."
+msgstr "Kompatible Regeln sind bereits gruppiert. Verwende Kombinieren."
+
+msgid "Grouped compatible rules into {group_count} group(s). Review order, then Combine or Save."
+msgstr "Kompatible Regeln in {group_count} Gruppe(n) gruppiert. Reihenfolge prüfen und dann kombinieren oder speichern."
+
+msgid "Combined {before_count} rules into {after_count} rules across {group_count} group(s). Review, then Save."
+msgstr "{before_count} Regeln zu {after_count} Regeln in {group_count} Gruppe(n) kombiniert. Prüfen und dann speichern."
+
+msgid "Change budget direction?"
+msgstr "Budgetrichtung ändern?"
+
+msgid "Change budget directions?"
+msgstr "Budgetrichtungen ändern?"
+
+msgid "Change Direction"
+msgstr "Richtung ändern"
+
+msgid "This item will switch between expenses and income. This can move related transactions between spending and income totals."
+msgstr "Dieses Element wechselt zwischen Ausgaben und Einnahmen. Dadurch können zugehörige Transaktionen zwischen Ausgaben- und Einnahmensummen verschoben werden."
+
+msgid "{item} will switch between expenses and income. This can move related transactions between spending and income totals."
+msgstr "{item} wechselt zwischen Ausgaben und Einnahmen. Dadurch können zugehörige Transaktionen zwischen Ausgaben- und Einnahmensummen verschoben werden."
+
+msgid "{count} items will switch between expenses and income. This can move related transactions between spending and income totals."
+msgstr "{count} Elemente wechseln zwischen Ausgaben und Einnahmen. Dadurch können zugehörige Transaktionen zwischen Ausgaben- und Einnahmensummen verschoben werden."
+
+msgid "Edit Planned Income"
+msgstr "Geplante Einnahmen bearbeiten"
+
+msgid "Save planned income budget"
+msgstr "Budget für geplante Einnahmen speichern"
+
+msgid "Set fixed monthly and yearly planned income for the INC budget code."
+msgstr "Lege feste monatliche und jährliche geplante Einnahmen für den Budgetcode INC fest."
+
+msgid "Monthly planned income"
+msgstr "Monatliche geplante Einnahmen"
+
+msgid "Yearly planned income"
+msgstr "Jährliche geplante Einnahmen"
+
+msgid "Delete planned income budget"
+msgstr "Budget für geplante Einnahmen löschen"
+
+msgid "Set every budget percentage basis to real income"
+msgstr "Jede Budget-Prozentbasis auf echte Einnahmen setzen"
+
+msgid "Set every budget percentage basis to planned income"
+msgstr "Jede Budget-Prozentbasis auf geplante Einnahmen setzen"
+
+msgid "Real Income"
+msgstr "Echte Einnahmen"
+
+msgid "Monthly"
+msgstr "Monatlich"
+
+msgid "Yearly"
+msgstr "Jährlich"
+
+msgid "Both"
+msgstr "Beide"
+
+msgid "Convert budget values to monthly values"
+msgstr "Budgetwerte in monatliche Werte umwandeln"
+
+msgid "Convert budget values to yearly values"
+msgstr "Budgetwerte in jährliche Werte umwandeln"
+
+msgid "Fill missing monthly and yearly budget values"
+msgstr "Fehlende monatliche und jährliche Budgetwerte ergänzen"
+
+msgid "No budget rows changed."
+msgstr "Keine Budgetzeilen geändert."
+
+msgid "Updated {count} {action}. Review, then Save."
+msgstr "{count} {action} aktualisiert. Prüfen, dann speichern."
+
+msgid "Updated {count} {action}; skipped {skipped} invalid value(s). Review, then Save."
+msgstr "{count} {action} aktualisiert; {skipped} ungültige Wert(e) übersprungen. Prüfen, dann speichern."
+
+msgid "budget(s) set to real income basis"
+msgstr "Budget(s) auf Basis echter Einnahmen gesetzt"
+
+msgid "budget(s) set to planned income basis"
+msgstr "Budget(s) auf Basis geplanter Einnahmen gesetzt"
+
+msgid "budget(s) converted to monthly values"
+msgstr "Budget(s) in monatliche Werte umgewandelt"
+
+msgid "budget(s) converted to yearly values"
+msgstr "Budget(s) in jährliche Werte umgewandelt"
+
+msgid "budget(s) filled with monthly and yearly values"
+msgstr "Budget(s) mit monatlichen und jährlichen Werten ergänzt"
+
+msgid "Sum {sum}; avg {average}; modal {modal}."
+msgstr "Summe {sum}; Durchschn. {average}; Modus {modal}."
+
+msgid "none"
+msgstr "keiner"
+
+msgid "Other planned income"
+msgstr "Sonstige geplante Einnahmen"
+
+msgid "remaining yearly budget"
+msgstr "verbleibendes Jahresbudget"
+
+msgid "Budgets for {month}. Yearly-only budgets use remaining annual room."
+msgstr "Budgets für {month}. Budgets nur mit Jahresbudget verwenden den verbleibenden Jahresraum."
+
+msgid "Budgets needing attention in {month}. More shows everything; yearly-only budgets use remaining annual room."
+msgstr "Budgets, die in {month} Aufmerksamkeit benötigen. Mehr zeigt alles; Budgets nur mit Jahresbudget verwenden den verbleibenden Jahresraum."
+
+msgid "Expenses are {expenses}, above annual budget room of {room} by {loss}."
+msgstr "Ausgaben betragen {expenses}, über dem Jahresbudget-Spielraum von {room} um {loss}."
+
+msgid "Expenses are {expenses}, above real income of {income} plus annual budget room of {room} by {loss}."
+msgstr "Ausgaben betragen {expenses}, über echten Einnahmen von {income} plus Jahresbudget-Spielraum von {room} um {loss}."
+
+msgid "Expenses are {expenses}, above planned income of {income} plus annual budget room of {room} by {loss}."
+msgstr "Ausgaben betragen {expenses}, über geplanten Einnahmen von {income} plus Jahresbudget-Spielraum von {room} um {loss}."
+
+# Transaction operation queue
+msgid "Processing queue"
+msgstr "Verarbeitungswarteschlange"
+
+msgid "Processing Queue"
+msgstr "Verarbeitungswarteschlange"
+
+msgid "Apply All"
+msgstr "Alle anwenden"
+
+msgid "Apply all pending queued operations"
+msgstr "Alle ausstehenden Vorgänge anwenden"
+
+msgid "Operation added to queue."
+msgstr "Vorgang zur Warteschlange hinzugefügt."
+
+msgid "Processing queue: {count} pending"
+msgstr "Verarbeitungswarteschlange: {count} ausstehend"
+
+msgid "No queued operations."
+msgstr "Keine Vorgänge in der Warteschlange."
+
+msgid "No pending operations."
+msgstr "Keine ausstehenden Vorgänge."
+
+msgid "{count} pending, {failed} failed."
+msgstr "{count} ausstehend, {failed} fehlgeschlagen."
+
+msgid "{count} pending operation(s)."
+msgstr "{count} ausstehende Vorgänge."
+
+msgid "Queued operation removed."
+msgstr "Vorgang aus der Warteschlange entfernt."
+
+msgid "Apply"
+msgstr "Anwenden"
+
+msgid "Apply this operation"
+msgstr "Diesen Vorgang anwenden"
+
+msgid "Remove"
+msgstr "Entfernen"
+
+msgid "Remove this operation"
+msgstr "Diesen Vorgang entfernen"
+
+msgid "Change budget code"
+msgstr "Budgetcode ändern"
+
+msgid "Rule {field}: {search} -> {category} / {code} ({direction})"
+msgstr "Regel {field}: {search} -> {category} / {code} ({direction})"
+
+msgid "Pending"
+msgstr "Ausstehend"
+
+msgid "Applying"
+msgstr "Wird angewendet"
+
+msgid "Applied"
+msgstr "Angewendet"
+
+msgid "Failed"
+msgstr "Fehlgeschlagen"
+
+msgid "No queued operations to apply."
+msgstr "Keine Vorgänge in der Warteschlange zum Anwenden."
+
+msgid "The processing queue is already running."
+msgstr "Die Verarbeitungswarteschlange läuft bereits."
+
+msgid "Applying queued operation {current} of {total}..."
+msgstr "Warteschlangenvorgang {current} von {total} wird angewendet..."
+
+msgid "The background task stopped unexpectedly."
+msgstr "Der Hintergrundprozess wurde unerwartet beendet."
+
+msgid "Reloading data after queued operations..."
+msgstr "Daten nach Warteschlangenvorgängen neu laden..."
+
+msgid "Queued operations applied, but reload failed: {error}"
+msgstr "Warteschlangenvorgänge angewendet, aber das Neuladen ist fehlgeschlagen: {error}"
+
+msgid "Queued operations applied, but reload canceled: the background task stopped unexpectedly."
+msgstr "Warteschlangenvorgänge angewendet, aber das Neuladen wurde abgebrochen: Der Hintergrundprozess wurde unerwartet beendet."
+
+msgid "No queued operations were applied."
+msgstr "Es wurden keine Warteschlangenvorgänge angewendet."
+
+msgid "Applied {count} queued operation(s)."
+msgstr "{count} Warteschlangenvorgänge angewendet."
+
+msgid "{count} queued operation(s) failed."
+msgstr "{count} Warteschlangenvorgänge fehlgeschlagen."
+
+msgid "Applied {applied} queued operation(s); {failed} failed."
+msgstr "{applied} Warteschlangenvorgänge angewendet; {failed} fehlgeschlagen."
+
+msgid "Rule added to processing queue."
+msgstr "Regel zur Verarbeitungswarteschlange hinzugefügt."
+
+msgid "Budget code rule added to processing queue."
+msgstr "Budgetcode-Regel zur Verarbeitungswarteschlange hinzugefügt."
+msgid "Save adds this rule to the processing queue."
+msgstr "Speichern fügt diese Regel zur Verarbeitungswarteschlange hinzu."
+
+msgid "Save adds a categorization rule to the processing queue. The original bank CSV is not changed."
+msgstr "Speichern fügt eine Kategorisierungsregel zur Verarbeitungswarteschlange hinzu. Die ursprüngliche Bank-CSV wird nicht geändert."
+
+msgid "Clear completed operations"
+msgstr "Abgeschlossene Vorgänge leeren"
+
+msgid "Completed queued operations cleared."
+msgstr "Abgeschlossene Warteschlangenvorgänge geleert."
+
+msgid "Grouping and combining queued rules..."
+msgstr "Warteschlangenregeln werden gruppiert und kombiniert..."
+
+msgid "{summary} Grouped and combined rules from {before_count} to {after_count}."
+msgstr "{summary} Regeln von {before_count} auf {after_count} gruppiert und kombiniert."
+
+msgid "Move Code"
+msgstr "Code verschieben"
+
+msgid "Move rules from one budget code to another"
+msgstr "Regeln von einem Budgetcode zu einem anderen verschieben"
+
+msgid "Need at least two budget codes to move rules."
+msgstr "Zum Verschieben von Regeln werden mindestens zwei Budgetcodes benötigt."
+
+msgid "Move Budget Code"
+msgstr "Budgetcode verschieben"
+
+msgid "Move rules to another budget code."
+msgstr "Regeln zu einem anderen Budgetcode verschieben."
+
+msgid "Move"
+msgstr "Verschieben"
+
+msgid "Move budget code"
+msgstr "Budgetcode verschieben"
+
+msgid "Move matching rules to the target budget code and remove the source budget code after Save."
+msgstr "Verschiebt passende Regeln zum Ziel-Budgetcode und entfernt den Quell-Budgetcode nach dem Speichern."
+
+msgid "From"
+msgstr "Von"
+
+msgid "To"
+msgstr "Nach"
+
+msgid "Changes are staged here. Press Save to write them."
+msgstr "Änderungen werden hier vorbereitet. Drücke Speichern, um sie zu schreiben."
+
+msgid "Choose both budget codes first."
+msgstr "Wähle zuerst beide Budgetcodes."
+
+msgid "Choose two different budget codes."
+msgstr "Wähle zwei unterschiedliche Budgetcodes."
+
+msgid "No source budget code found to move."
+msgstr "Kein Quell-Budgetcode zum Verschieben gefunden."
+
+msgid "No rules used {from}; removed budget code {from}. Review, then Save."
+msgstr "Keine Regeln verwendeten {from}; Budgetcode {from} entfernt. Prüfen, dann speichern."
+
+msgid "Moved {count} rule(s) from {from} to {to} and removed {from}. Review, then Save."
+msgstr "{count} Regel(n) von {from} nach {to} verschoben und {from} entfernt. Prüfen, dann speichern."
+
+msgid "Move matching rules to the target budget code. Choose whether to keep the source budget code."
+msgstr "Verschiebt passende Regeln zum Ziel-Budgetcode. Wähle, ob der Quell-Budgetcode behalten wird."
+
+msgid "Keep old budget code"
+msgstr "Alten Budgetcode behalten"
+
+msgid "Leave the source budget code in the budget list after moving rules"
+msgstr "Lässt den Quell-Budgetcode nach dem Verschieben der Regeln in der Budgetliste"
+
+msgid "Undo budget deletion"
+msgstr "Budgetlöschung rückgängig machen"
+
+msgid "No rules used {from}; kept budget code {from}. Review, then Save."
+msgstr "Keine Regeln verwendeten {from}; Budgetcode {from} behalten. Prüfen, dann speichern."
+
+msgid "Moved {count} rule(s) from {from} to {to}. Kept {from}. Review, then Save."
+msgstr "{count} Regel(n) von {from} nach {to} verschoben. {from} behalten. Prüfen, dann speichern."
+
+msgid "Fake transactions"
+msgstr "Scheintransaktionen"
+
+msgid "Fake Transactions"
+msgstr "Scheintransaktionen"
+
+msgid "Add fake transaction"
+msgstr "Scheintransaktion hinzufügen"
+
+msgid "Clear fake transactions"
+msgstr "Scheintransaktionen löschen"
+
+msgid "Fake transactions: {count}"
+msgstr "Scheintransaktionen: {count}"
+
+msgid "No fake transactions."
+msgstr "Keine Scheintransaktionen."
+
+msgid "No runtime preview transactions."
+msgstr "Keine temporären Vorschautransaktionen."
+
+msgid "{count} fake transaction(s) affect this session."
+msgstr "{count} Scheintransaktion(en) beeinflussen diese Sitzung."
+
+msgid "Edit fake transaction"
+msgstr "Scheintransaktion bearbeiten"
+
+msgid "Remove fake transaction"
+msgstr "Scheintransaktion entfernen"
+
+msgid "Edit Fake Transaction"
+msgstr "Scheintransaktion bearbeiten"
+
+msgid "New Fake Transaction"
+msgstr "Neue Scheintransaktion"
+
+msgid "Save fake transaction"
+msgstr "Scheintransaktion speichern"
+
+msgid "Cancel fake transaction edit"
+msgstr "Bearbeitung der Scheintransaktion abbrechen"
+
+msgid "Fake transaction no longer exists."
+msgstr "Scheintransaktion existiert nicht mehr."
+
+msgid "Fake transaction date is invalid."
+msgstr "Datum der Scheintransaktion ist ungültig."
+
+msgid "Fake transaction amount is invalid."
+msgstr "Betrag der Scheintransaktion ist ungültig."
+
+msgid "Fake transaction"
+msgstr "Scheintransaktion"
+
+msgid "Clearing fake transactions..."
+msgstr "Scheintransaktionen löschen..."
+
+msgid "Adding fake transaction..."
+msgstr "Scheintransaktion hinzufügen..."
+
+msgid "Removing fake transaction..."
+msgstr "Scheintransaktion entfernen..."
+
+msgid "Saving fake transaction..."
+msgstr "Scheintransaktion speichern..."
+
+msgid "Fake transactions cleared."
+msgstr "Scheintransaktionen gelöscht."
+
+msgid "Fake transaction added."
+msgstr "Scheintransaktion hinzugefügt."
+
+msgid "Fake transaction updated."
+msgstr "Scheintransaktion aktualisiert."
+
+msgid "Fake transaction removed."
+msgstr "Scheintransaktion entfernt."
+
+msgid "Duplicate as Fake"
+msgstr "Als Schein duplizieren"
+
+msgid "Duplicate this transaction as a runtime fake transaction"
+msgstr "Diese Transaktion als temporäre Scheintransaktion duplizieren"
+
+msgid "Advanced Features"
+msgstr "Erweiterte Funktionen"
+
+msgid "Allow rule editing and budget direction controls."
+msgstr "Regelbearbeitung und Einstellungen fuer die Budgetrichtung erlauben."
+
+msgid "Control simple mode, smart form filling, cleanup, and refunded transaction visibility."
+msgstr "Einfachen Modus, intelligentes Ausfuellen, Bereinigung und Sichtbarkeit von Erstattungen steuern."
+
+msgid "Smart Autofill"
+msgstr "Intelligentes Ausfuellen"
+
+msgid "Let forms fill related fields from context, such as matching categories and budget codes."
+msgstr "Formulare koennen passende Felder aus dem Kontext fuellen, zum Beispiel Kategorien und Budgetcodes."
+
+msgid "Advanced Features enabled. Rule editing and direction controls are available."
+msgstr "Erweiterte Funktionen aktiviert. Regelbearbeitung und Richtungseinstellungen sind verfuegbar."
+
+msgid "Simple mode enabled. Rule editing and direction controls are hidden."
+msgstr "Einfacher Modus aktiviert. Regelbearbeitung und Richtungseinstellungen sind ausgeblendet."
+
+msgid "Smart Autofill enabled. Forms can fill matching categories and budget codes."
+msgstr "Intelligentes Ausfuellen aktiviert. Formulare koennen passende Kategorien und Budgetcodes eintragen."
+
+msgid "Smart Autofill disabled. Forms only use values you select."
+msgstr "Intelligentes Ausfuellen deaktiviert. Formulare verwenden nur ausgewaehlte Werte."
+
+msgid "Toggle Advanced Features"
+msgstr "Erweiterte Funktionen umschalten"
+
+msgid "Move this transaction to another budget code"
+msgstr "Diese Transaktion zu einem anderen Budgetcode verschieben"
+
+msgid "Save Move"
+msgstr "Verschiebung speichern"
+
+msgid "Save budget code move"
+msgstr "Budgetcode-Verschiebung speichern"
+
+msgid "Move this transaction to another category or budget code."
+msgstr "Diese Transaktion in eine andere Kategorie oder zu einem anderen Budgetcode verschieben."
+
+msgid "Save moves matching transactions to this budget code. The original bank CSV is not changed."
+msgstr "Speichern verschiebt passende Transaktionen zu diesem Budgetcode. Die urspruengliche Bank-CSV wird nicht geaendert."
+
+msgid "Choose a budget code first."
+msgstr "Waehle zuerst einen Budgetcode."
+
+msgid "This budget code is not available in simple mode. Enable Advanced Features to change direction."
+msgstr "Dieser Budgetcode ist im einfachen Modus nicht verfuegbar. Aktiviere Erweiterte Funktionen, um die Richtung zu aendern."
+
+msgid "This move changes direction. Enable Advanced Features to continue."
+msgstr "Diese Verschiebung aendert die Richtung. Aktiviere Erweiterte Funktionen, um fortzufahren."
+
+msgid "Budget code move added to processing queue."
+msgstr "Budgetcode-Verschiebung zur Verarbeitungswarteschlange hinzugefuegt."
+
+msgid "Filter budgets and field names"
+msgstr "Budgets und Feldnamen filtern"
+
+msgid "Budgets and fields"
+msgstr "Budgets und Felder"
+
+msgid "Hide Refunded Transactions needs Smart Insights. Enable Smart Insights to use refunded transaction hiding."
+msgstr "Erstattete Transaktionen ausblenden benoetigt Intelligente Einblicke. Aktiviere Intelligente Einblicke, um erstattete Transaktionen auszublenden."
+
+msgid "Smart Insights are disabled. Enable Smart Insights to search detected transaction patterns."
+msgstr "Intelligente Einblicke sind deaktiviert. Aktiviere Intelligente Einblicke, um erkannte Transaktionsmuster zu suchen."
+
+# Simple mode category wording
+msgid "New Category"
+msgstr "Neue Kategorie"
+
+msgid "Create a category. A budget code is generated automatically when you press Add."
+msgstr "Erstelle eine Kategorie. Ein Budgetcode wird automatisch erzeugt, wenn du Hinzufuegen drueckst."
+
+msgid "Create a new category with a budget"
+msgstr "Neue Kategorie mit Budget erstellen"
+
+msgid "Use categories with fixed amounts or percentages."
+msgstr "Verwende Kategorien mit festen Betraegen oder Prozentwerten."
+
+msgid "New category added. Press Save to keep it."
+msgstr "Neue Kategorie hinzugefuegt. Druecke Speichern, um sie zu behalten."
+
+msgid "Changes are saved to your budget configuration."
+msgstr "Aenderungen werden in deiner Budgetkonfiguration gespeichert."
+
+msgid "Move Category"
+msgstr "Kategorie verschieben"
+
+msgid "Move this transaction to another category"
+msgstr "Diese Transaktion in eine andere Kategorie verschieben"
+
+msgid "Save category move"
+msgstr "Kategorieverschiebung speichern"
+
+msgid "Move this transaction to another category."
+msgstr "Diese Transaktion in eine andere Kategorie verschieben."
+
+msgid "Save moves matching transactions to this category. The original bank CSV is not changed."
+msgstr "Speichern verschiebt passende Transaktionen in diese Kategorie. Die urspruengliche Bank-CSV wird nicht geaendert."
+
+msgid "Choose a category first."
+msgstr "Waehle zuerst eine Kategorie."
+
+msgid "This category is not available in simple mode. Enable Advanced Features to change direction."
+msgstr "Diese Kategorie ist im einfachen Modus nicht verfuegbar. Aktiviere Erweiterte Funktionen, um die Richtung zu aendern."
+
+msgid "Generated from transaction category change."
+msgstr "Aus einer Kategorieaenderung der Transaktion erstellt."
+
+msgid "Category move added to processing queue."
+msgstr "Kategorieverschiebung zur Verarbeitungswarteschlange hinzugefuegt."
+
+msgid "Set fixed monthly and yearly planned income."
+msgstr "Lege feste monatliche und jaehrliche geplante Einnahmen fest."
+
+msgid "Could not read budgets: {error}"
+msgstr "Budgets konnten nicht gelesen werden: {error}"
+
+# Read-only storage and managed preferences
+
+msgid "CSV storage is read-only."
+msgstr "CSV-Speicher ist schreibgeschützt."
+
+msgid "Configuration storage is read-only."
+msgstr "Konfigurationsspeicher ist schreibgeschützt."
+
+msgid "Auto Clean Config skipped because configuration storage is read-only."
+msgstr "Automatische Konfigurationsbereinigung wurde übersprungen, weil der Konfigurationsspeicher schreibgeschützt ist."
+
+msgid "This preference is managed by the system."
+msgstr "Diese Einstellung wird vom System verwaltet."

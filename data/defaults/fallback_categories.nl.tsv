@@ -1,0 +1,13 @@
+category	budget_code	direction	keywords
+Inkomen	INC	income	salaris|loon|salary|payroll|uitbetaling|bijschrijving salaris
+Verlies en kosten	LOSS	expense	misbeheer|mismanagement|verlies|loss|roodstand|boete|aanmaning|incassokosten|incasso kosten|betalingsachterstand|casino|gok|gokken
+Boodschappen	FOOD	any	albert heijn|ah |jumbo|lidl|aldi|plus supermarkt|dirk|coop|picnic|spar
+Uit eten	DINING	any	restaurant|cafe|bar|thuisbezorgd|deliveroo|ubereats|coffee|koffie|lunch|diner
+Vervoer	TRAN	any	ns |nederlandse spoorwegen|ov chip|ovpay|shell|esso|bp |tankstation|uber|taxi|q park|parkeren
+Wonen	HOME	any	huur|hypotheek|mortgage|vve|woonverzekering|gemeente|waterschap
+Vaste lasten	UTIL	any	energie|gas|stroom|waternet|eneco|vattenfall|essent|greenchoice|internet|ziggo|kpn|odido|telefoon
+Zorg	CARE	any	zorg|verzekering|ziektekosten|apotheek|tandarts|huisarts|fysiotherapie
+Winkelen	SHOP	any	bol com|amazon|coolblue|mediamarkt|ikea|hema|zalando|wehkamp
+Abonnementen en entertainment	ENT	any	netflix|spotify|apple|google|steam|playstation|disney|hbo|videoland|pathe
+Belastingen	TAX	any	belastingdienst|toeslag|inkomstenbelasting|btw
+Overboekingen	TRANSFER	transfer	overboeking|transfer|tikkie|betaalverzoek|bunq|revolut|wise

@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=io.github.noobping.BankFiles.SearchProvider
+Exec=bank-files --search-provider

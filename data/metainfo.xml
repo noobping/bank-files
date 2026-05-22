@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id translate="no">io.github.noobping.BankFiles</id>
+
+  <name>Bank Files</name>
+  <name xml:lang="nl">Bankbestanden</name>
+  <name xml:lang="de">Bankdateien</name>
+  <summary>Review spending, budgets, and trends</summary>
+  <summary xml:lang="nl">Bekijk uitgaven, budgetten en trends</summary>
+  <summary xml:lang="de">Ausgaben, Budgets und Trends</summary>
+
+  <metadata_license translate="no">CC0-1.0</metadata_license>
+  <project_license translate="no">MIT</project_license>
+
+  <developer id="io.github.noobping">
+    <name translate="no">noobping</name>
+  </developer>
+
+  <branding>
+    <color type="primary" scheme_preference="light" translate="no">#3584E4</color>
+    <color type="primary" scheme_preference="dark" translate="no">#26A269</color>
+  </branding>
+
+  <recommends>
+    <display_length compare="ge" translate="no">360</display_length>
+  </recommends>
+
+  <supports>
+    <control translate="no">keyboard</control>
+    <control translate="no">pointing</control>
+    <control translate="no">touch</control>
+  </supports>
+
+  <description>
+    <p>Review bank CSV files locally. Import transaction and configuration files, detect common bank fields, and keep data on your device.</p>
+    <p xml:lang="nl">Bekijk bank-CSV-bestanden lokaal. Importeer transactie- en configuratiebestanden, herken gangbare bankvelden en houd je gegevens op je apparaat.</p>
+    <p xml:lang="de">Werte Bank-CSV-Dateien lokal aus. Importiere Transaktions- und Konfigurationsdateien, erkenne gängige Bankfelder und behalte deine Daten auf deinem Gerät.</p>
+    <ul>
+      <li>Inspect transactions, categories, budgets, monthly trends, yearly comparisons, and printable reports</li>
+      <li xml:lang="nl">Inspecteer transacties, categorieën, budgetten, maandtrends, jaarvergelijkingen en afdrukbare rapporten</li>
+      <li xml:lang="de">Prüfe Transaktionen, Kategorien, Budgets, Monatstrends, Jahresvergleiche und druckbare Berichte</li>
+      <li>Recognize common bank columns such as date, amount, description, counterparty, account, currency, tags, and transaction ID</li>
+      <li xml:lang="nl">Herken gangbare bankkolommen zoals datum, bedrag, omschrijving, tegenpartij, rekening, valuta, tags en transactie-ID</li>
+      <li xml:lang="de">Erkenne gängige Bankspalten wie Datum, Betrag, Beschreibung, Gegenpartei, Konto, Währung, Tags und Transaktions-ID</li>
+      <li>Use editable rules, budget codes, field aliases, fixed budgets, and percentage budgets based on income</li>
+      <li xml:lang="nl">Gebruik bewerkbare regels, budgetcodes, veldaliassen, vaste budgetten en percentagebudgetten op basis van inkomen</li>
+      <li xml:lang="de">Nutze bearbeitbare Regeln, Budgetcodes, Feldaliasse, feste Budgets und prozentuale Budgets auf Basis des Einkommens</li>
+      <li>Get warnings when spending is above income, planned budgets are above income, or spending is over budget</li>
+      <li xml:lang="nl">Krijg waarschuwingen wanneer uitgaven hoger zijn dan inkomen, geplande budgetten boven inkomen liggen of uitgaven boven budget zijn</li>
+      <li xml:lang="de">Erhalte Warnungen, wenn Ausgaben über dem Einkommen liegen, geplante Budgets das Einkommen überschreiten oder Ausgaben über dem Budget liegen</li>
+      <li>Detect repeating transactions, full refunds, and fully offsetting groups, then open matching transactions or create rules from patterns</li>
+      <li xml:lang="nl">Detecteer terugkerende transacties, volledige terugbetalingen en gedeelde rekeningen, en open bijpassende transacties of maak regels uit patronen</li>
+      <li xml:lang="de">Erkenne wiederkehrende Transaktionen, vollständige Rückerstattungen und geteilte Rechnungen, und öffne passende Transaktionen oder erstelle Regeln aus Mustern</li>
+      <li>Filter views from cards and charts, hide refunded or offsetting transactions when needed, print filtered reports, or export cleaned CSV data</li>
+      <li xml:lang="nl">Filter weergaven vanuit kaarten en grafieken, verberg terugbetalingen of verrekenende transacties wanneer nodig, druk gefilterde rapporten af of exporteer opgeschoonde CSV-data</li>
+      <li xml:lang="de">Filtere Ansichten über Karten und Diagramme, blende erstattete oder ausgleichende Transaktionen bei Bedarf aus, drucke gefilterte Berichte oder exportiere bereinigte CSV-Daten</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id" translate="no">io.github.noobping.BankFiles.desktop</launchable>
+  <icon type="stock" translate="no">io.github.noobping.BankFiles</icon>
+  <translation type="gettext">bank-files</translation>
+
+  <provides>
+    <binary translate="no">bank-files</binary>
+  </provides>
+
+  <screenshots>
+    <screenshot type="default">
+      <image type="source">https://raw.githubusercontent.com/noobping/bank-files/main/data/screenshots/overview.png</image>
+      <caption>Overview with trends, budget warning, and yearly comparison</caption>
+      <caption xml:lang="nl">Overzicht met trends, budgetwaarschuwing en jaarvergelijking</caption>
+      <caption xml:lang="de">Übersicht mit Trends, Budgetwarnung und Jahresvergleich</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/noobping/bank-files/main/data/screenshots/budget.png</image>
+      <caption>Budget room, categories, and transactions for a selected period</caption>
+      <caption xml:lang="nl">Budgetruimte, categorieën en transacties voor een gekozen periode</caption>
+      <caption xml:lang="de">Budgetspielraum, Kategorien und Transaktionen für einen ausgewählten Zeitraum</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://raw.githubusercontent.com/noobping/bank-files/main/data/screenshots/diagnostics.png</image>
+      <caption>Import diagnostics with duplicate filtering and transaction patterns</caption>
+      <caption xml:lang="nl">Importdiagnose met ontdubbelen en transactiepatronen</caption>
+      <caption xml:lang="de">Importdiagnose mit Duplikatfilterung und Transaktionsmustern</caption>
+    </screenshot>
+  </screenshots>
+
+  <releases>
+    <release version="0.1.0" date="2026-05-17">
+      <description>
+        <p>Initial release with local bank-file import, editable budgets and rules, transaction filters, printable reports, and pattern detection.</p>
+        <p xml:lang="nl">Eerste release met lokale import van bankbestanden, bewerkbare budgetten en regels, transactiefilters, afdrukbare rapporten en patroondetectie.</p>
+        <p xml:lang="de">Erste Veröffentlichung mit lokalem Import von Bankdateien, bearbeitbaren Budgets und Regeln, Transaktionsfiltern, druckbaren Berichten und Mustererkennung.</p>
+      </description>
+    </release>
+  </releases>
+
+  <url type="homepage" translate="no">https://github.com/noobping/bank-files</url>
+  <url type="bugtracker" translate="no">https://github.com/noobping/bank-files/issues</url>
+  <url type="vcs-browser" translate="no">https://github.com/noobping/bank-files</url>
+
+  <content_rating type="oars-1.1"/>
+
+  <categories>
+    <category translate="no">Office</category>
+    <category translate="no">Finance</category>
+  </categories>
+
+  <keywords>
+    <keyword>finance</keyword>
+    <keyword>budget</keyword>
+    <keyword>csv</keyword>
+    <keyword>bank</keyword>
+    <keyword>transactions</keyword>
+    <keyword>patterns</keyword>
+    <keyword xml:lang="nl">financien</keyword>
+    <keyword xml:lang="nl">budget</keyword>
+    <keyword xml:lang="nl">bank</keyword>
+    <keyword xml:lang="nl">transacties</keyword>
+    <keyword xml:lang="nl">patronen</keyword>
+    <keyword xml:lang="de">finanzen</keyword>
+    <keyword xml:lang="de">budget</keyword>
+    <keyword xml:lang="de">bank</keyword>
+    <keyword xml:lang="de">transaktionen</keyword>
+    <keyword xml:lang="de">muster</keyword>
+  </keywords>
+</component>

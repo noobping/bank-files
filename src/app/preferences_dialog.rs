@@ -1,0 +1,223 @@
+use super::*;
+
+pub(in crate::app) fn show_preferences_dialog(parent: &adw::ApplicationWindow, ui: &Rc<UiHandles>) {
+    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    let (header, search_button) = build_settings_header("Preferences");
+    root.append(&header);
+
+    let search_entry = gtk::SearchEntry::builder()
+        .placeholder_text(tr("Search preferences"))
+        .hexpand(true)
+        .build();
+    let search_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    search_box.set_margin_top(8);
+    search_box.set_margin_bottom(8);
+    search_box.set_margin_start(12);
+    search_box.set_margin_end(12);
+    search_box.append(&search_entry);
+    let search_bar = gtk::SearchBar::builder()
+        .child(&search_box)
+        .show_close_button(true)
+        .search_mode_enabled(false)
+        .build();
+    search_bar.connect_entry(&search_entry);
+    root.append(&search_bar);
+
+    let page = adw::PreferencesPage::builder()
+        .title(tr("General"))
+        .icon_name("preferences-system-symbolic")
+        .build();
+    let mut search_groups = Vec::new();
+
+    if let Some((group, search_group)) = preference_group(
+        "Interface",
+        "Control how much information is visible while you browse.",
+        &[
+            PreferenceSpec::new(
+                "Autohide Status Bar",
+                "Hide status messages automatically after a short delay.",
+                "app.autohide-status",
+                ui.status_autohide.get(),
+            ),
+            PreferenceSpec::new(
+                "Always Show Full Lists",
+                "Show every item immediately and hide More buttons.",
+                "app.show-all",
+                ui.show_all.get(),
+            ),
+        ],
+        ui.advanced_features.get(),
+        &ui.preferences,
+    ) {
+        page.add(&group);
+        search_groups.push(search_group);
+    }
+
+    if let Some((group, search_group)) = preference_group(
+        "Insights",
+        "Control smart forecasts, pattern detection, and previous-period spending comparisons.",
+        &[
+            PreferenceSpec::new(
+                "Smart Insights",
+                "Show forecast cards and detect transaction patterns from imported transactions.",
+                "app.show-predictions",
+                ui.show_predictions.get(),
+            ),
+            PreferenceSpec::new(
+                "Compare Spending with Previous Period",
+                "Compare spending cards with the previous month or year.",
+                "app.compare-categories-previous-period",
+                ui.compare_categories_previous_period.get(),
+            ),
+        ],
+        ui.advanced_features.get(),
+        &ui.preferences,
+    ) {
+        page.add(&group);
+        search_groups.push(search_group);
+    }
+
+    if let Some((group, search_group)) = preference_group(
+        "Forms and Data",
+        "Control simple mode, smart form filling, cleanup, and refunded transaction visibility.",
+        &[
+            PreferenceSpec::new(
+                "Advanced Features",
+                "Allow rule editing and budget direction controls.",
+                "app.advanced-features",
+                ui.advanced_features.get(),
+            ),
+            PreferenceSpec::new(
+                "Smart Autofill",
+                "Let forms fill related fields from context, such as matching categories and budget codes.",
+                "app.advanced-autofill",
+                ui.advanced_autofill.get(),
+            ),
+            PreferenceSpec::new(
+                "Auto Clean Config",
+                "Remove orphaned rules automatically during reload and import.",
+                "app.auto-clean-config",
+                ui.auto_clean_config.get(),
+            ),
+            PreferenceSpec::new(
+                "Hide Refunded Transactions",
+                "Requires Smart Insights. Exclude detected refunds and offsetting groups from normal views.",
+                "app.hide-canceled-transactions",
+                ui.hide_canceled_transactions.get(),
+            ),
+        ],
+        ui.advanced_features.get(),
+        &ui.preferences,
+    ) {
+        page.add(&group);
+        search_groups.push(search_group);
+    }
+
+    root.append(&ui::scroll(&page));
+
+    let status_bar = build_status_bar();
+    connect_embedded_status_bar(parent, &status_bar, Rc::clone(&ui.status_autohide));
+    status_bar
+        .label
+        .set_text(&tr("Preference changes are applied immediately."));
+    root.append(&status_bar.container);
+
+    let dialog = adw::Dialog::builder()
+        .title(tr("Preferences"))
+        .content_width(680)
+        .content_height(620)
+        .child(&root)
+        .build();
+
+    let search_bar_for_button = search_bar.clone();
+    let search_entry_for_button = search_entry.clone();
+    search_button.connect_clicked(move |_| {
+        let enabled = !search_bar_for_button.is_search_mode();
+        search_bar_for_button.set_search_mode(enabled);
+        if enabled {
+            search_entry_for_button.grab_focus();
+        }
+    });
+    search_bar.set_key_capture_widget(Some(&dialog));
+    connect_preference_search(&search_entry, search_groups);
+
+    dialog.present(Some(parent));
+}
+
+struct PreferenceSpec<'a> {
+    title: &'a str,
+    subtitle: &'a str,
+    action_name: &'a str,
+    active: bool,
+}
+
+impl<'a> PreferenceSpec<'a> {
+    fn new(title: &'a str, subtitle: &'a str, action_name: &'a str, active: bool) -> Self {
+        Self {
+            title,
+            subtitle,
+            action_name,
+            active,
+        }
+    }
+}
+
+fn preference_group(
+    title: &str,
+    description: &str,
+    rows: &[PreferenceSpec<'_>],
+    advanced_features: bool,
+    preferences: &Preferences,
+) -> Option<(adw::PreferencesGroup, SearchablePreferencesGroup)> {
+    let group = adw::PreferencesGroup::builder()
+        .title(tr(title))
+        .description(tr(description))
+        .build();
+    let mut search_group = SearchablePreferencesGroup::new(&group, title, description);
+    let mut added = false;
+    for spec in rows {
+        let writable = Preferences::key_for_action(spec.action_name)
+            .map(|key| preferences.is_writable(key))
+            .unwrap_or(true);
+        if !preference_row_visible(writable, advanced_features) {
+            continue;
+        }
+        let row = preference_row(spec, writable);
+        search_group.add_row(&row, spec.title, spec.subtitle);
+        group.add(&row);
+        added = true;
+    }
+    added.then_some((group, search_group))
+}
+
+fn preference_row_visible(writable: bool, advanced_features: bool) -> bool {
+    writable || advanced_features
+}
+
+fn preference_row(spec: &PreferenceSpec<'_>, writable: bool) -> adw::SwitchRow {
+    let row = adw::SwitchRow::builder()
+        .title(tr(spec.title))
+        .subtitle(tr(spec.subtitle))
+        .build();
+    row.set_active(spec.active);
+    if writable {
+        row.set_action_name(Some(spec.action_name));
+    } else {
+        row.set_sensitive(false);
+        row.set_tooltip_text(Some(&tr("This preference is managed by the system.")));
+    }
+    row
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn preference_row_visibility_follows_managed_state_and_mode() {
+        assert!(preference_row_visible(true, false));
+        assert!(preference_row_visible(true, true));
+        assert!(!preference_row_visible(false, false));
+        assert!(preference_row_visible(false, true));
+    }
+}

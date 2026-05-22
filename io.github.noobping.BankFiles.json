@@ -1,0 +1,49 @@
+{
+  "id": "io.github.noobping.BankFiles",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "50",
+  "sdk": "org.gnome.Sdk",
+  "command": "bank-files",
+  "sdk-extensions": [
+    "org.freedesktop.Sdk.Extension.rust-stable"
+  ],
+  "build-options": {
+    "append-path": "/usr/lib/sdk/rust-stable/bin",
+    "append-ld-library-path": "/usr/lib/sdk/rust-stable/lib",
+    "env": {
+      "CARGO_HOME": "/run/build/bank-files/cargo"
+    }
+  },
+  "finish-args": [
+    "--device=dri",
+    "--share=ipc",
+    "--socket=fallback-x11",
+    "--socket=wayland"
+  ],
+  "modules": [
+    {
+      "name": "bank-files",
+      "buildsystem": "meson",
+      "config-opts": [
+        "-Dcargo_variant=release",
+        "-Dcargo_features=flatpak",
+        "--libdir=lib"
+      ],
+      "sources": [
+        "cargo-sources.yml",
+        {
+          "type": "dir",
+          "path": ".",
+          "skip": [
+            ".git",
+            ".flatpak",
+            ".flatpak-builder",
+            "build-dir",
+            "builddir",
+            "target"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+canonical	exact	contains
+out	af|uit|debet|debit|withdrawal	af|debet
+in	bij|in|credit|deposit	bij|credit

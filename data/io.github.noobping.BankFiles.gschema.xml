@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="io.github.noobping.BankFiles" path="/io/github/noobping/BankFiles/">
+    <key name="active-tab" type="s">
+      <default>'overview'</default>
+      <summary>Last active tab</summary>
+      <description>The stack page that was visible when the application was last used.</description>
+    </key>
+    <key name="autohide-status-bar" type="b">
+      <default>false</default>
+      <summary>Autohide status bar</summary>
+      <description>Whether status messages hide themselves after a short delay.</description>
+    </key>
+    <key name="show-all" type="b">
+      <default>false</default>
+      <summary>Always show full lists</summary>
+      <description>Whether budget, category, and diagnostics sections show all rows instead of previews with More buttons.</description>
+    </key>
+    <key name="show-predictions" type="b">
+      <default>false</default>
+      <summary>Smart insights</summary>
+      <description>Whether forecast cards and detected transaction patterns are shown.</description>
+    </key>
+    <key name="compare-categories-previous-period" type="b">
+      <default>false</default>
+      <summary>Compare spending with previous period</summary>
+      <description>Whether spending cards compare the selected period with the previous period.</description>
+    </key>
+    <key name="advanced-autofill" type="b">
+      <default>true</default>
+      <summary>Smart autofill</summary>
+      <description>Whether forms may infer related values, such as selecting the TRANSFER budget code when transfer direction is selected.</description>
+    </key>
+    <key name="advanced-features" type="b">
+      <default>false</default>
+      <summary>Advanced features</summary>
+      <description>Whether rule editing and budget direction controls are available.</description>
+    </key>
+    <key name="auto-clean-config" type="b">
+      <default>false</default>
+      <summary>Auto clean configuration</summary>
+      <description>Whether rules pointing to missing budget codes are removed during reload and import.</description>
+    </key>
+    <key name="dedupe-enabled" type="b">
+      <default>true</default>
+      <summary>Duplicate filtering</summary>
+      <description>Whether duplicate transactions are skipped during import.</description>
+    </key>
+    <key name="hide-canceled-transactions" type="b">
+      <default>false</default>
+      <summary>Hide refunded transactions</summary>
+      <description>Whether detected refunds and fully offsetting groups are excluded from normal views and totals while Smart Insights are enabled.</description>
+    </key>
+    <key name="selected-year" type="i">
+      <default>0</default>
+      <summary>Selected overview year</summary>
+      <description>The year selected in the overview comparison, or 0 for automatic.</description>
+    </key>
+    <key name="selected-budget-month" type="s">
+      <default>''</default>
+      <summary>Selected budget month</summary>
+      <description>The selected budget period in YYYY-MM format, or empty for automatic.</description>
+    </key>
+    <key name="window-width" type="i">
+      <default>1180</default>
+      <summary>Window width</summary>
+      <description>The last normal window width.</description>
+    </key>
+    <key name="window-height" type="i">
+      <default>820</default>
+      <summary>Window height</summary>
+      <description>The last normal window height.</description>
+    </key>
+    <key name="window-maximized" type="b">
+      <default>false</default>
+      <summary>Window maximized</summary>
+      <description>Whether the main window was maximized when it was last closed.</description>
+    </key>
+  </schema>
+</schemalist>

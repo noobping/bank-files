@@ -1,0 +1,14 @@
+code,category,monthly_budget,yearly_budget,direction,income_basis,notes
+INC,Einkommen,0%,,income,real,Regelmäßige Einnahmen
+FOOD,Lebensmittel,14%,,expense,real,Lebensmittel und Haushaltsbedarf
+DINING,Essen gehen,4%,,expense,real,Restaurants und Cafés
+TRAN,Verkehr,9%,,expense,real,"ÖPNV, Kraftstoff und Parken"
+HOME,Wohnen,28%,,expense,real,Miete/Hypothek/Hausgeld
+UTIL,Nebenkosten,7%,,expense,real,"Energie, Internet, Telefon"
+LOSS,Verluste und Gebühren,0%,,expense,real,"Bußgelder, Überziehung und Verluste"
+CARE,Gesundheit,7%,,expense,real,Krankenversicherung und Gesundheitskosten
+SHOP,Einkaufen,6%,,expense,real,Online- und Ladeneinkäufe
+ENT,Abos und Unterhaltung,5%,,expense,real,Streaming und Unterhaltung
+TRANSFER,Überweisungen,0%,,transfer,real,Interne Überweisungen zwischen eigenen Konten
+OTHER,Sonstiges,5%,,expense,real,Sonstige Ausgaben und Puffer
+INC-OTHER,Sonstige Einnahmen,0%,,income,real,Positive Transaktionen ohne spezifische Regel

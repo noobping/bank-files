@@ -1,0 +1,20 @@
+[Desktop Entry]
+Name=Bank Files
+Name[nl]=Bankbestanden
+Name[de]=Bankdateien
+GenericName=Personal Finance Viewer
+GenericName[nl]=Persoonlijk financieel overzicht
+GenericName[de]=Persönliche Finanzübersicht
+Comment=Review spending, budgets, and trends
+Comment[nl]=Bekijk uitgaven, budgetten en trends
+Comment[de]=Ausgaben, Budgets und Trends
+Exec=bank-files %F
+Icon=io.github.noobping.BankFiles
+Terminal=false
+Type=Application
+Categories=Office;Finance;
+MimeType=text/csv;text/comma-separated-values;application/csv;application/vnd.ms-excel;
+Keywords=finance;budget;csv;bank;money;transactions;patterns;
+Keywords[nl]=financien;budget;csv;bank;geld;transacties;patronen;
+Keywords[de]=finanzen;budget;csv;bank;geld;transaktionen;muster;
+StartupNotify=true

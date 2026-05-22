@@ -1,0 +1,27 @@
+canonical,alias
+date,Date
+date,Transaction Date
+date,Booking Date
+amount,Amount
+amount,Transaction Amount
+debit,Debit
+credit,Credit
+description,Description
+description,Details
+description,Message
+counterparty,Counterparty
+counterparty,Name
+counterparty,Payee
+counterparty,Payer
+account,Account
+account,Account Number
+account,IBAN
+transaction_id,Transaction ID
+transaction_id,Reference
+currency,Currency
+direction,Direction
+direction,Debit/Credit
+tags,Tags
+tags,Tag
+tags,Labels
+tags,Category

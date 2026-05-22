@@ -1,0 +1,257 @@
+name: Windows
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    env:
+      CARGO_TERM_COLOR: always
+      BIN_NAME: bank-files
+      PKG_CONFIG_ALLOW_CROSS: 1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+          fetch-depth: 0
+
+      - name: Version
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF_TYPE -eq 'tag') {
+            "TAG_NAME=$env:GITHUB_REF_NAME" >> $env:GITHUB_ENV
+          } else {
+            $latest = git describe --tags --abbrev=0 2>$null
+            if ($LASTEXITCODE -ne 0) { $latest = '' }
+            "TAG_NAME=$latest" >> $env:GITHUB_ENV
+          }
+
+      - name: Install MSYS2 dependencies
+        id: msys2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          path-type: inherit
+          install: >-
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-gtk4
+            mingw-w64-x86_64-libadwaita
+            mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-ntldd-git
+            mingw-w64-x86_64-zlib
+
+      - name: Configure MSYS2 paths
+        shell: pwsh
+        run: |
+          $msys2Root = '${{ steps.msys2.outputs.msys2-location }}'
+          $mingwRoot = Join-Path $msys2Root 'mingw64'
+          $mingwBin = Join-Path $mingwRoot 'bin'
+          $usrBin = Join-Path $msys2Root 'usr\bin'
+          $pkgConfigDirs = @(
+            Join-Path $mingwRoot 'lib\pkgconfig'
+            Join-Path $mingwRoot 'share\pkgconfig'
+          ) -join [System.IO.Path]::PathSeparator
+
+          $mingwBin >> $env:GITHUB_PATH
+          $usrBin >> $env:GITHUB_PATH
+          "MINGW_BIN=$mingwBin" >> $env:GITHUB_ENV
+          "MSYS_USR_BIN=$usrBin" >> $env:GITHUB_ENV
+          "PKG_CONFIG=$(Join-Path $mingwBin 'pkgconf.exe')" >> $env:GITHUB_ENV
+          "PKG_CONFIG_PATH=$pkgConfigDirs" >> $env:GITHUB_ENV
+          "PKG_CONFIG_PATH_x86_64_pc_windows_gnu=$pkgConfigDirs" >> $env:GITHUB_ENV
+
+      - name: Verify MSYS2 pkg-config
+        shell: pwsh
+        run: |
+          if (-not (Test-Path $env:PKG_CONFIG)) {
+            throw "pkgconf.exe not found at: $env:PKG_CONFIG"
+          }
+          & $env:PKG_CONFIG --version
+          & $env:PKG_CONFIG --modversion glib-2.0 gtk4 libadwaita-1
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-gnu
+
+      - name: Format
+        run: cargo fmt --check
+
+      - name: Compile tests
+        shell: pwsh
+        run: |
+          $env:Path = "$env:MINGW_BIN;$env:MSYS_USR_BIN;$env:Path"
+          where.exe libglib-2.0-0.dll
+          where.exe libgtk-4-1.dll
+          where.exe libadwaita-1-0.dll
+          cargo test --target x86_64-pc-windows-gnu --no-run
+
+      - name: Build
+        shell: pwsh
+        run: |
+          $env:Path = "$env:MINGW_BIN;$env:MSYS_USR_BIN;$env:Path"
+          cargo build --release --target x86_64-pc-windows-gnu
+
+      - name: Bundle runtime
+        shell: pwsh
+        run: |
+          $workspace = $env:GITHUB_WORKSPACE
+          $bundleDir = Join-Path $workspace 'bundle'
+          if (Test-Path $bundleDir) {
+            Remove-Item $bundleDir -Recurse -Force
+          }
+          New-Item -ItemType Directory -Path $bundleDir | Out-Null
+
+          $exe = Join-Path $workspace "target\x86_64-pc-windows-gnu\release\$env:BIN_NAME.exe"
+          if (-not (Test-Path $exe)) {
+            throw "EXE not found at: $exe"
+          }
+          Copy-Item $exe $bundleDir -Force
+
+          $msys2Root = '${{ steps.msys2.outputs.msys2-location }}'
+          $mingwRoot = Join-Path $msys2Root 'mingw64'
+          $mingwBin = Join-Path $mingwRoot 'bin'
+          Get-ChildItem -Path $mingwBin -Filter '*.dll' |
+            Copy-Item -Destination $bundleDir -Force
+
+          $shareDir = Join-Path $bundleDir 'share'
+          $glibSchemasDir = Join-Path $shareDir 'glib-2.0\schemas'
+          New-Item -ItemType Directory -Path $glibSchemasDir -Force | Out-Null
+          $schemaFile = Join-Path $mingwRoot 'share\glib-2.0\schemas\gschemas.compiled'
+          Copy-Item $schemaFile $glibSchemasDir -Force
+
+          $fontConfigDir = Join-Path $mingwRoot 'share\fontconfig'
+          if (Test-Path $fontConfigDir) {
+            Copy-Item $fontConfigDir (Join-Path $shareDir 'fontconfig') -Recurse -Force
+          }
+
+          $etcDir = Join-Path $mingwRoot 'etc'
+          if (Test-Path $etcDir) {
+            Copy-Item $etcDir (Join-Path $bundleDir 'etc') -Recurse -Force
+          }
+
+          $pixbufRoot = Join-Path $bundleDir 'lib\gdk-pixbuf-2.0\2.10.0'
+          $pixbufLoadersDir = Join-Path $pixbufRoot 'loaders'
+          New-Item -ItemType Directory -Path $pixbufLoadersDir -Force | Out-Null
+
+          $pixbufSourceDir = Join-Path $mingwRoot 'lib\gdk-pixbuf-2.0\2.10.0\loaders'
+          if (Test-Path $pixbufSourceDir) {
+            Copy-Item (Join-Path $pixbufSourceDir '*') $pixbufLoadersDir -Recurse -Force
+          }
+
+          $pixbufQuery = Join-Path $mingwBin 'gdk-pixbuf-query-loaders.exe'
+          $pixbufLoaderDlls = @(Get-ChildItem $pixbufLoadersDir -Filter '*.dll' | Select-Object -ExpandProperty FullName)
+          if ((Test-Path $pixbufQuery) -and $pixbufLoaderDlls.Count -gt 0) {
+            $pixbufCache = & $pixbufQuery $pixbufLoaderDlls
+            [System.IO.File]::WriteAllText((Join-Path $pixbufRoot 'loaders.cache'), ($pixbufCache -join [Environment]::NewLine))
+          }
+
+      - name: Filter bundled DLLs
+        shell: pwsh
+        run: |
+          $exe = Join-Path $env:GITHUB_WORKSPACE "bundle\$env:BIN_NAME.exe"
+          $msys2Root = '${{ steps.msys2.outputs.msys2-location }}'
+          $ntldd = Join-Path $msys2Root 'mingw64\bin\ntldd.exe'
+          if (-not (Test-Path $ntldd)) {
+            Write-Host "ntldd not present; keeping full DLL bundle."
+            exit 0
+          }
+
+          function Get-NeededDllNames([string]$binaryPath) {
+            $raw = & $ntldd -R $binaryPath 2>$null
+            $raw |
+              ForEach-Object { $_.Trim() } |
+              Where-Object { $_ -match '^[A-Za-z]:\\' -and $_.ToLower().EndsWith('.dll') } |
+              ForEach-Object { Split-Path $_ -Leaf }
+          }
+
+          $needed = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+          foreach ($name in (Get-NeededDllNames $exe)) {
+            $null = $needed.Add($name)
+          }
+
+          $loaderDir = Join-Path $env:GITHUB_WORKSPACE 'bundle\lib\gdk-pixbuf-2.0\2.10.0\loaders'
+          if (Test-Path $loaderDir) {
+            Get-ChildItem $loaderDir -Filter '*.dll' | ForEach-Object {
+              foreach ($name in (Get-NeededDllNames $_.FullName)) {
+                $null = $needed.Add($name)
+              }
+            }
+          }
+
+          Get-ChildItem bundle -Filter '*.dll' | Where-Object { -not $needed.Contains($_.Name) } |
+            Remove-Item -Force
+
+      - name: Install WiX Toolset
+        run: choco install wixtoolset --no-progress -y
+
+      - name: Generate WiX file list
+        shell: pwsh
+        run: |
+          $heat = (Get-Command heat.exe -ErrorAction Stop).Source
+          New-Item -ItemType Directory -Force -Path wix\generated | Out-Null
+          & $heat dir "bundle" `
+            -cg AppFiles `
+            -dr INSTALLDIR `
+            -gg -g1 -srd -sreg -sfrag -suid `
+            -var var.BundleDir `
+            -out "wix\generated\AppFiles.wxs"
+
+      - name: Build MSI
+        shell: pwsh
+        run: |
+          $candle = (Get-Command candle.exe -ErrorAction Stop).Source
+          $light  = (Get-Command light.exe  -ErrorAction Stop).Source
+
+          $ver = $env:TAG_NAME -replace '^v',''
+          if ([string]::IsNullOrWhiteSpace($ver)) {
+            $cargo = Get-Content Cargo.toml -Raw
+            $ver = [regex]::Match($cargo, '(?m)^version\s*=\s*"([^"]+)"').Groups[1].Value
+          }
+
+          $parts = $ver.Split('.')
+          if ($parts.Count -eq 3) { $ver = "$ver.0" }
+          elseif ($parts.Count -eq 2) { $ver = "$ver.0.0" }
+          elseif ($parts.Count -eq 1) { $ver = "$ver.0.0.0" }
+
+          & $candle `
+            -ext WixUtilExtension `
+            -dBundleDir="$(Resolve-Path bundle)" `
+            -dProductVersion="$ver" `
+            -out wix\generated\ `
+            data\bank-files.wxs `
+            wix\generated\AppFiles.wxs
+
+          & $light `
+            -ext WixUtilExtension `
+            -out bank-files.msi `
+            wix\generated\bank-files.wixobj `
+            wix\generated\AppFiles.wixobj
+
+      - name: Upload MSI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bank-files-windows-msi
+          path: bank-files.msi
+
+      - name: Release
+        if: ${{ env.TAG_NAME != '' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          files: bank-files.msi
+          overwrite_files: true

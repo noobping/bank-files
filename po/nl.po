@@ -1,0 +1,3083 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Bank Files 0.1.0\n"
+"PO-Revision-Date: 2026-05-20 00:00+0200\n"
+"Last-Translator: Codex\n"
+"Language-Team: none\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Bank Files"
+msgstr "Bankbestanden"
+
+msgid "Overview"
+msgstr "Overzicht"
+
+msgid "Budget"
+msgstr "Budget"
+
+msgid "Transactions"
+msgstr "Transacties"
+
+msgid "Diagnostics"
+msgstr "Diagnose"
+
+msgid "Back"
+msgstr "Terug"
+
+msgid "Open CSV files"
+msgstr "CSV-bestanden openen"
+
+msgid "Search this page"
+msgstr "Zoeken in deze pagina"
+
+msgid "Copy message"
+msgstr "Kopieer melding"
+
+msgid "Show message history"
+msgstr "Meldingengeschiedenis tonen"
+
+msgid "Message History"
+msgstr "Meldingengeschiedenis"
+
+msgid "Search messages"
+msgstr "Meldingen zoeken"
+
+msgid "Recent status bar messages from this session."
+msgstr "Recente statusbalkmeldingen uit deze sessie."
+
+msgid "No messages found."
+msgstr "Geen meldingen gevonden."
+
+msgid "No messages yet."
+msgstr "Nog geen meldingen."
+
+msgid "Choose CSV Files"
+msgstr "CSV’s kiezen"
+
+msgid "Search"
+msgstr "Zoeken"
+
+msgid "Reload"
+msgstr "Herladen"
+
+msgid "Quick Reload"
+msgstr "Snel herladen"
+
+msgid "Reload All"
+msgstr "Alles herladen"
+
+msgid "Force reload all CSV files"
+msgstr "Alle CSV-bestanden geforceerd herladen"
+
+msgid "Categorization Rules"
+msgstr "Categorisatieregels"
+
+msgid "Budgets"
+msgstr "Budgetten"
+
+msgid "Normalize CSV Fields"
+msgstr "CSV-velden normaliseren"
+
+msgid "Install Locally"
+msgstr "Lokaal installeren"
+
+msgid "Add to app menu"
+msgstr "Toevoegen aan app-menu"
+
+msgid "Remove from app menu"
+msgstr "Verwijderen uit app-menu"
+
+msgid "Keyboard Shortcuts"
+msgstr "Sneltoetsen"
+
+msgid "Check for Updates"
+msgstr "Controleren op updates"
+
+msgid "About Bank Files"
+msgstr "Over Bankbestanden"
+
+msgid "Quit"
+msgstr "Afsluiten"
+
+msgid "Choose bank files or drop them onto the window to review spending, budgets, and trends."
+msgstr "Kies bankbestanden of sleep ze in het venster om uitgaven, budgetten en trends te bekijken."
+
+msgid "Opening the file portal for CSV import..."
+msgstr "Bestandsportal wordt geopend voor CSV-import..."
+
+msgid "Choose one or more CSV files"
+msgstr "Kies een of meer CSV-bestanden"
+
+msgid "CSV import canceled."
+msgstr "CSV-import geannuleerd."
+
+msgid "Importing CSV files..."
+msgstr "CSV-bestanden worden geïmporteerd..."
+
+msgid "Added to app menu."
+msgstr "Toegevoegd aan het app-menu."
+
+msgid "Removed from app menu."
+msgstr "Verwijderd uit het app-menu."
+
+msgid "Couldn't update the app menu."
+msgstr "Kon het app-menu niet bijwerken."
+
+msgid "No update available"
+msgstr "Geen update beschikbaar"
+
+msgid "Bank Files is already up to date."
+msgstr "Bankbestanden is al up-to-date."
+
+msgid "Couldn't check for updates."
+msgstr "Kon niet op updates controleren."
+
+msgid "Update available"
+msgstr "Update beschikbaar"
+
+msgid "Version {version} is available from GitHub Releases."
+msgstr "Versie {version} is beschikbaar via GitHub Releases."
+
+msgid "Later"
+msgstr "Later"
+
+msgid "Install Update"
+msgstr "Update installeren"
+
+msgid "Couldn't download the update."
+msgstr "Kon de update niet downloaden."
+
+msgid "Downloading update"
+msgstr "Update downloaden"
+
+msgid "Downloading version {version}."
+msgstr "Versie {version} wordt gedownload."
+
+msgid "Preparing download..."
+msgstr "Download voorbereiden..."
+
+msgid "Downloaded {downloaded} of {total}"
+msgstr "{downloaded} van {total} gedownload"
+
+msgid "Bank Files Update"
+msgstr "Bankbestanden-update"
+
+msgid "Close Bank Files to install the update?"
+msgstr "Bankbestanden sluiten om de update te installeren?"
+
+msgid "Installing the update will close Bank Files. Unsaved changes will be lost."
+msgstr "Het installeren van de update sluit Bankbestanden. Niet-opgeslagen wijzigingen gaan verloren."
+
+msgid "Couldn't start the installer."
+msgstr "Kon het installatieprogramma niet starten."
+
+msgid "Couldn't install the update."
+msgstr "Kon de update niet installeren."
+
+msgid "Bank Files couldn't finish installing the downloaded Linux update."
+msgstr "Bankbestanden kon de gedownloade Linux-update niet afronden."
+
+msgid "Close"
+msgstr "Sluiten"
+
+msgid "Filter cleared. All items are shown."
+msgstr "Filter gewist. Alle items worden getoond."
+
+msgid "Filter active: “{query}”. Clear the search text to show everything."
+msgstr "Filter actief: “{query}”. Wis de zoektekst om alles te tonen."
+
+msgid "Review spending, budgets, and trends"
+msgstr "Bekijk uitgaven, budgetten en trends"
+
+msgid "Navigation"
+msgstr "Navigatie"
+
+msgid "Go Back"
+msgstr "Teruggaan"
+
+msgid "Open Overview"
+msgstr "Overzicht openen"
+
+msgid "Open Budget"
+msgstr "Budget openen"
+
+msgid "Open Transactions"
+msgstr "Transacties openen"
+
+msgid "Open Diagnostics"
+msgstr "Diagnose openen"
+
+msgid "Files"
+msgstr "Bestanden"
+
+msgid "Export CSV"
+msgstr "CSV exporteren"
+
+msgid "Reload Data"
+msgstr "Data herladen"
+
+msgid "Page"
+msgstr "Pagina"
+
+msgid "Search or Filter"
+msgstr "Zoeken of filteren"
+
+msgid "Copy Page"
+msgstr "Pagina kopiëren"
+
+msgid "Copy Status Message"
+msgstr "Statusmelding kopiëren"
+
+msgid "Print Page"
+msgstr "Pagina printen"
+
+msgid "Manage"
+msgstr "Beheer"
+
+msgid "Manage Categorization Rules"
+msgstr "Categorisatieregels beheren"
+
+msgid "Manage Budgets"
+msgstr "Budgetten beheren"
+
+msgid "Filter the Manage Window"
+msgstr "Filteren in het beheervenster"
+
+msgid "Open Preferences"
+msgstr "Voorkeuren openen"
+
+msgid "Open Configuration"
+msgstr "Configuratie openen"
+
+msgid "Toggle Duplicate Filtering"
+msgstr "Ontdubbelen aan of uit"
+
+msgid "Toggle Smart Insights"
+msgstr "Slimme inzichten aan/uit"
+
+msgid "Toggle Smart Autofill"
+msgstr "Smart Autofill aan/uit"
+
+msgid "Toggle Hide Refunded Transactions"
+msgstr "Terugbetaalde transacties verbergen aan/uit"
+
+msgid "Toggle Full Lists"
+msgstr "Volledige lijsten aan/uit"
+
+msgid "Toggle Spending Comparison"
+msgstr "Uitgavenvergelijking aan/uit"
+
+msgid "Toggle Auto Clean Config"
+msgstr "Auto Clean Config aan/uit"
+
+msgid "Toggle Status Autohide"
+msgstr "Status automatisch verbergen aan/uit"
+
+msgid "Show Keyboard Shortcuts"
+msgstr "Sneltoetsen tonen"
+
+msgid "Copy this page"
+msgstr "Kopieer deze pagina"
+
+msgid "Print this page"
+msgstr "Druk deze pagina af"
+
+msgid "No transactions to export."
+msgstr "Geen transacties om te exporteren."
+
+msgid "Opening the file portal to save the CSV export..."
+msgstr "Bestandsportal wordt geopend om de CSV-export op te slaan..."
+
+msgid "Save CSV export"
+msgstr "CSV-export opslaan"
+
+msgid "CSV files"
+msgstr "CSV-bestanden"
+
+msgid "CSV export canceled."
+msgstr "CSV-export geannuleerd."
+
+msgid "CSV export saved"
+msgstr "CSV-export opgeslagen"
+
+msgid "Export saved: {path}"
+msgstr "Export opgeslagen: {path}"
+
+msgid "Latest month, yearly comparison, trend, and budget room based on your imported CSV files."
+msgstr "Laatste maand, jaarvergelijking, trend en budgetruimte op basis van je geïmporteerde CSV’s."
+
+msgid "No transactions yet"
+msgstr "Nog geen transacties"
+
+msgid "Choose CSV files or drop bank files onto this window. Your data stays local."
+msgstr "Kies CSV’s of sleep bankbestanden in dit venster. Je data blijft lokaal."
+
+msgid "Imported after duplicate filtering"
+msgstr "Geïmporteerd na ontdubbelen"
+
+msgid "Imported without duplicate filtering"
+msgstr "Geïmporteerd zonder ontdubbelen"
+
+msgid "Latest month"
+msgstr "Laatste maand"
+
+msgid "Active rules"
+msgstr "Actieve regels"
+
+msgid "Used for categorization"
+msgstr "Gebruikt voor categorisatie"
+
+msgid "Duplicates"
+msgstr "Dubbelen"
+
+msgid "Trend"
+msgstr "Trend"
+
+msgid "Latest 24 months. Green is income, red is expenses, blue is balance; red points show a loss."
+msgstr "Laatste 24 maanden. Groen is inkomen, rood is uitgaven, blauw is saldo; rode punten tonen verlies."
+
+msgid "Search Results"
+msgstr "Zoekresultaten"
+
+msgid "No results"
+msgstr "Geen resultaten"
+
+msgid "Adjust your search term or clear the search bar to see the full overview."
+msgstr "Pas je zoekterm aan of wis de zoekbalk om het volledige overzicht te zien."
+
+msgid "Compare Years"
+msgstr "Jaar vergelijken"
+
+msgid "Choose a year and see what changed compared with the previous year."
+msgstr "Kies een jaar en zie wat er veranderde ten opzichte van het voorgaande jaar."
+
+msgid "Difference"
+msgstr "Verschil"
+
+msgid "Income"
+msgstr "Inkomsten"
+
+msgid "Expenses"
+msgstr "Uitgaven"
+
+msgid "Balance"
+msgstr "Saldo"
+
+msgid "Category Changes"
+msgstr "Categorieveranderingen"
+
+msgid "Annual Budgets"
+msgstr "Jaarbudgetten"
+
+msgid "Annual Categories"
+msgstr "Jaarcategorieën"
+
+msgid "Previous year"
+msgstr "Vorig jaar"
+
+msgid "Next year"
+msgstr "Volgend jaar"
+
+msgid "Previous period"
+msgstr "Vorige periode"
+
+msgid "Next period"
+msgstr "Volgende periode"
+
+msgid "Year"
+msgstr "Jaar"
+
+msgid "Month"
+msgstr "Maand"
+
+msgid "Period"
+msgstr "Periode"
+
+msgid "Choose the month and year for budgets and categories."
+msgstr "Kies de maand en het jaar voor budgetten en categorieën."
+
+msgid "Budget period: {month}. The overview also uses {year}."
+msgstr "Budgetperiode: {month}. Overzicht gebruikt ook {year}."
+
+msgid "Choose a month and year to see budget room and categories for that period."
+msgstr "Kies maand en jaar om budgetruimte en categorieën voor die periode te zien."
+
+msgid "No budget view yet"
+msgstr "Nog geen budgetbeeld"
+
+msgid "Import CSV files first. Then budgets and categories appear here as graphical rows."
+msgstr "Importeer eerst CSV’s. Daarna zie je hier budgetten en categorieën als grafische rijen."
+
+msgid "No period found"
+msgstr "Geen periode gevonden"
+
+msgid "Import CSV files to choose a month and year."
+msgstr "Importeer CSV’s om een maand en jaar te kiezen."
+
+msgid "Budget Room"
+msgstr "Budgetruimte"
+
+msgid "Categories"
+msgstr "Categorieën"
+
+msgid "More"
+msgstr "Meer"
+
+msgid "Show all categories"
+msgstr "Alle categorieën tonen"
+
+msgid "Show all budgets"
+msgstr "Alle budgetten tonen"
+
+msgid "No budget results"
+msgstr "Geen budgetresultaten"
+
+msgid "No budgets or categories match this search term."
+msgstr "Geen budgetten of categorieën passen bij deze zoekterm."
+
+msgid "Recent transactions as a scannable list. Copy this page for a text export."
+msgstr "De laatste transacties als scanbare lijst. Kopieer deze pagina voor een tekstexport."
+
+msgid "Import CSV files to see recent transactions here."
+msgstr "Importeer CSV’s om hier recente transacties te zien."
+
+msgid "No transactions found"
+msgstr "Geen transacties gevonden"
+
+msgid "Adjust your search term or clear the search bar to show all transactions."
+msgstr "Pas je zoekterm aan of wis de zoekbalk om alle transacties te tonen."
+
+msgid "Import quality, detected fields, and warnings. Everything is local and copyable here."
+msgstr "Importkwaliteit, herkende velden en waarschuwingen. Alles is lokaal en hier kopieerbaar."
+
+msgid "Rows seen"
+msgstr "Rijen gezien"
+
+msgid "For import checks"
+msgstr "Voor importcontrole"
+
+msgid "Imported"
+msgstr "Geïmporteerd"
+
+msgid "Import Settings"
+msgstr "Importinstellingen"
+
+msgid "These settings control how CSV files are read."
+msgstr "Deze instellingen bepalen hoe CSV’s worden ingelezen."
+
+msgid "No CSV files opened"
+msgstr "Geen CSV-bestanden geopend"
+
+msgid "Choose CSV files or drop bank files onto the window to see import diagnostics."
+msgstr "Kies CSV’s of sleep bankbestanden naar het venster om importdiagnose te zien."
+
+msgid "Warnings"
+msgstr "Waarschuwingen"
+
+msgid "You can select these messages or include them through Copy Page."
+msgstr "Deze meldingen kun je selecteren of via Kopieer pagina meenemen."
+
+msgid "No diagnostic results"
+msgstr "Geen diagnose-resultaten"
+
+msgid "No CSV files or warnings match this search term."
+msgstr "Geen CSV-bestanden of waarschuwingen passen bij deze zoekterm."
+
+msgid "Duplicate Filtering"
+msgstr "Ontdubbelen"
+
+msgid "Exact duplicates are skipped during import."
+msgstr "Exacte dubbelen worden overgeslagen bij import."
+
+msgid "All imported rows remain visible, including possible duplicates."
+msgstr "Alle geïmporteerde rijen blijven zichtbaar, ook mogelijke dubbelen."
+
+msgid "on"
+msgstr "aan"
+
+msgid "off"
+msgstr "uit"
+
+msgid "duplicate filtering {state}"
+msgstr "ontdubbelen {state}"
+
+msgid "all CSV files"
+msgstr "alle CSV-bestanden"
+
+msgid "Uncategorized"
+msgstr "Ongecategoriseerd"
+
+msgid "Force reload stored CSV"
+msgstr "Opgeslagen CSV geforceerd opnieuw laden"
+
+msgid "Force reloading CSV file..."
+msgstr "CSV-bestand geforceerd opnieuw laden..."
+
+msgid "{name} was reloaded from app storage."
+msgstr "{name} is opnieuw geladen uit app-opslag."
+
+msgid "Could not reload {name}: {error}"
+msgstr "Kon {name} niet opnieuw laden: {error}"
+
+msgid "Unload stored CSV"
+msgstr "Opgeslagen CSV ontladen"
+
+msgid "CSV unloaded"
+msgstr "CSV ontladen"
+
+msgid "Detected fields"
+msgstr "Herkende velden"
+
+msgid "Show detected fields"
+msgstr "Herkende velden tonen"
+
+msgid "Hide detected fields"
+msgstr "Herkende velden verbergen"
+
+msgid "Not detected"
+msgstr "Niet herkend"
+
+msgid "Semicolon delimiter (;)"
+msgstr "Puntkomma-scheidingsteken (;)"
+
+msgid "Comma delimiter (,)"
+msgstr "Komma-scheidingsteken (,)"
+
+msgid "Tab delimiter"
+msgstr "Tab-scheidingsteken"
+
+msgid "Delimiter {delimiter}"
+msgstr "Scheidingsteken {delimiter}"
+
+msgid "no sample errors"
+msgstr "geen voorbeeldfouten"
+
+msgid "1 sample error"
+msgstr "1 voorbeeldfout"
+
+msgid "{count} sample errors"
+msgstr "{count} voorbeeldfouten"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Amount"
+msgstr "Bedrag"
+
+msgid "Description"
+msgstr "Omschrijving"
+
+msgid "Counterparty"
+msgstr "Tegenpartij"
+
+msgid "Account"
+msgstr "Rekening"
+
+msgid "Transaction ID"
+msgstr "Transactie-ID"
+
+msgid "Currency"
+msgstr "Valuta"
+
+msgid "Direction"
+msgstr "Richting"
+
+msgid "No transactions to draw yet."
+msgstr "Nog geen transacties om te tekenen."
+
+msgid "No category differences for this year."
+msgstr "Geen categorieverschillen voor dit jaar."
+
+msgid "Monthly balance"
+msgstr "Maandsaldo"
+
+msgid "Rules, budgets, and fields"
+msgstr "Regels, budgetten en velden"
+
+msgid "New"
+msgstr "Nieuw"
+
+msgid "New item"
+msgstr "Nieuw item"
+
+msgid "Save"
+msgstr "Opslaan"
+
+msgid "Save rules, budgets, and field names"
+msgstr "Regels, budgetten en veldnamen opslaan"
+
+msgid "Filter rules, budgets, and field names"
+msgstr "Filter regels, budgetten en veldnamen"
+
+msgid "Create rules with plain search text, or turn on Regex for patterns."
+msgstr "Maak regels met gewone zoektekst, of zet Regex aan voor patronen."
+
+msgid "New Rule"
+msgstr "Nieuwe regel"
+
+msgid "Create a new rule"
+msgstr "Nieuwe regel maken"
+
+msgid "Budget Codes"
+msgstr "Budgetcodes"
+
+msgid "These codes are used in rules and compared with the latest month."
+msgstr "Deze codes worden in regels gebruikt en vergeleken met de laatste maand."
+
+msgid "New Budget"
+msgstr "Nieuw budget"
+
+msgid "Create a new budget"
+msgstr "Nieuw budget maken"
+
+msgid "Map bank columns to fixed fields such as date, amount, and description."
+msgstr "Koppel bankkolommen aan vaste velden zoals datum, bedrag en omschrijving."
+
+msgid "New Field Name"
+msgstr "Nieuwe veldnaam"
+
+msgid "Create a new field name"
+msgstr "Nieuwe veldnaam maken"
+
+msgid "Rules"
+msgstr "Regels"
+
+msgid "Normalize"
+msgstr "Normaliseren"
+
+msgid "Changes are only applied after Save."
+msgstr "Wijzigingen worden pas toegepast na Opslaan."
+
+msgid "Saved. Updating the overview."
+msgstr "Opgeslagen. Overzicht wordt bijgewerkt."
+
+msgid "Rules saved"
+msgstr "Regels opgeslagen"
+
+msgid "Save failed: {error}"
+msgstr "Opslaan mislukt: {error}"
+
+msgid "Filter active: {rules_count} rule(s), {budgets_count} budget(s), {aliases_count} field name(s) visible."
+msgstr "Filter actief: {rules_count} regel(s), {budgets_count} budget(ten), {aliases_count} veldnaam/veldnamen zichtbaar."
+
+msgid "Fill in the rule first. It is only saved when you press Save."
+msgstr "Vul de regel eerst in. Hij wordt pas opgeslagen met Opslaan."
+
+msgid "Add"
+msgstr "Toevoegen"
+
+msgid "Everything"
+msgstr "Alles"
+
+msgid "All transactions"
+msgstr "Alle transacties"
+
+msgid "Search Text"
+msgstr "Zoektekst"
+
+msgid "Category"
+msgstr "Categorie"
+
+msgid "Budget code"
+msgstr "Budgetcode"
+
+msgid "Active"
+msgstr "Actief"
+
+msgid "Priority"
+msgstr "Prioriteit"
+
+msgid "Field"
+msgstr "Veld"
+
+msgid "Min amount"
+msgstr "Min bedrag"
+
+msgid "Max amount"
+msgstr "Max bedrag"
+
+msgid "Note"
+msgstr "Opmerking"
+
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgid "Not saved"
+msgstr "Niet opgeslagen"
+
+msgid "Add to changes"
+msgstr "Toevoegen aan wijzigingen"
+
+msgid "Enter search text first."
+msgstr "Vul eerst een zoektekst in."
+
+msgid "Enter a category first."
+msgstr "Vul eerst een categorie in."
+
+msgid "New rule added. Press Save to keep it."
+msgstr "Nieuwe regel toegevoegd. Druk op Opslaan om te bewaren."
+
+msgid "Create a budget code. It is only saved when you press Save."
+msgstr "Maak een budgetcode. Hij wordt pas opgeslagen met Opslaan."
+
+msgid "Monthly budget"
+msgstr "Maandbudget"
+
+msgid "Enter a budget code first."
+msgstr "Vul eerst een budgetcode in."
+
+msgid "New budget added. Press Save to keep it."
+msgstr "Nieuw budget toegevoegd. Druk op Opslaan om te bewaren."
+
+msgid "Map a bank column to a fixed field. It is only saved when you press Save."
+msgstr "Koppel een bankkolom aan een vast veld. Hij wordt pas opgeslagen met Opslaan."
+
+msgid "Column name from bank CSV"
+msgstr "Kolomnaam uit bank-CSV"
+
+msgid "Fixed field"
+msgstr "Vast veld"
+
+msgid "Bank column"
+msgstr "Bankkolom"
+
+msgid "Enter the bank column first."
+msgstr "Vul eerst de bankkolom in."
+
+msgid "New field name added. Press Save to keep it."
+msgstr "Nieuwe veldnaam toegevoegd. Druk op Opslaan om te bewaren."
+
+msgid "Delete rule"
+msgstr "Verwijder regel"
+
+msgid "Delete budget"
+msgstr "Verwijder budget"
+
+msgid "Delete field name"
+msgstr "Verwijder veldnaam"
+
+msgid "CSV drop received. Import is starting..."
+msgstr "CSV-drop ontvangen. Import wordt gestart..."
+
+msgid "CSV files received. Import is starting..."
+msgstr "CSV-bestanden ontvangen. Import wordt gestart..."
+
+msgid "Drop contains no files."
+msgstr "Drop bevat geen bestanden."
+
+msgid "CSV imported"
+msgstr "CSV geïmporteerd"
+
+msgid "No CSV files found. Only files with the .csv extension are imported."
+msgstr "Geen CSV-bestanden gevonden. Alleen bestanden met extensie .csv worden geïmporteerd."
+
+msgid "No files chosen."
+msgstr "Geen bestanden gekozen."
+
+msgid "{transactions} transaction CSV file(s) and {configs} configuration CSV file(s) were opened and applied."
+msgstr "{transactions} transactie-CSV-bestand(en) en {configs} configuratie-CSV-bestand(en) zijn geopend en toegepast."
+
+msgid "{count} transaction CSV file(s) were opened and imported."
+msgstr "{count} transactie-CSV-bestand(en) geopend en geïmporteerd."
+
+msgid "{count} configuration CSV file(s) were opened and applied."
+msgstr "{count} configuratie-CSV-bestand(en) geopend en toegepast."
+
+msgid "No CSV files were opened."
+msgstr "Er zijn geen CSV-bestanden geopend."
+
+msgid " {count} file(s) skipped because they were not CSV files."
+msgstr " {count} bestand(en) overgeslagen omdat het geen CSV-bestanden waren."
+
+msgid "Import canceled: the background task stopped unexpectedly."
+msgstr "Import afgebroken: de achtergrondtaak is onverwacht gestopt."
+
+msgid "Overview updated."
+msgstr "Overzicht bijgewerkt."
+
+msgid "Current data reloaded."
+msgstr "Huidige data herladen."
+
+msgid "All CSV data reloaded."
+msgstr "Alle CSV-data herladen."
+
+msgid "Quick reloading current data..."
+msgstr "Huidige data snel herladen..."
+
+msgid "Reloading all CSV data..."
+msgstr "Alle CSV-data herladen..."
+
+msgid "Updated"
+msgstr "Bijgewerkt"
+
+msgid "Duplicate filtering on"
+msgstr "Ontdubbelen aan"
+
+msgid "Duplicate filtering off"
+msgstr "Ontdubbelen uit"
+
+msgid "Print job started"
+msgstr "Printopdracht gestart"
+
+msgid "Printing failed"
+msgstr "Printen mislukt"
+
+msgid "Printing failed: {error}"
+msgstr "Printen mislukt: {error}"
+
+msgid "Export error: {error}"
+msgstr "Exportfout: {error}"
+
+msgid "Saving CSV export..."
+msgstr "CSV-export opslaan..."
+
+msgid "CSV export canceled: the background task stopped unexpectedly."
+msgstr "CSV-export geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Import error: {error}"
+msgstr "Importfout: {error}"
+
+msgid "Reload error: {error}"
+msgstr "Herlaadfout: {error}"
+
+msgid "No data for this section."
+msgstr "Geen gegevens voor deze sectie."
+
+msgid "Continued: {title}"
+msgstr "Vervolg: {title}"
+
+msgid "Created on {date}"
+msgstr "Gemaakt op {date}"
+
+msgid "Page {page} of {pages}"
+msgstr "Pagina {page} van {pages}"
+
+msgid "January"
+msgstr "Januari"
+
+msgid "February"
+msgstr "Februari"
+
+msgid "March"
+msgstr "Maart"
+
+msgid "April"
+msgstr "April"
+
+msgid "May"
+msgstr "Mei"
+
+msgid "June"
+msgstr "Juni"
+
+msgid "July"
+msgstr "Juli"
+
+msgid "August"
+msgstr "Augustus"
+
+msgid "September"
+msgstr "September"
+
+msgid "October"
+msgstr "Oktober"
+
+msgid "November"
+msgstr "November"
+
+msgid "December"
+msgstr "December"
+
+msgid "Row {row}: missing date or amount"
+msgstr "Rij {row}: mist datum of bedrag"
+
+msgid "date"
+msgstr "datum"
+
+msgid "amount"
+msgstr "bedrag"
+
+msgid "debit"
+msgstr "debet"
+
+msgid "credit"
+msgstr "credit"
+
+msgid "description"
+msgstr "omschrijving"
+
+msgid "counterparty"
+msgstr "tegenpartij"
+
+msgid "account"
+msgstr "rekening"
+
+msgid "transaction id"
+msgstr "transactie-id"
+
+msgid "currency"
+msgstr "valuta"
+
+msgid "direction"
+msgstr "richting"
+
+msgid "Startup error: {error}"
+msgstr "Opstartfout: {error}"
+
+msgid "Year: {year}. The budget period uses the same year."
+msgstr "Jaar: {year}. De budgetperiode gebruikt hetzelfde jaar."
+
+msgid "Compares with {year}"
+msgstr "Vergelijkt met {year}"
+
+msgid "Code"
+msgstr "Code"
+
+msgid "Code, for example FOOD"
+msgstr "Code, bijvoorbeeld FOOD"
+
+msgid "For example: Albert Heijn"
+msgstr "Bijvoorbeeld: Albert Heijn"
+
+msgid "Regex"
+msgstr "Regex"
+
+msgid "Search text or regex"
+msgstr "Zoektekst of regex"
+
+msgid "Optional"
+msgstr "Optioneel"
+
+msgid "Drop contains no readable files: {error}"
+msgstr "Drop bevat geen leesbare bestanden: {error}"
+
+msgid "Could not read drop: {error}"
+msgstr "Kon drop niet lezen: {error}"
+
+msgid "{count} CSV file(s) copied, but reload failed: {error}"
+msgstr "{count} CSV-bestand(en) gekopieerd, maar herladen mislukte: {error}"
+
+msgid "{name} was unloaded. The original CSV remains where you chose it."
+msgstr "{name} is ontladen. De originele CSV blijft staan waar je die gekozen hebt."
+
+msgid "{name} was removed, but reload failed: {error}"
+msgstr "{name} is verwijderd, maar herladen mislukte: {error}"
+
+msgid "Could not unload {name}: {error}"
+msgstr "Kon {name} niet ontladen: {error}"
+
+msgid "Duplicate filtering is {state}. {description}"
+msgstr "Ontdubbelen is {state}. {description}"
+
+msgid "Could not change duplicate filtering: {error}"
+msgstr "Kon ontdubbelen niet wijzigen: {error}"
+
+msgid "Filter “{query}” searches annual budgets and annual categories."
+msgstr "Filter “{query}” zoekt in jaarbudgetten en jaarcategorieën."
+
+msgid "{month} balance"
+msgstr "Saldo voor {month}"
+
+msgid "Filtered on {year}; the second bar compares with {previous_year}."
+msgstr "Gefilterd op {year}; de tweede balk vergelijkt met {previous_year}."
+
+msgid "Filter “{query}” searches budgets and categories for {month}."
+msgstr "Filter “{query}” zoekt in budgetten en categorieën voor {month}."
+
+msgid "Filter “{query}” searches budgets and categories."
+msgstr "Filter “{query}” zoekt in budgetten en categorieën."
+
+msgid "Budgets for {month}. Percentages use that month's income."
+msgstr "Budgetten voor {month}. Percentages gebruiken het inkomen van die maand."
+
+msgid "Budgets needing attention in {month}. More shows everything."
+msgstr "Budgetten die aandacht nodig hebben in {month}. Meer toont alles."
+
+msgid "All budgets are within plan. Use More to show every budget."
+msgstr "Alle budgetten liggen binnen plan. Gebruik Meer om alle budgetten te tonen."
+
+msgid "{amount} spent of {budget}"
+msgstr "{amount} uitgegeven van {budget}"
+
+msgid "Largest expense categories in {month}."
+msgstr "Grootste uitgavencategorieën in {month}."
+
+msgid "{count} transactions · budget code {code}"
+msgstr "{count} transacties · budgetcode {code}"
+
+msgid "Budgets needing attention in {year}. More shows everything; the second bar compares with {previous_year}."
+msgstr "Budgetten die aandacht nodig hebben in {year}. Meer toont alles; de tweede balk vergelijkt met {previous_year}."
+
+msgid "All annual budgets are within plan. Use More to show every budget."
+msgstr "Alle jaarbudgetten liggen binnen plan. Gebruik Meer om alle budgetten te tonen."
+
+msgid "Planned annual budget: {budget}"
+msgstr "Gepland jaarbudget: {budget}"
+
+msgid "{year} spent · {amount}"
+msgstr "{year} uitgegeven · {amount}"
+
+msgid "Largest expenses in {year}. The second bar shows the same category in {previous_year}."
+msgstr "Grootste uitgaven in {year}. De tweede balk toont dezelfde categorie in {previous_year}."
+
+msgid "{amount} more"
+msgstr "{amount} meer"
+
+msgid "{amount} less"
+msgstr "{amount} minder"
+
+msgid "Balance {year}"
+msgstr "Saldo {year}"
+
+msgid "{count} transactions"
+msgstr "{count} transacties"
+
+msgid "vs. {year}"
+msgstr "t.o.v. {year}"
+
+msgid "more spent than {year}"
+msgstr "meer uitgegeven dan in {year}"
+
+msgid "less spent than {year}"
+msgstr "minder uitgegeven dan in {year}"
+
+msgid "Per category: balance in {year} minus balance in {previous_year}. “Other income” means positive transactions without a more specific rule."
+msgstr "Per categorie: saldo in {year} min saldo in {previous_year}. “Overige inkomsten” betekent positieve transacties zonder specifiekere regel."
+
+msgid "Filter “{query}” searches import settings, CSV files, and warnings."
+msgstr "Filter “{query}” zoekt in importinstellingen, CSV-bestanden en waarschuwingen."
+
+msgid "Stored"
+msgstr "Opgeslagen"
+
+msgid "{count} skipped"
+msgstr "{count} overgeslagen"
+
+msgid "Duplicate filtering is on"
+msgstr "Ontdubbelen staat aan"
+
+msgid "Duplicate filtering is off"
+msgstr "Ontdubbelen staat uit"
+
+msgid "Duplicate filtering {state}. {description}"
+msgstr "Ontdubbelen {state}. {description}"
+
+msgid "Duplicate filtering {state}"
+msgstr "Ontdubbelen {state}"
+
+msgid "These are app copies of files you opened through the portal or drag-and-drop. Unloading only removes the stored copy."
+msgstr "Dit zijn app-kopieën van bestanden die je via het portaal of slepen-en-neerzetten hebt geopend. Ontladen verwijdert alleen de opgeslagen kopie."
+
+msgid "CSV Field Mapping"
+msgstr "CSV-veld koppelen"
+
+msgid "Map one of this file's CSV headers to {field}."
+msgstr "Koppel een CSV-kop uit dit bestand aan {field}."
+
+msgid "This CSV report has no headers to map."
+msgstr "Dit CSV-rapport heeft geen koppen om te koppelen."
+
+msgid "This is saved to field_aliases.csv and applies to future imports."
+msgstr "Dit wordt opgeslagen in field_aliases.csv en toegepast op toekomstige imports."
+
+msgid "Choose a CSV header first."
+msgstr "Kies eerst een CSV-kop."
+
+msgid "Save field mapping"
+msgstr "Veldkoppeling opslaan"
+
+msgid "App field"
+msgstr "App-veld"
+
+msgid "CSV header"
+msgstr "CSV-kop"
+
+msgid "Map CSV header to this field"
+msgstr "CSV-kop aan dit veld koppelen"
+
+msgid "{alias} is now mapped to {field}. Reloaded imports use the new field name."
+msgstr "{alias} is nu gekoppeld aan {field}. Herladen imports gebruiken de nieuwe veldnaam."
+
+msgid "{alias} was already mapped to {field}."
+msgstr "{alias} was al gekoppeld aan {field}."
+
+msgid "Field mapping was saved, but reload failed: {error}"
+msgstr "Veldkoppeling is opgeslagen, maar herladen mislukte: {error}"
+
+msgid "Could not save field mapping: {error}"
+msgstr "Kon veldkoppeling niet opslaan: {error}"
+
+msgid "Use fixed amounts or percentages such as 10% of income."
+msgstr "Gebruik vaste bedragen of percentages zoals 10% van het inkomen."
+
+msgid "Could not read rules: {error}"
+msgstr "Kon regels niet lezen: {error}"
+
+msgid "Could not read budget codes: {error}"
+msgstr "Kon budgetcodes niet lezen: {error}"
+
+msgid "Could not read field names: {error}"
+msgstr "Kon veldnamen niet lezen: {error}"
+
+msgid "500 or 10% of income"
+msgstr "500 of 10% van het inkomen"
+
+msgid "no budget"
+msgstr "geen budget"
+
+msgid "fixed budget"
+msgstr "vast budget"
+
+msgid "unconfigured budget"
+msgstr "niet ingesteld budget"
+
+msgid "{percent}% of income"
+msgstr "{percent}% van inkomen"
+
+msgid "{amount} ({basis})"
+msgstr "{amount} ({basis})"
+
+msgid "{amount} without a budget"
+msgstr "{amount} zonder budget"
+
+msgid "{amount} over budget"
+msgstr "{amount} boven budget"
+
+msgid "{amount} available"
+msgstr "{amount} beschikbaar"
+
+msgid "{amount} spent without an annual budget"
+msgstr "{amount} uitgegeven zonder jaarbudget"
+
+msgid "{amount} over annual budget"
+msgstr "{amount} boven jaarbudget"
+
+msgid "No period"
+msgstr "Geen periode"
+
+msgid "Choose CSV files or drop bank files onto the window to print monthly and yearly overviews."
+msgstr "Kies CSV’s of sleep bankbestanden naar het venster om maand- en jaaroverzichten te printen."
+
+msgid "Monthly trend, yearly comparison, and budget room."
+msgstr "Maandtrend, jaarvergelijking en budgetruimte."
+
+msgid "Budget room and categories for {month}."
+msgstr "Budgetruimte en categorieën voor {month}."
+
+msgid "Latest transactions with category, budget code, and description."
+msgstr "Laatste transacties met categorie, budgetcode en omschrijving."
+
+msgid "Total balance"
+msgstr "Totaalsaldo"
+
+msgid "imported"
+msgstr "geïmporteerd"
+
+msgid "configured"
+msgstr "ingesteld"
+
+msgid "total"
+msgstr "totaal"
+
+msgid "stored"
+msgstr "opgeslagen"
+
+msgid "for checks"
+msgstr "voor controles"
+
+msgid "Months"
+msgstr "Maanden"
+
+msgid "Latest 24 months with income, expenses, and balance."
+msgstr "Laatste 24 maanden met inkomsten, uitgaven en saldo."
+
+msgid "Year Comparison"
+msgstr "Jaarvergelijking"
+
+msgid "{year} compared with {previous_year}."
+msgstr "{year} vergeleken met {previous_year}."
+
+msgid "Metric"
+msgstr "Kengetal"
+
+msgid "Tx"
+msgstr "Tx"
+
+msgid "Green improves balance, red lowers balance."
+msgstr "Groen verbetert het saldo, rood verlaagt het saldo."
+
+msgid "Effect"
+msgstr "Effect"
+
+msgid "Meaning"
+msgstr "Betekenis"
+
+msgid "improves balance"
+msgstr "verbetert saldo"
+
+msgid "lowers balance"
+msgstr "verlaagt saldo"
+
+msgid "Other difference"
+msgstr "Overig verschil"
+
+msgid "Fixed monthly budgets are annualized; percentage budgets use yearly income. Compared with {previous_year}."
+msgstr "Vaste maandbudgetten worden omgerekend naar een jaar; percentagebudgetten gebruiken het jaarinkomen. Vergeleken met {previous_year}."
+
+msgid "Annual budget"
+msgstr "Jaarbudget"
+
+msgid "Room"
+msgstr "Ruimte"
+
+msgid "Actual"
+msgstr "Werkelijk"
+
+msgid "Transactions in Period"
+msgstr "Transacties in periode"
+
+msgid "Latest 40 transactions for this month."
+msgstr "Laatste 40 transacties voor deze maand."
+
+msgid "Transaction List"
+msgstr "Transactielijst"
+
+msgid "Latest 200 transactions."
+msgstr "Laatste 200 transacties."
+
+msgid "CSV Files"
+msgstr "CSV-bestanden"
+
+msgid "Import quality per file."
+msgstr "Importkwaliteit per bestand."
+
+msgid "File"
+msgstr "Bestand"
+
+msgid "Delimiter"
+msgstr "Scheidingsteken"
+
+msgid "Seen"
+msgstr "Gezien"
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Skipped"
+msgstr "Overgeslagen"
+
+msgid "Fields"
+msgstr "Velden"
+
+msgid "Message"
+msgstr "Melding"
+
+msgid "Messages that need attention."
+msgstr "Meldingen die aandacht nodig hebben."
+
+msgid "{count} of {total} transactions match “{query}”."
+msgstr "{count} van {total} transacties passen bij “{query}”."
+
+msgid "Menu"
+msgstr "Menu"
+
+msgid "Hide message"
+msgstr "Melding verbergen"
+
+msgid "Autohide Status Bar"
+msgstr "Statusbalk automatisch verbergen"
+
+msgid "Debit"
+msgstr "Debet"
+
+msgid "Credit"
+msgstr "Credit"
+
+msgid "Budget codes"
+msgstr "Budgetcodes"
+
+msgid "Import CSV files to print budgets and categories."
+msgstr "Importeer CSV-bestanden om budgetten en categorieën te printen."
+
+msgid "Map CSV Field"
+msgstr "CSV-veld koppelen"
+
+msgid "Import quality, detected fields, and warnings."
+msgstr "Importkwaliteit, herkende velden en waarschuwingen."
+
+msgid "no period"
+msgstr "geen periode"
+
+msgid "Largest expense categories in {year}."
+msgstr "Grootste uitgavencategorieën in {year}."
+
+msgid "Largest expenses in {month}."
+msgstr "Grootste uitgaven in {month}."
+
+msgid "App"
+msgstr "App"
+
+msgid "No monthly budget configured"
+msgstr "Geen maandbudget ingesteld"
+
+msgid "No annual budget configured"
+msgstr "Geen jaarbudget ingesteld"
+
+msgid "Unconfigured budgets"
+msgstr "Niet ingestelde budgetten"
+
+msgid "Expense transactions with a missing or unknown budget code."
+msgstr "Uitgaventransacties met een ontbrekende of onbekende budgetcode."
+
+msgid "Other categories"
+msgstr "Overige categorieën"
+
+msgid "Transactions grouped under OTHER or INC-OTHER."
+msgstr "Transacties gegroepeerd onder OTHER of INC-OTHER."
+
+msgid "Always Show Full Lists"
+msgstr "Altijd volledige lijsten tonen"
+
+msgid "Full lists enabled. More buttons are hidden."
+msgstr "Volledige lijsten ingeschakeld. Meer-knoppen zijn verborgen."
+
+msgid "Preview mode enabled. Sections show More buttons again."
+msgstr "Voorbeeldmodus ingeschakeld. Secties tonen weer Meer-knoppen."
+
+msgid "Edit budget"
+msgstr "Budget bewerken"
+
+msgid "Edit Budget"
+msgstr "Budget bewerken"
+
+msgid "Save budget"
+msgstr "Budget opslaan"
+
+msgid "Changes are saved to budgetcodes.csv."
+msgstr "Wijzigingen worden opgeslagen in budgetcodes.csv."
+
+msgid "Budget saved"
+msgstr "Budget opgeslagen"
+
+msgid "Budget saved, but reload failed: {error}"
+msgstr "Budget opgeslagen, maar herladen mislukte: {error}"
+
+msgid "Could not save budget: {error}"
+msgstr "Kon budget niet opslaan: {error}"
+
+msgid "Planned expenses total {expenses}, above planned income of {income} by {overage}."
+msgstr "Geplande uitgaven zijn samen {expenses}, {overage} boven het geplande inkomen van {income}."
+
+msgid "Planned expenses total {expenses}, but this period has no planned income."
+msgstr "Geplande uitgaven zijn samen {expenses}, maar deze periode heeft geen gepland inkomen."
+
+msgid "Check your budget"
+msgstr "Controleer je begroting"
+
+msgid "Transaction Patterns"
+msgstr "Transactiepatronen"
+
+msgid "Repeating payments, possible refunds, and bill splits detected from imported transactions."
+msgstr "Herhalende betalingen, mogelijke terugbetalingen en gedeelde rekeningen gevonden in geimporteerde transacties."
+
+msgid "Repeating {cadence} transaction"
+msgstr "Herhalende {cadence} transactie"
+
+msgid "Possible refund"
+msgstr "Mogelijke terugbetaling"
+
+msgid "Possible bill split"
+msgstr "Mogelijk gedeelde rekening"
+
+msgid "{count} transactions from {first} to {last}. Amount: {amount}."
+msgstr "{count} transacties van {first} tot {last}. Bedrag: {amount}."
+
+msgid "{count} transactions from {first} to {last}. Net effect: {net}."
+msgstr "{count} transacties van {first} tot {last}. Netto-effect: {net}."
+
+msgid "weekly"
+msgstr "wekelijkse"
+
+msgid "every two weeks"
+msgstr "tweewekelijkse"
+
+msgid "monthly"
+msgstr "maandelijkse"
+
+msgid "quarterly"
+msgstr "kwartaal"
+
+msgid "yearly"
+msgstr "jaarlijkse"
+
+msgid "{count} transactions total from {first} to {last}."
+msgstr "{count} transacties in totaal van {first} tot {last}."
+
+msgid "Values: {values}"
+msgstr "Waarden: {values}"
+
+msgid "{count} times {amount}"
+msgstr "{count} keer {amount}"
+
+msgid "Net effect: {net}."
+msgstr "Netto-effect: {net}."
+
+msgid "Tags"
+msgstr "Tags"
+
+msgid "Generate Budgets from Transactions"
+msgstr "Budgetten genereren uit transacties"
+
+msgid "Replace the default monthly budgets with budgets detected from imported spending."
+msgstr "Vervang de standaard maandbudgetten door budgetten uit geimporteerde uitgaven."
+
+msgid "Use Default Budgeting"
+msgstr "Standaardbudgettering gebruiken"
+
+msgid "Replace your current budget list with the built-in defaults."
+msgstr "Vervang je huidige budgetlijst door de ingebouwde standaardbudgetten."
+
+msgid "No budgets could be generated from the imported transactions yet."
+msgstr "Er konden nog geen budgetten uit de geimporteerde transacties worden gegenereerd."
+
+msgid "Replaced default budgets with {count} budgets from transactions."
+msgstr "Standaardbudgetten vervangen door {count} budgetten uit transacties."
+
+msgid "Default budgeting applied."
+msgstr "Standaardbudgettering toegepast."
+
+msgid "Could not apply default budgeting: {error}"
+msgstr "Kon standaardbudgettering niet toepassen: {error}"
+
+msgid "Generate"
+msgstr "Genereren"
+
+msgid "Generate missing budgets from transactions"
+msgstr "Ontbrekende budgetten genereren uit transacties"
+
+msgid "Could not generate budgets: {error}"
+msgstr "Kon budgetten niet genereren: {error}"
+
+msgid "Generated from transactions over {count} imported months on {date}."
+msgstr "Gegenereerd uit transacties over {count} geimporteerde maanden op {date}."
+
+msgid "Generated budget"
+msgstr "Gegenereerd budget"
+
+msgid "Show all transaction patterns"
+msgstr "Alle transactiepatronen tonen"
+
+msgid "Show Hidden"
+msgstr "Verborgen tonen"
+
+msgid "Show hidden transaction patterns"
+msgstr "Verborgen transactiepatronen tonen"
+
+msgid "All detected transaction patterns are hidden. Use Show Hidden to review them."
+msgstr "Alle gevonden transactiepatronen zijn verborgen. Gebruik Verborgen tonen om ze te bekijken."
+
+msgid "Hidden"
+msgstr "Verborgen"
+
+msgid "Hide detected pattern"
+msgstr "Gevonden patroon verbergen"
+
+msgid "Reopen detected pattern"
+msgstr "Gevonden patroon heropenen"
+
+msgid "Pattern hidden. Use Show Hidden to reopen it."
+msgstr "Patroon verborgen. Gebruik Verborgen tonen om het te heropenen."
+
+msgid "Pattern reopened."
+msgstr "Patroon heropend."
+
+msgid "Could not update hidden pattern: {error}"
+msgstr "Kon verborgen patroon niet bijwerken: {error}"
+
+msgid "No transaction patterns detected yet. Import more transactions or adjust tags and categorization rules."
+msgstr "Nog geen transactiepatronen gevonden. Importeer meer transacties of pas tags en categorisatieregels aan."
+
+msgid "recurring"
+msgstr "terugkerende"
+
+msgid "Create rule from pattern"
+msgstr "Regel maken uit patroon"
+
+msgid "Create Rule"
+msgstr "Regel maken"
+
+msgid "Save rule"
+msgstr "Regel opslaan"
+
+msgid "Create a categorization rule from this detected transaction pattern."
+msgstr "Maak een categorisatieregel uit dit gevonden transactiepatroon."
+
+msgid "Changes are saved to rules.csv."
+msgstr "Wijzigingen worden opgeslagen in rules.csv."
+
+msgid "Generated from detected transaction pattern."
+msgstr "Gegenereerd uit gevonden transactiepatroon."
+
+msgid "Rule updated"
+msgstr "Regel bijgewerkt"
+
+msgid "Rule saved"
+msgstr "Regel opgeslagen"
+
+msgid "Rule saved, but reload failed: {error}"
+msgstr "Regel opgeslagen, maar herladen mislukt: {error}"
+
+msgid "Could not save rule: {error}"
+msgstr "Kon regel niet opslaan: {error}"
+
+msgid "Cancels out transactions"
+msgstr "Heft transacties op"
+
+msgid "Generated rule"
+msgstr "Gegenereerde regel"
+
+msgid "Covered by rule"
+msgstr "Gedekt door regel"
+
+msgid "Needs rule"
+msgstr "Heeft regel nodig"
+
+msgid "All detected transaction patterns are already covered. Use More to review them."
+msgstr "Alle gevonden transactiepatronen zijn al gedekt. Gebruik Meer om ze te bekijken."
+
+msgid "Hide Refunded Transactions"
+msgstr "Terugbetaalde transacties verbergen"
+
+msgid "Exclude detected refunds and bill splits from normal views and totals."
+msgstr "Sluit gevonden terugbetalingen en gedeelde rekeningen uit van normale weergaven en totalen."
+
+msgid "{count} refund or bill-split transactions are hidden from normal views."
+msgstr "{count} terugbetalings- of gedeelde-rekeningtransacties zijn verborgen uit normale weergaven."
+
+msgid "{count} refund or bill-split transactions were detected. Enable Hide Refunded Transactions to exclude them from normal views."
+msgstr "{count} terugbetalings- of gedeelde-rekeningtransacties gevonden. Schakel Terugbetaalde transacties verbergen in om ze uit normale weergaven te sluiten."
+
+msgid "Hide Refunded Transactions enabled. Refunds and bill splits are excluded from normal views."
+msgstr "Terugbetaalde transacties verbergen ingeschakeld. Terugbetalingen en gedeelde rekeningen worden uitgesloten van normale weergaven."
+
+msgid "Hide Refunded Transactions disabled. Refunds and bill splits are included again."
+msgstr "Terugbetaalde transacties verbergen uitgeschakeld. Terugbetalingen en gedeelde rekeningen tellen weer mee."
+
+msgid "Applying default budgeting..."
+msgstr "Standaardbudgettering toepassen..."
+
+msgid "Applying default budgeting canceled: the background task stopped unexpectedly."
+msgstr "Standaardbudgettering toepassen geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Filtered"
+msgstr "Gefilterd"
+
+msgid "Unfiltered"
+msgstr "Ongefilterd"
+
+msgid "Category transactions"
+msgstr "Categorietransacties"
+
+msgid "Transactions for this category and year."
+msgstr "Transacties voor deze categorie en dit jaar."
+
+msgid "No CSV files opened. Choose CSV files or drop bank files onto the window."
+msgstr "Geen CSV-bestanden geopend. Kies CSV-bestanden of sleep bankbestanden naar het venster."
+
+msgid "{count} stored CSV file(s): {files}"
+msgstr "{count} opgeslagen CSV-bestand(en): {files}"
+
+msgid "{seen} rows seen. {imported} imported, {skipped} skipped."
+msgstr "{seen} rijen gezien. {imported} geimporteerd, {skipped} overgeslagen."
+
+msgid "{month} · {count} transactions · {income} income · {expenses} expenses · {balance} balance"
+msgstr "{month} · {count} transacties · {income} inkomsten · {expenses} uitgaven · {balance} saldo"
+
+msgid "Budget saved. Updating the overview..."
+msgstr "Budget opgeslagen. Overzicht bijwerken..."
+
+msgid "Rule saved. Updating the overview..."
+msgstr "Regel opgeslagen. Overzicht bijwerken..."
+
+msgid "CSV unloaded. Updating the overview..."
+msgstr "CSV verwijderd. Overzicht bijwerken..."
+
+msgid "Field mapping saved. Updating the overview..."
+msgstr "Veldkoppeling opgeslagen. Overzicht bijwerken..."
+
+msgid "Changes saved."
+msgstr "Wijzigingen opgeslagen."
+
+msgid "Changes saved. {count} rule(s) updated for renamed budget codes."
+msgstr "Wijzigingen opgeslagen. {count} regel(s) bijgewerkt voor hernoemde budgetcodes."
+
+msgid "Changes saved, but reload failed: {error}"
+msgstr "Wijzigingen opgeslagen, maar herladen mislukt: {error}"
+
+msgid "Filtered by “{query}”. {description}"
+msgstr "Gefilterd op “{query}”. {description}"
+
+msgid "Latest 200 transactions matching “{query}”."
+msgstr "Laatste 200 transacties die overeenkomen met “{query}”."
+
+msgid "Click to show transaction details"
+msgstr "Klik om transactiedetails te tonen"
+
+msgid "Source file"
+msgstr "Bronbestand"
+
+msgid "Not set"
+msgstr "Niet ingesteld"
+
+msgid "Spending is over budget"
+msgstr "Uitgaven zijn boven budget"
+
+msgid "{count} budget(s) are over plan by {amount}."
+msgstr "{count} budget(ten) zijn samen {amount} boven plan."
+
+msgid "Spending is above income"
+msgstr "Uitgaven zijn hoger dan inkomen"
+
+msgid "Expenses are {expenses}, with no real or planned income in this period."
+msgstr "Uitgaven zijn {expenses}, zonder echt of gepland inkomen in deze periode."
+
+msgid "Expenses are {expenses}, above real income of {income} by {loss}."
+msgstr "Uitgaven zijn {expenses}, {loss} boven het echte inkomen van {income}."
+
+msgid "Expenses are {expenses}, above planned income of {income} by {loss}."
+msgstr "Uitgaven zijn {expenses}, {loss} boven het geplande inkomen van {income}."
+
+msgid "Expense categories show more or less spent; income categories show more or less received."
+msgstr "Uitgavencategorieen tonen meer of minder uitgegeven; inkomstencategorieen tonen meer of minder ontvangen."
+
+msgid "less spent"
+msgstr "minder uitgegeven"
+
+msgid "more spent"
+msgstr "meer uitgegeven"
+
+msgid "more income"
+msgstr "meer inkomsten"
+
+msgid "less income"
+msgstr "minder inkomsten"
+
+msgid "less costs"
+msgstr "minder kosten"
+
+msgid "more costs"
+msgstr "meer kosten"
+
+msgid "{amount} less spent"
+msgstr "{amount} minder uitgegeven"
+
+msgid "{amount} more spent"
+msgstr "{amount} meer uitgegeven"
+
+msgid "{amount} more income"
+msgstr "{amount} meer inkomsten"
+
+msgid "{amount} less income"
+msgstr "{amount} minder inkomsten"
+
+msgid "less"
+msgstr "minder"
+
+msgid "more"
+msgstr "meer"
+
+msgid "Possible offsetting group"
+msgstr "Mogelijke verrekenende groep"
+
+msgid "Repeating payments, possible refunds, and fully offsetting groups detected from imported transactions."
+msgstr "Herhalende betalingen, mogelijke terugbetalingen en volledig verrekenende groepen gevonden in geïmporteerde transacties."
+
+msgid "Filtered out {count} refund or offsetting transactions because Hide Refunded Transactions is enabled."
+msgstr "{count} terugbetalings- of verrekenende transacties verborgen omdat Terugbetaalde transacties verbergen is ingeschakeld."
+
+msgid "Budget removed"
+msgstr "Budget verwijderd"
+
+msgid "Budget removed. Updating the overview..."
+msgstr "Budget verwijderd. Overzicht wordt bijgewerkt..."
+
+msgid "Budget removed, but reload failed: {error}"
+msgstr "Budget verwijderd, maar opnieuw laden is mislukt: {error}"
+
+msgid "Budget was already removed."
+msgstr "Budget was al verwijderd."
+
+msgid "Could not remove budget: {error}"
+msgstr "Kon budget niet verwijderen: {error}"
+
+msgid "Budget distribution"
+msgstr "Begrotingsverdeling"
+
+msgid "Planned monthly budgets for {month}."
+msgstr "Geplande maandbudgetten voor {month}."
+
+msgid "Spending distribution"
+msgstr "Uitgavenverdeling"
+
+msgid "Actual expenses by category for {month}."
+msgstr "Werkelijke uitgaven per categorie voor {month}."
+
+msgid "No monthly expenses in {month}."
+msgstr "Geen maanduitgaven in {month}."
+
+msgid "No slices to draw yet."
+msgstr "Nog geen segmenten om te tekenen."
+
+msgid "{label} · {value} · {percent}% · {detail}"
+msgstr "{label} · {value} · {percent}% · {detail}"
+
+msgid "{amount} planned"
+msgstr "{amount} gepland"
+
+msgid "+ {count} more"
+msgstr "+ {count} meer"
+
+msgid "{count} more value groups"
+msgstr "nog {count} waardegroepen"
+
+msgid "Transfers"
+msgstr "Overboekingen"
+
+msgid "Possible transfer"
+msgstr "Mogelijke overboeking"
+
+msgid "Repeating payments, possible transfers, refunds, and fully offsetting groups detected from imported transactions."
+msgstr "Herhalende betalingen, mogelijke overboekingen, terugbetalingen en volledig verrekenende groepen gevonden in geïmporteerde transacties."
+
+msgid "Create rule"
+msgstr "Regel maken"
+
+msgid "Create a categorization rule from this transaction"
+msgstr "Maak een categorisatieregel van deze transactie"
+
+msgid "Create or edit the budget code for this transaction"
+msgstr "Maak of bewerk de budgetcode voor deze transactie"
+
+msgid "Mark transfer"
+msgstr "Markeer overboeking"
+
+msgid "Create a transfer rule from this transaction"
+msgstr "Maak een overboekingsregel van deze transactie"
+
+msgid "Mark income"
+msgstr "Markeer inkomen"
+
+msgid "Create an income rule from this transaction"
+msgstr "Maak een inkomstenregel van deze transactie"
+
+msgid "Mark expense"
+msgstr "Markeer uitgave"
+
+msgid "Create an expense rule from this transaction"
+msgstr "Maak een uitgavenregel van deze transactie"
+
+msgid "Similar"
+msgstr "Vergelijkbaar"
+
+msgid "Show similar transactions"
+msgstr "Toon vergelijkbare transacties"
+
+msgid "Find pattern"
+msgstr "Zoek patroon"
+
+msgid "Search Diagnostics for related transaction patterns"
+msgstr "Zoek in Diagnose naar gerelateerde transactiepatronen"
+
+msgid "Create a categorization rule from this transaction."
+msgstr "Maak een categorisatieregel van deze transactie."
+
+msgid "Generated from transaction detail."
+msgstr "Gegenereerd vanuit transactiedetail."
+
+msgid "Created from transaction detail."
+msgstr "Gemaakt vanuit transactiedetail."
+
+msgid "Showing similar transactions."
+msgstr "Vergelijkbare transacties worden getoond."
+
+msgid "Searching Diagnostics for related patterns."
+msgstr "Diagnose zoekt naar gerelateerde patronen."
+
+msgid "Loading"
+msgstr "Laden"
+
+msgid "Preparing this page. Large CSV files may take a moment."
+msgstr "Deze pagina wordt voorbereid. Grote CSV-bestanden kunnen even duren."
+
+msgid "Loading data..."
+msgstr "Gegevens laden..."
+
+msgid "Loading saved CSV files..."
+msgstr "Opgeslagen CSV-bestanden laden..."
+
+msgid "Saved CSV files loaded."
+msgstr "Opgeslagen CSV-bestanden geladen."
+
+msgid "Saving rule..."
+msgstr "Regel opslaan..."
+
+msgid "Rule save canceled: the background task stopped unexpectedly."
+msgstr "Regel opslaan geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Saving budget..."
+msgstr "Budget opslaan..."
+
+msgid "Budget save canceled: the background task stopped unexpectedly."
+msgstr "Budget opslaan geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Removing budget..."
+msgstr "Budget verwijderen..."
+
+msgid "Budget removal canceled: the background task stopped unexpectedly."
+msgstr "Budget verwijderen geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Saving field mapping..."
+msgstr "Veldkoppeling opslaan..."
+
+msgid "Field mapping save canceled: the background task stopped unexpectedly."
+msgstr "Veldkoppeling opslaan geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "CSV reload canceled: the background task stopped unexpectedly."
+msgstr "CSV opnieuw laden geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "CSV unload canceled: the background task stopped unexpectedly."
+msgstr "CSV verwijderen geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Saving changes..."
+msgstr "Wijzigingen opslaan..."
+
+msgid "Save canceled: the background task stopped unexpectedly."
+msgstr "Opslaan geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "{count} refund or offsetting transactions are hidden from normal views."
+msgstr "{count} terugbetalingen of verrekenende transacties zijn verborgen in normale weergaven."
+
+msgid "{count} refund or offsetting transactions were detected. Enable Hide Refunded Transactions to exclude them from normal views."
+msgstr "{count} terugbetalingen of verrekenende transacties gevonden. Schakel Terugbetaalde transacties verbergen in om ze uit normale weergaven te halen."
+
+msgid "Hide Refunded Transactions enabled. Detected refunds and offsetting groups are excluded from normal views."
+msgstr "Terugbetaalde transacties verbergen ingeschakeld. Gevonden terugbetalingen en verrekenende groepen worden uit normale weergaven gehaald."
+
+msgid "Hide Refunded Transactions disabled. Detected refunds and offsetting groups are included again."
+msgstr "Terugbetaalde transacties verbergen uitgeschakeld. Gevonden terugbetalingen en verrekenende groepen worden weer getoond."
+
+msgid "Change code"
+msgstr "Code wijzigen"
+
+msgid "Change the budget code for this transaction"
+msgstr "Wijzig de budgetcode voor deze transactie"
+
+msgid "Change Budget Code"
+msgstr "Budgetcode wijzigen"
+
+msgid "Save budget code rule"
+msgstr "Budgetcoderegel opslaan"
+
+msgid "Create a rule that maps matching transactions to this budget code."
+msgstr "Maak een regel die overeenkomende transacties aan deze budgetcode koppelt."
+
+msgid "Matching by {field}: {value}"
+msgstr "Matcht op {field}: {value}"
+
+msgid "Rule match"
+msgstr "Regelmatch"
+
+msgid "This saves a categorization rule. The original bank CSV is not changed."
+msgstr "Dit slaat een categorisatieregel op. De originele bank-CSV wordt niet aangepast."
+
+msgid "Generated from transaction budget code change."
+msgstr "Gegenereerd vanuit budgetcodewijziging van transactie."
+
+msgid "Saving budget code rule..."
+msgstr "Budgetcoderegel opslaan..."
+
+msgid "Budget code rule updated"
+msgstr "Budgetcoderegel bijgewerkt"
+
+msgid "Budget code rule saved"
+msgstr "Budgetcoderegel opgeslagen"
+
+msgid "Could not save budget code rule: {error}"
+msgstr "Kon budgetcoderegel niet opslaan: {error}"
+
+msgid "Budget code rule save canceled: the background task stopped unexpectedly."
+msgstr "Budgetcoderegel opslaan geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Page loading canceled: the background task stopped unexpectedly."
+msgstr "Pagina laden geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Detecting transaction patterns..."
+msgstr "Transactiepatronen detecteren..."
+
+msgid "Could not detect transaction patterns: {error}"
+msgstr "Kon transactiepatronen niet detecteren: {error}"
+
+msgid "Transaction pattern detection stopped unexpectedly."
+msgstr "Transactiepatroondetectie stopte onverwacht."
+
+msgid "Yearly budget"
+msgstr "Jaarbudget"
+
+msgid "5000 or 10% of yearly income"
+msgstr "5000 of 10% van jaarinkomen"
+
+msgid "Use monthly budgets, yearly budgets, or both. If only a yearly budget is set, monthly views divide it over 12 months."
+msgstr "Gebruik maandbudgetten, jaarbudgetten of allebei. Als alleen een jaarbudget is ingesteld, verdelen maandweergaven dit over 12 maanden."
+
+msgid "Fixed monthly budgets are annualized; yearly budgets are used as-is; percentage budgets use yearly income. Compared with {previous_year}."
+msgstr "Vaste maandbudgetten worden omgerekend naar jaar; jaarbudgetten worden direct gebruikt; procentuele budgetten gebruiken jaarinkomen. Vergeleken met {previous_year}."
+
+msgid "yearly budget / 12"
+msgstr "jaarbudget / 12"
+
+msgid "yearly budget"
+msgstr "jaarbudget"
+
+msgid "No data for {year}"
+msgstr "Geen gegevens voor {year}"
+
+msgid "No previous year yet"
+msgstr "Nog geen vorig jaar"
+
+msgid "Forecast"
+msgstr "Voorspelling"
+
+msgid "Projected with imported transactions, budgeted income, and planned spending."
+msgstr "Voorspeld met geimporteerde transacties, begroot inkomen en geplande uitgaven."
+
+msgid "Current month"
+msgstr "Huidige maand"
+
+msgid "Next month"
+msgstr "Volgende maand"
+
+msgid "Rest of year"
+msgstr "Rest van het jaar"
+
+msgid "{status}: {income} in, {expenses} out"
+msgstr "{status}: {income} erin, {expenses} eruit"
+
+msgid "Looks safe"
+msgstr "Lijkt veilig"
+
+msgid "Tight"
+msgstr "Krap"
+
+msgid "Short"
+msgstr "Tekort"
+
+msgid "Smart Insights"
+msgstr "Slimme inzichten"
+
+msgid "Smart Insights enabled. Forecast cards and transaction pattern detection are available."
+msgstr "Slimme inzichten ingeschakeld. Prognosekaarten en patroonherkenning voor transacties zijn beschikbaar."
+
+msgid "Smart Insights disabled. Forecast cards and transaction pattern detection are hidden."
+msgstr "Slimme inzichten uitgeschakeld. Prognosekaarten en patroonherkenning voor transacties zijn verborgen."
+
+msgid "Prediction details"
+msgstr "Details van voorspelling"
+
+msgid "This estimate uses imported transactions, budgeted income, planned spending, and recent history."
+msgstr "Deze schatting gebruikt geimporteerde transacties, begroot inkomen, geplande uitgaven en recente historie."
+
+msgid "Show transactions"
+msgstr "Transacties tonen"
+
+msgid "Open the transactions used for this forecast period"
+msgstr "Open de transacties voor deze prognoseperiode"
+
+msgid "Imported income"
+msgstr "Geimporteerd inkomen"
+
+msgid "Expected income"
+msgstr "Verwacht inkomen"
+
+msgid "Projected income"
+msgstr "Voorspeld inkomen"
+
+msgid "Imported expenses"
+msgstr "Geimporteerde uitgaven"
+
+msgid "Planned expenses"
+msgstr "Geplande uitgaven"
+
+msgid "Projected expenses"
+msgstr "Voorspelde uitgaven"
+
+msgid "Projected balance"
+msgstr "Voorspeld saldo"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Auto Clean Config"
+msgstr "Configuratie automatisch opschonen"
+
+msgid "Auto Clean Config enabled. Orphaned rules are removed during reload and import."
+msgstr "Configuratie automatisch opschonen ingeschakeld. Weesregels worden verwijderd tijdens herladen en importeren."
+
+msgid "Auto Clean Config disabled. Orphaned rules stay visible in Diagnostics."
+msgstr "Configuratie automatisch opschonen uitgeschakeld. Weesregels blijven zichtbaar in Diagnose."
+
+msgid "Orphaned Configuration"
+msgstr "Weesconfiguratie"
+
+msgid "Rules that point to missing budget codes can create ghost categories or budget codes."
+msgstr "Regels die naar ontbrekende budgetcodes wijzen kunnen spookcategorieen of spookbudgetcodes maken."
+
+msgid "Remove Orphaned Rules"
+msgstr "Weesregels verwijderen"
+
+msgid "Remove rules that point to missing budget codes"
+msgstr "Verwijder regels die naar ontbrekende budgetcodes wijzen"
+
+msgid "No orphaned configuration found."
+msgstr "Geen weesconfiguratie gevonden."
+
+msgid "Could not inspect configuration: {error}"
+msgstr "Kon configuratie niet controleren: {error}"
+
+msgid "Rule “{search}” uses missing budget code “{code}” in category “{category}”."
+msgstr "Regel “{search}” gebruikt ontbrekende budgetcode “{code}” in categorie “{category}”."
+
+msgid "Removing orphaned rules..."
+msgstr "Weesregels verwijderen..."
+
+msgid "{count} orphaned rule(s) removed."
+msgstr "{count} weesregel(s) verwijderd."
+
+msgid "Could not remove orphaned rules: {error}"
+msgstr "Kon weesregels niet verwijderen: {error}"
+
+msgid "Removing orphaned rules canceled: the background task stopped unexpectedly."
+msgstr "Weesregels verwijderen geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Show all orphaned rules"
+msgstr "Alle weesregels tonen"
+
+msgid "Compare Categories with Previous Year"
+msgstr "Categorieen vergelijken met vorig jaar"
+
+msgid "Category comparison enabled. Annual categories compare with the previous year."
+msgstr "Categorievergelijking ingeschakeld. Jaarcategorieen vergelijken met vorig jaar."
+
+msgid "Category comparison disabled. Annual categories are hidden from Overview."
+msgstr "Categorievergelijking uitgeschakeld. Jaarcategorieen zijn verborgen in Overzicht."
+
+msgid "Annual Category Comparison"
+msgstr "Jaarcategorieën vergelijken"
+
+msgid "Compares category spending in {year} with {previous_year}. Red means more spent than last year, not over budget."
+msgstr "Vergelijkt categorie-uitgaven in {year} met {previous_year}. Rood betekent meer uitgegeven dan vorig jaar, niet boven budget."
+
+msgid "Compare Categories with Previous Period"
+msgstr "Categorieën vergelijken met vorige periode"
+
+msgid "Category Comparison"
+msgstr "Categorieën vergelijken"
+
+msgid "Compares category spending in {month} with {previous}. Red means more spent than the previous period, not over budget."
+msgstr "Vergelijkt categorie-uitgaven in {month} met {previous}. Rood betekent meer uitgegeven dan de vorige periode, niet boven budget."
+
+msgid "{period} spent · {amount}"
+msgstr "{period} uitgegeven · {amount}"
+
+msgid "Category comparison enabled. Categories compare with the previous period."
+msgstr "Categorievergelijking ingeschakeld. Categorieën vergelijken met de vorige periode."
+
+msgid "Category comparison disabled. Category comparisons are hidden."
+msgstr "Categorievergelijking uitgeschakeld. Categorievergelijkingen zijn verborgen."
+
+msgid "Annual budget distribution"
+msgstr "Jaarbudgetverdeling"
+
+msgid "Planned annual budgets for {year}."
+msgstr "Geplande jaarbudgetten voor {year}."
+
+msgid "Annual spending distribution"
+msgstr "Jaaruitgavenverdeling"
+
+msgid "Actual spending by category in {year}."
+msgstr "Werkelijke uitgaven per categorie in {year}."
+
+msgid "Actual annual spending by category in {year}."
+msgstr "Werkelijke jaaruitgaven per categorie in {year}."
+
+msgid "Spending by category in {year}."
+msgstr "Uitgaven per categorie in {year}."
+
+msgid "Filter “{query}” searches annual budgets and annual spending."
+msgstr "Filter “{query}” zoekt in jaarbudgetten en jaaruitgaven."
+
+msgid "Filter “{query}” searches budgets and spending for {month}."
+msgstr "Filter “{query}” zoekt in budgetten en uitgaven voor {month}."
+
+msgid "Filter “{query}” searches budgets and spending."
+msgstr "Filter “{query}” zoekt in budgetten en uitgaven."
+
+msgid "Choose the month and year for budgets and spending."
+msgstr "Kies de maand en het jaar voor budgetten en uitgaven."
+
+msgid "Choose a month and year to see budget room and spending for that period."
+msgstr "Kies een maand en jaar om budgetruimte en uitgaven voor die periode te zien."
+
+msgid "Import CSV files first. Then budgets and spending appear here as graphical rows."
+msgstr "Importeer eerst CSV-bestanden. Daarna verschijnen budgetten en uitgaven hier als grafische rijen."
+
+msgid "Monthly Spending"
+msgstr "Maanduitgaven"
+
+msgid "Show all spending"
+msgstr "Alle uitgaven tonen"
+
+msgid "Annual Spending"
+msgstr "Jaaruitgaven"
+
+msgid "Largest annual expenses by category in {year}."
+msgstr "Grootste jaaruitgaven per categorie in {year}."
+
+msgid "Compare Spending with Previous Period"
+msgstr "Uitgaven vergelijken met vorige periode"
+
+msgid "Spending comparison enabled. Spending is compared with the previous period."
+msgstr "Uitgavenvergelijking ingeschakeld. Uitgaven worden vergeleken met de vorige periode."
+
+msgid "Spending comparison disabled. Spending comparisons are hidden."
+msgstr "Uitgavenvergelijking uitgeschakeld. Uitgavenvergelijkingen zijn verborgen."
+
+msgid "Largest monthly expenses by category in {month}. The bar shows the share compared with the largest expense in this list."
+msgstr "Grootste maanduitgaven per categorie in {month}. De balk toont het aandeel ten opzichte van de grootste uitgave in deze lijst."
+
+msgid "Actual expenses by category for {year}."
+msgstr "Werkelijke uitgaven per categorie voor {year}."
+
+msgid "Preferences"
+msgstr "Voorkeuren"
+
+msgid "App options"
+msgstr "App-opties"
+
+msgid "Choose how lists, forecasts, forms, and imported transactions are shown."
+msgstr "Kies hoe lijsten, voorspellingen, formulieren en geimporteerde transacties worden getoond."
+
+msgid "Interface"
+msgstr "Interface"
+
+msgid "Control how much information is visible while you browse."
+msgstr "Bepaal hoeveel informatie zichtbaar is terwijl je bladert."
+
+msgid "Hide status messages automatically after a short delay."
+msgstr "Verberg statusmeldingen automatisch na een korte tijd."
+
+msgid "Show every item immediately and hide More buttons."
+msgstr "Toon direct alle items en verberg Meer-knoppen."
+
+msgid "Insights"
+msgstr "Inzichten"
+
+msgid "Control smart forecasts, pattern detection, and previous-period spending comparisons."
+msgstr "Beheer slimme prognoses, patroonherkenning en vergelijkingen met de vorige periode."
+
+msgid "Show forecast cards and detect transaction patterns from imported transactions."
+msgstr "Toon prognosekaarten en herken transactiepatronen uit geimporteerde transacties."
+
+msgid "Compare spending cards with the previous month or year."
+msgstr "Vergelijk uitgavenkaarten met de vorige maand of het vorige jaar."
+
+msgid "Forms and Data"
+msgstr "Formulieren en data"
+
+msgid "Control autofill, cleanup, and refunded transaction visibility."
+msgstr "Beheer automatisch invullen, opschonen en zichtbaarheid van terugbetaalde transacties."
+
+msgid "Let related form fields fill each other, such as transfer categories and codes."
+msgstr "Laat gerelateerde formuliervelden elkaar invullen, zoals overboekingscategorieen en codes."
+
+msgid "Remove orphaned rules automatically during reload and import."
+msgstr "Verwijder weesregels automatisch tijdens herladen en importeren."
+
+msgid "Requires Smart Insights. Exclude detected refunds and offsetting groups from normal views."
+msgstr "Vereist Slimme inzichten. Sluit gevonden terugbetalingen en verrekenende groepen uit van normale weergaven."
+
+msgid "Settings"
+msgstr "Instellingen"
+
+msgid "General"
+msgstr "Algemeen"
+
+msgid "Gray graph bars show {year}"
+msgstr "Grijze grafiekbalken tonen {year}"
+
+msgid "Only the selected year is loaded"
+msgstr "Alleen het geselecteerde jaar wordt geladen"
+
+msgid "Budgets needing attention in {year}. More shows everything; gray bars show {previous_year}."
+msgstr "Budgetten die aandacht nodig hebben in {year}. Meer toont alles; grijze balken tonen {previous_year}."
+
+msgid "Budgets needing attention in {year}. More shows everything."
+msgstr "Budgetten die aandacht nodig hebben in {year}. Meer toont alles."
+
+msgid "Choose a year and inspect how income and expenses are built up."
+msgstr "Kies een jaar en bekijk hoe inkomsten en uitgaven zijn opgebouwd."
+
+msgid "Cash Flow"
+msgstr "Kasstroom"
+
+msgid "Planned Income"
+msgstr "Geplande inkomsten"
+
+msgid "Income can be gross or net. Net income is needed for budgeting and calculations."
+msgstr "Income kan bruto en netto zijn. Het netto income is nodig voor de begroting/berekeningen."
+
+msgid "Edit planned income budget"
+msgstr "Gepland inkomstenbudget bewerken"
+
+msgid "Colored bars are the selected year; gray bars compare the previous year. Planned bars come from budgets; real bars come from transactions."
+msgstr "Gekleurde balken tonen het geselecteerde jaar; grijze balken vergelijken het vorige jaar. Geplande balken komen uit budgetten; werkelijke balken komen uit transacties."
+
+msgid "Colored bars show planned and real income and expenses for the selected year."
+msgstr "Gekleurde balken tonen geplande en werkelijke inkomsten en uitgaven voor het geselecteerde jaar."
+
+msgid "Scale"
+msgstr "Schaal"
+
+msgid "Planned income"
+msgstr "Geplande inkomsten"
+
+msgid "Real income"
+msgstr "Werkelijke inkomsten"
+
+msgid "Real expenses"
+msgstr "Werkelijke uitgaven"
+
+msgid "{label} · {kind} · {amount}"
+msgstr "{label} · {kind} · {amount}"
+
+msgid "planned income"
+msgstr "geplande inkomsten"
+
+msgid "real income"
+msgstr "werkelijke inkomsten"
+
+msgid "planned expenses"
+msgstr "geplande uitgaven"
+
+msgid "real expenses"
+msgstr "werkelijke uitgaven"
+
+msgid "Colored bars show {year}; gray bars show {previous_year}."
+msgstr "Gekleurde balken tonen {year}; grijze balken tonen {previous_year}."
+
+msgid "Colored bars show {month}; gray bars show {previous}."
+msgstr "Gekleurde balken tonen {month}; grijze balken tonen {previous}."
+
+msgid "Loading selected period..."
+msgstr "Geselecteerde periode laden..."
+
+msgid "Selected period loaded."
+msgstr "Geselecteerde periode geladen."
+
+msgid "{year} spent - {amount}"
+msgstr "{year} uitgegeven - {amount}"
+
+msgid "{period} spent - {amount}"
+msgstr "{period} uitgegeven - {amount}"
+
+msgid "Previous"
+msgstr "Vorige"
+
+msgid "Next"
+msgstr "Volgende"
+
+msgid "Load previous period"
+msgstr "Vorige periode laden"
+
+msgid "Load next period"
+msgstr "Volgende periode laden"
+
+msgid "Showing transactions for {period}."
+msgstr "Transacties voor {period}."
+
+msgid "{count} transactions in {period}."
+msgstr "{count} transacties in {period}."
+
+msgid "{count} of {total} transactions match “{query}” in {year}."
+msgstr "{count} van {total} transacties komen overeen met “{query}” in {year}."
+
+msgid "{count} transactions in {year}."
+msgstr "{count} transacties in {year}."
+
+msgid "No transactions in this year"
+msgstr "Geen transacties in dit jaar"
+
+msgid "Choose another year or import CSV files for this period."
+msgstr "Kies een ander jaar of importeer CSV-bestanden voor deze periode."
+
+msgid "Repeating payments, possible transfers, refunds, and offsetting groups detected in {year}."
+msgstr "Herhalende betalingen, mogelijke overboekingen, terugbetalingen en compenserende groepen gevonden in {year}."
+
+
+msgid "Configuration"
+msgstr "Configuratie"
+
+msgid "Configuration actions report progress here."
+msgstr "Configuratieacties tonen hier hun voortgang."
+
+msgid "Configuration Backup"
+msgstr "Configuratieback-up"
+
+msgid "Back up or restore the current rules, budgets, and CSV field names."
+msgstr "Maak een back-up of herstel de huidige regels, budgetten en CSV-veldnamen."
+
+msgid "Restore"
+msgstr "Herstellen"
+
+msgid "Restore archived configuration"
+msgstr "Gearchiveerde configuratie herstellen"
+
+msgid "Archive"
+msgstr "Archiveren"
+
+msgid "Archive current configuration"
+msgstr "Huidige configuratie archiveren"
+
+msgid "Back Up Current Configuration"
+msgstr "Back-up van huidige configuratie maken"
+
+msgid "Replace the existing backup in the config folder."
+msgstr "Vervang de bestaande back-up in de configuratiemap."
+
+msgid "Restore Configuration Backup"
+msgstr "Configuratieback-up herstellen"
+
+msgid "Restore rules, budgets, and field names from the backup."
+msgstr "Herstel regels, budgetten en veldnamen uit de back-up."
+
+msgid "Automatic Configuration"
+msgstr "Automatische configuratie"
+
+msgid "Generate budgeting from imported transactions or restore the built-in defaults."
+msgstr "Genereer budgettering uit geimporteerde transacties of herstel de ingebouwde standaardwaarden."
+
+msgid "Generate budgets from transactions"
+msgstr "Budgetten uit transacties genereren"
+
+msgid "Replace the budget list with budgets detected from imported spending."
+msgstr "Vervang de budgetlijst door budgetten uit geimporteerde uitgaven."
+
+msgid "Use Defaults"
+msgstr "Standaarden gebruiken"
+
+msgid "Use default configuration"
+msgstr "Standaardconfiguratie gebruiken"
+
+msgid "Use Default Configuration"
+msgstr "Standaardconfiguratie gebruiken"
+
+msgid "Replace the budget list with the built-in defaults."
+msgstr "Vervang de budgetlijst door de ingebouwde standaardwaarden."
+
+msgid "The latest configuration message."
+msgstr "De laatste configuratiemelding."
+
+msgid "Backing up current configuration..."
+msgstr "Back-up van huidige configuratie maken..."
+
+msgid "Configuration backed up in {path}."
+msgstr "Back-up van configuratie opgeslagen in {path}."
+
+msgid "Could not back up configuration: {error}"
+msgstr "Kon geen back-up van configuratie maken: {error}"
+
+msgid "Configuration backup canceled: the background task stopped unexpectedly."
+msgstr "Back-up van configuratie geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Restoring configuration backup..."
+msgstr "Configuratieback-up herstellen..."
+
+msgid "Configuration backup restored."
+msgstr "Configuratieback-up hersteld."
+
+msgid "Could not restore configuration backup: {error}"
+msgstr "Kon configuratieback-up niet herstellen: {error}"
+
+msgid "Configuration restore canceled: the background task stopped unexpectedly."
+msgstr "Configuratieherstel geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Preference changes are applied immediately."
+msgstr "Voorkeurwijzigingen worden meteen toegepast."
+
+msgid "The latest preference message."
+msgstr "De laatste voorkeurmelding."
+
+msgid "Generating budgets from transactions..."
+msgstr "Budgetten uit transacties genereren..."
+
+msgid "Budget generation canceled: the background task stopped unexpectedly."
+msgstr "Budgetgeneratie geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Another edit or save is already running."
+msgstr "Er loopt al een andere bewerking of opslagactie."
+
+msgid "Applying default configuration..."
+msgstr "Standaardconfiguratie toepassen..."
+
+msgid "Default configuration applied."
+msgstr "Standaardconfiguratie toegepast."
+
+msgid "Could not apply default configuration: {error}"
+msgstr "Kon standaardconfiguratie niet toepassen: {error}"
+
+msgid "Applying default configuration canceled: the background task stopped unexpectedly."
+msgstr "Standaardconfiguratie toepassen geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Generate budgeting from imported transactions, use defaults, or start clean."
+msgstr "Genereer budgettering uit geimporteerde transacties, gebruik standaarden of begin leeg."
+
+msgid "Replace rules, budgets, and field names with the built-in defaults."
+msgstr "Vervang regels, budgetten en veldnamen door de ingebouwde standaardwaarden."
+
+msgid "Use Empty"
+msgstr "Leeg gebruiken"
+
+msgid "Use empty configuration"
+msgstr "Lege configuratie gebruiken"
+
+msgid "Use Empty Configuration"
+msgstr "Lege configuratie gebruiken"
+
+msgid "Remove all rules and budget codes while keeping CSV field names for imports."
+msgstr "Verwijder alle regels en budgetcodes, maar behoud CSV-veldnamen voor imports."
+
+msgid "Applying empty configuration..."
+msgstr "Lege configuratie toepassen..."
+
+msgid "Empty configuration applied."
+msgstr "Lege configuratie toegepast."
+
+msgid "Could not apply empty configuration: {error}"
+msgstr "Kon lege configuratie niet toepassen: {error}"
+
+msgid "Applying empty configuration canceled: the background task stopped unexpectedly."
+msgstr "Lege configuratie toepassen geannuleerd: de achtergrondtaak stopte onverwacht."
+
+msgid "Search preferences"
+msgstr "Voorkeuren zoeken"
+
+msgid "Search configuration"
+msgstr "Configuratie zoeken"
+
+msgid "Percentage basis"
+msgstr "Percentagebasis"
+
+msgid "Edit details"
+msgstr "Details bewerken"
+
+msgid "Collapse details"
+msgstr "Details inklappen"
+
+msgid "{percent}% of real income"
+msgstr "{percent}% van werkelijke inkomsten"
+
+msgid "{percent}% of planned income"
+msgstr "{percent}% van geplande inkomsten"
+
+msgid "Use fixed amounts or percentages; choose real or planned income for percentages."
+msgstr "Gebruik vaste bedragen of percentages; kies werkelijke of geplande inkomsten voor percentages."
+
+msgid "Use monthly budgets, yearly budgets, or both. Percentage budgets can use real or planned income."
+msgstr "Gebruik maandbudgetten, jaarbudgetten of beide. Percentagebudgetten kunnen werkelijke of geplande inkomsten gebruiken."
+
+msgid "active"
+msgstr "actief"
+
+msgid "inactive"
+msgstr "inactief"
+
+msgid "priority"
+msgstr "prioriteit"
+
+msgid "text"
+msgstr "tekst"
+
+msgid "regex"
+msgstr "regex"
+
+msgid "Revert details"
+msgstr "Details terugzetten"
+
+msgid "Move rule"
+msgstr "Regel verplaatsen"
+
+msgid "Group"
+msgstr "Groeperen"
+
+msgid "Move compatible rules next to each other before combining"
+msgstr "Zet compatibele regels naast elkaar voordat je ze combineert"
+
+msgid "Combine"
+msgstr "Combineren"
+
+msgid "Combine adjacent compatible rules"
+msgstr "Combineer aangrenzende compatibele regels"
+
+msgid "Loading rules..."
+msgstr "Regels laden..."
+
+msgid "Loading budgets..."
+msgstr "Budgetten laden..."
+
+msgid "Loading field names..."
+msgstr "Veldnamen laden..."
+
+msgid "Loading management data..."
+msgstr "Beheer laden..."
+
+msgid "Grouping compatible rules..."
+msgstr "Compatibele regels groeperen..."
+
+msgid "Combining compatible rules..."
+msgstr "Compatibele regels combineren..."
+
+msgid "No adjacent compatible rules to combine. Use Group first if compatible rules are spread out."
+msgstr "Geen aangrenzende compatibele regels om te combineren. Gebruik eerst Groeperen als compatibele regels verspreid staan."
+
+msgid "No compatible rules to group."
+msgstr "Geen compatibele regels om te groeperen."
+
+msgid "Compatible rules are already grouped. Use Combine."
+msgstr "Compatibele regels zijn al gegroepeerd. Gebruik Combineren."
+
+msgid "Grouped compatible rules into {group_count} group(s). Review order, then Combine or Save."
+msgstr "Compatibele regels gegroepeerd in {group_count} groep(en). Controleer de volgorde en kies daarna Combineren of Opslaan."
+
+msgid "Combined {before_count} rules into {after_count} rules across {group_count} group(s). Review, then Save."
+msgstr "Gecombineerd: {before_count} regels naar {after_count} regels in {group_count} groep(en). Controleer en kies daarna Opslaan."
+
+msgid "Change budget direction?"
+msgstr "Budgetrichting wijzigen?"
+
+msgid "Change budget directions?"
+msgstr "Budgetrichtingen wijzigen?"
+
+msgid "Change Direction"
+msgstr "Richting wijzigen"
+
+msgid "This item will switch between expenses and income. This can move related transactions between spending and income totals."
+msgstr "Dit item wisselt tussen uitgaven en inkomsten. Dit kan gerelateerde transacties verplaatsen tussen uitgaven- en inkomenstotalen."
+
+msgid "{item} will switch between expenses and income. This can move related transactions between spending and income totals."
+msgstr "{item} wisselt tussen uitgaven en inkomsten. Dit kan gerelateerde transacties verplaatsen tussen uitgaven- en inkomenstotalen."
+
+msgid "{count} items will switch between expenses and income. This can move related transactions between spending and income totals."
+msgstr "{count} items wisselen tussen uitgaven en inkomsten. Dit kan gerelateerde transacties verplaatsen tussen uitgaven- en inkomenstotalen."
+
+msgid "Edit Planned Income"
+msgstr "Geplande inkomsten bewerken"
+
+msgid "Save planned income budget"
+msgstr "Gepland inkomstenbudget opslaan"
+
+msgid "Set fixed monthly and yearly planned income for the INC budget code."
+msgstr "Stel vaste maandelijkse en jaarlijkse geplande inkomsten in voor budgetcode INC."
+
+msgid "Monthly planned income"
+msgstr "Maandelijkse geplande inkomsten"
+
+msgid "Yearly planned income"
+msgstr "Jaarlijkse geplande inkomsten"
+
+msgid "Delete planned income budget"
+msgstr "Gepland inkomstenbudget verwijderen"
+
+msgid "Set every budget percentage basis to real income"
+msgstr "Zet de percentagebasis van elk budget op werkelijke inkomsten"
+
+msgid "Set every budget percentage basis to planned income"
+msgstr "Zet de percentagebasis van elk budget op geplande inkomsten"
+
+msgid "Real Income"
+msgstr "Werkelijke inkomsten"
+
+msgid "Monthly"
+msgstr "Maandelijks"
+
+msgid "Yearly"
+msgstr "Jaarlijks"
+
+msgid "Both"
+msgstr "Beide"
+
+msgid "Convert budget values to monthly values"
+msgstr "Zet budgetwaarden om naar maandelijkse waarden"
+
+msgid "Convert budget values to yearly values"
+msgstr "Zet budgetwaarden om naar jaarlijkse waarden"
+
+msgid "Fill missing monthly and yearly budget values"
+msgstr "Vul ontbrekende maandelijkse en jaarlijkse budgetwaarden aan"
+
+msgid "No budget rows changed."
+msgstr "Geen budgetrijen gewijzigd."
+
+msgid "Updated {count} {action}. Review, then Save."
+msgstr "{count} {action} bijgewerkt. Controleer en klik daarna op Opslaan."
+
+msgid "Updated {count} {action}; skipped {skipped} invalid value(s). Review, then Save."
+msgstr "{count} {action} bijgewerkt; {skipped} ongeldige waarde(n) overgeslagen. Controleer en klik daarna op Opslaan."
+
+msgid "budget(s) set to real income basis"
+msgstr "budget(s) ingesteld op werkelijke-inkomstenbasis"
+
+msgid "budget(s) set to planned income basis"
+msgstr "budget(s) ingesteld op geplande-inkomstenbasis"
+
+msgid "budget(s) converted to monthly values"
+msgstr "budget(s) omgezet naar maandelijkse waarden"
+
+msgid "budget(s) converted to yearly values"
+msgstr "budget(s) omgezet naar jaarlijkse waarden"
+
+msgid "budget(s) filled with monthly and yearly values"
+msgstr "budget(s) aangevuld met maandelijkse en jaarlijkse waarden"
+
+msgid "Sum {sum}; avg {average}; modal {modal}."
+msgstr "Som {sum}; gem. {average}; modus {modal}."
+
+msgid "none"
+msgstr "geen"
+
+msgid "Other planned income"
+msgstr "Overige geplande inkomsten"
+
+msgid "remaining yearly budget"
+msgstr "resterend jaarbudget"
+
+msgid "Budgets for {month}. Yearly-only budgets use remaining annual room."
+msgstr "Budgetten voor {month}. Budgetten met alleen een jaarbudget gebruiken de resterende jaarruimte."
+
+msgid "Budgets needing attention in {month}. More shows everything; yearly-only budgets use remaining annual room."
+msgstr "Budgetten die aandacht nodig hebben in {month}. Meer toont alles; budgetten met alleen een jaarbudget gebruiken de resterende jaarruimte."
+
+msgid "Expenses are {expenses}, above annual budget room of {room} by {loss}."
+msgstr "Uitgaven zijn {expenses}, boven de jaarbudgetruimte van {room} met {loss}."
+
+msgid "Expenses are {expenses}, above real income of {income} plus annual budget room of {room} by {loss}."
+msgstr "Uitgaven zijn {expenses}, boven werkelijke inkomsten van {income} plus jaarbudgetruimte van {room} met {loss}."
+
+msgid "Expenses are {expenses}, above planned income of {income} plus annual budget room of {room} by {loss}."
+msgstr "Uitgaven zijn {expenses}, boven geplande inkomsten van {income} plus jaarbudgetruimte van {room} met {loss}."
+
+# Transaction operation queue
+msgid "Processing queue"
+msgstr "Verwerkingswachtrij"
+
+msgid "Processing Queue"
+msgstr "Verwerkingswachtrij"
+
+msgid "Apply All"
+msgstr "Alles toepassen"
+
+msgid "Apply all pending queued operations"
+msgstr "Alle wachtende bewerkingen toepassen"
+
+msgid "Operation added to queue."
+msgstr "Bewerking aan wachtrij toegevoegd."
+
+msgid "Processing queue: {count} pending"
+msgstr "Verwerkingswachtrij: {count} in wachtrij"
+
+msgid "No queued operations."
+msgstr "Geen bewerkingen in de wachtrij."
+
+msgid "No pending operations."
+msgstr "Geen wachtende bewerkingen."
+
+msgid "{count} pending, {failed} failed."
+msgstr "{count} wachtend, {failed} mislukt."
+
+msgid "{count} pending operation(s)."
+msgstr "{count} wachtende bewerking(en)."
+
+msgid "Queued operation removed."
+msgstr "Wachtrijbewerking verwijderd."
+
+msgid "Apply"
+msgstr "Toepassen"
+
+msgid "Apply this operation"
+msgstr "Deze bewerking toepassen"
+
+msgid "Remove"
+msgstr "Verwijderen"
+
+msgid "Remove this operation"
+msgstr "Deze bewerking verwijderen"
+
+msgid "Change budget code"
+msgstr "Budgetcode wijzigen"
+
+msgid "Rule {field}: {search} -> {category} / {code} ({direction})"
+msgstr "Regel {field}: {search} -> {category} / {code} ({direction})"
+
+msgid "Pending"
+msgstr "Wachtend"
+
+msgid "Applying"
+msgstr "Bezig met toepassen"
+
+msgid "Applied"
+msgstr "Toegepast"
+
+msgid "Failed"
+msgstr "Mislukt"
+
+msgid "No queued operations to apply."
+msgstr "Geen bewerkingen in de wachtrij om toe te passen."
+
+msgid "The processing queue is already running."
+msgstr "De verwerkingswachtrij is al bezig."
+
+msgid "Applying queued operation {current} of {total}..."
+msgstr "Wachtrijbewerking {current} van {total} toepassen..."
+
+msgid "The background task stopped unexpectedly."
+msgstr "De achtergrondtaak is onverwacht gestopt."
+
+msgid "Reloading data after queued operations..."
+msgstr "Gegevens opnieuw laden na wachtrijbewerkingen..."
+
+msgid "Queued operations applied, but reload failed: {error}"
+msgstr "Wachtrijbewerkingen toegepast, maar opnieuw laden is mislukt: {error}"
+
+msgid "Queued operations applied, but reload canceled: the background task stopped unexpectedly."
+msgstr "Wachtrijbewerkingen toegepast, maar opnieuw laden is geannuleerd: de achtergrondtaak is onverwacht gestopt."
+
+msgid "No queued operations were applied."
+msgstr "Er zijn geen wachtrijbewerkingen toegepast."
+
+msgid "Applied {count} queued operation(s)."
+msgstr "{count} wachtrijbewerking(en) toegepast."
+
+msgid "{count} queued operation(s) failed."
+msgstr "{count} wachtrijbewerking(en) mislukt."
+
+msgid "Applied {applied} queued operation(s); {failed} failed."
+msgstr "{applied} wachtrijbewerking(en) toegepast; {failed} mislukt."
+
+msgid "Rule added to processing queue."
+msgstr "Regel aan verwerkingswachtrij toegevoegd."
+
+msgid "Budget code rule added to processing queue."
+msgstr "Budgetcoderegel aan verwerkingswachtrij toegevoegd."
+msgid "Save adds this rule to the processing queue."
+msgstr "Opslaan voegt deze regel toe aan de verwerkingswachtrij."
+
+msgid "Save adds a categorization rule to the processing queue. The original bank CSV is not changed."
+msgstr "Opslaan voegt een categorisatieregel toe aan de verwerkingswachtrij. De originele bank-CSV wordt niet gewijzigd."
+
+msgid "Clear completed operations"
+msgstr "Voltooide bewerkingen wissen"
+
+msgid "Completed queued operations cleared."
+msgstr "Voltooide wachtrijbewerkingen gewist."
+
+msgid "Grouping and combining queued rules..."
+msgstr "Wachtrijregels groeperen en combineren..."
+
+msgid "{summary} Grouped and combined rules from {before_count} to {after_count}."
+msgstr "{summary} Regels gegroepeerd en gecombineerd van {before_count} naar {after_count}."
+
+msgid "Move Code"
+msgstr "Code verplaatsen"
+
+msgid "Move rules from one budget code to another"
+msgstr "Regels van de ene budgetcode naar de andere verplaatsen"
+
+msgid "Need at least two budget codes to move rules."
+msgstr "Er zijn minstens twee budgetcodes nodig om regels te verplaatsen."
+
+msgid "Move Budget Code"
+msgstr "Budgetcode verplaatsen"
+
+msgid "Move rules to another budget code."
+msgstr "Regels naar een andere budgetcode verplaatsen."
+
+msgid "Move"
+msgstr "Verplaatsen"
+
+msgid "Move budget code"
+msgstr "Budgetcode verplaatsen"
+
+msgid "Move matching rules to the target budget code and remove the source budget code after Save."
+msgstr "Verplaats overeenkomende regels naar de doelbudgetcode en verwijder de bronbudgetcode na Opslaan."
+
+msgid "From"
+msgstr "Van"
+
+msgid "To"
+msgstr "Naar"
+
+msgid "Changes are staged here. Press Save to write them."
+msgstr "Wijzigingen worden hier klaargezet. Druk op Opslaan om ze weg te schrijven."
+
+msgid "Choose both budget codes first."
+msgstr "Kies eerst beide budgetcodes."
+
+msgid "Choose two different budget codes."
+msgstr "Kies twee verschillende budgetcodes."
+
+msgid "No source budget code found to move."
+msgstr "Geen bronbudgetcode gevonden om te verplaatsen."
+
+msgid "No rules used {from}; removed budget code {from}. Review, then Save."
+msgstr "Geen regels gebruikten {from}; budgetcode {from} verwijderd. Controleer en druk daarna op Opslaan."
+
+msgid "Moved {count} rule(s) from {from} to {to} and removed {from}. Review, then Save."
+msgstr "{count} regel(s) verplaatst van {from} naar {to} en {from} verwijderd. Controleer en druk daarna op Opslaan."
+
+msgid "Move matching rules to the target budget code. Choose whether to keep the source budget code."
+msgstr "Verplaats overeenkomende regels naar de doelbudgetcode. Kies of je de bronbudgetcode wilt behouden."
+
+msgid "Keep old budget code"
+msgstr "Oude budgetcode behouden"
+
+msgid "Leave the source budget code in the budget list after moving rules"
+msgstr "Laat de bronbudgetcode in de budgetlijst staan na het verplaatsen van regels"
+
+msgid "Undo budget deletion"
+msgstr "Budgetverwijdering ongedaan maken"
+
+msgid "No rules used {from}; kept budget code {from}. Review, then Save."
+msgstr "Geen regels gebruikten {from}; budgetcode {from} behouden. Controleer en druk daarna op Opslaan."
+
+msgid "Moved {count} rule(s) from {from} to {to}. Kept {from}. Review, then Save."
+msgstr "{count} regel(s) verplaatst van {from} naar {to}. {from} behouden. Controleer en druk daarna op Opslaan."
+
+msgid "Fake transactions"
+msgstr "Neptransacties"
+
+msgid "Fake Transactions"
+msgstr "Neptransacties"
+
+msgid "Add fake transaction"
+msgstr "Neptransactie toevoegen"
+
+msgid "Clear fake transactions"
+msgstr "Neptransacties wissen"
+
+msgid "Fake transactions: {count}"
+msgstr "Neptransacties: {count}"
+
+msgid "No fake transactions."
+msgstr "Geen neptransacties."
+
+msgid "No runtime preview transactions."
+msgstr "Geen tijdelijke voorbeeldtransacties."
+
+msgid "{count} fake transaction(s) affect this session."
+msgstr "{count} neptransactie(s) beïnvloeden deze sessie."
+
+msgid "Edit fake transaction"
+msgstr "Neptransactie bewerken"
+
+msgid "Remove fake transaction"
+msgstr "Neptransactie verwijderen"
+
+msgid "Edit Fake Transaction"
+msgstr "Neptransactie bewerken"
+
+msgid "New Fake Transaction"
+msgstr "Nieuwe neptransactie"
+
+msgid "Save fake transaction"
+msgstr "Neptransactie opslaan"
+
+msgid "Cancel fake transaction edit"
+msgstr "Bewerken van neptransactie annuleren"
+
+msgid "Fake transaction no longer exists."
+msgstr "Neptransactie bestaat niet meer."
+
+msgid "Fake transaction date is invalid."
+msgstr "Datum van neptransactie is ongeldig."
+
+msgid "Fake transaction amount is invalid."
+msgstr "Bedrag van neptransactie is ongeldig."
+
+msgid "Fake transaction"
+msgstr "Neptransactie"
+
+msgid "Clearing fake transactions..."
+msgstr "Neptransacties wissen..."
+
+msgid "Adding fake transaction..."
+msgstr "Neptransactie toevoegen..."
+
+msgid "Removing fake transaction..."
+msgstr "Neptransactie verwijderen..."
+
+msgid "Saving fake transaction..."
+msgstr "Neptransactie opslaan..."
+
+msgid "Fake transactions cleared."
+msgstr "Neptransacties gewist."
+
+msgid "Fake transaction added."
+msgstr "Neptransactie toegevoegd."
+
+msgid "Fake transaction updated."
+msgstr "Neptransactie bijgewerkt."
+
+msgid "Fake transaction removed."
+msgstr "Neptransactie verwijderd."
+
+msgid "Duplicate as Fake"
+msgstr "Dupliceren als nep"
+
+msgid "Duplicate this transaction as a runtime fake transaction"
+msgstr "Dupliceer deze transactie als tijdelijke neptransactie"
+
+msgid "Advanced Features"
+msgstr "Geavanceerde functies"
+
+msgid "Allow rule editing and budget direction controls."
+msgstr "Sta regelbewerking en instellingen voor budgetrichting toe."
+
+msgid "Control simple mode, smart form filling, cleanup, and refunded transaction visibility."
+msgstr "Beheer eenvoudige modus, slim invullen, opschonen en zichtbaarheid van terugbetalingen."
+
+msgid "Smart Autofill"
+msgstr "Slim invullen"
+
+msgid "Let forms fill related fields from context, such as matching categories and budget codes."
+msgstr "Laat formulieren verwante velden invullen vanuit de context, zoals passende categorieen en budgetcodes."
+
+msgid "Advanced Features enabled. Rule editing and direction controls are available."
+msgstr "Geavanceerde functies ingeschakeld. Regelbewerking en richtinginstellingen zijn beschikbaar."
+
+msgid "Simple mode enabled. Rule editing and direction controls are hidden."
+msgstr "Eenvoudige modus ingeschakeld. Regelbewerking en richtinginstellingen zijn verborgen."
+
+msgid "Smart Autofill enabled. Forms can fill matching categories and budget codes."
+msgstr "Slim invullen ingeschakeld. Formulieren kunnen passende categorieen en budgetcodes invullen."
+
+msgid "Smart Autofill disabled. Forms only use values you select."
+msgstr "Slim invullen uitgeschakeld. Formulieren gebruiken alleen waarden die je zelf kiest."
+
+msgid "Toggle Advanced Features"
+msgstr "Geavanceerde functies aan/uit"
+
+msgid "Move this transaction to another budget code"
+msgstr "Verplaats deze transactie naar een andere budgetcode"
+
+msgid "Save Move"
+msgstr "Verplaatsing opslaan"
+
+msgid "Save budget code move"
+msgstr "Budgetcodeverplaatsing opslaan"
+
+msgid "Move this transaction to another category or budget code."
+msgstr "Verplaats deze transactie naar een andere categorie of budgetcode."
+
+msgid "Save moves matching transactions to this budget code. The original bank CSV is not changed."
+msgstr "Opslaan verplaatst overeenkomende transacties naar deze budgetcode. De oorspronkelijke bank-CSV wordt niet gewijzigd."
+
+msgid "Choose a budget code first."
+msgstr "Kies eerst een budgetcode."
+
+msgid "This budget code is not available in simple mode. Enable Advanced Features to change direction."
+msgstr "Deze budgetcode is niet beschikbaar in eenvoudige modus. Schakel Geavanceerde functies in om de richting te wijzigen."
+
+msgid "This move changes direction. Enable Advanced Features to continue."
+msgstr "Deze verplaatsing wijzigt de richting. Schakel Geavanceerde functies in om door te gaan."
+
+msgid "Budget code move added to processing queue."
+msgstr "Budgetcodeverplaatsing toegevoegd aan de verwerkingswachtrij."
+
+msgid "Filter budgets and field names"
+msgstr "Filter budgetten en veldnamen"
+
+msgid "Budgets and fields"
+msgstr "Budgetten en velden"
+
+msgid "Hide Refunded Transactions needs Smart Insights. Enable Smart Insights to use refunded transaction hiding."
+msgstr "Terugbetaalde transacties verbergen heeft Slimme inzichten nodig. Schakel Slimme inzichten in om terugbetaalde transacties te verbergen."
+
+msgid "Smart Insights are disabled. Enable Smart Insights to search detected transaction patterns."
+msgstr "Slimme inzichten zijn uitgeschakeld. Schakel Slimme inzichten in om gevonden transactiepatronen te zoeken."
+
+# Simple mode category wording
+msgid "New Category"
+msgstr "Nieuwe categorie"
+
+msgid "Create a category. A budget code is generated automatically when you press Add."
+msgstr "Maak een categorie. Een budgetcode wordt automatisch gemaakt wanneer je op Toevoegen drukt."
+
+msgid "Create a new category with a budget"
+msgstr "Nieuwe categorie met budget maken"
+
+msgid "Use categories with fixed amounts or percentages."
+msgstr "Gebruik categorieen met vaste bedragen of percentages."
+
+msgid "New category added. Press Save to keep it."
+msgstr "Nieuwe categorie toegevoegd. Druk op Opslaan om te bewaren."
+
+msgid "Changes are saved to your budget configuration."
+msgstr "Wijzigingen worden opgeslagen in je budgetconfiguratie."
+
+msgid "Move Category"
+msgstr "Categorie verplaatsen"
+
+msgid "Move this transaction to another category"
+msgstr "Verplaats deze transactie naar een andere categorie"
+
+msgid "Save category move"
+msgstr "Categorieverplaatsing opslaan"
+
+msgid "Move this transaction to another category."
+msgstr "Verplaats deze transactie naar een andere categorie."
+
+msgid "Save moves matching transactions to this category. The original bank CSV is not changed."
+msgstr "Opslaan verplaatst overeenkomende transacties naar deze categorie. De oorspronkelijke bank-CSV wordt niet gewijzigd."
+
+msgid "Choose a category first."
+msgstr "Kies eerst een categorie."
+
+msgid "This category is not available in simple mode. Enable Advanced Features to change direction."
+msgstr "Deze categorie is niet beschikbaar in eenvoudige modus. Schakel Geavanceerde functies in om de richting te wijzigen."
+
+msgid "Generated from transaction category change."
+msgstr "Gemaakt vanuit een categoriewijziging van een transactie."
+
+msgid "Category move added to processing queue."
+msgstr "Categorieverplaatsing toegevoegd aan de verwerkingswachtrij."
+
+msgid "Set fixed monthly and yearly planned income."
+msgstr "Stel vaste maandelijkse en jaarlijkse geplande inkomsten in."
+
+msgid "Could not read budgets: {error}"
+msgstr "Kon budgetten niet lezen: {error}"
+
+# Read-only storage and managed preferences
+
+msgid "CSV storage is read-only."
+msgstr "CSV-opslag is alleen-lezen."
+
+msgid "Configuration storage is read-only."
+msgstr "Configuratieopslag is alleen-lezen."
+
+msgid "Auto Clean Config skipped because configuration storage is read-only."
+msgstr "Configuratie automatisch opschonen overgeslagen omdat de configuratieopslag alleen-lezen is."
+
+msgid "This preference is managed by the system."
+msgstr "Deze voorkeur wordt door het systeem beheerd."

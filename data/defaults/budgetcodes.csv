@@ -1,0 +1,14 @@
+code,category,monthly_budget,yearly_budget,direction,income_basis,notes
+INC,Income,0%,,income,real,Regular income
+FOOD,Groceries,14%,,expense,real,Groceries and household basics
+DINING,Dining out,4%,,expense,real,Restaurants and cafes
+TRAN,Transport,9%,,expense,real,"Public transport, fuel, and parking"
+HOME,Housing,28%,,expense,real,Rent/mortgage/HOA
+UTIL,Utilities,7%,,expense,real,"Energy, internet, phone"
+LOSS,Losses & fees,0%,,expense,real,"Fines, overdrafts, and losses"
+CARE,Healthcare,7%,,expense,real,Health insurance and care costs
+SHOP,Shopping,6%,,expense,real,Online and physical stores
+ENT,Subscriptions & entertainment,5%,,expense,real,Streaming and entertainment
+TRANSFER,Transfers,0%,,transfer,real,Internal transfers between your own accounts
+OTHER,Other,5%,,expense,real,Other expenses and buffer spending
+INC-OTHER,Other income,0%,,income,real,Positive transactions without a more specific rule

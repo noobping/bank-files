@@ -1,0 +1,13 @@
+Datum;Beschreibung;Gegenpartei;Betrag;Konto;Transaktions-ID
+24.01.2025;Gehalt Januar 2025;Employer Ltd;3200,00;NL00DEMO0123456789;demo-en-202501-01
+25.01.2025;Miete Februar;Vermieter;-1180,00;NL00DEMO0123456789;demo-en-202501-02
+26.01.2025;Monatliche Lebensmittel;Albert Heijn;-270,32;NL00DEMO0123456789;demo-en-202501-03
+24.02.2025;Gehalt Februar 2025;Arbeitgeber Ltd;3200,00;NL00DEMO0123456789;demo-en-202502-01
+2025-02-25;Miete März;Vermieter;-1180,00;NL00DEMO0123456789;demo-en-202502-02
+2025-02-26;Monatliche Lebensmittel;Jumbo;-283,21;NL00DEMO0123456789;demo-en-202502-03
+2025-03-24;Gehalt März 2025;Arbeitgeber Ltd;3200,00;NL00DEMO0123456789;demo-en-202503-01
+2025-03-25;Miete April;Vermieter;-1180,00;NL00DEMO0123456789;demo-en-202503-02
+2025-03-26;Monatliche Lebensmittel;Lidl;-244,87;NL00DEMO0123456789;demo-en-202503-03
+2025-04-24;Gehalt April 2025;Employer Ltd;3200,00;NL00DEMO0123456789;demo-en-202504-01
+2025-04-25;Miete Mai;Vermieter;-1180,00;NL00DEMO0123456789;demo-en-202504-02
+2025-04-26;Monatlich Lebensmittel;Picknick;-259,70;NL00DEMO0123456789;demo-en-202504-03
