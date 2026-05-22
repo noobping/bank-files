@@ -56,65 +56,6 @@ pub(in crate::app) fn finish_config_operation(ui_handles: &Rc<UiHandles>) {
     refresh_write_actions(ui_handles.as_ref());
 }
 
-pub(in crate::app) fn save_rule_in_background(
-    state: &Rc<RefCell<AppData>>,
-    ui_handles: &Rc<UiHandles>,
-    rule: EditableRule,
-    ensure_budget: bool,
-) -> bool {
-    if !try_begin_config_operation(ui_handles, "Another edit or save is already running.") {
-        return false;
-    }
-
-    let borrowed = state.borrow();
-    let mode = borrowed.dedupe_mode;
-    let remember_mode = ui_handles.remember_mode.get();
-    let sources = current_sources_for_reload(&borrowed, remember_mode);
-    let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
-    drop(borrowed);
-    let auto_clean_config = ui_handles.preferences.auto_clean_config();
-    let state_for_save = Rc::clone(state);
-    let ui_for_save = Rc::clone(ui_handles);
-    show_status(ui_handles, "Saving rule...");
-    begin_background_operation(ui_handles.as_ref());
-    gtk::glib::MainContext::default().spawn_local(async move {
-        let task = gtk::gio::spawn_blocking(move || {
-            apply_rule_config_change(rule, ensure_budget)?;
-            let new_data = data::load_app_data_with_sources(
-                mode,
-                auto_clean_config,
-                scope,
-                remember_mode,
-                &sources,
-            )?
-            .0;
-            anyhow::Ok(new_data)
-        });
-
-        match task.await {
-            Ok(Ok(new_data)) => {
-                *state_for_save.borrow_mut() = new_data;
-                render_views(&state_for_save.borrow(), &ui_for_save, &state_for_save);
-                show_status(&ui_for_save, "Rule saved");
-            }
-            Ok(Err(error)) => show_status(
-                &ui_for_save,
-                &trf(
-                    "Could not save rule: {error}",
-                    &[("error", format!("{error:#}"))],
-                ),
-            ),
-            Err(_) => show_status(
-                &ui_for_save,
-                "Rule save canceled: the background task stopped unexpectedly.",
-            ),
-        }
-        finish_background_operation(ui_for_save.as_ref());
-        finish_config_operation(&ui_for_save);
-    });
-    true
-}
-
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub(in crate::app) struct RuleConfigChange {
     pub(in crate::app) rule_replaced: bool,

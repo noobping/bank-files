@@ -1003,7 +1003,7 @@ fn show_transaction_pattern_rule_dialog(
     ui::add_labeled(&grid, 10, "Note", &notes);
     page.append(&grid);
 
-    let status = ui::wrapped_label(&tr("Changes are saved to rules.csv."));
+    let status = ui::wrapped_label(&tr("Save adds this rule to the processing queue."));
     status.add_css_class("dim-label");
     page.append(&status);
     root.append(&ui::scroll(&page));
@@ -1021,7 +1021,6 @@ fn show_transaction_pattern_rule_dialog(
         dialog_for_cancel.close();
     });
 
-    let state_for_save = Rc::clone(state);
     let ui_for_save = Rc::clone(ui_handles);
     let dialog_for_save = dialog.clone();
     let cancel_button_for_save = cancel_button.clone();
@@ -1053,12 +1052,11 @@ fn show_transaction_pattern_rule_dialog(
             notes: notes.text().trim().to_string(),
         };
 
-        if save_rule_in_background(&state_for_save, &ui_for_save, rule, true) {
-            button.set_sensitive(false);
-            cancel_button_for_save.set_label(&tr("Close"));
-            status.set_text(&tr("Saving rule..."));
-            dialog_for_save.close();
-        }
+        enqueue_rule_operation(&ui_for_save, rule, true, OperationSource::CreateRule);
+        button.set_sensitive(false);
+        cancel_button_for_save.set_label(&tr("Close"));
+        status.set_text(&tr("Rule added to processing queue."));
+        dialog_for_save.close();
     });
 
     dialog.present(Some(&ui_handles.window));

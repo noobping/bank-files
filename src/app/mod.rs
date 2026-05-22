@@ -75,8 +75,8 @@ use budget::{
 };
 use config_ops::{
     config_operation_is_active, finish_config_operation, register_config_widget,
-    register_exclusive_config_widget, save_rule_in_background, set_config_widget_base_sensitive,
-    try_begin_config_operation, update_config_action_widgets, ConfigWidget,
+    register_exclusive_config_widget, set_config_widget_base_sensitive, try_begin_config_operation,
+    update_config_action_widgets, ConfigWidget,
 };
 use configuration_dialog::show_configuration_dialog;
 use core::{
