@@ -90,7 +90,7 @@ pub(in crate::app) fn build_menu_model(
 
     let help_section = gtk::gio::Menu::new();
     help_section.append(Some(&tr("Keyboard Shortcuts")), Some("app.shortcuts"));
-    help_section.append(Some(&tr("About Bank Files")), Some("app.about"));
+    help_section.append(Some(&tr("About")), Some("app.about"));
     help_section.append(Some(&tr("Quit")), Some("app.quit"));
     menu.append_section(None, &help_section);
 

@@ -46,17 +46,13 @@ fn handle_update_check_result(
     match result {
         Ok(Some(release)) => show_update_available_dialog(app, parent, release),
         Ok(None) if mode == CheckMode::Manual => {
-            show_alert(
-                parent,
-                "No update available",
-                "Bank Files is already up to date.",
-            );
+            show_alert(parent, "No update available", "Already up to date.");
         }
         Ok(None) => {}
         Err(error) if mode == CheckMode::Manual => {
             show_alert(parent, "Couldn't check for updates.", &error);
         }
-        Err(error) => eprintln!("Bank Files automatic update check failed: {error}"),
+        Err(error) => eprintln!("Automatic update check failed: {error}"),
     }
 }
 

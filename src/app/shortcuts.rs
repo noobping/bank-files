@@ -148,7 +148,7 @@ pub(in crate::app) fn build_shortcuts_dialog(
         ));
     }
     app_shortcuts.extend([
-        ShortcutSpec::action("About Bank Files", "app.about"),
+        ShortcutSpec::action("About", "app.about"),
         ShortcutSpec::action("Show Keyboard Shortcuts", "app.shortcuts"),
         ShortcutSpec::action("Quit", "app.quit"),
     ]);

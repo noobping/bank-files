@@ -99,8 +99,8 @@ msgstr "Sneltoetsen"
 msgid "Check for Updates"
 msgstr "Controleren op updates"
 
-msgid "About Bank Files"
-msgstr "Over Bankbestanden"
+msgid "About"
+msgstr "Over"
 
 msgid "Quit"
 msgstr "Afsluiten"
@@ -132,8 +132,8 @@ msgstr "Kon het app-menu niet bijwerken."
 msgid "No update available"
 msgstr "Geen update beschikbaar"
 
-msgid "Bank Files is already up to date."
-msgstr "Bankbestanden is al up-to-date."
+msgid "Already up to date."
+msgstr "Al up-to-date."
 
 msgid "Couldn't check for updates."
 msgstr "Kon niet op updates controleren."
@@ -165,14 +165,14 @@ msgstr "Download voorbereiden..."
 msgid "Downloaded {downloaded} of {total}"
 msgstr "{downloaded} van {total} gedownload"
 
-msgid "Bank Files Update"
-msgstr "Bankbestanden-update"
+msgid "Update"
+msgstr "Update"
 
-msgid "Close Bank Files to install the update?"
-msgstr "Bankbestanden sluiten om de update te installeren?"
+msgid "Close before installing the update?"
+msgstr "Sluiten voordat de update wordt geïnstalleerd?"
 
-msgid "Installing the update will close Bank Files. Unsaved changes will be lost."
-msgstr "Het installeren van de update sluit Bankbestanden. Niet-opgeslagen wijzigingen gaan verloren."
+msgid "Unsaved changes will be lost."
+msgstr "Niet-opgeslagen wijzigingen gaan verloren."
 
 msgid "Couldn't start the installer."
 msgstr "Kon het installatieprogramma niet starten."
@@ -180,8 +180,8 @@ msgstr "Kon het installatieprogramma niet starten."
 msgid "Couldn't install the update."
 msgstr "Kon de update niet installeren."
 
-msgid "Bank Files couldn't finish installing the downloaded Linux update."
-msgstr "Bankbestanden kon de gedownloade Linux-update niet afronden."
+msgid "The downloaded Linux update couldn't be installed."
+msgstr "De gedownloade Linux-update kon niet worden geïnstalleerd."
 
 msgid "Close"
 msgstr "Sluiten"

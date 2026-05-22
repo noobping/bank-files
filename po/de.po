@@ -99,8 +99,8 @@ msgstr "Tastenkombinationen"
 msgid "Check for Updates"
 msgstr "Nach Updates suchen"
 
-msgid "About Bank Files"
-msgstr "Info zu Bankdateien"
+msgid "About"
+msgstr "Info"
 
 msgid "Quit"
 msgstr "Beenden"
@@ -132,8 +132,8 @@ msgstr "Das App-Menü konnte nicht aktualisiert werden."
 msgid "No update available"
 msgstr "Kein Update verfügbar"
 
-msgid "Bank Files is already up to date."
-msgstr "Bankdateien ist bereits aktuell."
+msgid "Already up to date."
+msgstr "Bereits aktuell."
 
 msgid "Couldn't check for updates."
 msgstr "Es konnte nicht nach Updates gesucht werden."
@@ -165,14 +165,14 @@ msgstr "Download wird vorbereitet..."
 msgid "Downloaded {downloaded} of {total}"
 msgstr "{downloaded} von {total} heruntergeladen"
 
-msgid "Bank Files Update"
-msgstr "Bankdateien-Update"
+msgid "Update"
+msgstr "Update"
 
-msgid "Close Bank Files to install the update?"
-msgstr "Bankdateien schließen, um das Update zu installieren?"
+msgid "Close before installing the update?"
+msgstr "Vor der Installation des Updates schließen?"
 
-msgid "Installing the update will close Bank Files. Unsaved changes will be lost."
-msgstr "Die Installation des Updates schließt Bankdateien. Nicht gespeicherte Änderungen gehen verloren."
+msgid "Unsaved changes will be lost."
+msgstr "Nicht gespeicherte Änderungen gehen verloren."
 
 msgid "Couldn't start the installer."
 msgstr "Das Installationsprogramm konnte nicht gestartet werden."
@@ -180,8 +180,8 @@ msgstr "Das Installationsprogramm konnte nicht gestartet werden."
 msgid "Couldn't install the update."
 msgstr "Das Update konnte nicht installiert werden."
 
-msgid "Bank Files couldn't finish installing the downloaded Linux update."
-msgstr "Bankdateien konnte die Installation des heruntergeladenen Linux-Updates nicht abschließen."
+msgid "The downloaded Linux update couldn't be installed."
+msgstr "Das heruntergeladene Linux-Update konnte nicht installiert werden."
 
 msgid "Close"
 msgstr "Schließen"
@@ -1588,7 +1588,7 @@ msgid "Transactions for this category and year."
 msgstr "Transaktionen fur diese Kategorie und dieses Jahr."
 
 msgid "No CSV files opened. Choose CSV files or drop bank files onto the window."
-msgstr "Keine CSV-Dateien geoffnet. Wahle CSV-Dateien aus oder ziehe Bankdateien in das Fenster."
+msgstr "Keine CSV-Dateien geöffnet. Wähle CSV-Dateien aus oder ziehe Bankdateien in das Fenster."
 
 msgid "{count} stored CSV file(s): {files}"
 msgstr "{count} gespeicherte CSV-Datei(en): {files}"

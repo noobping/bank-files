@@ -28,13 +28,13 @@ pub(in crate::updater::standalone) fn run_auto_install(cleanup_dir: &Path) -> i3
     crate::i18n::init();
 
     if let Err(error) = crate::resources::register() {
-        eprintln!("Bank Files resource registration failed before Linux update install: {error}");
+        eprintln!("Resource registration failed before Linux update install: {error}");
     }
 
     match auto_install_update(cleanup_dir) {
         Ok(()) => 0,
         Err(error) => {
-            eprintln!("Bank Files Linux update install failed: {error}");
+            eprintln!("Linux update install failed: {error}");
             show_auto_install_error_dialog(&error);
             1
         }
@@ -59,7 +59,7 @@ fn auto_install_update(cleanup_dir: &Path) -> Result<(), String> {
         .map_err(|error| format!("Failed to install the downloaded update: {error}"))?;
     if let Err(error) = fs::remove_dir_all(cleanup_dir) {
         eprintln!(
-            "Bank Files update cleanup failed for '{}': {error}",
+            "Update cleanup failed for '{}': {error}",
             cleanup_dir.display()
         );
     }
@@ -74,7 +74,7 @@ fn show_auto_install_error_dialog(error: &str) {
 
     let body = format!(
         "{}\n\n{}",
-        gettext("Bank Files couldn't finish installing the downloaded Linux update."),
+        gettext("The downloaded Linux update couldn't be installed."),
         error
     );
     let dialog = AlertDialog::new(Some(&gettext("Couldn't install the update.")), Some(&body));

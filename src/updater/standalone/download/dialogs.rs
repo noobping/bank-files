@@ -39,7 +39,7 @@ pub(in crate::updater::standalone) fn build_download_dialog(
     content.append(&status);
 
     let dialog = Dialog::builder()
-        .title(gettext("Bank Files Update"))
+        .title(gettext("Update"))
         .content_width(520)
         .follows_content_size(true)
         .child(&content)
@@ -54,10 +54,8 @@ pub(in crate::updater::standalone) fn confirm_install(
     download: DownloadedUpdate,
 ) {
     let dialog = AlertDialog::builder()
-        .heading(gettext("Close Bank Files to install the update?"))
-        .body(gettext(
-            "Installing the update will close Bank Files. Unsaved changes will be lost.",
-        ))
+        .heading(gettext("Close before installing the update?"))
+        .body(gettext("Unsaved changes will be lost."))
         .build();
     let cancel = gettext("Cancel");
     let install = gettext("Install Update");
