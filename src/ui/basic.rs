@@ -133,7 +133,9 @@ pub fn scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
 pub fn compact_popover_scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
     gtk::ScrolledWindow::builder()
         .child(child)
-        .max_content_height(360)
+        .max_content_width(380)
+        .max_content_height(320)
+        .propagate_natural_width(true)
         .propagate_natural_height(true)
         .hscrollbar_policy(gtk::PolicyType::Never)
         .build()

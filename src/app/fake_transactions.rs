@@ -127,7 +127,6 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     root.set_margin_bottom(10);
     root.set_margin_start(10);
     root.set_margin_end(10);
-    root.set_size_request(420, -1);
 
     let header = gtk::Box::new(gtk::Orientation::Horizontal, 8);
     header.set_hexpand(true);
@@ -137,10 +136,16 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     title.add_css_class("heading");
     title.set_selectable(false);
     title.set_xalign(0.0);
+    title.set_width_chars(1);
+    title.set_max_width_chars(28);
+    title.set_ellipsize(gtk::pango::EllipsizeMode::End);
     let summary = gtk::Label::new(None);
     summary.add_css_class("dim-label");
     summary.set_selectable(false);
     summary.set_xalign(0.0);
+    summary.set_width_chars(1);
+    summary.set_max_width_chars(34);
+    summary.set_ellipsize(gtk::pango::EllipsizeMode::End);
     title_box.append(&title);
     title_box.append(&summary);
 
@@ -173,6 +178,8 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     root.append(&busy_box);
 
     let stack = gtk::Stack::builder()
+        .hhomogeneous(false)
+        .vhomogeneous(false)
         .transition_type(gtk::StackTransitionType::SlideLeftRight)
         .build();
     stack.set_hexpand(true);
@@ -421,6 +428,8 @@ fn fake_transaction_row(
     let title = gtk::Label::new(Some(&fake_transaction_title(&fake.transaction)));
     title.set_selectable(false);
     title.set_xalign(0.0);
+    title.set_width_chars(1);
+    title.set_max_width_chars(24);
     title.set_ellipsize(gtk::pango::EllipsizeMode::End);
     labels.append(&title);
 
@@ -428,6 +437,8 @@ fn fake_transaction_row(
     subtitle.set_selectable(false);
     subtitle.add_css_class("dim-label");
     subtitle.set_xalign(0.0);
+    subtitle.set_width_chars(1);
+    subtitle.set_max_width_chars(30);
     subtitle.set_ellipsize(gtk::pango::EllipsizeMode::End);
     labels.append(&subtitle);
     content.append(&labels);
