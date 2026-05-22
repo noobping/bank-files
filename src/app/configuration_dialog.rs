@@ -99,8 +99,8 @@ fn configuration_page_snapshot() -> StaticPageSnapshot {
             ],
             vec![
                 tr("Automatic Configuration"),
-                tr("Generate Budgets from Transactions"),
-                tr("Replace the budget list with budgets detected from imported spending."),
+                tr("Generate Configuration from Transactions"),
+                tr("Create a working setup from imported transactions."),
             ],
             vec![
                 tr("Automatic Configuration"),
@@ -176,15 +176,19 @@ fn automatic_configuration_group(
 ) -> (adw::PreferencesGroup, SearchablePreferencesGroup) {
     let title = "Automatic Configuration";
     let description =
-        "Generate budgeting from imported transactions, use defaults, or start clean.";
+        "Generate configuration from imported transactions, use defaults, or start clean.";
     let group = adw::PreferencesGroup::builder()
         .title(tr(title))
         .description(tr(description))
         .build();
     let mut search_group = SearchablePreferencesGroup::new(&group, title, description);
 
-    let generate_title = "Generate Budgets from Transactions";
-    let generate_subtitle = "Replace the budget list with budgets detected from imported spending.";
+    let generate_title = "Generate Configuration from Transactions";
+    let generate_subtitle = if ui_handles.advanced_features.get() {
+        "Create rules, budget codes, field mappings, and hidden refund/split patterns from imported transactions."
+    } else {
+        "Create a working setup from imported transactions and hide refund/split patterns."
+    };
     let generate_row = action_row("view-refresh-symbolic", generate_title, generate_subtitle);
     search_group.add_row(&generate_row, generate_title, generate_subtitle);
     group.add(&generate_row);
@@ -213,7 +217,7 @@ fn automatic_configuration_group(
     let ui_for_generate = Rc::clone(ui_handles);
     let status_for_generate = status.clone();
     generate_row.connect_activated(move |_| {
-        generate_budgets_from_transactions_with_status(
+        generate_configuration_from_transactions_with_status(
             &state_for_generate,
             &ui_for_generate,
             Some(status_for_generate.clone()),

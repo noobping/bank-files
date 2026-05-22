@@ -1,7 +1,6 @@
 use super::*;
-use std::collections::{BTreeMap, BTreeSet, HashMap};
 
-pub(in crate::app) fn generate_budgets_from_transactions_with_status(
+pub(in crate::app) fn generate_configuration_from_transactions_with_status(
     state: &Rc<RefCell<AppData>>,
     ui: &Rc<UiHandles>,
     dialog_status: Option<gtk::Label>,
@@ -17,34 +16,36 @@ pub(in crate::app) fn generate_budgets_from_transactions_with_status(
     let snapshot = state.borrow().clone();
     let mode = snapshot.dedupe_mode;
     let auto_clean_config = ui.preferences.auto_clean_config();
-    let scope = current_transaction_load_scope(&snapshot, ui.as_ref());
+    let restore_scope = current_transaction_load_scope(&snapshot, ui.as_ref());
     let state_for_generate = Rc::clone(state);
     let ui_for_generate = Rc::clone(ui);
     show_config_status(
         ui.as_ref(),
         dialog_status.as_ref(),
-        "Generating budgets from transactions...",
+        "Generating configuration from transactions...",
     );
     begin_background_operation(ui.as_ref());
 
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
-            let budgets = generated_budget_suggestions(&snapshot);
-            if budgets.is_empty() {
-                return anyhow::Ok(GeneratedBudgetsOutcome::None);
+            let generation_data = generation_app_data(snapshot, mode, auto_clean_config)?;
+            let generated = data::generate_automatic_configuration(&generation_data)?;
+            if generated.summary.is_empty() {
+                return anyhow::Ok(GeneratedConfigurationOutcome::None);
             }
 
-            let count = budgets.len();
-            data::write_editable_budgets(&budgets)?;
-            let new_data = data::load_app_data_with_config_cleanup(mode, auto_clean_config, scope)?;
-            anyhow::Ok(GeneratedBudgetsOutcome::Generated {
-                count,
-                data: new_data,
-            })
+            let summary = generated.summary.clone();
+            data::write_generated_configuration(&generated)?;
+            let data = data::load_app_data_with_config_cleanup(
+                mode,
+                auto_clean_config,
+                restore_scope,
+            )?;
+            anyhow::Ok(GeneratedConfigurationOutcome::Generated { summary, data })
         });
 
         match task.await {
-            Ok(Ok(GeneratedBudgetsOutcome::Generated { count, data })) => {
+            Ok(Ok(GeneratedConfigurationOutcome::Generated { summary, data })) => {
                 *state_for_generate.borrow_mut() = data;
                 render_views(
                     &state_for_generate.borrow(),
@@ -52,21 +53,26 @@ pub(in crate::app) fn generate_budgets_from_transactions_with_status(
                     &state_for_generate,
                 );
                 let message = trf(
-                    "Replaced default budgets with {count} budgets from transactions.",
-                    &[("count", count.to_string())],
+                    "Generated configuration: {budgets} budget(s), {rules} rule(s), {fields} field mapping(s), {hidden} hidden pattern(s).",
+                    &[
+                        ("budgets", summary.budgets.to_string()),
+                        ("rules", summary.rules.to_string()),
+                        ("fields", summary.field_mappings.to_string()),
+                        ("hidden", summary.ignored_patterns.to_string()),
+                    ],
                 );
                 show_config_status_text(ui_for_generate.as_ref(), dialog_status.as_ref(), &message);
             }
-            Ok(Ok(GeneratedBudgetsOutcome::None)) => {
+            Ok(Ok(GeneratedConfigurationOutcome::None)) => {
                 show_config_status(
                     ui_for_generate.as_ref(),
                     dialog_status.as_ref(),
-                    "No budgets could be generated from the imported transactions yet.",
+                    "No configuration could be generated from imported transactions yet.",
                 );
             }
             Ok(Err(error)) => {
                 let message = trf(
-                    "Could not generate budgets: {error}",
+                    "Could not generate configuration: {error}",
                     &[("error", format!("{error:#}"))],
                 );
                 show_config_status_text(ui_for_generate.as_ref(), dialog_status.as_ref(), &message);
@@ -74,12 +80,24 @@ pub(in crate::app) fn generate_budgets_from_transactions_with_status(
             Err(_) => show_config_status(
                 ui_for_generate.as_ref(),
                 dialog_status.as_ref(),
-                "Budget generation canceled: the background task stopped unexpectedly.",
+                "Configuration generation canceled: the background task stopped unexpectedly.",
             ),
         }
         finish_background_operation(ui_for_generate.as_ref());
         finish_config_operation(&ui_for_generate);
     });
+}
+
+fn generation_app_data(
+    snapshot: AppData,
+    mode: DedupeMode,
+    auto_clean_config: bool,
+) -> anyhow::Result<AppData> {
+    if matches!(snapshot.loaded_scope, TransactionLoadScope::All) {
+        Ok(snapshot)
+    } else {
+        data::load_app_data_with_config_cleanup(mode, auto_clean_config, TransactionLoadScope::All)
+    }
 }
 
 fn show_config_status(ui: &UiHandles, dialog_status: Option<&gtk::Label>, message: &str) {
@@ -94,85 +112,10 @@ fn show_config_status_text(ui: &UiHandles, dialog_status: Option<&gtk::Label>, m
     show_status(ui, message);
 }
 
-enum GeneratedBudgetsOutcome {
-    Generated { count: usize, data: AppData },
+enum GeneratedConfigurationOutcome {
+    Generated {
+        summary: data::GeneratedConfigurationSummary,
+        data: AppData,
+    },
     None,
-}
-
-fn generated_budget_suggestions(data: &AppData) -> Vec<EditableBudget> {
-    let months = data
-        .transactions
-        .iter()
-        .map(|transaction| transaction.month_key().to_string())
-        .collect::<BTreeSet<_>>();
-    let period = months.into_iter().rev().take(12).collect::<BTreeSet<_>>();
-    if period.is_empty() {
-        return Vec::new();
-    }
-
-    let mut groups = BTreeMap::<String, GeneratedBudgetStats>::new();
-    for transaction in &data.transactions {
-        if transaction.amount >= Decimal::ZERO
-            || !period.contains(&transaction.month_key().to_string())
-        {
-            continue;
-        }
-        let code = transaction.budget_code.trim();
-        if code.is_empty() || code.eq_ignore_ascii_case("INC-OTHER") {
-            continue;
-        }
-
-        let group = groups.entry(code.to_string()).or_default();
-        let expense = -transaction.amount;
-        group.total += expense;
-        let category = transaction.category.trim();
-        if !category.is_empty() {
-            *group.categories.entry(category.to_string()).or_default() += expense;
-        }
-    }
-
-    let month_count = Decimal::from(period.len() as u64);
-    groups
-        .into_iter()
-        .filter_map(|(code, stats)| {
-            if stats.total <= Decimal::ZERO {
-                return None;
-            }
-            let monthly_budget = (stats.total / month_count).round_dp(2);
-            if monthly_budget <= Decimal::ZERO {
-                return None;
-            }
-            Some(EditableBudget {
-                code,
-                category: stats.category(),
-                monthly_budget: monthly_budget.to_string(),
-                yearly_budget: String::new(),
-                direction: "expense".to_string(),
-                income_basis: "real".to_string(),
-                notes: trf(
-                    "Generated from transactions over {count} imported months on {date}.",
-                    &[
-                        ("count", period.len().to_string()),
-                        ("date", chrono::Local::now().date_naive().to_string()),
-                    ],
-                ),
-            })
-        })
-        .collect()
-}
-
-#[derive(Default)]
-struct GeneratedBudgetStats {
-    total: Decimal,
-    categories: HashMap<String, Decimal>,
-}
-
-impl GeneratedBudgetStats {
-    fn category(&self) -> String {
-        self.categories
-            .iter()
-            .max_by(|left, right| left.1.cmp(right.1).then_with(|| right.0.cmp(left.0)))
-            .map(|(category, _)| category.clone())
-            .unwrap_or_else(|| "Generated budget".to_string())
-    }
 }

@@ -689,6 +689,23 @@ pub fn write_editable_aliases(aliases: &[EditableAlias]) -> Result<PathBuf> {
     write_config_file("field_aliases.csv", &contents)
 }
 
+pub fn write_generated_configuration(config: &GeneratedConfiguration) -> Result<PathBuf> {
+    let rules = serialize_editable_rules(&config.rules)?;
+    let budgets = serialize_editable_budgets(&config.budgets)?;
+    let aliases = serialize_editable_aliases(&config.aliases)?;
+    let ignored_patterns = serialize_ignored_transaction_patterns(&config.ignored_patterns)?;
+    let dirs = prepare_app_storage()?;
+    write_configuration_contents(
+        &dirs,
+        ConfigurationContents {
+            rules: &rules,
+            budgets: &budgets,
+            aliases: &aliases,
+            ignored_patterns: &ignored_patterns,
+        },
+    )
+}
+
 pub fn upsert_editable_alias(canonical: &str, alias: &str) -> Result<bool> {
     let mut aliases = load_editable_aliases()?;
     if !upsert_alias(&mut aliases, canonical, alias)? {

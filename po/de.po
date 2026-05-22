@@ -1464,8 +1464,14 @@ msgstr "Fehlende Budgets aus Transaktionen generieren"
 msgid "Could not generate budgets: {error}"
 msgstr "Budgets konnten nicht generiert werden: {error}"
 
-msgid "Generated from transactions over {count} imported months on {date}."
-msgstr "Aus Transaktionen uber {count} importierte Monate am {date} generiert."
+msgid "Generated from imported transactions over {count} imported months on {date}."
+msgstr "Aus importierten Transaktionen uber {count} importierte Monate am {date} erzeugt."
+
+msgid "Generated from automatic configuration."
+msgstr "Aus automatischer Konfiguration erzeugt."
+
+msgid "Generated from detected transfers."
+msgstr "Aus erkannten Ueberweisungen erzeugt."
 
 msgid "Generated budget"
 msgstr "Generiertes Budget"
@@ -2368,14 +2374,20 @@ msgstr "Regeln, Budgets und Feldnamen aus der Sicherung wiederherstellen."
 msgid "Automatic Configuration"
 msgstr "Automatische Konfiguration"
 
-msgid "Generate budgeting from imported transactions or restore the built-in defaults."
-msgstr "Budgetierung aus importierten Transaktionen generieren oder die eingebauten Standards wiederherstellen."
+msgid "Generate configuration from imported transactions, use defaults, or start clean."
+msgstr "Konfiguration aus importierten Transaktionen erzeugen, Standards verwenden oder leer beginnen."
 
-msgid "Generate budgets from transactions"
-msgstr "Budgets aus Transaktionen generieren"
+msgid "Generate Configuration from Transactions"
+msgstr "Konfiguration aus Transaktionen erzeugen"
 
-msgid "Replace the budget list with budgets detected from imported spending."
-msgstr "Budgetliste durch aus importierten Ausgaben erkannte Budgets ersetzen."
+msgid "Create a working setup from imported transactions."
+msgstr "Eine funktionierende Einrichtung aus importierten Transaktionen erstellen."
+
+msgid "Create rules, budget codes, field mappings, and hidden refund/split patterns from imported transactions."
+msgstr "Regeln, Budgetcodes, Feldzuordnungen und ausgeblendete Erstattungs-/Aufteilungsmuster aus importierten Transaktionen erstellen."
+
+msgid "Create a working setup from imported transactions and hide refund/split patterns."
+msgstr "Eine funktionierende Einrichtung aus importierten Transaktionen erstellen und Erstattungs-/Aufteilungsmuster ausblenden."
 
 msgid "Use Defaults"
 msgstr "Standards verwenden"
@@ -2422,11 +2434,20 @@ msgstr "Einstellungsaenderungen werden sofort angewendet."
 msgid "The latest preference message."
 msgstr "Die neueste Einstellungsmeldung."
 
-msgid "Generating budgets from transactions..."
-msgstr "Budgets aus Transaktionen werden generiert..."
+msgid "Generating configuration from transactions..."
+msgstr "Konfiguration aus Transaktionen wird erzeugt..."
 
-msgid "Budget generation canceled: the background task stopped unexpectedly."
-msgstr "Budgetgenerierung abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+msgid "Generated configuration: {budgets} budget(s), {rules} rule(s), {fields} field mapping(s), {hidden} hidden pattern(s)."
+msgstr "Konfiguration erzeugt: {budgets} Budget(s), {rules} Regel(n), {fields} Feldzuordnung(en), {hidden} ausgeblendete Muster."
+
+msgid "No configuration could be generated from imported transactions yet."
+msgstr "Aus importierten Transaktionen konnte noch keine Konfiguration erzeugt werden."
+
+msgid "Could not generate configuration: {error}"
+msgstr "Konfiguration konnte nicht erzeugt werden: {error}"
+
+msgid "Configuration generation canceled: the background task stopped unexpectedly."
+msgstr "Konfigurationserzeugung abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
 
 msgid "Another edit or save is already running."
 msgstr "Eine andere Bearbeitung oder Speicherung laeuft bereits."
@@ -2442,9 +2463,6 @@ msgstr "Standardkonfiguration konnte nicht angewendet werden: {error}"
 
 msgid "Applying default configuration canceled: the background task stopped unexpectedly."
 msgstr "Anwenden der Standardkonfiguration abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
-
-msgid "Generate budgeting from imported transactions, use defaults, or start clean."
-msgstr "Budgetierung aus importierten Transaktionen generieren, Standards verwenden oder leer beginnen."
 
 msgid "Replace rules, budgets, and field names with the built-in defaults."
 msgstr "Regeln, Budgets und Feldnamen durch die eingebauten Standards ersetzen."

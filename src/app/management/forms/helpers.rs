@@ -1,5 +1,4 @@
 use super::*;
-use std::collections::HashSet;
 
 fn budget_code_key(code: &str) -> String {
     code.trim().to_ascii_lowercase()
@@ -14,52 +13,6 @@ fn renamed_budget_code<'a>(code: &str, renames: &'a [BudgetCodeRename]) -> Optio
         .iter()
         .find(|rename| budget_code_key(&rename.from) == key)
         .map(|rename| rename.to.as_str())
-}
-
-pub(in crate::app) fn generated_budget_code_for_category(
-    category: &str,
-    existing_codes: &[String],
-) -> String {
-    let reserved = existing_codes
-        .iter()
-        .map(|code| budget_code_key(code))
-        .collect::<HashSet<_>>();
-    generated_budget_code_with_reserved(category, &reserved)
-}
-
-fn generated_budget_code_with_reserved(category: &str, reserved: &HashSet<String>) -> String {
-    let base = generated_budget_code_base(category);
-    let mut candidate = base.clone();
-    let mut suffix = 2;
-    while budget_code_is_unavailable(&candidate, reserved) {
-        candidate = format!("{base}-{suffix}");
-        suffix += 1;
-    }
-    candidate
-}
-
-fn generated_budget_code_base(category: &str) -> String {
-    let mut code = String::new();
-    let mut last_was_separator = false;
-    for ch in category.chars() {
-        if ch.is_ascii_alphanumeric() {
-            code.push(ch.to_ascii_uppercase());
-            last_was_separator = false;
-        } else if !code.is_empty() && !last_was_separator {
-            code.push('-');
-            last_was_separator = true;
-        }
-    }
-    let code = code.trim_matches('-');
-    if code.is_empty() {
-        "BUDGET".to_string()
-    } else {
-        code.to_string()
-    }
-}
-
-fn budget_code_is_unavailable(code: &str, reserved: &HashSet<String>) -> bool {
-    planned_income::is_budget_code(code) || reserved.contains(&budget_code_key(code))
 }
 
 pub(in crate::app) fn set_text_combo(combo: &gtk::ComboBoxText, value: &str) {
@@ -218,19 +171,19 @@ pub(in crate::app) fn collect_rule_forms(forms: &[RuleForm]) -> Vec<EditableRule
 }
 
 pub(in crate::app) fn collect_budget_forms(forms: &[BudgetForm]) -> Vec<EditableBudget> {
-    let mut reserved = HashSet::new();
+    let mut reserved = Vec::new();
     forms
         .iter()
         .filter(|form| !form.deleted.get())
         .map(|form| {
             let mut budget = editable_budget_from_form(form);
             if form.auto_code.get() || budget.code.trim().is_empty() {
-                budget.code = generated_budget_code_with_reserved(&budget.category, &reserved);
+                budget.code = data::generated_budget_code_for_category(&budget.category, &reserved);
                 set_text_combo(&form.code, &budget.code);
             }
             let key = budget_code_key(&budget.code);
             if !key.is_empty() {
-                reserved.insert(key);
+                reserved.push(budget.code.clone());
             }
             budget
         })
@@ -460,25 +413,6 @@ mod tests {
             budget_amount_text_for_save("10% of income", false),
             "10% of income"
         );
-    }
-
-    #[test]
-    fn generated_budget_code_uses_readable_category_slug() {
-        assert_eq!(
-            generated_budget_code_for_category("Dining out & coffee", &[]),
-            "DINING-OUT-COFFEE"
-        );
-        assert_eq!(generated_budget_code_for_category("!!!", &[]), "BUDGET");
-    }
-
-    #[test]
-    fn generated_budget_code_avoids_existing_and_reserved_codes() {
-        let existing = vec!["DINING".to_string(), "DINING-2".to_string()];
-        assert_eq!(
-            generated_budget_code_for_category("Dining", &existing),
-            "DINING-3"
-        );
-        assert_eq!(generated_budget_code_for_category("Inc", &[]), "INC-2");
     }
 
     #[test]

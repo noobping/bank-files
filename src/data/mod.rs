@@ -16,6 +16,7 @@ mod copy;
 mod defaults;
 mod editable;
 mod export;
+mod generate;
 mod maintenance;
 mod storage;
 #[cfg(test)]
@@ -29,15 +30,19 @@ pub use config::{
     load_editable_rules, orphaned_rules, remove_orphaned_rules, reopen_transaction_pattern,
     restore_configuration_archive, restore_default_configuration, restore_empty_configuration,
     upsert_editable_alias, write_editable_aliases, write_editable_budgets, write_editable_rules,
-    OrphanedRule,
+    write_generated_configuration, OrphanedRule,
 };
 pub use copy::{copy_files_to_app_storage, copy_uris_to_app_storage};
 pub use export::{export_transactions_to_path, remove_inbox_file};
-use storage::IgnoredTransactionPattern;
+pub use generate::{
+    generate_automatic_configuration, generated_budget_code_for_category, GeneratedConfiguration,
+    GeneratedConfigurationSummary,
+};
 pub use storage::{
     current_storage_capabilities, load_app_data_read_only_aware, load_app_data_with_config_cleanup,
     mark_transaction_csv_readonly, prepare_app_storage, reload_inbox_file, storage_capabilities,
-    CsvCopyResult, EditableAlias, EditableBudget, EditableRule, StorageCapabilities,
+    CsvCopyResult, EditableAlias, EditableBudget, EditableRule, IgnoredTransactionPattern,
+    StorageCapabilities,
 };
 
 use copy::unique_inbox_target;

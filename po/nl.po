@@ -1464,8 +1464,14 @@ msgstr "Ontbrekende budgetten genereren uit transacties"
 msgid "Could not generate budgets: {error}"
 msgstr "Kon budgetten niet genereren: {error}"
 
-msgid "Generated from transactions over {count} imported months on {date}."
-msgstr "Gegenereerd uit transacties over {count} geimporteerde maanden op {date}."
+msgid "Generated from imported transactions over {count} imported months on {date}."
+msgstr "Gegenereerd uit geimporteerde transacties over {count} geimporteerde maanden op {date}."
+
+msgid "Generated from automatic configuration."
+msgstr "Gegenereerd door automatische configuratie."
+
+msgid "Generated from detected transfers."
+msgstr "Gegenereerd uit gedetecteerde overboekingen."
 
 msgid "Generated budget"
 msgstr "Gegenereerd budget"
@@ -2368,14 +2374,20 @@ msgstr "Herstel regels, budgetten en veldnamen uit de back-up."
 msgid "Automatic Configuration"
 msgstr "Automatische configuratie"
 
-msgid "Generate budgeting from imported transactions or restore the built-in defaults."
-msgstr "Genereer budgettering uit geimporteerde transacties of herstel de ingebouwde standaardwaarden."
+msgid "Generate configuration from imported transactions, use defaults, or start clean."
+msgstr "Genereer configuratie uit geimporteerde transacties, gebruik standaarden of begin leeg."
 
-msgid "Generate budgets from transactions"
-msgstr "Budgetten uit transacties genereren"
+msgid "Generate Configuration from Transactions"
+msgstr "Configuratie uit transacties genereren"
 
-msgid "Replace the budget list with budgets detected from imported spending."
-msgstr "Vervang de budgetlijst door budgetten uit geimporteerde uitgaven."
+msgid "Create a working setup from imported transactions."
+msgstr "Maak een werkende instelling uit geimporteerde transacties."
+
+msgid "Create rules, budget codes, field mappings, and hidden refund/split patterns from imported transactions."
+msgstr "Maak regels, budgetcodes, veldkoppelingen en verborgen terugbetaling/splitpatronen uit geimporteerde transacties."
+
+msgid "Create a working setup from imported transactions and hide refund/split patterns."
+msgstr "Maak een werkende instelling uit geimporteerde transacties en verberg terugbetaling/splitpatronen."
 
 msgid "Use Defaults"
 msgstr "Standaarden gebruiken"
@@ -2422,11 +2434,20 @@ msgstr "Voorkeurwijzigingen worden meteen toegepast."
 msgid "The latest preference message."
 msgstr "De laatste voorkeurmelding."
 
-msgid "Generating budgets from transactions..."
-msgstr "Budgetten uit transacties genereren..."
+msgid "Generating configuration from transactions..."
+msgstr "Configuratie uit transacties genereren..."
 
-msgid "Budget generation canceled: the background task stopped unexpectedly."
-msgstr "Budgetgeneratie geannuleerd: de achtergrondtaak stopte onverwacht."
+msgid "Generated configuration: {budgets} budget(s), {rules} rule(s), {fields} field mapping(s), {hidden} hidden pattern(s)."
+msgstr "Configuratie gegenereerd: {budgets} budget(ten), {rules} regel(s), {fields} veldkoppeling(en), {hidden} verborgen patroon/patronen."
+
+msgid "No configuration could be generated from imported transactions yet."
+msgstr "Er kon nog geen configuratie uit geimporteerde transacties worden gegenereerd."
+
+msgid "Could not generate configuration: {error}"
+msgstr "Kon configuratie niet genereren: {error}"
+
+msgid "Configuration generation canceled: the background task stopped unexpectedly."
+msgstr "Configuratiegeneratie geannuleerd: de achtergrondtaak stopte onverwacht."
 
 msgid "Another edit or save is already running."
 msgstr "Er loopt al een andere bewerking of opslagactie."
@@ -2442,9 +2463,6 @@ msgstr "Kon standaardconfiguratie niet toepassen: {error}"
 
 msgid "Applying default configuration canceled: the background task stopped unexpectedly."
 msgstr "Standaardconfiguratie toepassen geannuleerd: de achtergrondtaak stopte onverwacht."
-
-msgid "Generate budgeting from imported transactions, use defaults, or start clean."
-msgstr "Genereer budgettering uit geimporteerde transacties, gebruik standaarden of begin leeg."
 
 msgid "Replace rules, budgets, and field names with the built-in defaults."
 msgstr "Vervang regels, budgetten en veldnamen door de ingebouwde standaardwaarden."
