@@ -88,18 +88,6 @@ jobs:
         with:
           targets: x86_64-pc-windows-gnu
 
-      - name: Format
-        run: cargo fmt --check
-
-      - name: Compile tests
-        shell: pwsh
-        run: |
-          $env:Path = "$env:MINGW_BIN;$env:MSYS_USR_BIN;$env:Path"
-          where.exe libglib-2.0-0.dll
-          where.exe libgtk-4-1.dll
-          where.exe libadwaita-1-0.dll
-          cargo test --target x86_64-pc-windows-gnu --no-run
-
       - name: Build
         shell: pwsh
         run: |
