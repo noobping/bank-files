@@ -78,6 +78,30 @@ pub(in crate::app) fn build_status_bar() -> StatusBar {
     }
 }
 
+pub(in crate::app) fn build_page_actions_menu_button(action_namespace: &str) -> gtk::MenuButton {
+    let menu_button = gtk::MenuButton::builder()
+        .icon_name("view-more-symbolic")
+        .tooltip_text(tr("Page actions"))
+        .build();
+    menu_button.add_css_class("flat");
+
+    let menu = gtk::gio::Menu::new();
+    menu.append(
+        Some(&tr("Copy Page")),
+        Some(&format!("{action_namespace}.copy-page")),
+    );
+    menu.append(
+        Some(&tr("Print Page")),
+        Some(&format!("{action_namespace}.print-page")),
+    );
+    menu.append(
+        Some(&tr("Export CSV")),
+        Some(&format!("{action_namespace}.export-csv")),
+    );
+    menu_button.set_menu_model(Some(&menu));
+    menu_button
+}
+
 pub(in crate::app) fn connect_embedded_status_bar(
     window: &adw::ApplicationWindow,
     status_bar: &StatusBar,

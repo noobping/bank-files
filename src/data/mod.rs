@@ -53,5 +53,17 @@ use validation::{
 };
 use validation::{validate_editable_budgets, validate_editable_rules};
 
+pub(crate) fn editable_rules_to_csv(rules: &[EditableRule]) -> Result<String> {
+    serialize_editable_rules(rules)
+}
+
+pub(crate) fn editable_budgets_to_csv(budgets: &[EditableBudget]) -> Result<String> {
+    serialize_editable_budgets(budgets)
+}
+
+pub(crate) fn editable_aliases_to_csv(aliases: &[EditableAlias]) -> Result<String> {
+    serialize_editable_aliases(aliases)
+}
+
 #[cfg(test)]
 use copy::{config_csv_from_headers, config_csv_name, copy_gio_file_to_app_storage, CsvCopyTarget};

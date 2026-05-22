@@ -3084,3 +3084,48 @@ msgstr "Configuratie automatisch opschonen overgeslagen omdat de configuratieops
 
 msgid "This preference is managed by the system."
 msgstr "Deze voorkeur wordt door het systeem beheerd."
+
+msgid "Page actions"
+msgstr "Pagina-acties"
+
+msgid "Copied {page}."
+msgstr "{page} gekopieerd."
+
+msgid "Copy failed: {error}"
+msgstr "Kopiëren mislukt: {error}"
+
+msgid "Printing {page}..."
+msgstr "{page} printen..."
+
+msgid "Categorization rules visible in the management window."
+msgstr "Categorisatieregels die zichtbaar zijn in het beheervenster."
+
+msgid "Budgets visible in the management window."
+msgstr "Budgetten die zichtbaar zijn in het beheervenster."
+
+msgid "Field names visible in the management window."
+msgstr "Veldnamen die zichtbaar zijn in het beheervenster."
+
+msgid "Budget Code"
+msgstr "Budgetcode"
+
+msgid "Min"
+msgstr "Min."
+
+msgid "Max"
+msgstr "Max."
+
+msgid "Income basis"
+msgstr "Inkomensbasis"
+
+msgid "Canonical"
+msgstr "Vast veld"
+
+msgid "Alias"
+msgstr "Alias"
+
+msgid "Notes"
+msgstr "Notities"
+
+msgid "No rows to print."
+msgstr "Geen rijen om te printen."

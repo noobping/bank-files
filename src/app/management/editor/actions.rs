@@ -16,6 +16,7 @@ pub(in crate::app::management::editor) struct ManagementDialogActions<'a> {
     pub(in crate::app::management::editor) add_alias_button: &'a gtk::Button,
     pub(in crate::app::management::editor) cancel_button: &'a gtk::Button,
     pub(in crate::app::management::editor) save_button: &'a gtk::Button,
+    pub(in crate::app::management::editor) page_actions_button: &'a gtk::MenuButton,
     pub(in crate::app::management::editor) stack: &'a adw::ViewStack,
     pub(in crate::app::management::editor) filter_entry: &'a gtk::SearchEntry,
     pub(in crate::app::management::editor) filter_search_bar: &'a gtk::SearchBar,
@@ -54,6 +55,7 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
         add_alias_button,
         cancel_button,
         save_button,
+        page_actions_button,
         stack,
         filter_entry,
         filter_search_bar,
@@ -73,6 +75,15 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
         state,
         ui_handles,
     } = actions;
+    connect_management_page_actions(
+        page_actions_button,
+        stack,
+        rules_forms,
+        budgets_forms,
+        aliases_forms,
+        status,
+        ui_handles,
+    );
     let management_dialog_for_header_add = management_dialog.clone();
     let rules_list_for_header_add = rules_list.clone();
     let rules_forms_for_header_add = Rc::clone(rules_forms);
@@ -525,6 +536,362 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
             },
         );
     });
+}
+
+fn connect_management_page_actions(
+    page_actions_button: &gtk::MenuButton,
+    stack: &adw::ViewStack,
+    rules_forms: &Rc<RefCell<Vec<RuleForm>>>,
+    budgets_forms: &Rc<RefCell<Vec<BudgetForm>>>,
+    aliases_forms: &Rc<RefCell<Vec<AliasForm>>>,
+    status: &gtk::Label,
+    ui_handles: &Rc<UiHandles>,
+) {
+    let action_group = gtk::gio::SimpleActionGroup::new();
+
+    let stack_for_copy = stack.clone();
+    let rules_forms_for_copy = Rc::clone(rules_forms);
+    let budgets_forms_for_copy = Rc::clone(budgets_forms);
+    let aliases_forms_for_copy = Rc::clone(aliases_forms);
+    let status_for_copy = status.clone();
+    let ui_for_copy = Rc::clone(ui_handles);
+    let copy_action = gtk::gio::SimpleAction::new("copy-page", None);
+    copy_action.connect_activate(move |_, _| {
+        match current_management_page_snapshot(
+            &stack_for_copy,
+            &rules_forms_for_copy.borrow(),
+            &budgets_forms_for_copy.borrow(),
+            &aliases_forms_for_copy.borrow(),
+        ) {
+            Ok(snapshot) => {
+                ui_for_copy.window.clipboard().set_text(&snapshot.text);
+                status_for_copy.set_text(&trf("Copied {page}.", &[("page", tr(&snapshot.title))]));
+            }
+            Err(err) => status_for_copy.set_text(&trf(
+                "Copy failed: {error}",
+                &[("error", format!("{err:#}"))],
+            )),
+        }
+    });
+    action_group.add_action(&copy_action);
+
+    let stack_for_print = stack.clone();
+    let rules_forms_for_print = Rc::clone(rules_forms);
+    let budgets_forms_for_print = Rc::clone(budgets_forms);
+    let aliases_forms_for_print = Rc::clone(aliases_forms);
+    let status_for_print = status.clone();
+    let ui_for_print = Rc::clone(ui_handles);
+    let print_action = gtk::gio::SimpleAction::new("print-page", None);
+    print_action.connect_activate(move |_, _| {
+        match current_management_page_snapshot(
+            &stack_for_print,
+            &rules_forms_for_print.borrow(),
+            &budgets_forms_for_print.borrow(),
+            &aliases_forms_for_print.borrow(),
+        ) {
+            Ok(snapshot) => {
+                status_for_print
+                    .set_text(&trf("Printing {page}...", &[("page", tr(&snapshot.title))]));
+                let report = table_print_report(
+                    &snapshot.title,
+                    &snapshot.subtitle,
+                    &snapshot.columns,
+                    &snapshot.rows,
+                );
+                print_report(&ui_for_print, report);
+            }
+            Err(err) => status_for_print.set_text(&trf(
+                "Printing failed: {error}",
+                &[("error", format!("{err:#}"))],
+            )),
+        }
+    });
+    action_group.add_action(&print_action);
+
+    let stack_for_export = stack.clone();
+    let rules_forms_for_export = Rc::clone(rules_forms);
+    let budgets_forms_for_export = Rc::clone(budgets_forms);
+    let aliases_forms_for_export = Rc::clone(aliases_forms);
+    let status_for_export = status.clone();
+    let export_action = gtk::gio::SimpleAction::new("export-csv", None);
+    export_action.connect_activate(move |action, _| {
+        if !action.is_enabled() {
+            return;
+        }
+        match current_management_page_snapshot(
+            &stack_for_export,
+            &rules_forms_for_export.borrow(),
+            &budgets_forms_for_export.borrow(),
+            &aliases_forms_for_export.borrow(),
+        ) {
+            Ok(snapshot) => export_management_snapshot(action, &status_for_export, snapshot),
+            Err(err) => status_for_export.set_text(&trf(
+                "Export error: {error}",
+                &[("error", format!("{err:#}"))],
+            )),
+        }
+    });
+    action_group.add_action(&export_action);
+
+    page_actions_button.insert_action_group("management", Some(&action_group));
+}
+
+#[derive(Clone)]
+struct ManagementPageSnapshot {
+    key: &'static str,
+    title: String,
+    subtitle: String,
+    columns: Vec<String>,
+    rows: Vec<Vec<String>>,
+    text: String,
+    csv: String,
+}
+
+fn current_management_page_snapshot(
+    stack: &adw::ViewStack,
+    rules_forms: &[RuleForm],
+    budgets_forms: &[BudgetForm],
+    aliases_forms: &[AliasForm],
+) -> anyhow::Result<ManagementPageSnapshot> {
+    match stack.visible_child_name().as_deref() {
+        Some("rules") => rules_management_snapshot(rules_forms),
+        Some("aliases") => aliases_management_snapshot(aliases_forms),
+        _ => budgets_management_snapshot(budgets_forms),
+    }
+}
+
+fn rules_management_snapshot(forms: &[RuleForm]) -> anyhow::Result<ManagementPageSnapshot> {
+    let rules = visible_collected_rules(forms);
+    let columns = strings(&[
+        "Active",
+        "Priority",
+        "Field",
+        "Search",
+        "Regex",
+        "Category",
+        "Budget Code",
+        "Direction",
+        "Min",
+        "Max",
+        "Notes",
+    ]);
+    let rows = rules
+        .iter()
+        .map(|rule| {
+            vec![
+                rule.active.to_string(),
+                rule.priority.to_string(),
+                rule.field.clone(),
+                rule.search.clone(),
+                rule.is_regex.to_string(),
+                rule.category.clone(),
+                rule.budget_code.clone(),
+                rule.direction.clone(),
+                rule.amount_min.clone(),
+                rule.amount_max.clone(),
+                rule.notes.clone(),
+            ]
+        })
+        .collect::<Vec<_>>();
+    management_page_snapshot(
+        "rules",
+        "Rules",
+        "Categorization rules visible in the management window.",
+        columns,
+        rows,
+        data::editable_rules_to_csv(&rules)?,
+    )
+}
+
+fn budgets_management_snapshot(forms: &[BudgetForm]) -> anyhow::Result<ManagementPageSnapshot> {
+    let budgets = visible_collected_budgets(forms);
+    let columns = strings(&[
+        "Code",
+        "Category",
+        "Monthly",
+        "Yearly",
+        "Direction",
+        "Income basis",
+        "Notes",
+    ]);
+    let rows = budgets
+        .iter()
+        .map(|budget| {
+            vec![
+                budget.code.clone(),
+                budget.category.clone(),
+                budget.monthly_budget.clone(),
+                budget.yearly_budget.clone(),
+                budget.direction.clone(),
+                budget.income_basis.clone(),
+                budget.notes.clone(),
+            ]
+        })
+        .collect::<Vec<_>>();
+    management_page_snapshot(
+        "budgets",
+        "Budgets",
+        "Budgets visible in the management window.",
+        columns,
+        rows,
+        data::editable_budgets_to_csv(&budgets)?,
+    )
+}
+
+fn aliases_management_snapshot(forms: &[AliasForm]) -> anyhow::Result<ManagementPageSnapshot> {
+    let aliases = visible_collected_aliases(forms);
+    let columns = strings(&["Canonical", "Alias"]);
+    let rows = aliases
+        .iter()
+        .map(|alias| vec![alias.canonical.clone(), alias.alias.clone()])
+        .collect::<Vec<_>>();
+    management_page_snapshot(
+        "aliases",
+        "Normalize",
+        "Field names visible in the management window.",
+        columns,
+        rows,
+        data::editable_aliases_to_csv(&aliases)?,
+    )
+}
+
+fn management_page_snapshot(
+    key: &'static str,
+    title: &str,
+    subtitle: &str,
+    columns: Vec<String>,
+    rows: Vec<Vec<String>>,
+    csv: String,
+) -> anyhow::Result<ManagementPageSnapshot> {
+    let text = management_page_text(title, subtitle, &columns, &rows);
+    Ok(ManagementPageSnapshot {
+        key,
+        title: title.to_string(),
+        subtitle: subtitle.to_string(),
+        columns,
+        rows,
+        text,
+        csv,
+    })
+}
+
+fn visible_collected_rules(forms: &[RuleForm]) -> Vec<EditableRule> {
+    let rules = collect_rule_forms(forms);
+    forms
+        .iter()
+        .filter(|form| !form.deleted.get())
+        .zip(rules)
+        .filter(|(form, _)| form.form_box.is_visible())
+        .map(|(_, rule)| rule)
+        .collect()
+}
+
+fn visible_collected_budgets(forms: &[BudgetForm]) -> Vec<EditableBudget> {
+    let budgets = collect_budget_forms(forms);
+    forms
+        .iter()
+        .filter(|form| !form.deleted.get())
+        .zip(budgets)
+        .filter(|(form, _)| form.form_box.is_visible())
+        .map(|(_, budget)| budget)
+        .collect()
+}
+
+fn visible_collected_aliases(forms: &[AliasForm]) -> Vec<EditableAlias> {
+    let aliases = collect_alias_forms(forms);
+    forms
+        .iter()
+        .filter(|form| !form.deleted.get())
+        .zip(aliases)
+        .filter(|(form, _)| form.form_box.is_visible())
+        .map(|(_, alias)| alias)
+        .collect()
+}
+
+fn management_page_text(
+    title: &str,
+    subtitle: &str,
+    columns: &[String],
+    rows: &[Vec<String>],
+) -> String {
+    let mut lines = vec![tr(title), tr(subtitle), String::new()];
+    lines.push(
+        columns
+            .iter()
+            .map(|column| tr(column))
+            .collect::<Vec<_>>()
+            .join("\t"),
+    );
+    lines.extend(rows.iter().map(|row| {
+        row.iter()
+            .map(|value| compact_management_cell(value))
+            .collect::<Vec<_>>()
+            .join("\t")
+    }));
+    lines.join("\n")
+}
+
+fn compact_management_cell(value: &str) -> String {
+    value.replace(['\t', '\n', '\r'], " ")
+}
+
+fn strings(values: &[&str]) -> Vec<String> {
+    values.iter().map(|value| (*value).to_string()).collect()
+}
+
+fn export_management_snapshot(
+    action: &gtk::gio::SimpleAction,
+    status: &gtk::Label,
+    snapshot: ManagementPageSnapshot,
+) {
+    action.set_enabled(false);
+    status.set_text(&tr("Opening the file portal to save the CSV export..."));
+
+    let action = action.clone();
+    let status = status.clone();
+    gtk::glib::MainContext::default().spawn_local(async move {
+        let handle = rfd::AsyncFileDialog::new()
+            .set_title(tr("Save CSV export"))
+            .add_filter(tr("CSV files"), &["csv"])
+            .set_file_name(management_export_file_name(snapshot.key))
+            .save_file()
+            .await;
+
+        let Some(handle) = handle else {
+            action.set_enabled(true);
+            status.set_text(&tr("CSV export canceled."));
+            return;
+        };
+
+        let path = handle.path().to_path_buf();
+        let contents = snapshot.csv;
+        status.set_text(&tr("Saving CSV export..."));
+        let task = gtk::gio::spawn_blocking(move || {
+            std::fs::write(&path, contents)?;
+            anyhow::Ok(path)
+        });
+        match task.await {
+            Ok(Ok(path)) => status.set_text(&trf(
+                "Export saved: {path}",
+                &[("path", path.display().to_string())],
+            )),
+            Ok(Err(err)) => status.set_text(&trf(
+                "Export error: {error}",
+                &[("error", format!("{err:#}"))],
+            )),
+            Err(_) => status.set_text(&tr(
+                "CSV export canceled: the background task stopped unexpectedly.",
+            )),
+        }
+        action.set_enabled(true);
+    });
+}
+
+fn management_export_file_name(key: &str) -> String {
+    format!(
+        "bank_files_management_{key}_{}.csv",
+        chrono::Local::now().format("%Y%m%d-%H%M%S")
+    )
 }
 
 fn set_rule_bulk_buttons_sensitive(

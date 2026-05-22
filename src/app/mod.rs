@@ -120,7 +120,7 @@ use operation_queue::{
 use overview::render_overview;
 use preferences::Preferences;
 use preferences_dialog::show_preferences_dialog;
-use print::{current_print_report, print_report};
+use print::{current_print_report, print_report, table_print_report};
 use render::{render_loading_placeholder, render_views, request_render_views};
 use settings_dialog::{
     build_settings_header, connect_preference_search, SearchablePreferencesGroup,
@@ -134,9 +134,9 @@ use shell::{
 use shortcuts::{build_shortcuts_dialog, install_action_accelerators};
 use smart::{effective_hide_canceled_transactions, smart_pattern_detection_enabled};
 use status::{
-    build_status_bar, connect_embedded_status_bar, connect_status_actions,
-    register_page_copy_feedback_button, schedule_status_autohide_after_loading,
-    show_page_copy_feedback, show_status, StatusLogEntry,
+    build_page_actions_menu_button, build_status_bar, connect_embedded_status_bar,
+    connect_status_actions, register_page_copy_feedback_button,
+    schedule_status_autohide_after_loading, show_page_copy_feedback, show_status, StatusLogEntry,
 };
 use text::truncate;
 use transactions::{

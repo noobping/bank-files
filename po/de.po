@@ -3084,3 +3084,48 @@ msgstr "Automatische Konfigurationsbereinigung wurde übersprungen, weil der Kon
 
 msgid "This preference is managed by the system."
 msgstr "Diese Einstellung wird vom System verwaltet."
+
+msgid "Page actions"
+msgstr "Seitenaktionen"
+
+msgid "Copied {page}."
+msgstr "{page} kopiert."
+
+msgid "Copy failed: {error}"
+msgstr "Kopieren fehlgeschlagen: {error}"
+
+msgid "Printing {page}..."
+msgstr "{page} wird gedruckt..."
+
+msgid "Categorization rules visible in the management window."
+msgstr "Kategorisierungsregeln, die im Verwaltungsfenster sichtbar sind."
+
+msgid "Budgets visible in the management window."
+msgstr "Budgets, die im Verwaltungsfenster sichtbar sind."
+
+msgid "Field names visible in the management window."
+msgstr "Feldnamen, die im Verwaltungsfenster sichtbar sind."
+
+msgid "Budget Code"
+msgstr "Budgetcode"
+
+msgid "Min"
+msgstr "Min."
+
+msgid "Max"
+msgstr "Max."
+
+msgid "Income basis"
+msgstr "Einkommensbasis"
+
+msgid "Canonical"
+msgstr "Standardfeld"
+
+msgid "Alias"
+msgstr "Alias"
+
+msgid "Notes"
+msgstr "Notizen"
+
+msgid "No rows to print."
+msgstr "Keine Zeilen zum Drucken."

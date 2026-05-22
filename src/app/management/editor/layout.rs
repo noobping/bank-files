@@ -239,6 +239,9 @@ pub(in crate::app) fn show_management_dialog(
 
     let status_bar = build_status_bar();
     connect_embedded_status_bar(window, &status_bar, Rc::clone(&ui_handles.status_autohide));
+    let page_actions_button = build_page_actions_menu_button("management");
+    page_actions_button.set_sensitive(false);
+    status_bar.action_group.append(&page_actions_button);
     status_bar.label.set_text(&tr("Loading management data..."));
     root.append(&status_bar.container);
     let status = status_bar.label.clone();
@@ -295,6 +298,7 @@ pub(in crate::app) fn show_management_dialog(
         add_alias_button: &add_alias_button,
         cancel_button: &cancel_button,
         save_button: &save_button,
+        page_actions_button: &page_actions_button,
         stack: &stack,
         filter_entry: &filter_entry,
         filter_search_bar: &filter_search_bar,
@@ -329,6 +333,7 @@ pub(in crate::app) fn show_management_dialog(
         save_button.clone(),
     ];
     set_management_form_action_buttons_sensitive(&management_form_action_buttons, false);
+    page_actions_button.set_sensitive(false);
     if let Some(filter) = initial_filter {
         filter_search_bar.set_search_mode(true);
         filter_entry.set_text(filter);
@@ -347,6 +352,7 @@ pub(in crate::app) fn show_management_dialog(
         dialog_closed,
         advanced_autofill: Rc::clone(&ui_handles.advanced_autofill),
         buttons: management_form_action_buttons,
+        page_actions_button,
     });
     true
 }
@@ -364,6 +370,7 @@ struct ManagementFormsLoad {
     dialog_closed: Rc<Cell<bool>>,
     advanced_autofill: Rc<Cell<bool>>,
     buttons: Vec<gtk::Button>,
+    page_actions_button: gtk::MenuButton,
 }
 
 fn append_management_loading(container: &gtk::Box, message: &str) {
@@ -403,6 +410,7 @@ fn load_management_forms(load: ManagementFormsLoad) {
         &load.status,
     );
     set_management_form_action_buttons_sensitive(&load.buttons, true);
+    load.page_actions_button.set_sensitive(true);
 }
 
 fn load_editable_rule_forms(load: &ManagementFormsLoad) {
