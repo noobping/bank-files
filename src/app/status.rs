@@ -4,6 +4,8 @@ const STATUS_AUTOHIDE_SECONDS: u32 = 6;
 const COPY_FEEDBACK_SECONDS: u32 = 3;
 const COPY_ICON: &str = "edit-copy-symbolic";
 const COPIED_ICON: &str = "object-select-symbolic";
+const STATUS_HISTORY_TITLE_PAGE: &str = "title";
+const STATUS_HISTORY_SEARCH_PAGE: &str = "search";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::app) struct StatusLogEntry {
@@ -147,8 +149,9 @@ pub(in crate::app) fn connect_status_actions(
     copy_button.set_action_name(Some("app.copy-status"));
 
     let ui_for_history = Rc::clone(ui);
-    history_button.connect_clicked(move |_| {
-        show_status_history_dialog(&ui_for_history);
+    let history_popover = Rc::new(RefCell::new(None::<gtk::Popover>));
+    history_button.connect_clicked(move |button| {
+        show_status_history_popover(&ui_for_history, button, &history_popover);
     });
 
     let ui_for_hide = Rc::clone(ui);
@@ -209,40 +212,44 @@ fn push_status_history(ui: &UiHandles, message: &str) {
     });
 }
 
-fn show_status_history_dialog(ui: &Rc<UiHandles>) {
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    let (header, search_button) = build_settings_header("Message History");
-    root.append(&header);
+fn show_status_history_popover(
+    ui: &Rc<UiHandles>,
+    button: &gtk::Button,
+    active_popover: &Rc<RefCell<Option<gtk::Popover>>>,
+) {
+    let visible_popover = active_popover
+        .borrow()
+        .as_ref()
+        .filter(|popover| popover.is_visible())
+        .cloned();
+    if let Some(popover) = visible_popover {
+        popover.popdown();
+        return;
+    }
 
-    let search_entry = gtk::SearchEntry::builder()
-        .placeholder_text(tr("Search messages"))
-        .hexpand(true)
-        .build();
-    let search_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    search_box.set_margin_top(8);
-    search_box.set_margin_bottom(8);
-    search_box.set_margin_start(12);
-    search_box.set_margin_end(12);
-    search_box.append(&search_entry);
-    let search_bar = gtk::SearchBar::builder()
-        .child(&search_box)
-        .show_close_button(true)
-        .search_mode_enabled(false)
-        .build();
-    search_bar.connect_entry(&search_entry);
-    root.append(&search_bar);
+    let root = gtk::Box::new(gtk::Orientation::Vertical, 10);
+    root.set_margin_top(10);
+    root.set_margin_bottom(10);
+    root.set_margin_start(10);
+    root.set_margin_end(10);
 
-    let page = ui::page_box();
-    page.append(&ui::section_title(
-        "Message History",
-        "Recent status bar messages from this session.",
-    ));
-    let list = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    page.append(&list);
+    let header = build_status_history_header();
+    root.append(&header.stack);
+
+    let content = gtk::Box::new(gtk::Orientation::Vertical, 8);
+    let list = gtk::ListBox::new();
+    list.add_css_class("boxed-list");
+    list.set_selection_mode(gtk::SelectionMode::None);
+    list.set_hexpand(true);
+    content.append(&list);
     let empty_label = ui::wrapped_label(&tr("No messages found."));
     empty_label.add_css_class("dim-label");
     empty_label.set_visible(false);
-    page.append(&empty_label);
+    empty_label.set_margin_top(10);
+    empty_label.set_margin_bottom(10);
+    empty_label.set_margin_start(10);
+    empty_label.set_margin_end(10);
+    content.append(&empty_label);
 
     let entries = ui.status_history.borrow().clone();
     let rows = append_status_history_rows(&list, &entries);
@@ -250,29 +257,96 @@ fn show_status_history_dialog(ui: &Rc<UiHandles>) {
         empty_label.set_text(&tr("No messages yet."));
         empty_label.set_visible(true);
     }
+    root.append(&ui::compact_popover_scroll(&content));
 
-    root.append(&ui::scroll(&page));
+    let popover = gtk::Popover::builder().autohide(true).build();
+    popover.set_child(Some(&root));
+    popover.set_parent(button);
 
-    let dialog = adw::Dialog::builder()
-        .title(tr("Message History"))
-        .content_width(720)
-        .content_height(620)
-        .child(&root)
-        .build();
-
-    let search_bar_for_button = search_bar.clone();
-    let search_entry_for_button = search_entry.clone();
-    search_button.connect_clicked(move |_| {
-        let enabled = !search_bar_for_button.is_search_mode();
-        search_bar_for_button.set_search_mode(enabled);
-        if enabled {
-            search_entry_for_button.grab_focus();
-        }
+    let stack_for_search = header.stack.clone();
+    let search_entry_for_button = header.search_entry.clone();
+    header.search_button.connect_clicked(move |_| {
+        stack_for_search.set_visible_child_name(STATUS_HISTORY_SEARCH_PAGE);
+        search_entry_for_button.grab_focus();
     });
-    search_bar.set_key_capture_widget(Some(&dialog));
-    connect_status_history_search(&search_entry, rows, empty_label);
+    let stack_for_back = header.stack.clone();
+    let search_entry_for_back = header.search_entry.clone();
+    header.back_button.connect_clicked(move |_| {
+        search_entry_for_back.set_text("");
+        stack_for_back.set_visible_child_name(STATUS_HISTORY_TITLE_PAGE);
+    });
+    connect_status_history_search(&header.search_entry, rows, empty_label);
 
-    dialog.present(Some(&ui.window));
+    let active_popover_for_closed = Rc::clone(active_popover);
+    popover.connect_closed(move |_| {
+        active_popover_for_closed.borrow_mut().take();
+    });
+
+    *active_popover.borrow_mut() = Some(popover.clone());
+    popover.popup();
+}
+
+struct StatusHistoryHeader {
+    stack: gtk::Stack,
+    search_button: gtk::Button,
+    back_button: gtk::Button,
+    search_entry: gtk::SearchEntry,
+}
+
+fn build_status_history_header() -> StatusHistoryHeader {
+    let stack = gtk::Stack::builder()
+        .hhomogeneous(false)
+        .vhomogeneous(false)
+        .build();
+    stack.set_hexpand(true);
+
+    let title_header = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+    title_header.set_hexpand(true);
+    let title_box = gtk::Box::new(gtk::Orientation::Vertical, 2);
+    title_box.set_hexpand(true);
+    let title = gtk::Label::new(Some(&tr("Message History")));
+    title.add_css_class("heading");
+    title.set_selectable(false);
+    title.set_xalign(0.0);
+    title.set_width_chars(1);
+    title.set_max_width_chars(28);
+    title.set_ellipsize(gtk::pango::EllipsizeMode::End);
+    let subtitle = gtk::Label::new(Some(&tr("Recent status messages")));
+    subtitle.add_css_class("dim-label");
+    subtitle.set_selectable(false);
+    subtitle.set_xalign(0.0);
+    subtitle.set_width_chars(1);
+    subtitle.set_max_width_chars(34);
+    subtitle.set_ellipsize(gtk::pango::EllipsizeMode::End);
+    title_box.append(&title);
+    title_box.append(&subtitle);
+
+    let search_button = ui::icon_button("edit-find-symbolic", "Search messages");
+    let title_actions = ui::linked_button_group();
+    title_actions.append(&search_button);
+    title_header.append(&title_box);
+    title_header.append(&title_actions);
+
+    let back_button = ui::icon_button("go-previous-symbolic", "Back");
+    let search_entry = gtk::SearchEntry::builder()
+        .placeholder_text(tr("Search messages"))
+        .hexpand(true)
+        .build();
+    let search_header = ui::linked_button_group();
+    search_header.set_hexpand(true);
+    search_header.append(&back_button);
+    search_header.append(&search_entry);
+
+    stack.add_named(&title_header, Some(STATUS_HISTORY_TITLE_PAGE));
+    stack.add_named(&search_header, Some(STATUS_HISTORY_SEARCH_PAGE));
+    stack.set_visible_child_name(STATUS_HISTORY_TITLE_PAGE);
+
+    StatusHistoryHeader {
+        stack,
+        search_button,
+        back_button,
+        search_entry,
+    }
 }
 
 #[derive(Clone)]
@@ -282,16 +356,12 @@ struct StatusHistoryRow {
 }
 
 fn append_status_history_rows(
-    list: &gtk::Box,
+    list: &gtk::ListBox,
     entries: &[StatusLogEntry],
 ) -> Vec<StatusHistoryRow> {
     let mut rows = Vec::with_capacity(entries.len());
     for entry in entries.iter().rev() {
-        let row = adw::ActionRow::builder()
-            .title(&entry.message)
-            .subtitle(&entry.timestamp)
-            .build();
-        row.set_activatable(false);
+        let row = status_history_row(entry);
         list.append(&row);
         rows.push(StatusHistoryRow {
             widget: row.upcast::<gtk::Widget>(),
@@ -299,6 +369,35 @@ fn append_status_history_rows(
         });
     }
     rows
+}
+
+fn status_history_row(entry: &StatusLogEntry) -> gtk::ListBoxRow {
+    let row = gtk::ListBoxRow::builder()
+        .activatable(false)
+        .selectable(false)
+        .build();
+    let content = gtk::Box::new(gtk::Orientation::Vertical, 2);
+    content.set_margin_top(8);
+    content.set_margin_bottom(8);
+    content.set_margin_start(10);
+    content.set_margin_end(10);
+
+    let message = gtk::Label::new(Some(&entry.message));
+    message.set_selectable(false);
+    message.set_xalign(0.0);
+    message.set_width_chars(1);
+    message.set_max_width_chars(34);
+    message.set_ellipsize(gtk::pango::EllipsizeMode::End);
+    content.append(&message);
+
+    let timestamp = gtk::Label::new(Some(&entry.timestamp));
+    timestamp.add_css_class("dim-label");
+    timestamp.set_selectable(false);
+    timestamp.set_xalign(0.0);
+    content.append(&timestamp);
+
+    row.set_child(Some(&content));
+    row
 }
 
 fn connect_status_history_search(

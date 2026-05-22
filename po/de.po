@@ -45,6 +45,9 @@ msgstr "Nachrichtenverlauf"
 msgid "Search messages"
 msgstr "Nachrichten suchen"
 
+msgid "Recent status messages"
+msgstr "Aktuelle Statusmeldungen"
+
 msgid "Recent status bar messages from this session."
 msgstr "Aktuelle Statusleistenmeldungen aus dieser Sitzung."
 

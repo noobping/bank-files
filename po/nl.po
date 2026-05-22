@@ -45,6 +45,9 @@ msgstr "Meldingengeschiedenis"
 msgid "Search messages"
 msgstr "Meldingen zoeken"
 
+msgid "Recent status messages"
+msgstr "Recente meldingen"
+
 msgid "Recent status bar messages from this session."
 msgstr "Recente statusbalkmeldingen uit deze sessie."
 
