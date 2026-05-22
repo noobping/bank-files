@@ -65,14 +65,6 @@ pub struct LocalAiError {
     message: String,
 }
 
-impl LocalAiError {
-    fn new(message: impl Into<String>) -> Self {
-        Self {
-            message: message.into(),
-        }
-    }
-}
-
 impl fmt::Display for LocalAiError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(&self.message)
@@ -259,11 +251,6 @@ pub fn pattern_hint_for_label<'a>(
     hints
         .iter()
         .find(|hint| normalize_key(&hint.label) == key && !hint.category.trim().is_empty())
-}
-
-pub fn parse_local_ai_draft_json(input: &str) -> std::result::Result<LocalAiDraft, LocalAiError> {
-    serde_json::from_str(input)
-        .map_err(|error| LocalAiError::new(format!("Invalid AI JSON: {error}")))
 }
 
 impl LocalAiInput {
@@ -715,7 +702,7 @@ mod tests {
                 ..GeneratedConfigurationSummary::default()
             },
         };
-        let draft = parse_local_ai_draft_json(
+        let draft = serde_json::from_str::<LocalAiDraft>(
             r#"{
                 "budgets": [{
                     "code": "FOOD",
