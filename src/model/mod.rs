@@ -5,7 +5,10 @@ mod import;
 mod time;
 mod transaction;
 
-pub use app::{AppData, ComparisonMode, TransactionLoadScope};
+pub use app::{
+    AppData, ComparisonMode, DataCacheStatus, RememberMode, TransactionLoadScope,
+    TransactionSource, TransactionSourceKind,
+};
 pub use budget::{BudgetAmount, BudgetCode, BudgetDirection, BudgetIncomeBasis};
 pub use dedupe::DedupeMode;
 pub use import::{FieldMap, ImportOutcome, ImportReport};

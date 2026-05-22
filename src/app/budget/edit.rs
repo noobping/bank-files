@@ -116,14 +116,25 @@ fn save_budget_with_reload(
     cancel_button.set_label(&tr("Close"));
     status.set_text(&tr("Saving budget..."));
 
-    let mode = state.borrow().dedupe_mode;
+    let borrowed = state.borrow();
+    let mode = borrowed.dedupe_mode;
+    let remember_mode = ui_handles.remember_mode.get();
+    let sources = current_sources_for_reload(&borrowed, remember_mode);
+    let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
+    drop(borrowed);
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
-    let scope = current_transaction_load_scope(&state.borrow(), ui_handles.as_ref());
 
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
             upsert_budget(budget)?;
-            let new_data = data::load_app_data_with_config_cleanup(mode, auto_clean_config, scope)?;
+            let new_data = data::load_app_data_with_sources(
+                mode,
+                auto_clean_config,
+                scope,
+                remember_mode,
+                &sources,
+            )?
+            .0;
             anyhow::Ok(new_data)
         });
 
@@ -385,9 +396,13 @@ fn connect_budget_delete_action(action: BudgetDeleteAction<'_>) {
         let save_button = save_button_for_delete.clone();
         let cancel_button = cancel_button_for_delete.clone();
         let code = code.clone();
-        let mode = state.borrow().dedupe_mode;
+        let borrowed = state.borrow();
+        let mode = borrowed.dedupe_mode;
+        let remember_mode = ui_handles.remember_mode.get();
+        let sources = current_sources_for_reload(&borrowed, remember_mode);
+        let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
+        drop(borrowed);
         let auto_clean_config = ui_handles.preferences.auto_clean_config();
-        let scope = current_transaction_load_scope(&state.borrow(), ui_handles.as_ref());
         let state = Rc::clone(&state);
         let ui_handles = Rc::clone(&ui_handles);
         let dialog_for_delete = dialog_for_delete.clone();
@@ -402,8 +417,14 @@ fn connect_budget_delete_action(action: BudgetDeleteAction<'_>) {
                 if !delete_budget(&code)? {
                     return anyhow::Ok(None);
                 }
-                let new_data =
-                    data::load_app_data_with_config_cleanup(mode, auto_clean_config, scope)?;
+                let new_data = data::load_app_data_with_sources(
+                    mode,
+                    auto_clean_config,
+                    scope,
+                    remember_mode,
+                    &sources,
+                )?
+                .0;
                 anyhow::Ok(Some(new_data))
             });
 

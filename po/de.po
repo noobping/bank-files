@@ -3201,3 +3201,120 @@ msgstr "Einstellung"
 
 msgid "Action"
 msgstr "Aktion"
+
+msgid "Remember"
+msgstr "Merken"
+
+msgid "Forget"
+msgstr "Vergessen"
+
+msgid "Data only"
+msgstr "Nur Daten"
+
+msgid "Data and analytics"
+msgstr "Daten und Analyse"
+
+msgid "Open CSV Files"
+msgstr "CSV-Dateien öffnen"
+
+msgid "Choose whether opened CSV data is forgotten after this session, remembered as data, or remembered with reusable analysis cache."
+msgstr "Wählen Sie, ob geöffnete CSV-Daten nach dieser Sitzung vergessen, als Daten gemerkt oder mit wiederverwendbarem Analysecache gemerkt werden."
+
+msgid "Forget opens CSVs live for this session. Data only remembers copied CSVs. Data and analytics also keeps a reusable processed cache."
+msgstr "Vergessen öffnet CSV-Dateien nur live für diese Sitzung. Nur Daten merkt kopierte CSV-Dateien. Daten und Analyse speichert zusätzlich einen wiederverwendbaren verarbeiteten Cache."
+
+msgid "Open CSV files live for this session only."
+msgstr "CSV-Dateien nur für diese Sitzung live öffnen."
+
+msgid "Remember copied CSV files and configuration."
+msgstr "Kopierte CSV-Dateien und Konfiguration merken."
+
+msgid "Remember copied CSV files and reusable analysis data."
+msgstr "Kopierte CSV-Dateien und wiederverwendbare Analysedaten merken."
+
+msgid "Opening the file portal for CSV files..."
+msgstr "Dateiportal für CSV-Dateien wird geöffnet..."
+
+msgid "Opening CSV files..."
+msgstr "CSV-Dateien werden geöffnet..."
+
+msgid "CSV files received. Opening files..."
+msgstr "CSV-Dateien empfangen. Dateien werden geöffnet..."
+
+msgid "CSV drop received. Opening files..."
+msgstr "CSV-Ablage empfangen. Dateien werden geöffnet..."
+
+msgid "CSV storage is read-only. Opening local CSV files live for this session."
+msgstr "Der CSV-Speicher ist schreibgeschützt. Lokale CSV-Dateien werden für diese Sitzung live geöffnet."
+
+msgid "No local CSV files found. Live opening needs readable .csv files."
+msgstr "Keine lokalen CSV-Dateien gefunden. Live-Öffnen benötigt lesbare .csv-Dateien."
+
+msgid "{count} live transaction CSV file(s) opened for this session."
+msgstr "{count} Live-Transaktions-CSV-Datei(en) für diese Sitzung geöffnet."
+
+msgid " {count} file(s) skipped because they were not local CSV files."
+msgstr " {count} Datei(en) übersprungen, weil sie keine lokalen CSV-Dateien waren."
+
+msgid "{count} transaction CSV file(s) were opened and remembered."
+msgstr "{count} Transaktions-CSV-Datei(en) wurden geöffnet und gemerkt."
+
+msgid "No CSV files found. Only files with the .csv extension are opened."
+msgstr "Keine CSV-Dateien gefunden. Nur Dateien mit der Endung .csv werden geöffnet."
+
+msgid "Open CSV error: {error}"
+msgstr "Fehler beim Öffnen der CSV-Datei: {error}"
+
+msgid "Open CSV canceled: the background task stopped unexpectedly."
+msgstr "CSV-Öffnen abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Could not open live CSV files: {error}"
+msgstr "Live-CSV-Dateien konnten nicht geöffnet werden: {error}"
+
+msgid "Live CSV opening canceled: the background task stopped unexpectedly."
+msgstr "Live-CSV-Öffnen abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "Applying Remember preference..."
+msgstr "Merk-Einstellung wird angewendet..."
+
+msgid "Remember is set to {mode}."
+msgstr "Merken ist auf {mode} gesetzt."
+
+msgid "Could not apply Remember preference: {error}"
+msgstr "Merk-Einstellung konnte nicht angewendet werden: {error}"
+
+msgid " Loaded from the data and analytics cache."
+msgstr " Aus dem Daten- und Analysecache geladen."
+
+msgid " Data and analytics cache updated."
+msgstr " Daten- und Analysecache aktualisiert."
+
+msgid " Data and analytics cache was skipped: {error}"
+msgstr " Daten- und Analysecache wurde übersprungen: {error}"
+
+msgid "Force reload live CSV"
+msgstr "Live-CSV erzwungen neu laden"
+
+msgid "Forget live CSV for this session"
+msgstr "Live-CSV für diese Sitzung vergessen"
+
+msgid "{name} was reloaded from the live CSV file."
+msgstr "{name} wurde aus der Live-CSV-Datei neu geladen."
+
+msgid "{name} was forgotten for this session. The CSV file was not changed."
+msgstr "{name} wurde für diese Sitzung vergessen. Die CSV-Datei wurde nicht geändert."
+
+msgid "CSV removed from this session. Updating the overview..."
+msgstr "CSV aus dieser Sitzung entfernt. Übersicht wird aktualisiert..."
+
+msgid "Could not remove {name}: {error}"
+msgstr "{name} konnte nicht entfernt werden: {error}"
+
+msgid "CSV removal canceled: the background task stopped unexpectedly."
+msgstr "CSV-Entfernung abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+
+msgid "{count} open CSV file(s): {files}"
+msgstr "{count} geöffnete CSV-Datei(en): {files}"
+
+msgid "These are remembered app copies or live CSV files for this session. Removing a live CSV only forgets it for this session."
+msgstr "Dies sind gemerkte App-Kopien oder Live-CSV-Dateien für diese Sitzung. Das Entfernen einer Live-CSV vergisst sie nur für diese Sitzung."

@@ -16,6 +16,8 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
 
     let snapshot = state.borrow().clone();
     let mode = snapshot.dedupe_mode;
+    let remember_mode = ui.remember_mode.get();
+    let sources = current_sources_for_reload(&snapshot, remember_mode);
     let auto_clean_config = ui.preferences.auto_clean_config();
     let restore_scope = current_transaction_load_scope(&snapshot, ui.as_ref());
     let state_for_generate = Rc::clone(state);
@@ -49,7 +51,13 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
 
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
-            let generation_data = generation_app_data(snapshot, mode, auto_clean_config)?;
+            let generation_data = generation_app_data(
+                snapshot,
+                mode,
+                auto_clean_config,
+                remember_mode,
+                &sources,
+            )?;
             let generated = data::generate_automatic_configuration(&generation_data)?;
             if generated.summary.is_empty() {
                 return anyhow::Ok(GeneratedConfigurationOutcome::None);
@@ -57,11 +65,14 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
 
             let summary = generated.summary.clone();
             data::write_generated_configuration(&generated)?;
-            let data = data::load_app_data_with_config_cleanup(
+            let data = data::load_app_data_with_sources(
                 mode,
                 auto_clean_config,
                 restore_scope,
-            )?;
+                remember_mode,
+                &sources,
+            )?
+            .0;
             anyhow::Ok(GeneratedConfigurationOutcome::Generated { summary, data })
         });
 
@@ -116,11 +127,20 @@ fn generation_app_data(
     snapshot: AppData,
     mode: DedupeMode,
     auto_clean_config: bool,
+    remember_mode: RememberMode,
+    sources: &[TransactionSource],
 ) -> anyhow::Result<AppData> {
     if matches!(snapshot.loaded_scope, TransactionLoadScope::All) {
         Ok(snapshot)
     } else {
-        data::load_app_data_with_config_cleanup(mode, auto_clean_config, TransactionLoadScope::All)
+        data::load_app_data_with_sources(
+            mode,
+            auto_clean_config,
+            TransactionLoadScope::All,
+            remember_mode,
+            sources,
+        )
+        .map(|loaded| loaded.0)
     }
 }
 

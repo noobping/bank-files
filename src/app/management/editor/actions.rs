@@ -458,10 +458,13 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
                 let rules = collect_rule_forms(&rules_forms_for_save.borrow());
                 let budgets = collect_budget_forms(&budgets_forms_for_save.borrow());
                 let aliases = collect_alias_forms(&aliases_forms_for_save.borrow());
-                let mode = state_for_save.borrow().dedupe_mode;
+                let borrowed = state_for_save.borrow();
+                let mode = borrowed.dedupe_mode;
+                let remember_mode = ui_for_save.remember_mode.get();
+                let sources = current_sources_for_reload(&borrowed, remember_mode);
+                let scope = current_transaction_load_scope(&borrowed, ui_for_save.as_ref());
+                drop(borrowed);
                 let auto_clean_config = ui_for_save.preferences.auto_clean_config();
-                let scope =
-                    current_transaction_load_scope(&state_for_save.borrow(), ui_for_save.as_ref());
                 let state_for_save = Rc::clone(&state_for_save);
                 let ui_for_save = Rc::clone(&ui_for_save);
                 let status_for_save = status_for_save.clone();
@@ -481,11 +484,14 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
                         data::write_editable_rules(&rules)?;
                         data::write_editable_budgets(&budgets)?;
                         data::write_editable_aliases(&aliases)?;
-                        let new_data = data::load_app_data_with_config_cleanup(
+                        let new_data = data::load_app_data_with_sources(
                             mode,
                             auto_clean_config,
                             scope,
-                        )?;
+                            remember_mode,
+                            &sources,
+                        )?
+                        .0;
                         anyhow::Ok(new_data)
                     });
 

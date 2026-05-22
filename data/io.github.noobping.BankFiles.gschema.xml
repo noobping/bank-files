@@ -41,6 +41,11 @@
       <summary>Advanced features</summary>
       <description>Whether rule editing and budget direction controls are available.</description>
     </key>
+    <key name="remember-mode" type="s">
+      <default>'data-only'</default>
+      <summary>Remember</summary>
+      <description>How opened CSV data is remembered: forget for live session files, data-only for copied CSV storage, or data-and-analytics for copied CSV storage plus processed cache.</description>
+    </key>
     <key name="auto-clean-config" type="b">
       <default>false</default>
       <summary>Auto clean configuration</summary>

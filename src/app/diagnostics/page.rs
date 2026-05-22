@@ -46,7 +46,7 @@ pub(in crate::app) fn render_diagnostics_page(
             .collect::<Vec<_>>()
             .join(", ");
         trf(
-            "{count} stored CSV file(s): {files}",
+            "{count} open CSV file(s): {files}",
             &[
                 ("count", data.reports.len().to_string()),
                 ("files", truncate(&names, 160)),
@@ -183,7 +183,7 @@ pub(in crate::app) fn render_diagnostics_page(
             register_loading_sensitive_widget(ui_handles, &reload_all_button);
             ui_handles.debug.append(&ui::section_title_with_action(
                 "CSV files",
-                "These are app copies of files you opened through the portal or drag-and-drop. Unloading only removes the stored copy.",
+                "These are remembered app copies or live CSV files for this session. Removing a live CSV only forgets it for this session.",
                 &reload_all_button,
             ));
             let files = gtk::Box::new(gtk::Orientation::Vertical, 8);
@@ -372,9 +372,13 @@ fn remove_orphaned_config_rules(
     }
 
     let button = button.clone();
-    let mode = state.borrow().dedupe_mode;
+    let borrowed = state.borrow();
+    let mode = borrowed.dedupe_mode;
+    let remember_mode = ui_handles.remember_mode.get();
+    let sources = current_sources_for_reload(&borrowed, remember_mode);
+    let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
+    drop(borrowed);
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
-    let scope = current_transaction_load_scope(&state.borrow(), ui_handles.as_ref());
     let state_for_remove = Rc::clone(state);
     let ui_for_remove = Rc::clone(ui_handles);
     button.set_sensitive(false);
@@ -384,7 +388,14 @@ fn remove_orphaned_config_rules(
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
             let removed = data::remove_orphaned_rules()?;
-            let new_data = data::load_app_data_with_config_cleanup(mode, auto_clean_config, scope)?;
+            let new_data = data::load_app_data_with_sources(
+                mode,
+                auto_clean_config,
+                scope,
+                remember_mode,
+                &sources,
+            )?
+            .0;
             anyhow::Ok((removed, new_data))
         });
 

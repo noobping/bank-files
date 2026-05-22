@@ -6,7 +6,7 @@ pub(in crate::app) struct Preferences {
 }
 
 impl Preferences {
-    pub(in crate::app) const WRITABLE_KEYS: [&'static str; 16] = [
+    pub(in crate::app) const WRITABLE_KEYS: [&'static str; 17] = [
         "active-tab",
         "autohide-status-bar",
         "show-all",
@@ -15,6 +15,7 @@ impl Preferences {
         "compare-categories-previous-period",
         "advanced-autofill",
         "advanced-features",
+        "remember-mode",
         "auto-clean-config",
         "dedupe-enabled",
         "hide-canceled-transactions",
@@ -104,6 +105,16 @@ impl Preferences {
         self.set_boolean("advanced-features", enabled);
     }
 
+    pub(in crate::app) fn remember_mode(&self) -> RememberMode {
+        RememberMode::from_settings(
+            &self.string("remember-mode", RememberMode::DataOnly.as_settings()),
+        )
+    }
+
+    pub(in crate::app) fn set_remember_mode(&self, mode: RememberMode) {
+        self.set_string("remember-mode", mode.as_settings());
+    }
+
     pub(in crate::app) fn auto_clean_config(&self) -> bool {
         self.boolean("auto-clean-config", false)
     }
@@ -183,6 +194,7 @@ impl Preferences {
             "compare-categories-previous-period" => Some("compare-categories-previous-period"),
             "advanced-autofill" => Some("advanced-autofill"),
             "advanced-features" => Some("advanced-features"),
+            "remember-mode" => Some("remember-mode"),
             "auto-clean-config" => Some("auto-clean-config"),
             "dedupe-enabled" => Some("dedupe-enabled"),
             "hide-canceled-transactions" => Some("hide-canceled-transactions"),
@@ -254,6 +266,12 @@ fn parse_month_key(input: &str) -> Option<MonthKey> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn remember_mode_uses_data_only_by_default() {
+        assert_eq!(RememberMode::from_settings(""), RememberMode::DataOnly);
+        assert_eq!(RememberMode::DataOnly.as_settings(), "data-only");
+    }
 
     #[test]
     fn online_smart_insights_action_maps_to_preference_key() {

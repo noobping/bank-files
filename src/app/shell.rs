@@ -41,9 +41,7 @@ pub(in crate::app) fn build_menu_model(
     preferences: &Preferences,
 ) -> gtk::gio::Menu {
     let menu = gtk::gio::Menu::new();
-    if storage_capabilities.data_writable || advanced_features {
-        menu.append(Some(&tr("Choose CSV Files")), Some("app.import-csv"));
-    }
+    menu.append(Some(&tr("Open CSV Files")), Some("app.import-csv"));
     menu.append(Some(&tr("Search")), Some("app.find"));
     if advanced_features {
         menu.append(Some(&tr("Quick Reload")), Some("app.reload"));

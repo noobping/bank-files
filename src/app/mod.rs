@@ -3,8 +3,8 @@ use crate::app_info::{self, APP_ID};
 use crate::data::{self, EditableAlias, EditableBudget, EditableRule};
 use crate::i18n::{self, gettext};
 use crate::model::{
-    AppData, BudgetDirection, ComparisonMode, DedupeMode, FieldMap, ImportReport, MonthKey,
-    Transaction, TransactionLoadScope,
+    AppData, BudgetDirection, ComparisonMode, DataCacheStatus, DedupeMode, FieldMap, ImportReport,
+    MonthKey, RememberMode, Transaction, TransactionLoadScope, TransactionSource,
 };
 #[cfg(all(target_os = "linux", feature = "setup", not(feature = "flatpak")))]
 use crate::setup;
@@ -105,8 +105,9 @@ use form_autofill::{
     transaction_rule_search_values,
 };
 use import::{
-    connect_drop_target, import_and_reload_in_background, import_uris_into_session, reload_state,
-    reload_state_with_scope, reload_state_with_status, set_dedupe_enabled,
+    connect_drop_target, current_sources_for_reload, import_uris_into_session,
+    open_paths_in_background, reload_state, reload_state_with_scope, reload_state_with_status,
+    set_dedupe_enabled, set_remember_mode,
 };
 use management::show_management_dialog;
 use money::{

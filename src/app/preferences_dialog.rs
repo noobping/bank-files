@@ -1,6 +1,10 @@
 use super::*;
 
-pub(in crate::app) fn show_preferences_dialog(parent: &adw::ApplicationWindow, ui: &Rc<UiHandles>) {
+pub(in crate::app) fn show_preferences_dialog(
+    parent: &adw::ApplicationWindow,
+    state: &Rc<RefCell<AppData>>,
+    ui: &Rc<UiHandles>,
+) {
     let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let (header, search_button) = build_settings_header("Preferences");
     root.append(&header);
@@ -79,6 +83,13 @@ pub(in crate::app) fn show_preferences_dialog(parent: &adw::ApplicationWindow, u
         ui.advanced_features.get(),
         &ui.preferences,
     ) {
+        page.add(&group);
+        search_groups.push(search_group);
+    }
+
+    if let Some((group, search_group)) =
+        remember_preference_group(ui.advanced_features.get(), state, ui)
+    {
         page.add(&group);
         search_groups.push(search_group);
     }
@@ -205,6 +216,17 @@ fn preferences_page_snapshot(
     );
     add_preference_snapshot_rows(
         &mut rows,
+        "Remember",
+        &[(
+            "Remember",
+            "Choose whether opened CSV data is forgotten after this session, remembered as data, or remembered with reusable analysis cache.",
+            "app.remember-mode",
+        )],
+        advanced_features,
+        preferences,
+    );
+    add_preference_snapshot_rows(
+        &mut rows,
         "Forms and Data",
         &[
             (
@@ -274,6 +296,75 @@ impl<'a> PreferenceSpec<'a> {
             active,
         }
     }
+}
+
+fn remember_preference_group(
+    advanced_features: bool,
+    state: &Rc<RefCell<AppData>>,
+    ui: &Rc<UiHandles>,
+) -> Option<(adw::PreferencesGroup, SearchablePreferencesGroup)> {
+    let title = "Remember";
+    let description = "Choose whether opened CSV data is forgotten after this session, remembered as data, or remembered with reusable analysis cache.";
+    let writable = Preferences::key_for_action("app.remember-mode")
+        .map(|key| ui.preferences.is_writable(key))
+        .unwrap_or(true);
+    if !preference_row_visible(writable, advanced_features) {
+        return None;
+    }
+
+    let group = adw::PreferencesGroup::builder()
+        .title(tr(title))
+        .description(tr(description))
+        .build();
+    let mut search_group = SearchablePreferencesGroup::new(&group, title, description);
+    let row = remember_preference_row(state, ui, writable);
+    search_group.add_row(&row, title, description);
+    group.add(&row);
+    Some((group, search_group))
+}
+
+fn remember_preference_row(
+    state: &Rc<RefCell<AppData>>,
+    ui: &Rc<UiHandles>,
+    writable: bool,
+) -> adw::ActionRow {
+    let row = adw::ActionRow::builder()
+        .title(tr("Remember"))
+        .subtitle(tr("Forget opens CSVs live for this session. Data only remembers copied CSVs. Data and analytics also keeps a reusable processed cache."))
+        .build();
+    let labels = RememberMode::SETTINGS_VALUES
+        .iter()
+        .map(|mode| tr(mode.label()))
+        .collect::<Vec<_>>();
+    let label_refs = labels.iter().map(String::as_str).collect::<Vec<_>>();
+    let dropdown = gtk::DropDown::from_strings(&label_refs);
+    dropdown.set_valign(gtk::Align::Center);
+    let selected = RememberMode::SETTINGS_VALUES
+        .iter()
+        .position(|mode| *mode == ui.remember_mode.get())
+        .unwrap_or(1) as u32;
+    dropdown.set_selected(selected);
+    row.add_suffix(&dropdown);
+    row.set_activatable_widget(Some(&dropdown));
+
+    if writable {
+        let state_for_dropdown = Rc::clone(state);
+        let ui_for_dropdown = Rc::clone(ui);
+        dropdown.connect_selected_notify(move |dropdown| {
+            let Some(mode) = RememberMode::SETTINGS_VALUES
+                .get(dropdown.selected() as usize)
+                .copied()
+            else {
+                return;
+            };
+            set_remember_mode(mode, &state_for_dropdown, &ui_for_dropdown);
+        });
+    } else {
+        row.set_sensitive(false);
+        row.set_tooltip_text(Some(&tr("This preference is managed by the system.")));
+    }
+
+    row
 }
 
 fn preference_group(

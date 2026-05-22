@@ -66,9 +66,13 @@ pub(in crate::app) fn save_rule_in_background(
         return false;
     }
 
-    let mode = state.borrow().dedupe_mode;
+    let borrowed = state.borrow();
+    let mode = borrowed.dedupe_mode;
+    let remember_mode = ui_handles.remember_mode.get();
+    let sources = current_sources_for_reload(&borrowed, remember_mode);
+    let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
+    drop(borrowed);
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
-    let scope = current_transaction_load_scope(&state.borrow(), ui_handles.as_ref());
     let state_for_save = Rc::clone(state);
     let ui_for_save = Rc::clone(ui_handles);
     show_status(ui_handles, "Saving rule...");
@@ -76,7 +80,14 @@ pub(in crate::app) fn save_rule_in_background(
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
             apply_rule_config_change(rule, ensure_budget)?;
-            let new_data = data::load_app_data_with_config_cleanup(mode, auto_clean_config, scope)?;
+            let new_data = data::load_app_data_with_sources(
+                mode,
+                auto_clean_config,
+                scope,
+                remember_mode,
+                &sources,
+            )?
+            .0;
             anyhow::Ok(new_data)
         });
 

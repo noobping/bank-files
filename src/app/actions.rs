@@ -1,4 +1,5 @@
 use super::*;
+use adw::glib::variant::{StaticVariantType, ToVariant};
 
 pub(in crate::app) fn add_view_action(
     app: &adw::Application,
@@ -45,18 +46,8 @@ pub(in crate::app) fn connect_actions(
         if !action.is_enabled() || ui_for_import.loading_count.get() > 0 {
             return;
         }
-        if !ui_for_import.storage_capabilities.borrow().data_writable {
-            show_status(
-                &ui_for_import,
-                ui_for_import
-                    .storage_capabilities
-                    .borrow()
-                    .data_write_reason(),
-            );
-            return;
-        }
         action.set_enabled(false);
-        show_status(&ui_for_import, "Opening the file portal for CSV import...");
+        show_status(&ui_for_import, "Opening the file portal for CSV files...");
 
         let action_for_import = action.clone();
         let state_for_import = Rc::clone(&state_for_import);
@@ -79,11 +70,9 @@ pub(in crate::app) fn connect_actions(
                 .map(|handle| handle.path().to_path_buf())
                 .collect::<Vec<_>>();
 
-            show_status(&ui_for_import, "Importing CSV files...");
-            let mode = state_for_import.borrow().dedupe_mode;
-            import_and_reload_in_background(
-                move || data::copy_files_to_app_storage(&files),
-                mode,
+            show_status(&ui_for_import, "Opening CSV files...");
+            open_paths_in_background(
+                files,
                 Rc::clone(&state_for_import),
                 Rc::clone(&ui_for_import),
             )
@@ -158,8 +147,13 @@ pub(in crate::app) fn connect_actions(
     let window_for_preferences = window.clone();
     let ui_for_preferences = Rc::clone(ui);
     let preferences_action = gtk::gio::SimpleAction::new("preferences", None);
+    let state_for_preferences = Rc::clone(state);
     preferences_action.connect_activate(move |_, _| {
-        show_preferences_dialog(&window_for_preferences, &ui_for_preferences);
+        show_preferences_dialog(
+            &window_for_preferences,
+            &state_for_preferences,
+            &ui_for_preferences,
+        );
     });
     app.add_action(&preferences_action);
 
@@ -281,6 +275,45 @@ pub(in crate::app) fn connect_actions(
         set_dedupe_enabled(enabled, action.clone(), &state_for_dedupe, &ui_for_dedupe);
     });
     app.add_action(&dedupe_action);
+
+    let state_for_remember_mode = Rc::clone(state);
+    let ui_for_remember_mode = Rc::clone(ui);
+    let remember_mode_action = gtk::gio::SimpleAction::new_stateful(
+        "remember-mode",
+        Some(&String::static_variant_type()),
+        &ui.remember_mode.get().as_settings().to_variant(),
+    );
+    remember_mode_action.connect_activate(move |action, _| {
+        let current = action
+            .state()
+            .and_then(|state| state.get::<String>())
+            .map(|state| RememberMode::from_settings(&state))
+            .unwrap_or_default();
+        let next_index = RememberMode::SETTINGS_VALUES
+            .iter()
+            .position(|mode| *mode == current)
+            .map(|index| (index + 1) % RememberMode::SETTINGS_VALUES.len())
+            .unwrap_or(0);
+        action.change_state(
+            &RememberMode::SETTINGS_VALUES[next_index]
+                .as_settings()
+                .to_variant(),
+        );
+    });
+    remember_mode_action.set_enabled(ui.preferences.action_is_writable("remember-mode"));
+    remember_mode_action.connect_change_state(move |action, value| {
+        let Some(value) = value.and_then(|value| value.get::<String>()) else {
+            return;
+        };
+        let remember_mode = RememberMode::from_settings(&value);
+        action.set_state(&remember_mode.as_settings().to_variant());
+        set_remember_mode(
+            remember_mode,
+            &state_for_remember_mode,
+            &ui_for_remember_mode,
+        );
+    });
+    app.add_action(&remember_mode_action);
 
     let state_for_advanced_features = Rc::clone(state);
     let ui_for_advanced_features = Rc::clone(ui);

@@ -209,6 +209,7 @@ pub(in crate::app) struct UiHandles {
     pub(in crate::app) compare_categories_previous_period: Rc<Cell<bool>>,
     pub(in crate::app) advanced_autofill: Rc<Cell<bool>>,
     pub(in crate::app) advanced_features: Rc<Cell<bool>>,
+    pub(in crate::app) remember_mode: Rc<Cell<RememberMode>>,
     pub(in crate::app) auto_clean_config: Rc<Cell<bool>>,
     pub(in crate::app) management_dialog_active: Rc<Cell<bool>>,
     pub(in crate::app) management_actions: Rc<RefCell<Vec<gtk::gio::SimpleAction>>>,
@@ -306,7 +307,7 @@ pub(in crate::app) fn refresh_write_actions(ui: &UiHandles) {
     set_app_action_enabled(ui, "copy-page", not_loading);
     set_app_action_enabled(ui, "print-page", not_loading);
     set_app_action_enabled(ui, "export-csv", not_loading);
-    set_app_action_enabled(ui, "import-csv", capabilities.data_writable && idle);
+    set_app_action_enabled(ui, "import-csv", idle);
     set_app_action_enabled(ui, "configuration", capabilities.config_writable && idle);
     set_app_action_enabled(
         ui,
@@ -316,6 +317,11 @@ pub(in crate::app) fn refresh_write_actions(ui: &UiHandles) {
     set_app_action_enabled(ui, "manage-budgets", capabilities.config_writable && idle);
     set_app_action_enabled(ui, "manage-aliases", capabilities.config_writable && idle);
     set_app_action_enabled(ui, "preferences", ui.preferences.any_writable());
+    set_app_action_enabled(
+        ui,
+        "remember-mode",
+        ui.preferences.action_is_writable("remember-mode") && not_loading,
+    );
     update_config_action_widgets(ui);
     update_loading_sensitive_widgets(ui);
 }
@@ -625,6 +631,7 @@ fn build_ui_with_startup_request(app: &adw::Application, startup_request: Startu
     let initial_dedupe_mode = DedupeMode::from_enabled(preferences.dedupe_enabled());
     let initial = AppData {
         dedupe_mode: initial_dedupe_mode,
+        remember_mode: preferences.remember_mode(),
         ..Default::default()
     };
     let state = Rc::new(RefCell::new(initial));
@@ -800,6 +807,7 @@ fn build_ui_with_startup_request(app: &adw::Application, startup_request: Startu
         )),
         advanced_autofill: Rc::new(Cell::new(preferences.advanced_autofill())),
         advanced_features: Rc::new(Cell::new(preferences.advanced_features())),
+        remember_mode: Rc::new(Cell::new(preferences.remember_mode())),
         auto_clean_config: Rc::new(Cell::new(preferences.auto_clean_config())),
         management_dialog_active: Rc::new(Cell::new(false)),
         management_actions: Rc::new(RefCell::new(Vec::new())),

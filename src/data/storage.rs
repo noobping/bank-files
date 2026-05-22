@@ -3,6 +3,7 @@ use crate::csv_detect::{import_files, FieldAliases};
 use crate::model::{BudgetCode, ImportOutcome, ImportReport};
 use crate::rules::Rule;
 use anyhow::anyhow;
+use sha2::{Digest, Sha256};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StorageCapabilities {
@@ -261,16 +262,6 @@ pub fn prepare_app_storage() -> Result<AppDirs> {
     Ok(dirs)
 }
 
-pub fn load_app_data_with_config_cleanup(
-    mode: DedupeMode,
-    auto_clean_config: bool,
-    scope: TransactionLoadScope,
-) -> Result<AppData> {
-    let dirs = prepare_app_storage()?;
-    let capabilities = crate::data::storage_capabilities(&dirs);
-    Ok(load_app_data_from_dirs(&dirs, &capabilities, mode, auto_clean_config, scope)?.0)
-}
-
 pub fn load_app_data_read_only_aware(
     mode: DedupeMode,
     auto_clean_config: bool,
@@ -278,7 +269,35 @@ pub fn load_app_data_read_only_aware(
 ) -> Result<(AppData, StorageCapabilities)> {
     let dirs = app_dirs()?;
     let capabilities = crate::data::storage_capabilities(&dirs);
-    load_app_data_from_dirs(&dirs, &capabilities, mode, auto_clean_config, scope)
+    load_app_data_from_dirs(
+        &dirs,
+        &capabilities,
+        mode,
+        auto_clean_config,
+        scope,
+        RememberMode::DataOnly,
+        &[],
+    )
+}
+
+pub fn load_app_data_with_sources(
+    mode: DedupeMode,
+    auto_clean_config: bool,
+    scope: TransactionLoadScope,
+    remember_mode: RememberMode,
+    sources: &[TransactionSource],
+) -> Result<(AppData, StorageCapabilities)> {
+    let dirs = app_dirs()?;
+    let capabilities = crate::data::storage_capabilities(&dirs);
+    load_app_data_from_dirs(
+        &dirs,
+        &capabilities,
+        mode,
+        auto_clean_config,
+        scope,
+        remember_mode,
+        sources,
+    )
 }
 
 fn load_app_data_from_dirs(
@@ -287,7 +306,63 @@ fn load_app_data_from_dirs(
     mode: DedupeMode,
     auto_clean_config: bool,
     scope: TransactionLoadScope,
+    remember_mode: RememberMode,
+    sources: &[TransactionSource],
 ) -> Result<(AppData, StorageCapabilities)> {
+    let cache_key = remember_mode
+        .uses_analytics_cache()
+        .then(|| app_data_cache_key(dirs, mode, scope, remember_mode, sources))
+        .transpose()?;
+
+    if let Some(cache_key) = cache_key.as_deref() {
+        match read_cached_app_data(cache_key) {
+            Ok(Some(mut data)) => {
+                data.cache_status = DataCacheStatus::Hit;
+                return Ok((data, capabilities.clone()));
+            }
+            Ok(None) => {}
+            Err(error) => {
+                let mut data = load_app_data_uncached(
+                    dirs,
+                    capabilities,
+                    mode,
+                    auto_clean_config,
+                    scope,
+                    remember_mode,
+                    sources,
+                )?;
+                data.warnings
+                    .push(format!("Data and analytics cache ignored: {error:#}"));
+                write_cache_status(cache_key, &mut data);
+                return Ok((data, capabilities.clone()));
+            }
+        }
+    }
+
+    let mut data = load_app_data_uncached(
+        dirs,
+        capabilities,
+        mode,
+        auto_clean_config,
+        scope,
+        remember_mode,
+        sources,
+    )?;
+    if let Some(cache_key) = cache_key.as_deref() {
+        write_cache_status(cache_key, &mut data);
+    }
+    Ok((data, capabilities.clone()))
+}
+
+fn load_app_data_uncached(
+    dirs: &AppDirs,
+    capabilities: &StorageCapabilities,
+    mode: DedupeMode,
+    auto_clean_config: bool,
+    scope: TransactionLoadScope,
+    remember_mode: RememberMode,
+    sources: &[TransactionSource],
+) -> Result<AppData> {
     if auto_clean_config && capabilities.config_writable {
         remove_orphaned_rules()?;
     }
@@ -295,8 +370,9 @@ fn load_app_data_from_dirs(
         mut outcome,
         rules,
         budgets,
-    } = load_app_data_inputs(dirs, scope)?;
-    if capabilities.data_writable {
+        transaction_sources,
+    } = load_app_data_inputs(dirs, scope, remember_mode, sources)?;
+    if capabilities.data_writable && sources.is_empty() && !remember_mode.opens_live_files() {
         outcome
             .warnings
             .extend(mark_existing_transaction_csvs_readonly(dirs));
@@ -320,37 +396,48 @@ fn load_app_data_from_dirs(
     let default_month = default_month_from_available_months(&available_months)
         .or_else(|| analytics_default_month(&transactions, &budgets));
 
-    Ok((
-        AppData {
-            transactions,
-            reports: outcome.reports,
-            warnings: outcome.warnings,
-            duplicate_count,
-            dedupe_mode: mode,
-            budgets,
-            rules_count: rules.iter().filter(|r| r.active).count(),
-            available_years,
-            available_months,
-            default_month,
-            loaded_scope: outcome.loaded_scope,
+    Ok(AppData {
+        transactions,
+        reports: outcome.reports,
+        warnings: outcome.warnings,
+        duplicate_count,
+        dedupe_mode: mode,
+        budgets,
+        rules_count: rules.iter().filter(|r| r.active).count(),
+        available_years,
+        available_months,
+        default_month,
+        loaded_scope: outcome.loaded_scope,
+        remember_mode,
+        transaction_sources,
+        cache_status: if remember_mode.uses_analytics_cache() {
+            DataCacheStatus::Skipped
+        } else {
+            DataCacheStatus::Disabled
         },
-        capabilities.clone(),
-    ))
+    })
 }
 
 struct AppDataLoadInputs {
     outcome: ImportOutcome,
     rules: Vec<Rule>,
     budgets: Vec<BudgetCode>,
+    transaction_sources: Vec<TransactionSource>,
 }
 
-fn load_app_data_inputs(dirs: &AppDirs, scope: TransactionLoadScope) -> Result<AppDataLoadInputs> {
+fn load_app_data_inputs(
+    dirs: &AppDirs,
+    scope: TransactionLoadScope,
+    remember_mode: RememberMode,
+    sources: &[TransactionSource],
+) -> Result<AppDataLoadInputs> {
     std::thread::scope(|thread_scope| {
-        let import_handle = thread_scope.spawn(|| import_inbox(dirs, scope));
+        let import_handle =
+            thread_scope.spawn(|| import_sources(dirs, scope, remember_mode, sources));
         let rules_handle = thread_scope.spawn(|| load_rules(&dirs.config));
         let budgets_handle = thread_scope.spawn(|| load_budget_codes(&dirs.config));
 
-        let outcome = import_handle
+        let (outcome, transaction_sources) = import_handle
             .join()
             .map_err(|_| anyhow!("CSV import pipeline stopped unexpectedly"))??;
         let rules = rules_handle
@@ -364,39 +451,232 @@ fn load_app_data_inputs(dirs: &AppDirs, scope: TransactionLoadScope) -> Result<A
             outcome,
             rules,
             budgets,
+            transaction_sources,
         })
     })
 }
 
-pub fn reload_inbox_file(
+fn import_sources(
+    dirs: &AppDirs,
+    scope: TransactionLoadScope,
+    remember_mode: RememberMode,
+    sources: &[TransactionSource],
+) -> Result<(ImportOutcome, Vec<TransactionSource>)> {
+    if sources.is_empty() && !remember_mode.opens_live_files() {
+        let outcome = import_inbox(dirs, scope)?;
+        let transaction_sources = outcome
+            .reports
+            .iter()
+            .map(|report| TransactionSource::inbox_file(report.source.clone()))
+            .collect();
+        return Ok((outcome, transaction_sources));
+    }
+
+    let paths = sources
+        .iter()
+        .filter(|source| source.path().is_file() && is_csv(source.path()))
+        .map(|source| source.path.clone())
+        .collect::<Vec<_>>();
+    let aliases = FieldAliases::load(&dirs.config)?;
+    let outcome = import_files(&paths, &aliases, scope)?;
+    let transaction_sources = sources
+        .iter()
+        .filter(|source| source.path().is_file() && is_csv(source.path()))
+        .cloned()
+        .collect();
+    Ok((outcome, transaction_sources))
+}
+
+fn write_cache_status(cache_key: &str, data: &mut AppData) {
+    match write_cached_app_data(cache_key, data) {
+        Ok(()) => data.cache_status = DataCacheStatus::Updated,
+        Err(error) => {
+            data.cache_status = DataCacheStatus::Failed(format!("{error:#}"));
+            data.warnings.push(format!(
+                "Data and analytics cache was not updated: {error:#}"
+            ));
+        }
+    }
+}
+
+fn read_cached_app_data(cache_key: &str) -> Result<Option<AppData>> {
+    let path = app_data_cache_path(cache_key)?;
+    if !path.exists() {
+        return Ok(None);
+    }
+    let content = fs::read_to_string(&path).with_context(|| {
+        format!(
+            "Could not read data and analytics cache: {}",
+            path.display()
+        )
+    })?;
+    let data = serde_json::from_str(&content).with_context(|| {
+        format!(
+            "Could not parse data and analytics cache: {}",
+            path.display()
+        )
+    })?;
+    Ok(Some(data))
+}
+
+fn write_cached_app_data(cache_key: &str, data: &AppData) -> Result<()> {
+    let path = app_data_cache_path(cache_key)?;
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent).with_context(|| {
+            format!(
+                "Could not create data and analytics cache folder: {}",
+                parent.display()
+            )
+        })?;
+    }
+    let temp = path.with_extension("json.tmp");
+    let content =
+        serde_json::to_string(data).context("Could not serialize data and analytics cache")?;
+    fs::write(&temp, content).with_context(|| {
+        format!(
+            "Could not write data and analytics cache: {}",
+            temp.display()
+        )
+    })?;
+    fs::rename(&temp, &path).with_context(|| {
+        format!(
+            "Could not replace data and analytics cache: {}",
+            path.display()
+        )
+    })?;
+    Ok(())
+}
+
+fn app_data_cache_path(cache_key: &str) -> Result<PathBuf> {
+    Ok(app_cache_dir()?
+        .join("processed")
+        .join(format!("{cache_key}.json")))
+}
+
+fn app_data_cache_key(
+    dirs: &AppDirs,
+    mode: DedupeMode,
+    scope: TransactionLoadScope,
+    remember_mode: RememberMode,
+    sources: &[TransactionSource],
+) -> Result<String> {
+    let mut digest = Sha256::new();
+    digest.update(env!("CARGO_PKG_VERSION").as_bytes());
+    digest.update(format!("{mode:?}|{scope:?}|{remember_mode:?}").as_bytes());
+    for source in effective_cache_sources(dirs, remember_mode, sources)? {
+        digest.update(format!("{:?}|{}|", source.kind, source.path.display()).as_bytes());
+        match fs::metadata(&source.path) {
+            Ok(metadata) => {
+                digest.update(metadata.len().to_string().as_bytes());
+                if let Ok(modified) = metadata.modified() {
+                    digest.update(format!("{modified:?}").as_bytes());
+                }
+            }
+            Err(error) => digest.update(format!("missing:{error}").as_bytes()),
+        }
+    }
+    for name in ["rules.csv", "budgetcodes.csv", "field_aliases.csv"] {
+        let path = dirs.config.join(name);
+        digest.update(path.display().to_string().as_bytes());
+        match fs::metadata(&path) {
+            Ok(metadata) => {
+                digest.update(metadata.len().to_string().as_bytes());
+                if let Ok(modified) = metadata.modified() {
+                    digest.update(format!("{modified:?}").as_bytes());
+                }
+            }
+            Err(_) => digest.update(b"missing"),
+        }
+    }
+    Ok(hex::encode(digest.finalize()))
+}
+
+fn effective_cache_sources(
+    dirs: &AppDirs,
+    remember_mode: RememberMode,
+    sources: &[TransactionSource],
+) -> Result<Vec<TransactionSource>> {
+    if !sources.is_empty() || remember_mode.opens_live_files() {
+        let mut current = sources.to_vec();
+        current.sort_by(|left, right| left.path.cmp(&right.path));
+        return Ok(current);
+    }
+
+    let mut inbox_sources = inbox_csv_files(dirs)?
+        .into_iter()
+        .map(TransactionSource::inbox_file)
+        .collect::<Vec<_>>();
+    inbox_sources.sort_by(|left, right| left.path.cmp(&right.path));
+    Ok(inbox_sources)
+}
+
+fn inbox_csv_files(dirs: &AppDirs) -> Result<Vec<PathBuf>> {
+    let mut files = Vec::new();
+    if dirs.inbox.exists() {
+        for entry in fs::read_dir(&dirs.inbox)
+            .with_context(|| format!("Could not read CSV storage: {}", dirs.inbox.display()))?
+        {
+            let path = entry?.path();
+            if path.is_file() && is_csv(&path) {
+                files.push(path);
+            }
+        }
+    }
+    files.sort();
+    Ok(files)
+}
+
+pub fn reload_transaction_source_file(
     data: AppData,
-    path: &Path,
+    source: &TransactionSource,
     mode: DedupeMode,
     auto_clean_config: bool,
+    remember_mode: RememberMode,
 ) -> Result<AppData> {
     let dirs = app_dirs()?;
     let capabilities = crate::data::storage_capabilities(&dirs);
-    reload_inbox_file_with_dirs(
+    reload_transaction_source_file_with_dirs(
         data,
         &dirs,
-        path,
+        source,
         mode,
         auto_clean_config && capabilities.config_writable,
+        remember_mode,
     )
 }
 
+#[cfg(test)]
 fn reload_inbox_file_with_dirs(
-    mut data: AppData,
+    data: AppData,
     dirs: &AppDirs,
     path: &Path,
     mode: DedupeMode,
     auto_clean_config: bool,
 ) -> Result<AppData> {
+    let source = TransactionSource::inbox_file(path.to_path_buf());
+    reload_transaction_source_file_with_dirs(
+        data,
+        dirs,
+        &source,
+        mode,
+        auto_clean_config,
+        RememberMode::DataOnly,
+    )
+}
+
+fn reload_transaction_source_file_with_dirs(
+    mut data: AppData,
+    dirs: &AppDirs,
+    source: &TransactionSource,
+    mode: DedupeMode,
+    auto_clean_config: bool,
+    remember_mode: RememberMode,
+) -> Result<AppData> {
     if auto_clean_config {
         remove_orphaned_rules()?;
     }
 
-    let file = validated_inbox_csv_file(path, dirs)?;
+    let file = validated_transaction_source_file(source, dirs)?;
     let source_file = source_file_name(&file)?;
     let aliases = FieldAliases::load(&dirs.config)?;
     let outcome = import_files(&[file.clone()], &aliases, data.loaded_scope)?;
@@ -445,7 +725,35 @@ fn reload_inbox_file_with_dirs(
     data.dedupe_mode = mode;
     data.budgets = budgets;
     data.rules_count = rules.iter().filter(|rule| rule.active).count();
+    data.remember_mode = remember_mode;
+    data.cache_status = DataCacheStatus::Disabled;
+    if data.transaction_sources.is_empty() {
+        data.transaction_sources = data
+            .reports
+            .iter()
+            .map(|report| TransactionSource::inbox_file(report.source.clone()))
+            .collect();
+    }
+    let reloaded_source = TransactionSource {
+        kind: source.kind,
+        path: file,
+    };
+    data.transaction_sources
+        .retain(|existing| existing.path != reloaded_source.path);
+    data.transaction_sources.push(reloaded_source);
+    data.transaction_sources
+        .sort_by(|left, right| left.path.cmp(&right.path));
     Ok(data)
+}
+
+fn validated_transaction_source_file(
+    source: &TransactionSource,
+    dirs: &AppDirs,
+) -> Result<PathBuf> {
+    match source.kind {
+        TransactionSourceKind::InboxFile => validated_inbox_csv_file(source.path(), dirs),
+        TransactionSourceKind::LiveFile => validated_live_csv_file(source.path()),
+    }
 }
 
 fn validated_inbox_csv_file(path: &Path, dirs: &AppDirs) -> Result<PathBuf> {
@@ -463,6 +771,16 @@ fn validated_inbox_csv_file(path: &Path, dirs: &AppDirs) -> Result<PathBuf> {
             path.display()
         );
     }
+    if !is_csv(&file) {
+        bail!("Only CSV files can be reloaded");
+    }
+    Ok(file)
+}
+
+fn validated_live_csv_file(path: &Path) -> Result<PathBuf> {
+    let file = path
+        .canonicalize()
+        .with_context(|| format!("Could not find CSV: {}", path.display()))?;
     if !is_csv(&file) {
         bail!("Only CSV files can be reloaded");
     }
@@ -546,7 +864,10 @@ mod tests {
     use chrono::NaiveDate;
     use rust_decimal::Decimal;
     use std::fs;
+    use std::sync::Mutex;
     use std::time::{SystemTime, UNIX_EPOCH};
+
+    static CACHE_ENV_LOCK: Mutex<()> = Mutex::new(());
 
     #[test]
     fn read_only_load_uses_defaults_without_creating_missing_config() {
@@ -572,6 +893,8 @@ mod tests {
             DedupeMode::Disabled,
             true,
             TransactionLoadScope::All,
+            RememberMode::DataOnly,
+            &[],
         )
         .expect("read-only load should use embedded defaults");
 
@@ -585,6 +908,103 @@ mod tests {
             .any(|warning| warning.contains("Auto Clean Config skipped")));
         assert_eq!(returned_capabilities, capabilities);
 
+        fs::remove_dir_all(root).ok();
+    }
+
+    #[test]
+    fn forget_mode_loads_live_csv_without_creating_app_storage() {
+        let root = unique_test_dir("forget-mode-live-csv");
+        fs::create_dir_all(&root).expect("test root should be created");
+        let live_csv = root.join("live.csv");
+        fs::write(
+            &live_csv,
+            "Date,Description,Amount\n2026-01-01,Coffee,-2.50\n",
+        )
+        .expect("live test csv should be written");
+        let dirs = AppDirs {
+            config: root.join("config"),
+            data: root.join("data"),
+            inbox: root.join("data"),
+        };
+        let capabilities = StorageCapabilities {
+            data_readable: true,
+            data_writable: false,
+            config_readable: true,
+            config_writable: false,
+            data_reason: "CSV storage is read-only.".to_string(),
+            config_reason: "Configuration storage is read-only.".to_string(),
+        };
+        let sources = vec![TransactionSource::live_file(live_csv.clone())];
+
+        let (data, returned_capabilities) = load_app_data_from_dirs(
+            &dirs,
+            &capabilities,
+            DedupeMode::Disabled,
+            false,
+            TransactionLoadScope::All,
+            RememberMode::Forget,
+            &sources,
+        )
+        .expect("live load should read the selected CSV");
+
+        assert_eq!(data.transactions.len(), 1);
+        assert_eq!(data.remember_mode, RememberMode::Forget);
+        assert_eq!(data.transaction_sources, sources);
+        assert!(!dirs.config.exists());
+        assert!(!dirs.inbox.exists());
+        assert_eq!(returned_capabilities, capabilities);
+
+        fs::remove_dir_all(root).ok();
+    }
+
+    #[test]
+    fn data_and_analytics_cache_reuses_processed_live_data() {
+        let _guard = CACHE_ENV_LOCK
+            .lock()
+            .expect("cache env lock should be available");
+        let root = unique_test_dir("full-cache-live-csv");
+        fs::create_dir_all(&root).expect("test root should be created");
+        std::env::set_var("BANK_FILES_CACHE", root.join("cache"));
+        let live_csv = root.join("live.csv");
+        fs::write(
+            &live_csv,
+            "Date,Description,Amount\n2026-01-01,Coffee,-2.50\n",
+        )
+        .expect("live test csv should be written");
+        let dirs = AppDirs {
+            config: root.join("config"),
+            data: root.join("data"),
+            inbox: root.join("data"),
+        };
+        let capabilities = StorageCapabilities::default();
+        let sources = vec![TransactionSource::live_file(live_csv)];
+
+        let (first, _) = load_app_data_from_dirs(
+            &dirs,
+            &capabilities,
+            DedupeMode::Disabled,
+            false,
+            TransactionLoadScope::All,
+            RememberMode::DataAndAnalytics,
+            &sources,
+        )
+        .expect("first full-cache load should parse and cache data");
+        let (second, _) = load_app_data_from_dirs(
+            &dirs,
+            &capabilities,
+            DedupeMode::Disabled,
+            false,
+            TransactionLoadScope::All,
+            RememberMode::DataAndAnalytics,
+            &sources,
+        )
+        .expect("second full-cache load should reuse cached data");
+
+        assert_eq!(first.cache_status, DataCacheStatus::Updated);
+        assert_eq!(second.cache_status, DataCacheStatus::Hit);
+        assert_eq!(second.transactions.len(), 1);
+
+        std::env::remove_var("BANK_FILES_CACHE");
         fs::remove_dir_all(root).ok();
     }
 

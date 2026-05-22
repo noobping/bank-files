@@ -692,14 +692,25 @@ async fn reload_after_queue_apply(
     ui: Rc<UiHandles>,
     counts: ApplyCounts,
 ) {
-    let mode = state.borrow().dedupe_mode;
+    let borrowed = state.borrow();
+    let mode = borrowed.dedupe_mode;
+    let remember_mode = ui.remember_mode.get();
+    let sources = current_sources_for_reload(&borrowed, remember_mode);
+    let scope = current_transaction_load_scope(&borrowed, ui.as_ref());
+    drop(borrowed);
     let auto_clean_config = ui.preferences.auto_clean_config();
-    let scope = current_transaction_load_scope(&state.borrow(), ui.as_ref());
     show_status(&ui, "Grouping and combining queued rules...");
     begin_background_operation(ui.as_ref());
     let task = gtk::gio::spawn_blocking(move || {
         let combine_summary = combine_queued_rules()?;
-        let new_data = data::load_app_data_with_config_cleanup(mode, auto_clean_config, scope)?;
+        let new_data = data::load_app_data_with_sources(
+            mode,
+            auto_clean_config,
+            scope,
+            remember_mode,
+            &sources,
+        )?
+        .0;
         anyhow::Ok((new_data, combine_summary))
     });
 

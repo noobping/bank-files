@@ -1,13 +1,14 @@
 use crate::util::{normalize_key, parse_decimal};
 use rust_decimal::Decimal;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum BudgetAmount {
     Fixed(Decimal),
     IncomePercent(Decimal),
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Serialize, Deserialize)]
 pub enum BudgetIncomeBasis {
     RealIncome,
     PlannedIncome,
@@ -125,7 +126,7 @@ impl BudgetIncomeBasis {
     }
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Serialize, Deserialize)]
 pub enum BudgetDirection {
     Expense,
     Income,
@@ -206,7 +207,7 @@ impl BudgetDirection {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BudgetCode {
     pub code: String,
     pub category: String,

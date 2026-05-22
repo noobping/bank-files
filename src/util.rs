@@ -39,6 +39,17 @@ pub fn app_dirs() -> Result<AppDirs> {
     })
 }
 
+pub fn app_cache_dir() -> Result<PathBuf> {
+    if let Ok(path) = std::env::var("BANK_FILES_CACHE") {
+        return Ok(PathBuf::from(path));
+    }
+
+    dirs_next::cache_dir()
+        .or_else(dirs_next::data_local_dir)
+        .context("Could not determine the default cache folder")
+        .map(|base| base.join(APP_DIR_NAME))
+}
+
 pub fn ensure_layout(dirs: &AppDirs) -> Result<()> {
     fs::create_dir_all(&dirs.config)?;
     fs::create_dir_all(&dirs.data)?;

@@ -1,7 +1,8 @@
 use super::{MonthKey, Transaction, TransactionLoadScope};
+use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ImportReport {
     pub source: PathBuf,
     pub delimiter: char,
@@ -13,7 +14,7 @@ pub struct ImportReport {
     pub guessed_fields: FieldMap,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct FieldMap {
     pub date: Option<String>,
     pub amount: Option<String>,
@@ -28,7 +29,7 @@ pub struct FieldMap {
     pub direction: Option<String>,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct ImportOutcome {
     pub transactions: Vec<Transaction>,
     pub reports: Vec<ImportReport>,

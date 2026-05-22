@@ -1,6 +1,8 @@
 use super::{BudgetCode, DedupeMode, ImportReport, MonthKey, Transaction};
+use serde::{Deserialize, Serialize};
+use std::path::{Path, PathBuf};
 
-#[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub enum ComparisonMode {
     #[default]
     CurrentOnly,
@@ -13,7 +15,7 @@ impl ComparisonMode {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub enum TransactionLoadScope {
     #[default]
     Unloaded,
@@ -111,7 +113,106 @@ fn desired_is_inside_months(desired: TransactionLoadScope, months: &[MonthKey]) 
     }
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Serialize, Deserialize)]
+pub enum RememberMode {
+    Forget,
+    #[default]
+    DataOnly,
+    DataAndAnalytics,
+}
+
+impl RememberMode {
+    pub const SETTINGS_VALUES: [Self; 3] = [Self::Forget, Self::DataOnly, Self::DataAndAnalytics];
+
+    pub fn from_settings(value: &str) -> Self {
+        match value {
+            "forget" => Self::Forget,
+            "data-and-analytics" => Self::DataAndAnalytics,
+            "data-only" => Self::DataOnly,
+            _ => Self::default(),
+        }
+    }
+
+    pub fn as_settings(self) -> &'static str {
+        match self {
+            Self::Forget => "forget",
+            Self::DataOnly => "data-only",
+            Self::DataAndAnalytics => "data-and-analytics",
+        }
+    }
+
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Forget => "Forget",
+            Self::DataOnly => "Data only",
+            Self::DataAndAnalytics => "Data and analytics",
+        }
+    }
+
+    pub fn description(self) -> &'static str {
+        match self {
+            Self::Forget => "Open CSV files live for this session only.",
+            Self::DataOnly => "Remember copied CSV files and configuration.",
+            Self::DataAndAnalytics => "Remember copied CSV files and reusable analysis data.",
+        }
+    }
+
+    pub fn opens_live_files(self) -> bool {
+        matches!(self, Self::Forget)
+    }
+
+    pub fn uses_analytics_cache(self) -> bool {
+        matches!(self, Self::DataAndAnalytics)
+    }
+}
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Serialize, Deserialize)]
+pub enum TransactionSourceKind {
+    InboxFile,
+    LiveFile,
+}
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+pub struct TransactionSource {
+    pub kind: TransactionSourceKind,
+    pub path: PathBuf,
+}
+
+impl TransactionSource {
+    pub fn inbox_file(path: PathBuf) -> Self {
+        Self {
+            kind: TransactionSourceKind::InboxFile,
+            path,
+        }
+    }
+
+    pub fn live_file(path: PathBuf) -> Self {
+        Self {
+            kind: TransactionSourceKind::LiveFile,
+            path,
+        }
+    }
+
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+
+    pub fn is_live(&self) -> bool {
+        matches!(self.kind, TransactionSourceKind::LiveFile)
+    }
+}
+
+#[derive(Debug, Clone, Default, Eq, PartialEq, Serialize, Deserialize)]
+pub enum DataCacheStatus {
+    #[default]
+    Disabled,
+    Hit,
+    Updated,
+    Skipped,
+    Failed(String),
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct AppData {
     pub transactions: Vec<Transaction>,
     pub reports: Vec<ImportReport>,
@@ -124,6 +225,9 @@ pub struct AppData {
     pub available_months: Vec<MonthKey>,
     pub default_month: Option<MonthKey>,
     pub loaded_scope: TransactionLoadScope,
+    pub remember_mode: RememberMode,
+    pub transaction_sources: Vec<TransactionSource>,
+    pub cache_status: DataCacheStatus,
 }
 
 #[cfg(test)]

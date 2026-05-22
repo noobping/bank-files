@@ -54,27 +54,46 @@ pub(in crate::app) fn diagnostic_file_card(
     count.set_valign(gtk::Align::Start);
     heading.append(&count);
 
+    let source = transaction_source_for_report(report, &state.borrow());
+    let live_source = source.is_live();
+
     let file_actions = ui::linked_button_group();
     file_actions.set_valign(gtk::Align::Start);
-    let reload_button = ui::icon_button("view-refresh-symbolic", "Force reload stored CSV");
+    let reload_button = ui::icon_button(
+        "view-refresh-symbolic",
+        if live_source {
+            "Force reload live CSV"
+        } else {
+            "Force reload stored CSV"
+        },
+    );
     reload_button.add_css_class("flat");
     register_loading_sensitive_widget(ui_handles, &reload_button);
-    let unload_button = ui::icon_button("user-trash-symbolic", "Unload stored CSV");
+    let unload_button = ui::icon_button(
+        "user-trash-symbolic",
+        if live_source {
+            "Forget live CSV for this session"
+        } else {
+            "Unload stored CSV"
+        },
+    );
     unload_button.add_css_class("destructive-action");
     unload_button.add_css_class("flat");
     register_loading_sensitive_widget(ui_handles, &unload_button);
-    match data_write_availability(ui_handles.as_ref()) {
-        ActionAvailability::Available => {}
-        availability => apply_action_availability(&unload_button, &availability),
+    if !live_source {
+        match data_write_availability(ui_handles.as_ref()) {
+            ActionAvailability::Available => {}
+            availability => apply_action_availability(&unload_button, &availability),
+        }
     }
 
-    let path_for_reload = report.source.clone();
+    let source_for_reload = source.clone();
     let name_for_reload = name.clone();
     let state_for_reload = Rc::clone(state);
     let ui_for_reload = Rc::clone(ui_handles);
     reload_button.connect_clicked(move |button| {
         force_reload_csv_file(
-            &path_for_reload,
+            &source_for_reload,
             &name_for_reload,
             &state_for_reload,
             &ui_for_reload,
@@ -82,76 +101,18 @@ pub(in crate::app) fn diagnostic_file_card(
         );
     });
 
-    let path_for_unload = report.source.clone();
+    let source_for_unload = source.clone();
     let name_for_unload = name.clone();
     let state_for_unload = Rc::clone(state);
     let ui_for_unload = Rc::clone(ui_handles);
     unload_button.connect_clicked(move |button| {
-        if !csv_file_action_available(ui_for_unload.loading_count.get()) {
-            show_status(&ui_for_unload, "Data is still loading.");
-            return;
-        }
-        if !ui_for_unload.storage_capabilities.borrow().data_writable {
-            show_status(
-                &ui_for_unload,
-                ui_for_unload
-                    .storage_capabilities
-                    .borrow()
-                    .data_write_reason(),
-            );
-            return;
-        }
-        let button = button.clone();
-        let path = path_for_unload.clone();
-        let name = name_for_unload.clone();
-        let mode = state_for_unload.borrow().dedupe_mode;
-        let auto_clean_config = ui_for_unload.preferences.auto_clean_config();
-        let scope =
-            current_transaction_load_scope(&state_for_unload.borrow(), ui_for_unload.as_ref());
-        let state_for_unload = Rc::clone(&state_for_unload);
-        let ui_for_unload = Rc::clone(&ui_for_unload);
-        button.set_sensitive(false);
-        show_status(&ui_for_unload, "CSV unloaded. Updating the overview...");
-
-        gtk::glib::MainContext::default().spawn_local(async move {
-            let task = gtk::gio::spawn_blocking(move || {
-                data::remove_inbox_file(&path)?;
-                data::load_app_data_read_only_aware(mode, auto_clean_config, scope)
-            });
-
-            match task.await {
-                Ok(Ok((new_data, capabilities))) => {
-                    *state_for_unload.borrow_mut() = new_data;
-                    set_storage_capabilities(&ui_for_unload, capabilities);
-                    request_render_views(&ui_for_unload, &state_for_unload);
-                    refresh_menu(&ui_for_unload, &state_for_unload.borrow());
-                    show_status(
-                        &ui_for_unload,
-                        &trf(
-                            "{name} was unloaded. The original CSV remains where you chose it.",
-                            &[("name", name.clone())],
-                        ),
-                    );
-                }
-                Ok(Err(err)) => {
-                    show_status(
-                        &ui_for_unload,
-                        &trf(
-                            "Could not unload {name}: {error}",
-                            &[("name", name.clone()), ("error", format!("{err:#}"))],
-                        ),
-                    );
-                    button.set_sensitive(true);
-                }
-                Err(_) => {
-                    show_status(
-                        &ui_for_unload,
-                        "CSV unload canceled: the background task stopped unexpectedly.",
-                    );
-                    button.set_sensitive(true);
-                }
-            }
-        });
+        forget_or_unload_csv_file(
+            &source_for_unload,
+            &name_for_unload,
+            &state_for_unload,
+            &ui_for_unload,
+            button,
+        );
     });
     file_actions.append(&reload_button);
     file_actions.append(&unload_button);
@@ -181,7 +142,7 @@ pub(in crate::app) fn diagnostic_file_card(
 }
 
 fn force_reload_csv_file(
-    path: &std::path::Path,
+    source: &TransactionSource,
     name: &str,
     state: &Rc<RefCell<AppData>>,
     ui_handles: &Rc<UiHandles>,
@@ -192,10 +153,12 @@ fn force_reload_csv_file(
         return;
     }
 
-    let path = path.to_path_buf();
+    let source = source.clone();
+    let source_is_live = source.is_live();
     let name = name.to_string();
     let mode = state.borrow().dedupe_mode;
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
+    let remember_mode = ui_handles.remember_mode.get();
     let data = state.borrow().clone();
     let state_for_reload = Rc::clone(state);
     let ui_for_reload = Rc::clone(ui_handles);
@@ -206,7 +169,13 @@ fn force_reload_csv_file(
 
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
-            data::reload_inbox_file(data, &path, mode, auto_clean_config)
+            data::reload_transaction_source_file(
+                data,
+                &source,
+                mode,
+                auto_clean_config,
+                remember_mode,
+            )
         });
 
         match task.await {
@@ -222,7 +191,11 @@ fn force_reload_csv_file(
                 show_status(
                     &ui_for_reload,
                     &trf(
-                        "{name} was reloaded from app storage.",
+                        if source_is_live {
+                            "{name} was reloaded from the live CSV file."
+                        } else {
+                            "{name} was reloaded from app storage."
+                        },
                         &[("name", name.clone())],
                     ),
                 );
@@ -247,6 +220,111 @@ fn force_reload_csv_file(
         }
         finish_background_operation(ui_for_reload.as_ref());
     });
+}
+
+fn forget_or_unload_csv_file(
+    source: &TransactionSource,
+    name: &str,
+    state: &Rc<RefCell<AppData>>,
+    ui_handles: &Rc<UiHandles>,
+    button: &gtk::Button,
+) {
+    if !csv_file_action_available(ui_handles.loading_count.get()) {
+        show_status(ui_handles, "Data is still loading.");
+        return;
+    }
+    if !source.is_live() && !ui_handles.storage_capabilities.borrow().data_writable {
+        show_status(
+            ui_handles,
+            ui_handles.storage_capabilities.borrow().data_write_reason(),
+        );
+        return;
+    }
+
+    let source = source.clone();
+    let source_is_live = source.is_live();
+    let name = name.to_string();
+    let mode = state.borrow().dedupe_mode;
+    let auto_clean_config = ui_handles.preferences.auto_clean_config();
+    let remember_mode = ui_handles.remember_mode.get();
+    let mut sources = state.borrow().transaction_sources.clone();
+    sources.retain(|existing| existing.path != source.path || existing.kind != source.kind);
+    let scope = current_transaction_load_scope(&state.borrow(), ui_handles.as_ref());
+    let state_for_unload = Rc::clone(state);
+    let ui_for_unload = Rc::clone(ui_handles);
+    let button = button.clone();
+    button.set_sensitive(false);
+    show_status(
+        &ui_for_unload,
+        "CSV removed from this session. Updating the overview...",
+    );
+
+    gtk::glib::MainContext::default().spawn_local(async move {
+        let task = gtk::gio::spawn_blocking(move || {
+            if !source.is_live() {
+                data::remove_inbox_file(source.path())?;
+            }
+            let reload_sources = if sources.iter().any(TransactionSource::is_live)
+                || remember_mode.opens_live_files()
+            {
+                sources
+            } else {
+                Vec::new()
+            };
+            data::load_app_data_with_sources(
+                mode,
+                auto_clean_config,
+                scope,
+                remember_mode,
+                &reload_sources,
+            )
+        });
+
+        match task.await {
+            Ok(Ok((new_data, capabilities))) => {
+                *state_for_unload.borrow_mut() = new_data;
+                set_storage_capabilities(&ui_for_unload, capabilities);
+                request_render_views(&ui_for_unload, &state_for_unload);
+                refresh_menu(&ui_for_unload, &state_for_unload.borrow());
+                show_status(
+                    &ui_for_unload,
+                    &trf(
+                        if source_is_live {
+                            "{name} was forgotten for this session. The CSV file was not changed."
+                        } else {
+                            "{name} was unloaded. The original CSV remains where you chose it."
+                        },
+                        &[("name", name.clone())],
+                    ),
+                );
+            }
+            Ok(Err(err)) => {
+                show_status(
+                    &ui_for_unload,
+                    &trf(
+                        "Could not remove {name}: {error}",
+                        &[("name", name.clone()), ("error", format!("{err:#}"))],
+                    ),
+                );
+                button.set_sensitive(true);
+            }
+            Err(_) => {
+                show_status(
+                    &ui_for_unload,
+                    "CSV removal canceled: the background task stopped unexpectedly.",
+                );
+                button.set_sensitive(true);
+            }
+        }
+    });
+}
+
+fn transaction_source_for_report(report: &ImportReport, data: &AppData) -> TransactionSource {
+    data.transaction_sources
+        .iter()
+        .find(|source| source.path == report.source)
+        .cloned()
+        .unwrap_or_else(|| TransactionSource::inbox_file(report.source.clone()))
 }
 
 fn csv_file_action_available(loading_count: u32) -> bool {
