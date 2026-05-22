@@ -168,6 +168,7 @@ pub(in crate::app) fn trf(message: &str, replacements: &[(&str, String)]) -> Str
 pub(in crate::app) struct LoadingSensitiveWidget {
     widget: gtk::Widget,
     base_sensitive: bool,
+    was_rooted: Rc<Cell<bool>>,
 }
 
 #[derive(Clone)]
@@ -328,22 +329,36 @@ pub(in crate::app) fn register_loading_sensitive_widget<W: IsA<gtk::Widget>>(
 ) {
     let widget = widget.clone().upcast::<gtk::Widget>();
     let base_sensitive = widget.is_sensitive();
+    let was_rooted = widget.root().is_some();
     widget.set_sensitive(base_sensitive && loading_sensitive_items_enabled(ui.loading_count.get()));
     ui.loading_sensitive_widgets
         .borrow_mut()
         .push(LoadingSensitiveWidget {
             widget,
             base_sensitive,
+            was_rooted: Rc::new(Cell::new(was_rooted)),
         });
 }
 
 fn update_loading_sensitive_widgets(ui: &UiHandles) {
     let sensitive = loading_sensitive_items_enabled(ui.loading_count.get());
     let mut widgets = ui.loading_sensitive_widgets.borrow_mut();
-    widgets.retain(|item| item.widget.root().is_some());
+    widgets.retain(loading_sensitive_widget_should_remain_registered);
     for item in widgets.iter() {
         item.widget.set_sensitive(item.base_sensitive && sensitive);
     }
+}
+
+fn loading_sensitive_widget_should_remain_registered(item: &LoadingSensitiveWidget) -> bool {
+    let rooted = item.widget.root().is_some();
+    if rooted {
+        item.was_rooted.set(true);
+    }
+    widget_registration_is_live(rooted, item.was_rooted.get())
+}
+
+fn widget_registration_is_live(rooted: bool, was_rooted: bool) -> bool {
+    rooted || !was_rooted
 }
 
 fn set_app_action_enabled(ui: &UiHandles, name: &str, enabled: bool) {
@@ -924,6 +939,13 @@ mod tests {
         assert!(loading_sensitive_items_enabled(0));
         assert!(!loading_sensitive_items_enabled(1));
         assert!(!loading_sensitive_items_enabled(3));
+    }
+
+    #[test]
+    fn unrooted_loading_widgets_stay_registered_until_first_root() {
+        assert!(widget_registration_is_live(false, false));
+        assert!(widget_registration_is_live(true, false));
+        assert!(!widget_registration_is_live(false, true));
     }
 
     #[test]

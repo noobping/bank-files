@@ -58,9 +58,11 @@ pub(in crate::app) fn diagnostic_file_card(
     file_actions.set_valign(gtk::Align::Start);
     let reload_button = ui::icon_button("view-refresh-symbolic", "Force reload stored CSV");
     reload_button.add_css_class("flat");
+    register_loading_sensitive_widget(ui_handles, &reload_button);
     let unload_button = ui::icon_button("user-trash-symbolic", "Unload stored CSV");
     unload_button.add_css_class("destructive-action");
     unload_button.add_css_class("flat");
+    register_loading_sensitive_widget(ui_handles, &unload_button);
     match data_write_availability(ui_handles.as_ref()) {
         ActionAvailability::Available => {}
         availability => apply_action_availability(&unload_button, &availability),
@@ -85,6 +87,10 @@ pub(in crate::app) fn diagnostic_file_card(
     let state_for_unload = Rc::clone(state);
     let ui_for_unload = Rc::clone(ui_handles);
     unload_button.connect_clicked(move |button| {
+        if !csv_file_action_available(ui_for_unload.loading_count.get()) {
+            show_status(&ui_for_unload, "Data is still loading.");
+            return;
+        }
         if !ui_for_unload.storage_capabilities.borrow().data_writable {
             show_status(
                 &ui_for_unload,
@@ -181,6 +187,11 @@ fn force_reload_csv_file(
     ui_handles: &Rc<UiHandles>,
     button: &gtk::Button,
 ) {
+    if !csv_file_action_available(ui_handles.loading_count.get()) {
+        show_status(ui_handles, "Data is still loading.");
+        return;
+    }
+
     let path = path.to_path_buf();
     let name = name.to_string();
     let mode = state.borrow().dedupe_mode;
@@ -236,6 +247,10 @@ fn force_reload_csv_file(
         }
         finish_background_operation(ui_for_reload.as_ref());
     });
+}
+
+fn csv_file_action_available(loading_count: u32) -> bool {
+    loading_count == 0
 }
 
 pub(in crate::app) fn detected_fields_toggle(
@@ -607,4 +622,16 @@ pub(in crate::app) fn empty_page(
         .title(tr(title))
         .description(tr(description))
         .build()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn csv_file_actions_are_disabled_while_loading() {
+        assert!(csv_file_action_available(0));
+        assert!(!csv_file_action_available(1));
+        assert!(!csv_file_action_available(3));
+    }
 }

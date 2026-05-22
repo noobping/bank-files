@@ -180,6 +180,7 @@ pub(in crate::app) fn render_diagnostics_page(
                 "Force reload all CSV files",
             );
             reload_all_button.set_action_name(Some("app.reload-all"));
+            register_loading_sensitive_widget(ui_handles, &reload_all_button);
             ui_handles.debug.append(&ui::section_title_with_action(
                 "CSV files",
                 "These are app copies of files you opened through the portal or drag-and-drop. Unloading only removes the stored copy.",
