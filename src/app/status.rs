@@ -19,7 +19,6 @@ pub(in crate::app) struct StatusBar {
     pub(in crate::app) spinner: adw::Spinner,
     pub(in crate::app) label: gtk::Label,
     pub(in crate::app) action_group: gtk::Box,
-    pub(in crate::app) copy_button: gtk::Button,
     pub(in crate::app) history_button: gtk::Button,
     pub(in crate::app) page_actions_button: gtk::MenuButton,
     pub(in crate::app) hide_button: gtk::Button,
@@ -51,7 +50,6 @@ pub(in crate::app) fn build_status_bar() -> StatusBar {
     label.set_margin_top(2);
     label.set_margin_bottom(2);
 
-    let copy_button = status_button(COPY_ICON, "Copy message");
     let history_button = status_button("document-open-recent-symbolic", "Show message history");
     let page_actions_button = build_page_actions_menu_button("app");
     let hide_button = status_button("window-close-symbolic", "Hide message");
@@ -59,7 +57,6 @@ pub(in crate::app) fn build_status_bar() -> StatusBar {
     action_group.set_margin_top(2);
     action_group.set_margin_bottom(2);
     action_group.set_margin_end(2);
-    action_group.append(&copy_button);
     action_group.append(&history_button);
     action_group.append(&page_actions_button);
     action_group.append(&hide_button);
@@ -75,7 +72,6 @@ pub(in crate::app) fn build_status_bar() -> StatusBar {
         spinner,
         label,
         action_group,
-        copy_button,
         history_button,
         page_actions_button,
         hide_button,
@@ -86,8 +82,10 @@ pub(in crate::app) fn build_page_actions_menu_button(action_namespace: &str) -> 
     let menu_button = gtk::MenuButton::builder()
         .icon_name("view-more-symbolic")
         .tooltip_text(tr("Page actions"))
+        .has_frame(false)
         .build();
     menu_button.add_css_class("flat");
+    menu_button.add_css_class("image-button");
     set_page_actions_menu_namespace(&menu_button, action_namespace);
     menu_button
 }
@@ -309,18 +307,8 @@ pub(in crate::app) fn connect_embedded_status_bar(
     status_autohide: Rc<Cell<bool>>,
 ) {
     let generation = Rc::new(Cell::new(0u64));
-    let copy_feedback_generation = Rc::new(Cell::new(0u64));
     let history = Rc::new(RefCell::new(Vec::<StatusLogEntry>::new()));
     let history_popover = Rc::new(RefCell::new(None::<gtk::Popover>));
-
-    let label_for_copy = status_bar.label.clone();
-    let window_for_copy = window.clone();
-    let copy_button_for_copy = status_bar.copy_button.clone();
-    let copy_feedback_for_copy = Rc::clone(&copy_feedback_generation);
-    status_bar.copy_button.connect_clicked(move |_| {
-        window_for_copy.clipboard().set_text(&label_for_copy.text());
-        show_copy_feedback(&copy_button_for_copy, &copy_feedback_for_copy);
-    });
 
     let window_for_history = window.clone();
     let history_for_button = Rc::clone(&history);
@@ -370,25 +358,9 @@ pub(in crate::app) fn connect_embedded_status_bar(
 pub(in crate::app) fn connect_status_actions(
     app: &adw::Application,
     ui: &Rc<UiHandles>,
-    copy_button: gtk::Button,
     history_button: gtk::Button,
     hide_button: gtk::Button,
 ) {
-    let copy_feedback_generation = Rc::new(Cell::new(0u64));
-    let ui_for_status_copy = Rc::clone(ui);
-    let copy_button_for_status_copy = copy_button.clone();
-    let copy_feedback_for_status_copy = Rc::clone(&copy_feedback_generation);
-    let copy_status_action = gtk::gio::SimpleAction::new("copy-status", None);
-    copy_status_action.connect_activate(move |_, _| {
-        ui_for_status_copy
-            .window
-            .clipboard()
-            .set_text(&ui_for_status_copy.status.text());
-        show_copy_feedback(&copy_button_for_status_copy, &copy_feedback_for_status_copy);
-    });
-    app.add_action(&copy_status_action);
-    copy_button.set_action_name(Some("app.copy-status"));
-
     let window_for_history = ui.window.clone();
     let history_for_history = Rc::clone(&ui.status_history);
     let history_popover = Rc::new(RefCell::new(None::<gtk::Popover>));

@@ -9,7 +9,6 @@ const COMMON_ACTION_ACCELERATORS: &[ActionAccelerators] = &[
     ("app.reload", &["<primary>R"]),
     ("app.reload-all", &["<primary><shift>R"]),
     ("app.copy-page", &["<primary><shift>C"]),
-    ("app.copy-status", &["<primary><shift>M"]),
     ("app.print-page", &["<primary>P"]),
     ("app.export-csv", &["<primary>E"]),
     ("app.view-overview", &["<primary>1"]),
@@ -94,7 +93,6 @@ pub(in crate::app) fn build_shortcuts_dialog(
         &[
             ShortcutSpec::action("Search or Filter", "app.find"),
             ShortcutSpec::action("Copy Page", "app.copy-page"),
-            ShortcutSpec::action("Copy Status Message", "app.copy-status"),
             ShortcutSpec::action("Print Page", "app.print-page"),
         ],
     ));

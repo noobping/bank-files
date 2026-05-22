@@ -763,13 +763,7 @@ fn build_ui_with_startup_request(app: &adw::Application, startup_request: Startu
         "Choose bank files or drop them onto the window to review spending, budgets, and trends.",
     );
 
-    connect_status_actions(
-        app,
-        &ui,
-        status_bar.copy_button,
-        status_bar.history_button,
-        status_bar.hide_button,
-    );
+    connect_status_actions(app, &ui, status_bar.history_button, status_bar.hide_button);
     connect_operation_queue(&state, &ui);
     connect_fake_transactions(&state, &ui);
     connect_actions(
