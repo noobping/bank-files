@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bank Files 0.1.0\n"
-"PO-Revision-Date: 2026-05-20 00:00+0200\n"
+"PO-Revision-Date: 2026-05-22 00:00+0200\n"
 "Last-Translator: Codex\n"
 "Language-Team: none\n"
 "Language: de\n"
@@ -260,6 +260,9 @@ msgstr "Duplikatfilterung umschalten"
 
 msgid "Toggle Smart Insights"
 msgstr "Intelligente Einblicke umschalten"
+
+msgid "Toggle Online Smart Insights"
+msgstr "Online-Intelligente Einblicke umschalten"
 
 msgid "Toggle Smart Autofill"
 msgstr "Intelligentes Ausfüllen umschalten"
@@ -1992,6 +1995,18 @@ msgstr "Intelligente Einblicke aktiviert. Prognosekarten und Transaktionsmustere
 msgid "Smart Insights disabled. Forecast cards and transaction pattern detection are hidden."
 msgstr "Intelligente Einblicke deaktiviert. Prognosekarten und Transaktionsmustererkennung sind ausgeblendet."
 
+msgid "Online Smart Insights"
+msgstr "Online-Intelligente Einblicke"
+
+msgid "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent."
+msgstr "Datenschutzgefilterte Unternehmenskategorie-Abfragen erlauben. Betraege, Daten, Konten, Beschreibungen, Notizen und Zeilen werden nie gesendet."
+
+msgid "Online Smart Insights enabled. Only privacy-filtered company labels may be used for online lookups."
+msgstr "Online-Intelligente Einblicke aktiviert. Fuer Online-Abfragen duerfen nur datenschutzgefilterte Unternehmensbezeichnungen verwendet werden."
+
+msgid "Online Smart Insights disabled. Smart Insights use local transactions only."
+msgstr "Online-Intelligente Einblicke deaktiviert. Intelligente Einblicke verwenden nur lokale Transaktionen."
+
 msgid "Prediction details"
 msgstr "Prognosedetails"
 
@@ -2437,11 +2452,41 @@ msgstr "Die neueste Einstellungsmeldung."
 msgid "Generating configuration from transactions..."
 msgstr "Konfiguration aus Transaktionen wird erzeugt..."
 
+msgid "Automatic Configuration uses complete imported calendar years for budget amounts and ignores incomplete years."
+msgstr "Die automatische Konfiguration verwendet vollstaendige importierte Kalenderjahre fuer Budgetbetraege und ignoriert unvollstaendige Jahre."
+
+msgid "Analysing loaded transactions, yearly comparisons, recurring patterns, transfers, and field mappings..."
+msgstr "Geladene Transaktionen, Jahresvergleiche, wiederkehrende Muster, Umbuchungen und Feldzuordnungen werden analysiert..."
+
+msgid "Loading all imported transactions before analysing yearly comparisons and patterns..."
+msgstr "Alle importierten Transaktionen werden geladen, bevor Jahresvergleiche und Muster analysiert werden..."
+
+msgid "Generated from {count} complete imported year(s), covering {months} month(s), on {date}."
+msgstr "Erzeugt aus {count} vollstaendigen importierten Jahr(en), ueber {months} Monat(e), am {date}."
+
 msgid "Generated configuration: {budgets} budget(s), {rules} rule(s), {fields} field mapping(s), {hidden} hidden pattern(s)."
 msgstr "Konfiguration erzeugt: {budgets} Budget(s), {rules} Regel(n), {fields} Feldzuordnung(en), {hidden} ausgeblendete Muster."
 
+msgid "Generated configuration from {years} complete year(s), covering {months} month(s): {budgets} budget(s), {rules} rule(s), {fields} field mapping(s), {hidden} hidden pattern(s)."
+msgstr "Konfiguration aus {years} vollstaendigen Jahr(en), ueber {months} Monat(e), erzeugt: {budgets} Budget(s), {rules} Regel(n), {fields} Feldzuordnung(en), {hidden} ausgeblendete Muster."
+
 msgid "No configuration could be generated from imported transactions yet."
 msgstr "Aus importierten Transaktionen konnte noch keine Konfiguration erzeugt werden."
+
+msgid "No configuration could be generated yet. Import a complete calendar year to generate budget amounts."
+msgstr "Es konnte noch keine Konfiguration erzeugt werden. Importiere ein vollstaendiges Kalenderjahr, um Budgetbetraege zu erzeugen."
+
+msgid "Smart Insights are disabled. Online merchant enrichment and extra pattern hints are skipped."
+msgstr "Intelligente Einblicke sind deaktiviert. Online-Unternehmensanreicherung und zusaetzliche Musterhinweise werden uebersprungen."
+
+msgid "Online Smart Insights are off by default. Automatic Configuration uses only local transactions, and no merchant names or transaction fields are sent."
+msgstr "Online-Intelligente Einblicke sind standardmaessig ausgeschaltet. Die automatische Konfiguration verwendet nur lokale Transaktionen; Unternehmensnamen oder Transaktionsfelder werden nicht gesendet."
+
+msgid "Online Smart Insights are enabled, but no network connection is available. External merchant lookups are skipped, and no transaction data is sent."
+msgstr "Online-Intelligente Einblicke sind aktiviert, aber es ist keine Netzwerkverbindung verfuegbar. Externe Unternehmensabfragen werden uebersprungen und es werden keine Transaktionsdaten gesendet."
+
+msgid "Online Smart Insights are enabled, but no safe lookup provider is configured in this build. External merchant lookups are skipped, and no transaction data is sent."
+msgstr "Online-Intelligente Einblicke sind aktiviert, aber in diesem Build ist kein sicherer Abfrageanbieter konfiguriert. Externe Unternehmensabfragen werden uebersprungen und es werden keine Transaktionsdaten gesendet."
 
 msgid "Could not generate configuration: {error}"
 msgstr "Konfiguration konnte nicht erzeugt werden: {error}"
