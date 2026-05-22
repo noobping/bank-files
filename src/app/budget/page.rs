@@ -485,7 +485,9 @@ pub(in crate::app) fn append_budget_rows(
         let state_for_row = Rc::clone(state);
         let ui_for_row = Rc::clone(ui_handles);
         let filter = TransactionFilter::budget_for_month(budget.code.clone(), month);
-        let card = ui::activatable_progress_row_with_state(
+        let edit_button = budget_edit_button(&budget.code, &budget.category, ui_handles, state)
+            .upcast::<gtk::Widget>();
+        let row = ui::progress_row_with_state_and_action(
             &format!("{} · {}", budget.code, budget.category),
             &trf(
                 "{amount} spent of {budget}",
@@ -500,15 +502,12 @@ pub(in crate::app) fn append_budget_rows(
             fraction(budget.actual, budget.budget),
             &detail,
             state_kind,
-            move || show_transactions_filter(&state_for_row, &ui_for_row, filter.clone()),
+            Some(edit_button),
         );
-        container.append(&budget_edit_row(
-            card,
-            &budget.code,
-            &budget.category,
-            ui_handles,
-            state,
-        ));
+        let card = ui::activatable_card(row, move || {
+            show_transactions_filter(&state_for_row, &ui_for_row, filter.clone())
+        });
+        container.append(&card);
     }
 }
 
@@ -623,28 +622,26 @@ pub(in crate::app) fn append_month_category_rows(
         let state_for_row = Rc::clone(state);
         let ui_for_row = Rc::clone(ui_handles);
         let filter = TransactionFilter::budget_for_month(category.budget_code.clone(), month);
-        let card = ui::activatable_card(
-            ui::progress_row(
-                &category.category,
-                &trf(
-                    "{count} transactions · budget code {code}",
-                    &[
-                        ("count", category.totals.count.to_string()),
-                        ("code", category.budget_code.clone()),
-                    ],
-                ),
-                fraction(category.totals.expenses, max_expense),
-                &money(category.totals.expenses),
-            ),
-            move || show_transactions_filter(&state_for_row, &ui_for_row, filter.clone()),
-        );
-        container.append(&budget_edit_row(
-            card,
-            &category.budget_code,
+        let edit_button =
+            budget_edit_button(&category.budget_code, &category.category, ui_handles, state)
+                .upcast::<gtk::Widget>();
+        let row = ui::progress_row_with_action(
             &category.category,
-            ui_handles,
-            state,
-        ));
+            &trf(
+                "{count} transactions · budget code {code}",
+                &[
+                    ("count", category.totals.count.to_string()),
+                    ("code", category.budget_code.clone()),
+                ],
+            ),
+            fraction(category.totals.expenses, max_expense),
+            &money(category.totals.expenses),
+            Some(edit_button),
+        );
+        let card = ui::activatable_card(row, move || {
+            show_transactions_filter(&state_for_row, &ui_for_row, filter.clone())
+        });
+        container.append(&card);
     }
 }
 

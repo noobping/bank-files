@@ -160,30 +160,16 @@ fn save_budget_with_reload(
     });
 }
 
-pub(in crate::app) fn budget_edit_row(
-    card: gtk::Box,
+pub(in crate::app) fn budget_edit_button(
     code: &str,
     category: &str,
     ui_handles: &Rc<UiHandles>,
     state: &Rc<RefCell<AppData>>,
-) -> gtk::Overlay {
-    card.set_hexpand(true);
-    if let Some(content) = card
-        .first_child()
-        .and_then(|child| child.downcast::<gtk::Box>().ok())
-    {
-        content.set_margin_end(content.margin_end() + 42);
-    }
-
-    let overlay = gtk::Overlay::new();
-    overlay.set_hexpand(true);
-    overlay.set_child(Some(&card));
-
+) -> gtk::Button {
     let button = ui::icon_button("document-edit-symbolic", "Edit budget");
     button.add_css_class("flat");
     button.set_halign(gtk::Align::End);
     button.set_valign(gtk::Align::Center);
-    button.set_margin_end(12);
     button.set_sensitive(!code.trim().is_empty());
     register_exclusive_config_widget(ui_handles, &button);
 
@@ -198,8 +184,7 @@ pub(in crate::app) fn budget_edit_row(
         show_budget_edit_dialog(&code, &category, &state_for_edit, &ui_for_edit);
     });
 
-    overlay.add_overlay(&button);
-    overlay
+    button
 }
 
 pub(in crate::app) fn show_budget_edit_dialog(

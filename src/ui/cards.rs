@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn metric_card(title: &str, value: &str, subtitle: &str) -> gtk::Box {
+pub fn card_container() -> gtk::Box {
     let card = gtk::Box::new(gtk::Orientation::Vertical, 0);
     card.add_css_class("card");
     card.set_margin_top(4);
@@ -8,12 +8,21 @@ pub fn metric_card(title: &str, value: &str, subtitle: &str) -> gtk::Box {
     card.set_margin_start(4);
     card.set_margin_end(4);
     card.set_hexpand(true);
+    card
+}
 
-    let content = gtk::Box::new(gtk::Orientation::Vertical, 4);
+pub fn card_content(orientation: gtk::Orientation, spacing: i32) -> gtk::Box {
+    let content = gtk::Box::new(orientation, spacing);
     content.set_margin_top(12);
     content.set_margin_bottom(12);
     content.set_margin_start(12);
     content.set_margin_end(12);
+    content
+}
+
+pub fn metric_card(title: &str, value: &str, subtitle: &str) -> gtk::Box {
+    let card = card_container();
+    let content = card_content(gtk::Orientation::Vertical, 4);
 
     let title_label = gtk::Label::new(Some(&gettext(title)));
     title_label.add_css_class("caption");
@@ -50,12 +59,35 @@ where
     card.add_css_class("action-card");
     card.set_can_target(true);
 
+    let card_widget = card.clone().upcast::<gtk::Widget>();
     let click = gtk::GestureClick::new();
     click.set_propagation_phase(gtk::PropagationPhase::Capture);
-    click.connect_pressed(move |_, _, _, _| on_activate());
+    click.connect_pressed(move |_, _, x, y| {
+        if picked_widget_is_button(&card_widget, x, y) {
+            return;
+        }
+        on_activate();
+    });
     card.add_controller(click);
 
     card
+}
+
+fn picked_widget_is_button(widget: &gtk::Widget, x: f64, y: f64) -> bool {
+    widget
+        .pick(x, y, gtk::PickFlags::DEFAULT)
+        .is_some_and(|picked| widget_or_ancestor_is_button(&picked))
+}
+
+fn widget_or_ancestor_is_button(widget: &gtk::Widget) -> bool {
+    let mut current = Some(widget.clone());
+    while let Some(widget) = current {
+        if widget.is::<gtk::Button>() {
+            return true;
+        }
+        current = widget.parent();
+    }
+    false
 }
 
 pub fn activatable_metric_card<F>(
@@ -157,19 +189,8 @@ pub fn loading_section_group(title: &str, subtitle: &str) -> gtk::Box {
 }
 
 fn loading_status_card(message: &str) -> gtk::Box {
-    let card = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    card.add_css_class("card");
-    card.set_margin_top(4);
-    card.set_margin_bottom(4);
-    card.set_margin_start(4);
-    card.set_margin_end(4);
-    card.set_hexpand(true);
-
-    let content = gtk::Box::new(gtk::Orientation::Horizontal, 10);
-    content.set_margin_top(12);
-    content.set_margin_bottom(12);
-    content.set_margin_start(12);
-    content.set_margin_end(12);
+    let card = card_container();
+    let content = card_content(gtk::Orientation::Horizontal, 10);
     content.set_valign(gtk::Align::Center);
 
     let spinner = loading_spinner();
@@ -241,12 +262,7 @@ pub enum ProgressState {
 }
 
 pub fn text_card(text: &str) -> gtk::Box {
-    let card = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    card.add_css_class("card");
-    card.set_margin_top(4);
-    card.set_margin_bottom(4);
-    card.set_margin_start(4);
-    card.set_margin_end(4);
+    let card = card_container();
 
     let label = selectable_wrapped_label(text);
     label.set_margin_top(12);
@@ -258,14 +274,8 @@ pub fn text_card(text: &str) -> gtk::Box {
 }
 
 pub fn warning_card(title: &str, text: &str) -> gtk::Box {
-    let card = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    card.add_css_class("card");
+    let card = card_container();
     card.add_css_class("warning-card");
-    card.set_margin_top(4);
-    card.set_margin_bottom(4);
-    card.set_margin_start(4);
-    card.set_margin_end(4);
-    card.set_hexpand(true);
 
     let content = gtk::Box::new(gtk::Orientation::Horizontal, 12);
     content.set_margin_top(14);

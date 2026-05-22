@@ -125,7 +125,7 @@ fn annual_budget_row(
     year: i32,
     ui_handles: &Rc<UiHandles>,
     state: &Rc<RefCell<AppData>>,
-) -> gtk::Overlay {
+) -> gtk::Box {
     let previous_actual = budget.previous_actual.unwrap_or(Decimal::ZERO);
     let scale = if budget.budget > Decimal::ZERO {
         budget.budget
@@ -144,7 +144,9 @@ fn annual_budget_row(
     let state_for_row = Rc::clone(state);
     let ui_for_row = Rc::clone(ui_handles);
     let filter = TransactionFilter::budget_for_year(budget.code.clone(), year);
-    let card = ui::activatable_comparison_progress_row(
+    let edit_button = budget_edit_button(&budget.code, &budget.category, ui_handles, state)
+        .upcast::<gtk::Widget>();
+    let row = ui::comparison_progress_row_with_action(
         ui::ComparisonProgressRow {
             title: format!("{} · {}", budget.code, budget.category),
             subtitle: trf(
@@ -165,9 +167,11 @@ fn annual_budget_row(
             previous,
             detail,
         },
-        move || show_transactions_filter(&state_for_row, &ui_for_row, filter.clone()),
+        Some(edit_button),
     );
-    budget_edit_row(card, &budget.code, &budget.category, ui_handles, state)
+    ui::activatable_card(row, move || {
+        show_transactions_filter(&state_for_row, &ui_for_row, filter.clone())
+    })
 }
 
 pub(in crate::app) fn append_annual_budgets_more_button(
@@ -293,28 +297,26 @@ fn append_annual_category_row(
     let state_for_row = Rc::clone(state);
     let ui_for_row = Rc::clone(ui_handles);
     let filter = TransactionFilter::budget_for_year(category.budget_code.clone(), year);
-    let card = ui::activatable_card(
-        ui::progress_row(
-            &category.category,
-            &trf(
-                "{count} transactions · budget code {code}",
-                &[
-                    ("count", category.totals.count.to_string()),
-                    ("code", category.budget_code.clone()),
-                ],
-            ),
-            fraction(category.totals.expenses, max_expense),
-            &money(category.totals.expenses),
-        ),
-        move || show_transactions_filter(&state_for_row, &ui_for_row, filter.clone()),
-    );
-    container.append(&budget_edit_row(
-        card,
-        &category.budget_code,
+    let edit_button =
+        budget_edit_button(&category.budget_code, &category.category, ui_handles, state)
+            .upcast::<gtk::Widget>();
+    let row = ui::progress_row_with_action(
         &category.category,
-        ui_handles,
-        state,
-    ));
+        &trf(
+            "{count} transactions · budget code {code}",
+            &[
+                ("count", category.totals.count.to_string()),
+                ("code", category.budget_code.clone()),
+            ],
+        ),
+        fraction(category.totals.expenses, max_expense),
+        &money(category.totals.expenses),
+        Some(edit_button),
+    );
+    let card = ui::activatable_card(row, move || {
+        show_transactions_filter(&state_for_row, &ui_for_row, filter.clone())
+    });
+    container.append(&card);
 }
 
 pub(in crate::app) fn annual_category_matches(
