@@ -25,8 +25,10 @@ modules:
 
     build-commands:
       - sed -i '/\[target.\x27cfg(target_os = "windows")\x27.*ependencies\]/,/^$/d' Cargo.toml
-      - BANK_FILES_DATADIR=/app/share cargo build --offline --release --features flatpak
+      - BANK_FILES_DATADIR=/app/share BANK_FILES_INSTALLED_RESOURCES=1 BANK_FILES_GRESOURCE=/app/share/bank-files/bank-files.gresource cargo build --offline --release --features flatpak
       - install -Dm0755 target/release/bank-files /app/bin/bank-files
+      - install -dm0755 /app/share/bank-files
+      - glib-compile-resources --sourcedir=data --target=/app/share/bank-files/bank-files.gresource data/resources.xml
       - install -Dm0644 data/scalable/apps/${FLATPAK_ID}.svg /app/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg
       - install -Dm0644 data/symbolic/apps/${FLATPAK_ID}-symbolic.svg /app/share/icons/hicolor/symbolic/apps/${FLATPAK_ID}-symbolic.svg
       - install -dm0755 /app/share/icons/hicolor/symbolic/actions

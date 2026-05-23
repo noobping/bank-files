@@ -1,14 +1,28 @@
 use crate::app_info::RESOURCE_ID;
 
+#[cfg(bank_files_installed_resources)]
+pub fn register() -> Result<(), adw::glib::Error> {
+    let resource = adw::gio::Resource::load(installed_resource_path())?;
+    adw::gio::resources_register(&resource);
+    Ok(())
+}
+
+#[cfg(not(bank_files_installed_resources))]
 pub fn register() -> Result<(), adw::glib::Error> {
     adw::gio::resources_register_include!("compiled.gresource")
+}
+
+#[cfg(bank_files_installed_resources)]
+fn installed_resource_path() -> &'static str {
+    option_env!("BANK_FILES_GRESOURCE")
+        .unwrap_or("/usr/local/share/bank-files/bank-files.gresource")
 }
 
 pub fn add_icon_theme_path(display: &adw::gtk::gdk::Display) {
     adw::gtk::IconTheme::for_display(display).add_resource_path(RESOURCE_ID);
 }
 
-#[cfg(test)]
+#[cfg(all(test, not(bank_files_installed_resources)))]
 mod tests {
     use super::*;
     use crate::app_info::APP_ID;

@@ -9,4 +9,5 @@
 _build/
 debug
 resources.xml
+!data/resources.xml
 target

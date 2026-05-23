@@ -46,7 +46,7 @@ cargo run --release
 
 ## Linux Install From Source
 
-Use Meson for a normal Linux install. This installs the binary, desktop file, app metadata, GSettings schema, icons, symbolic action icons, GNOME search provider files, compiled translations, source PO/POT files, and non-embedded AI model assets in the selected prefix.
+Use Meson for a normal Linux install. This installs the binary, desktop file, app metadata, GSettings schema, icons, symbolic action icons, GTK resource bundle, GNOME search provider files, compiled translations, source PO/POT files, and non-embedded AI model assets in the selected prefix.
 
 ```bash
 meson setup build -Dcargo_variant=release
@@ -62,7 +62,7 @@ meson compile -C build
 sudo meson install -C build
 ```
 
-The AI bundle is installed to `share/bank-files/models/ai`. Setup builds embed the AI assets instead of installing sidecar files:
+The GTK resource bundle is installed to `share/bank-files/bank-files.gresource` and loaded from there by default Linux builds. Plain Cargo development builds and setup/self-contained builds keep GTK resources embedded. The AI bundle is installed to `share/bank-files/models/ai`. Setup builds embed the AI assets instead of installing sidecar files:
 
 ```bash
 meson setup build -Dcargo_variant=release -Dsetup=true

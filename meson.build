@@ -76,8 +76,19 @@ endif
 
 embedded_ai_feature_enabled = feature_tokens.contains('embedded-ai-model') or feature_tokens.contains('setup')
 install_ai_assets = not embedded_ai_feature_enabled
+install_gtk_resources = not feature_tokens.contains('setup')
+installed_gresource = join_paths(installed_datadir, project_binary, project_binary + '.gresource')
+installed_resource_mode = 'false'
+if install_gtk_resources
+  installed_resource_mode = 'true'
+endif
 
 message('Configured Meson install data dir "@0@"'.format(installed_datadir))
+if install_gtk_resources
+  message('Configured Meson GTK resources "installed" -> @0@'.format(installed_gresource))
+else
+  message('Configured Meson GTK resources "embedded"')
+endif
 
 cargo_wrapper_script = '''
 set -eu
@@ -86,10 +97,12 @@ native_cargo=$1
 flatpak_spawn=$2
 source_root=$3
 build_root=$4
-variant=$5
-features=$6
-install_datadir=$7
-output=$8
+install_datadir=$5
+installed_resources=$6
+resource_file=$7
+variant=$8
+features=$9
+output=${10}
 output_path=$output
 
 profile_dir=debug
@@ -107,11 +120,19 @@ cargo_target_dir="$build_root/cargo-target"
 export BANK_FILES_DATADIR="$install_datadir"
 
 if [ -n "$native_cargo" ]; then
-  set -- env "BANK_FILES_DATADIR=$install_datadir" "$native_cargo" build "--manifest-path" "$source_root/Cargo.toml" "--target-dir" "$cargo_target_dir" "--locked"
+  if [ "$installed_resources" = "true" ]; then
+    set -- env "BANK_FILES_DATADIR=$install_datadir" "BANK_FILES_INSTALLED_RESOURCES=1" "BANK_FILES_GRESOURCE=$resource_file" "$native_cargo" build "--manifest-path" "$source_root/Cargo.toml" "--target-dir" "$cargo_target_dir" "--locked"
+  else
+    set -- env "BANK_FILES_DATADIR=$install_datadir" "$native_cargo" build "--manifest-path" "$source_root/Cargo.toml" "--target-dir" "$cargo_target_dir" "--locked"
+  fi
 else
   cargo_target_dir="$source_root/target/meson-toolbox"
   cd "$source_root"
-  set -- "$flatpak_spawn" --host toolbox run env "BANK_FILES_DATADIR=$install_datadir" cargo build "--manifest-path" "$source_root/Cargo.toml" "--target-dir" "$cargo_target_dir" "--locked"
+  if [ "$installed_resources" = "true" ]; then
+    set -- "$flatpak_spawn" --host toolbox run env "BANK_FILES_DATADIR=$install_datadir" "BANK_FILES_INSTALLED_RESOURCES=1" "BANK_FILES_GRESOURCE=$resource_file" cargo build "--manifest-path" "$source_root/Cargo.toml" "--target-dir" "$cargo_target_dir" "--locked"
+  else
+    set -- "$flatpak_spawn" --host toolbox run env "BANK_FILES_DATADIR=$install_datadir" cargo build "--manifest-path" "$source_root/Cargo.toml" "--target-dir" "$cargo_target_dir" "--locked"
+  fi
 fi
 
 if [ "$profile_dir" = "release" ]; then
@@ -139,6 +160,8 @@ cargo_wrapper_args = [
   meson.project_source_root(),
   meson.project_build_root(),
   installed_datadir,
+  installed_resource_mode,
+  installed_gresource,
 ]
 
 custom_target(
@@ -155,6 +178,18 @@ custom_target(
   install: true,
   install_dir: get_option('bindir'),
 )
+
+if install_gtk_resources
+  gnome.compile_resources(
+    project_binary,
+    'data/resources.xml',
+    source_dir: 'data',
+    gresource_bundle: true,
+    build_by_default: true,
+    install: true,
+    install_dir: join_paths(get_option('datadir'), project_binary),
+  )
+endif
 
 foreach variant : ['developer', 'release', 'translation']
   run_target(

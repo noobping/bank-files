@@ -44,7 +44,7 @@ pub fn run() {
 
 fn register_icon_resources() {
     if let Err(err) = crate::resources::register() {
-        eprintln!("Failed to register embedded icon resources: {err}");
+        eprintln!("Failed to register icon resources: {err}");
     }
 }
 

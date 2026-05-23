@@ -1,35 +1,18 @@
 use std::env;
-use std::fmt::Write;
 use std::fs;
 use std::path::{Path, PathBuf};
-
-#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
-struct ResourceFileEntry {
-    source: String,
-}
-
-impl ResourceFileEntry {
-    fn source(source: String) -> Self {
-        Self { source }
-    }
-}
 
 fn main() {
     configure_linux_install_paths();
 
     let data_dir = Path::new("data");
-    let mut resource_files = Vec::new();
-    collect_icon_assets(data_dir, data_dir, &mut resource_files);
-    resource_files.sort();
-    let resources_xml = write_resources_xml(&resource_files);
-
-    glib_build_tools::compile_resources(
-        &[data_dir],
-        resources_xml
-            .to_str()
-            .expect("Generated resource XML path should be valid UTF-8"),
-        "compiled.gresource",
-    );
+    if !installed_resources_enabled() {
+        glib_build_tools::compile_resources(
+            &[data_dir],
+            "data/resources.xml",
+            "compiled.gresource",
+        );
+    }
 
     if env::var_os("CARGO_FEATURE_LOCAL_AI").is_some()
         && env::var_os("CARGO_FEATURE_EMBEDDED_AI_MODEL").is_none()
@@ -41,6 +24,7 @@ fn main() {
     embed_windows_icon(data_dir);
 
     println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=data/resources.xml");
     println!("cargo:rerun-if-changed=data/scalable/apps");
     println!("cargo:rerun-if-changed=data/symbolic/actions");
     println!("cargo:rerun-if-changed=data/symbolic/apps");
@@ -49,13 +33,29 @@ fn main() {
 }
 
 fn configure_linux_install_paths() {
+    println!("cargo:rustc-check-cfg=cfg(bank_files_installed_resources)");
     println!("cargo:rerun-if-env-changed=BANK_FILES_DATADIR");
+    println!("cargo:rerun-if-env-changed=BANK_FILES_GRESOURCE");
+    println!("cargo:rerun-if-env-changed=BANK_FILES_INSTALLED_RESOURCES");
     if let Some(datadir) = env::var_os("BANK_FILES_DATADIR") {
         println!(
             "cargo:rustc-env=BANK_FILES_DATADIR={}",
             datadir.to_string_lossy()
         );
     }
+    if let Some(resource) = env::var_os("BANK_FILES_GRESOURCE") {
+        println!(
+            "cargo:rustc-env=BANK_FILES_GRESOURCE={}",
+            resource.to_string_lossy()
+        );
+    }
+    if installed_resources_enabled() {
+        println!("cargo:rustc-cfg=bank_files_installed_resources");
+    }
+}
+
+fn installed_resources_enabled() -> bool {
+    env::var_os("BANK_FILES_INSTALLED_RESOURCES").is_some()
 }
 
 fn copy_local_ai_assets_to_profile(data_dir: &Path) {
@@ -113,69 +113,4 @@ fn embed_windows_icon(data_dir: &Path) {
     resource
         .compile()
         .expect("Failed to compile Windows icon resource");
-}
-
-fn write_resources_xml(resource_files: &[ResourceFileEntry]) -> PathBuf {
-    let mut xml = String::from("<gresources>\n");
-    writeln!(xml, "\t<gresource prefix=\"{}\">", resource_id())
-        .expect("Failed to format resource prefix");
-    for file in resource_files {
-        writeln!(xml, "\t\t<file>{}</file>", file.source).expect("Failed to format resource entry");
-    }
-    xml.push_str("\t</gresource>\n</gresources>\n");
-    let path = PathBuf::from(env::var_os("OUT_DIR").expect("OUT_DIR should be set by Cargo"))
-        .join("resources.xml");
-    write_if_changed(&path, &xml);
-    path
-}
-
-fn write_if_changed(path: &Path, contents: &str) {
-    if fs::read_to_string(path).ok().as_deref() == Some(contents) {
-        return;
-    }
-
-    fs::write(path, contents)
-        .unwrap_or_else(|err| panic!("Failed to write {}: {err}", path.display()));
-}
-
-fn collect_icon_assets(dir: &Path, data_dir: &Path, resource_files: &mut Vec<ResourceFileEntry>) {
-    for entry in fs::read_dir(dir).expect("Failed to read resource directory") {
-        let entry = entry.expect("Failed to read resource directory entry");
-        let path = entry.path();
-
-        if path.is_dir() {
-            collect_icon_assets(&path, data_dir, resource_files);
-            continue;
-        }
-
-        if !resource_icon_file(&path) {
-            continue;
-        }
-
-        let rel = path
-            .strip_prefix(data_dir)
-            .expect("Resource path should stay within data/");
-        resource_files.push(ResourceFileEntry::source(path_to_resource(rel)));
-    }
-}
-
-fn resource_icon_file(path: &Path) -> bool {
-    matches!(
-        path.extension().and_then(|value| value.to_str()),
-        Some("png" | "svg")
-    ) && path.components().any(|component| {
-        let value = component.as_os_str();
-        value == "actions" || value == "apps"
-    })
-}
-
-fn path_to_resource(path: &Path) -> String {
-    path.components()
-        .map(|component| component.as_os_str().to_string_lossy())
-        .collect::<Vec<_>>()
-        .join("/")
-}
-
-const fn resource_id() -> &'static str {
-    "/io/github/noobping/BankFiles"
 }

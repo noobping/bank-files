@@ -1,0 +1,7 @@
+<gresources>
+  <gresource prefix="/io/github/noobping/BankFiles">
+    <file>scalable/apps/io.github.noobping.BankFiles.svg</file>
+    <file>symbolic/apps/io.github.noobping.BankFiles-symbolic.svg</file>
+    <file>symbolic/actions/document-save-symbolic.svg</file>
+  </gresource>
+</gresources>
