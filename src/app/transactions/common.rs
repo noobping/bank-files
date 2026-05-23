@@ -476,6 +476,10 @@ fn show_transaction_rule_dialog(
         app_budget_autofill_entries(&state.borrow()),
         &ui_handles.advanced_autofill,
     );
+    ui::focus_button_after_combo_selections(
+        &save_button,
+        &[&field, &search, &category, &budget_code, &direction],
+    );
     let amount_min = ui::entry(&initial.amount_min, "Optional");
     let amount_max = ui::entry(&initial.amount_max, "Optional");
     let notes = ui::entry(&initial.notes, "Note");
@@ -636,6 +640,10 @@ fn show_transaction_budget_code_dialog(
             app_budget_autofill_entries(&state.borrow()),
             &ui_handles.advanced_autofill,
         );
+        ui::focus_button_after_combo_selections(
+            &save_button,
+            &[&category, &budget_code, &direction],
+        );
         ui::add_labeled_stacked(&form, "Category", &category);
         ui::add_labeled_stacked(&form, "Budget code", &budget_code);
         ui::add_labeled_stacked(&form, "Direction", &direction);
@@ -648,6 +656,7 @@ fn show_transaction_budget_code_dialog(
             &direction,
             Rc::clone(&budget_targets),
         );
+        ui::focus_button_after_combo_selection(&budget_code, &save_button);
         ui::add_labeled_stacked(&form, "Category", &budget_code);
     }
     page.append(&form);

@@ -1032,6 +1032,10 @@ fn show_transaction_pattern_rule_dialog(
         app_budget_autofill_entries(&state.borrow()),
         &ui_handles.advanced_autofill,
     );
+    ui::focus_button_after_combo_selections(
+        &save_button,
+        &[&field, &search, &category, &budget_code, &direction],
+    );
     let amount_min = ui::entry(&initial.amount_min, "Optional");
     let amount_max = ui::entry(&initial.amount_max, "Optional");
     let notes = ui::entry(&initial.notes, "Note");

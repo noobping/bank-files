@@ -138,6 +138,24 @@ pub fn combo_active_id(combo: &gtk::ComboBoxText) -> String {
         .unwrap_or_default()
 }
 
+pub fn focus_button_after_combo_selection(combo: &gtk::ComboBoxText, button: &gtk::Button) {
+    let button = button.clone();
+    combo.connect_changed(move |_| {
+        let button = button.clone();
+        gtk::glib::idle_add_local_once(move || {
+            if button.is_visible() && button.is_sensitive() {
+                button.grab_focus();
+            }
+        });
+    });
+}
+
+pub fn focus_button_after_combo_selections(button: &gtk::Button, combos: &[&gtk::ComboBoxText]) {
+    for combo in combos {
+        focus_button_after_combo_selection(combo, button);
+    }
+}
+
 pub fn budget_direction_id(input: &str) -> &'static str {
     match crate::model::BudgetDirection::parse(input, "", "") {
         crate::model::BudgetDirection::Income => "income",
