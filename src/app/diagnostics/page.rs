@@ -141,6 +141,10 @@ pub(in crate::app) fn render_diagnostics_page(
         has_search_results = true;
     }
 
+    let patterns_section_search_matches = search
+        .as_ref()
+        .map(|filter| transaction_patterns_section_matches(Some(filter)))
+        .unwrap_or(false);
     if transaction_patterns_section_visible(
         search.as_ref(),
         smart_pattern_detection_enabled(ui_handles.show_predictions.get()),
@@ -153,6 +157,9 @@ pub(in crate::app) fn render_diagnostics_page(
             state,
             ui_handles,
         );
+    } else if patterns_section_search_matches {
+        has_search_results = true;
+        append_transaction_patterns_disabled_section(ui_handles);
     }
 
     if data.reports.is_empty() && search.is_none() {
@@ -199,27 +206,34 @@ pub(in crate::app) fn render_diagnostics_page(
         }
     }
 
-    let warnings_section_matches = search.as_ref().map(warning_section_matches).unwrap_or(true);
+    let warnings_section_search_matches = search
+        .as_ref()
+        .map(warning_section_matches)
+        .unwrap_or(false);
     let warnings = data
         .warnings
         .iter()
         .filter(|warning| {
-            warnings_section_matches
+            warnings_section_search_matches
                 || search
                     .as_ref()
                     .map(|filter| filter.matches(warning))
                     .unwrap_or(true)
         })
         .collect::<Vec<_>>();
-    if !warnings.is_empty() {
+    if !warnings.is_empty() || warnings_section_search_matches {
         has_search_results = true;
         ui_handles.debug.append(&ui::section_title(
             "Warnings",
             "You can select these messages or include them through Copy Page.",
         ));
         let warnings_box = gtk::Box::new(gtk::Orientation::Vertical, 8);
-        for warning in warnings {
-            warnings_box.append(&ui::text_card(warning));
+        if warnings.is_empty() {
+            warnings_box.append(&ui::text_card(&tr("No warnings found.")));
+        } else {
+            for warning in warnings {
+                warnings_box.append(&ui::text_card(warning));
+            }
         }
         ui_handles.debug.append(&warnings_box);
     }
@@ -437,6 +451,16 @@ fn remove_orphaned_config_rules(
         finish_background_operation(ui_for_remove.as_ref());
         finish_config_operation(&ui_for_remove);
     });
+}
+
+fn append_transaction_patterns_disabled_section(ui_handles: &Rc<UiHandles>) {
+    ui_handles.debug.append(&ui::section_title(
+        "Transaction Patterns",
+        "Repeating payments, possible transfers, refunds, and fully offsetting groups detected from imported transactions.",
+    ));
+    ui_handles.debug.append(&ui::text_card(&tr(
+        "Smart Insights is disabled. Enable Smart Insights to detect transaction patterns.",
+    )));
 }
 
 fn append_transaction_patterns_section_async(
@@ -673,14 +697,19 @@ fn transaction_patterns_render_data(
     let pattern_analysis =
         analytics::transaction_pattern_analysis(&data.transactions, data.dedupe_mode.is_enabled());
     let hidden_count = pattern_analysis.hidden_canceled_transaction_count();
+    let section_search_matches = search
+        .as_ref()
+        .map(|filter| transaction_patterns_section_matches(Some(filter)))
+        .unwrap_or(false);
     let mut patterns = pattern_analysis
         .patterns
         .into_iter()
         .filter(|pattern| {
-            search
-                .as_ref()
-                .map(|filter| transaction_pattern_matches(pattern, filter))
-                .unwrap_or(true)
+            section_search_matches
+                || search
+                    .as_ref()
+                    .map(|filter| transaction_pattern_matches(pattern, filter))
+                    .unwrap_or(true)
         })
         .map(|pattern| {
             let hidden =
@@ -1381,5 +1410,16 @@ mod tests {
 
         assert!(warning_section_matches(&warning_search));
         assert!(!warning_section_matches(&unrelated_search));
+    }
+
+    #[test]
+    fn patterns_preset_matches_pattern_section() {
+        let pattern_search = SearchFilter::from_text("patterns").unwrap();
+        let unrelated_search = SearchFilter::from_text("warnings").unwrap();
+
+        assert!(transaction_patterns_section_matches(Some(&pattern_search)));
+        assert!(!transaction_patterns_section_matches(Some(
+            &unrelated_search
+        )));
     }
 }

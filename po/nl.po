@@ -483,6 +483,9 @@ msgstr "Kies CSV’s of sleep bankbestanden naar het venster om importdiagnose t
 msgid "Warnings"
 msgstr "Waarschuwingen"
 
+msgid "No warnings found."
+msgstr "Geen waarschuwingen gevonden."
+
 msgid "You can select these messages or include them through Copy Page."
 msgstr "Deze meldingen kun je selecteren of via Kopieer pagina meenemen."
 
@@ -3090,6 +3093,9 @@ msgstr "Terugbetaalde transacties verbergen heeft Slimme inzichten nodig. Schake
 
 msgid "Smart Insights are disabled. Enable Smart Insights to search detected transaction patterns."
 msgstr "Slimme inzichten zijn uitgeschakeld. Schakel Slimme inzichten in om gevonden transactiepatronen te zoeken."
+
+msgid "Smart Insights is disabled. Enable Smart Insights to detect transaction patterns."
+msgstr "Slimme inzichten zijn uitgeschakeld. Schakel Slimme inzichten in om transactiepatronen te detecteren."
 
 # Simple mode category wording
 msgid "New Category"

@@ -483,6 +483,9 @@ msgstr "Wähle CSV-Dateien aus oder ziehe Bankdateien in das Fenster, um Importd
 msgid "Warnings"
 msgstr "Warnungen"
 
+msgid "No warnings found."
+msgstr "Keine Warnungen gefunden."
+
 msgid "You can select these messages or include them through Copy Page."
 msgstr "Du kannst diese Meldungen auswählen oder über Seite kopieren einbeziehen."
 
@@ -3090,6 +3093,9 @@ msgstr "Erstattete Transaktionen ausblenden benoetigt Intelligente Einblicke. Ak
 
 msgid "Smart Insights are disabled. Enable Smart Insights to search detected transaction patterns."
 msgstr "Intelligente Einblicke sind deaktiviert. Aktiviere Intelligente Einblicke, um erkannte Transaktionsmuster zu suchen."
+
+msgid "Smart Insights is disabled. Enable Smart Insights to detect transaction patterns."
+msgstr "Intelligente Einblicke sind deaktiviert. Aktiviere Intelligente Einblicke, um Transaktionsmuster zu erkennen."
 
 # Simple mode category wording
 msgid "New Category"
