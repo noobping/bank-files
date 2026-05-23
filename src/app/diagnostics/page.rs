@@ -1074,7 +1074,7 @@ fn show_transaction_pattern_rule_dialog(
     let ui_for_save = Rc::clone(ui_handles);
     let dialog_for_save = dialog.clone();
     let cancel_button_for_save = cancel_button.clone();
-    save_button.connect_clicked(move |button| {
+    ui::connect_button_activation(&save_button, move |button| {
         let search_text = ui::combo_text(&search);
         let category_text = ui::combo_text(&category);
         if search_text.is_empty() {

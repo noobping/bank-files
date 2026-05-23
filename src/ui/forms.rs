@@ -139,17 +139,38 @@ pub fn combo_active_id(combo: &gtk::ComboBoxText) -> String {
 }
 
 pub fn focus_button_after_combo_selection(combo: &gtk::ComboBoxText, button: &gtk::Button) {
+    if !combo.has_entry() {
+        combo.set_focus_on_click(false);
+    }
+
     let button_for_change = button.clone();
     let combo_for_change = combo.clone();
     combo.connect_changed(move |_| {
-        combo_for_change.popdown();
-        focus_button_after_selection_commit(&button_for_change);
+        finish_combo_selection(&combo_for_change, &button_for_change);
     });
 
     let button_for_popdown = button.clone();
     combo.connect_popdown(move |_| {
         focus_button_after_selection_commit(&button_for_popdown);
         false
+    });
+}
+
+fn finish_combo_selection(combo: &gtk::ComboBoxText, button: &gtk::Button) {
+    close_combo_popup(combo);
+
+    let combo_for_idle = combo.clone();
+    let button_for_idle = button.clone();
+    gtk::glib::idle_add_local_once(move || {
+        close_combo_popup(&combo_for_idle);
+        focus_button_if_available(&button_for_idle);
+    });
+
+    let combo_for_timeout = combo.clone();
+    let button_for_timeout = button.clone();
+    gtk::glib::timeout_add_local_once(std::time::Duration::from_millis(80), move || {
+        close_combo_popup(&combo_for_timeout);
+        focus_button_if_available(&button_for_timeout);
     });
 }
 
@@ -169,10 +190,68 @@ fn focus_button_if_available(button: &gtk::Button) {
     }
 }
 
+fn close_combo_popup(combo: &gtk::ComboBoxText) {
+    if combo.is_popup_shown() {
+        combo.popdown();
+    }
+}
+
 pub fn focus_button_after_combo_selections(button: &gtk::Button, combos: &[&gtk::ComboBoxText]) {
     for combo in combos {
         focus_button_after_combo_selection(combo, button);
     }
+}
+
+pub fn connect_button_activation<F>(button: &gtk::Button, action: F)
+where
+    F: Fn(&gtk::Button) + 'static,
+{
+    button.set_receives_default(true);
+
+    let action: Rc<dyn Fn(&gtk::Button)> = Rc::new(action);
+    let activating = Rc::new(Cell::new(false));
+
+    let clicked_action = Rc::clone(&action);
+    let clicked_activating = Rc::clone(&activating);
+    button.connect_clicked(move |button| {
+        run_button_activation(button, &clicked_action, &clicked_activating);
+    });
+
+    let click = gtk::GestureClick::new();
+    click.set_button(0);
+    click.set_propagation_phase(gtk::PropagationPhase::Capture);
+    let press_button = button.clone();
+    let press_action = Rc::clone(&action);
+    let press_activating = Rc::clone(&activating);
+    click.connect_pressed(move |_, _, x, y| {
+        if point_is_inside_widget(&press_button, x, y) {
+            run_button_activation(&press_button, &press_action, &press_activating);
+        }
+    });
+    button.add_controller(click);
+}
+
+fn run_button_activation(
+    button: &gtk::Button,
+    action: &Rc<dyn Fn(&gtk::Button)>,
+    activating: &Rc<Cell<bool>>,
+) {
+    if activating.get() || !button.is_sensitive() || !button.is_visible() {
+        return;
+    }
+
+    activating.set(true);
+    action(button);
+
+    let activating = Rc::clone(activating);
+    gtk::glib::idle_add_local_once(move || activating.set(false));
+}
+
+fn point_is_inside_widget(widget: &impl IsA<gtk::Widget>, x: f64, y: f64) -> bool {
+    x >= 0.0
+        && y >= 0.0
+        && x < f64::from(widget.as_ref().allocated_width())
+        && y < f64::from(widget.as_ref().allocated_height())
 }
 
 pub fn budget_direction_id(input: &str) -> &'static str {

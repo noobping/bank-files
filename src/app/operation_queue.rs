@@ -561,18 +561,33 @@ fn operation_row(
     details_revealer.set_child(Some(&details));
     content.append(&details_revealer);
 
-    let details_revealer_for_toggle = details_revealer.clone();
-    let expand_icon_for_toggle = expand_icon.clone();
+    let details_revealer_for_activate = details_revealer.clone();
+    let expand_icon_for_activate = expand_icon.clone();
     row.connect_activate(move |row| {
-        let expanded = !details_revealer_for_toggle.reveals_child();
-        details_revealer_for_toggle.set_reveal_child(expanded);
-        expand_icon_for_toggle.set_icon_name(Some(operation_details_icon_name(expanded)));
-        row.set_tooltip_text(Some(&tr(if expanded {
-            "Hide operation details"
-        } else {
-            "Show operation details"
-        })));
+        toggle_operation_details(
+            row,
+            &details_revealer_for_activate,
+            &expand_icon_for_activate,
+        );
     });
+
+    let click = gtk::GestureClick::new();
+    click.set_button(0);
+    let row_for_click = row.clone();
+    let content_for_click = content.clone();
+    let actions_for_click = actions.clone();
+    let details_revealer_for_click = details_revealer.clone();
+    let expand_icon_for_click = expand_icon.clone();
+    click.connect_released(move |_, _, x, y| {
+        if !point_is_inside_child(&actions_for_click, &content_for_click, x, y) {
+            toggle_operation_details(
+                &row_for_click,
+                &details_revealer_for_click,
+                &expand_icon_for_click,
+            );
+        }
+    });
+    content.add_controller(click);
 
     row.set_child(Some(&content));
     row
@@ -621,6 +636,40 @@ fn operation_details_icon_name(expanded: bool) -> &'static str {
     } else {
         "pan-end-symbolic"
     }
+}
+
+fn toggle_operation_details(
+    row: &gtk::ListBoxRow,
+    details_revealer: &gtk::Revealer,
+    expand_icon: &gtk::Image,
+) {
+    let expanded = !details_revealer.reveals_child();
+    details_revealer.set_reveal_child(expanded);
+    expand_icon.set_icon_name(Some(operation_details_icon_name(expanded)));
+    row.set_tooltip_text(Some(&tr(if expanded {
+        "Hide operation details"
+    } else {
+        "Show operation details"
+    })));
+}
+
+fn point_is_inside_child(
+    child: &impl IsA<gtk::Widget>,
+    target: &impl IsA<gtk::Widget>,
+    x: f64,
+    y: f64,
+) -> bool {
+    child
+        .as_ref()
+        .compute_bounds(target)
+        .map(|bounds| {
+            let left = f64::from(bounds.x());
+            let top = f64::from(bounds.y());
+            let right = left + f64::from(bounds.width());
+            let bottom = top + f64::from(bounds.height());
+            x >= left && x <= right && y >= top && y <= bottom
+        })
+        .unwrap_or(false)
 }
 
 fn operation_details(kind: &QueuedOperationKind, status: &QueuedOperationStatus) -> String {

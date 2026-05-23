@@ -518,7 +518,7 @@ fn show_transaction_rule_dialog(
     let ui_for_save = Rc::clone(ui_handles);
     let dialog_for_save = dialog.clone();
     let cancel_button_for_save = cancel_button.clone();
-    save_button.connect_clicked(move |button| {
+    ui::connect_button_activation(&save_button, move |button| {
         let search_text = ui::combo_text(&search);
         let category_text = ui::combo_text(&category);
         if search_text.is_empty() {
@@ -694,7 +694,7 @@ fn show_transaction_budget_code_dialog(
     let initial_amount_max = initial.amount_max.clone();
     let cancel_button_for_save = cancel_button.clone();
     let budget_targets_for_save = Rc::clone(&budget_targets);
-    save_button.connect_clicked(move |button| {
+    ui::connect_button_activation(&save_button, move |button| {
         let budget_code_text = if advanced_features {
             ui::combo_text(&budget_code)
         } else {
