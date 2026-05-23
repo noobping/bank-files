@@ -158,9 +158,17 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
     let group_button_for_group = group_rules_button.clone();
     let combine_button_for_group = combine_rules_button.clone();
     let advanced_autofill_for_group = Rc::clone(&ui_handles.advanced_autofill);
+    let ui_for_group = Rc::clone(ui_handles);
     group_rules_button.connect_clicked(move |_| {
         set_rule_bulk_buttons_sensitive(&group_button_for_group, &combine_button_for_group, false);
         status_for_group.set_text(&tr("Grouping compatible rules..."));
+        show_verbose_status(
+            ui_for_group.as_ref(),
+            format!(
+                "management rule grouping started; rules={}",
+                rules_forms_for_group.borrow().len()
+            ),
+        );
 
         let rules_list = rules_list_for_group.clone();
         let rules_forms = Rc::clone(&rules_forms_for_group);
@@ -170,10 +178,20 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
         let group_button = group_button_for_group.clone();
         let combine_button = combine_button_for_group.clone();
         let advanced_autofill = Rc::clone(&advanced_autofill_for_group);
+        let ui = Rc::clone(&ui_for_group);
         gtk::glib::timeout_add_local_once(std::time::Duration::from_millis(30), move || {
             let report = data::group_editable_rules_for_combining(&collect_rule_forms(
                 &rules_forms.borrow(),
             ));
+            show_verbose_status(
+                ui.as_ref(),
+                format!(
+                    "management rule grouping finished; changed={}; groups={}; rules={}",
+                    report.changed,
+                    report.grouped_groups,
+                    report.rules.len()
+                ),
+            );
             if report.grouped_groups == 0 {
                 status.set_text(&tr("No compatible rules to group."));
                 set_rule_bulk_buttons_sensitive(&group_button, &combine_button, true);
@@ -210,9 +228,17 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
     let group_button_for_combine = group_rules_button.clone();
     let combine_button_for_combine = combine_rules_button.clone();
     let advanced_autofill_for_combine = Rc::clone(&ui_handles.advanced_autofill);
+    let ui_for_combine = Rc::clone(ui_handles);
     combine_rules_button.connect_clicked(move |_| {
         set_rule_bulk_buttons_sensitive(&group_button_for_combine, &combine_button_for_combine, false);
         status_for_combine.set_text(&tr("Combining compatible rules..."));
+        show_verbose_status(
+            ui_for_combine.as_ref(),
+            format!(
+                "management rule combine started; rules={}",
+                rules_forms_for_combine.borrow().len()
+            ),
+        );
 
         let rules_list = rules_list_for_combine.clone();
         let rules_forms = Rc::clone(&rules_forms_for_combine);
@@ -222,10 +248,20 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
         let group_button = group_button_for_combine.clone();
         let combine_button = combine_button_for_combine.clone();
         let advanced_autofill = Rc::clone(&advanced_autofill_for_combine);
+        let ui = Rc::clone(&ui_for_combine);
         gtk::glib::timeout_add_local_once(std::time::Duration::from_millis(30), move || {
             let report = data::combine_editable_rules(&collect_rule_forms(
                 &rules_forms.borrow(),
             ));
+            show_verbose_status(
+                ui.as_ref(),
+                format!(
+                    "management rule combine finished; before={}; after={}; groups={}",
+                    report.before_count,
+                    report.after_count,
+                    report.combined_groups
+                ),
+            );
             if report.before_count == report.after_count {
                 status.set_text(&tr(
                     "No adjacent compatible rules to combine. Use Group first if compatible rules are spread out.",
@@ -433,6 +469,13 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
         direction_changes.extend(collect_rule_direction_changes(
             &rules_forms_for_save.borrow(),
         ));
+        show_verbose_status(
+            ui_for_save.as_ref(),
+            format!(
+                "management save requested; direction_changes={}",
+                direction_changes.len()
+            ),
+        );
 
         let management_dialog_for_confirm = management_dialog_for_save.clone();
         let rules_forms_for_save = Rc::clone(&rules_forms_for_save);
@@ -458,6 +501,16 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
                 let rules = collect_rule_forms(&rules_forms_for_save.borrow());
                 let budgets = collect_budget_forms(&budgets_forms_for_save.borrow());
                 let aliases = collect_alias_forms(&aliases_forms_for_save.borrow());
+                show_verbose_status(
+                    ui_for_save.as_ref(),
+                    format!(
+                        "management save started; rules={}; budgets={}; aliases={}; renamed_rules={}",
+                        rules.len(),
+                        budgets.len(),
+                        aliases.len(),
+                        renamed_rule_count
+                    ),
+                );
                 let borrowed = state_for_save.borrow();
                 let mode = borrowed.dedupe_mode;
                 let remember_mode = ui_for_save.remember_mode.get();
@@ -512,6 +565,7 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
                             };
                             status_for_save.set_text(&message);
                             show_status(&ui_for_save, &message);
+                            show_verbose_status(ui_for_save.as_ref(), "management save finished");
                             save_succeeded = true;
                         }
                         Ok(Err(err)) => {
@@ -519,12 +573,17 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
                                 trf("Save failed: {error}", &[("error", format!("{err:#}"))]);
                             status_for_save.set_text(&message);
                             show_status(&ui_for_save, &message);
+                            show_verbose_status(
+                                ui_for_save.as_ref(),
+                                format!("management save failed; error={err:#}"),
+                            );
                         }
                         Err(_) => {
                             let message =
                                 tr("Save canceled: the background task stopped unexpectedly.");
                             status_for_save.set_text(&message);
                             show_status(&ui_for_save, &message);
+                            show_verbose_status(ui_for_save.as_ref(), "management save task canceled");
                         }
                     }
                     save_running_for_save.set(false);
@@ -570,6 +629,14 @@ fn connect_management_page_actions(
             &aliases_forms_for_copy.borrow(),
         ) {
             Ok(snapshot) => {
+                show_verbose_status(
+                    ui_for_copy.as_ref(),
+                    format!(
+                        "management page copied; page={}; rows={}",
+                        snapshot.key,
+                        snapshot.rows.len()
+                    ),
+                );
                 ui_for_copy.window.clipboard().set_text(&snapshot.text);
                 status_for_copy.set_text(&trf("Copied {page}.", &[("page", tr(&snapshot.title))]));
             }
@@ -596,6 +663,14 @@ fn connect_management_page_actions(
             &aliases_forms_for_print.borrow(),
         ) {
             Ok(snapshot) => {
+                show_verbose_status(
+                    ui_for_print.as_ref(),
+                    format!(
+                        "management page print started; page={}; rows={}",
+                        snapshot.key,
+                        snapshot.rows.len()
+                    ),
+                );
                 status_for_print
                     .set_text(&trf("Printing {page}...", &[("page", tr(&snapshot.title))]));
                 let report = table_print_report(
@@ -619,6 +694,7 @@ fn connect_management_page_actions(
     let budgets_forms_for_export = Rc::clone(budgets_forms);
     let aliases_forms_for_export = Rc::clone(aliases_forms);
     let status_for_export = status.clone();
+    let ui_for_export = Rc::clone(ui_handles);
     let export_action = gtk::gio::SimpleAction::new("export-csv", None);
     export_action.connect_activate(move |action, _| {
         if !action.is_enabled() {
@@ -630,7 +706,17 @@ fn connect_management_page_actions(
             &budgets_forms_for_export.borrow(),
             &aliases_forms_for_export.borrow(),
         ) {
-            Ok(snapshot) => export_management_snapshot(action, &status_for_export, snapshot),
+            Ok(snapshot) => {
+                show_verbose_status(
+                    ui_for_export.as_ref(),
+                    format!(
+                        "management page export started; page={}; rows={}",
+                        snapshot.key,
+                        snapshot.rows.len()
+                    ),
+                );
+                export_management_snapshot(action, &status_for_export, snapshot);
+            }
             Err(err) => status_for_export.set_text(&trf(
                 "Export error: {error}",
                 &[("error", format!("{err:#}"))],

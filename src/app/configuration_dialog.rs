@@ -271,6 +271,7 @@ fn archive_configuration(
         &status,
         "Backing up current configuration...",
     );
+    show_verbose_status(ui_handles.as_ref(), "configuration backup started");
     status.set_loading(true);
     begin_background_operation(ui_handles.as_ref());
 
@@ -284,6 +285,7 @@ fn archive_configuration(
                     &[("path", path.display().to_string())],
                 );
                 show_dialog_status_text(ui_handles.as_ref(), &status, &message);
+                show_verbose_status(ui_handles.as_ref(), "configuration backup finished");
             }
             Ok(Err(error)) => {
                 let message = trf(
@@ -291,12 +293,19 @@ fn archive_configuration(
                     &[("error", format!("{error:#}"))],
                 );
                 show_dialog_status_text(ui_handles.as_ref(), &status, &message);
+                show_verbose_status(
+                    ui_handles.as_ref(),
+                    format!("configuration backup failed; error={error:#}"),
+                );
             }
-            Err(_) => show_dialog_status(
-                ui_handles.as_ref(),
-                &status,
-                "Configuration backup canceled: the background task stopped unexpectedly.",
-            ),
+            Err(_) => {
+                show_dialog_status(
+                    ui_handles.as_ref(),
+                    &status,
+                    "Configuration backup canceled: the background task stopped unexpectedly.",
+                );
+                show_verbose_status(ui_handles.as_ref(), "configuration backup task canceled");
+            }
         }
         status.set_loading(false);
         finish_background_operation(ui_handles.as_ref());
@@ -393,6 +402,10 @@ fn run_configuration_reload_task<F>(
     drop(borrowed);
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
     show_dialog_status(ui_handles.as_ref(), &status, messages.progress);
+    show_verbose_status(
+        ui_handles.as_ref(),
+        format!("configuration task started; progress={}", messages.progress),
+    );
     status.set_loading(true);
     begin_background_operation(ui_handles.as_ref());
 
@@ -414,12 +427,23 @@ fn run_configuration_reload_task<F>(
                 *state.borrow_mut() = data;
                 render_views(&state.borrow(), &ui_handles, &state);
                 show_dialog_status(ui_handles.as_ref(), &status, messages.success);
+                show_verbose_status(
+                    ui_handles.as_ref(),
+                    format!("configuration task finished; success={}", messages.success),
+                );
             }
             Ok(Err(error)) => {
                 let message = trf(messages.failure, &[("error", format!("{error:#}"))]);
                 show_dialog_status_text(ui_handles.as_ref(), &status, &message);
+                show_verbose_status(
+                    ui_handles.as_ref(),
+                    format!("configuration task failed; error={error:#}"),
+                );
             }
-            Err(_) => show_dialog_status(ui_handles.as_ref(), &status, messages.canceled),
+            Err(_) => {
+                show_dialog_status(ui_handles.as_ref(), &status, messages.canceled);
+                show_verbose_status(ui_handles.as_ref(), "configuration task canceled");
+            }
         }
         status.set_loading(false);
         finish_background_operation(ui_handles.as_ref());

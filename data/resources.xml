@@ -5,6 +5,7 @@
     <file>symbolic/actions/document-save-symbolic.svg</file>
     <file>css/style.css</file>
     <file>ui/settings-dialog.ui</file>
+    <file>ui/status-history-popover.ui</file>
     <file>ui/status-bar.ui</file>
   </gresource>
 </gresources>

@@ -595,53 +595,47 @@ struct StatusHistoryHeader {
 }
 
 fn build_status_history_header() -> StatusHistoryHeader {
+    let builder = ui::builder_from_resource("status-history-popover.ui");
     let stack = gtk::Stack::builder()
         .hhomogeneous(false)
         .vhomogeneous(false)
-        .build();
-    stack.set_hexpand(true);
-
-    let title_header = gtk::Box::new(gtk::Orientation::Horizontal, 8);
-    title_header.set_hexpand(true);
-    let title_box = gtk::Box::new(gtk::Orientation::Vertical, 2);
-    title_box.set_hexpand(true);
-    let title = gtk::Label::new(Some(&tr("Message History")));
-    title.add_css_class("heading");
-    title.set_selectable(false);
-    title.set_xalign(0.0);
-    title.set_width_chars(1);
-    title.set_max_width_chars(28);
-    title.set_ellipsize(gtk::pango::EllipsizeMode::End);
-    let subtitle = gtk::Label::new(Some(&tr("Recent status messages")));
-    subtitle.add_css_class("dim-label");
-    subtitle.set_selectable(false);
-    subtitle.set_xalign(0.0);
-    subtitle.set_width_chars(1);
-    subtitle.set_max_width_chars(34);
-    subtitle.set_ellipsize(gtk::pango::EllipsizeMode::End);
-    title_box.append(&title);
-    title_box.append(&subtitle);
-
-    let search_button = ui::icon_button("edit-find-symbolic", "Search messages");
-    let copy_button = ui::icon_button(COPY_ICON, "Copy message history");
-    let save_button = ui::icon_button(SAVE_ICON, "Save message history");
-    let title_actions = ui::linked_button_group();
-    title_actions.append(&search_button);
-    title_actions.append(&copy_button);
-    title_actions.append(&save_button);
-    title_header.append(&title_box);
-    title_header.append(&title_actions);
-
-    let back_button = ui::icon_button("go-previous-symbolic", "Back");
-    let search_entry = gtk::SearchEntry::builder()
-        .placeholder_text(tr("Search messages"))
         .hexpand(true)
         .build();
-    let search_header = ui::linked_button_group();
-    search_header.set_hexpand(true);
-    search_header.append(&back_button);
-    search_header.append(&search_entry);
+    let title_header = builder
+        .object::<gtk::Box>("status_history_title_header")
+        .expect("status-history-popover.ui should define status_history_title_header");
+    let search_header = builder
+        .object::<gtk::Box>("status_history_search_header")
+        .expect("status-history-popover.ui should define status_history_search_header");
+    let title = builder
+        .object::<gtk::Label>("status_history_title")
+        .expect("status-history-popover.ui should define status_history_title");
+    title.set_text(&tr("Message History"));
+    let subtitle = builder
+        .object::<gtk::Label>("status_history_subtitle")
+        .expect("status-history-popover.ui should define status_history_subtitle");
+    subtitle.set_text(&tr("Recent status messages"));
 
+    let search_button = builder
+        .object::<gtk::Button>("status_history_search_button")
+        .expect("status-history-popover.ui should define status_history_search_button");
+    search_button.set_tooltip_text(Some(&tr("Search messages")));
+    let copy_button = builder
+        .object::<gtk::Button>("status_history_copy_button")
+        .expect("status-history-popover.ui should define status_history_copy_button");
+    copy_button.set_tooltip_text(Some(&tr("Copy message history")));
+    let save_button = builder
+        .object::<gtk::Button>("status_history_save_button")
+        .expect("status-history-popover.ui should define status_history_save_button");
+    save_button.set_tooltip_text(Some(&tr("Save message history")));
+    let back_button = builder
+        .object::<gtk::Button>("status_history_back_button")
+        .expect("status-history-popover.ui should define status_history_back_button");
+    back_button.set_tooltip_text(Some(&tr("Back")));
+    let search_entry = builder
+        .object::<gtk::SearchEntry>("status_history_search_entry")
+        .expect("status-history-popover.ui should define status_history_search_entry");
+    search_entry.set_placeholder_text(Some(&tr("Search messages")));
     stack.add_named(&title_header, Some(STATUS_HISTORY_TITLE_PAGE));
     stack.add_named(&search_header, Some(STATUS_HISTORY_SEARCH_PAGE));
     stack.set_visible_child_name(STATUS_HISTORY_TITLE_PAGE);

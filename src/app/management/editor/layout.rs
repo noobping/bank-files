@@ -28,6 +28,12 @@ pub(in crate::app) fn show_management_dialog(
     let dialog_closed = Rc::new(Cell::new(false));
     let save_running = Rc::new(Cell::new(false));
     let advanced_features = ui_handles.advanced_features.get();
+    show_verbose_status(
+        ui_handles.as_ref(),
+        format!(
+            "management dialog opening; tab={initial_tab}; advanced_features={advanced_features}"
+        ),
+    );
 
     let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let stack = adw::ViewStack::new();
@@ -276,8 +282,10 @@ pub(in crate::app) fn show_management_dialog(
     let dialog_closed_for_closed = Rc::clone(&dialog_closed);
     let save_running_for_closed = Rc::clone(&save_running);
     let finish_for_closed = Rc::clone(&finish_management_dialog);
+    let ui_for_closed = Rc::clone(ui_handles);
     management_dialog.connect_closed(move |_| {
         dialog_closed_for_closed.set(true);
+        show_verbose_status(ui_for_closed.as_ref(), "management dialog closed");
         if !save_running_for_closed.get() {
             finish_for_closed();
         }
@@ -416,16 +424,32 @@ fn append_management_loading(container: &gtk::Box, message: &str) {
 }
 
 fn schedule_management_forms_load(load: ManagementFormsLoad) {
+    show_verbose_status(load.ui_handles.as_ref(), "management forms load started");
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(load_management_forms_data);
         match task.await {
             Ok(loaded) => {
                 if load.dialog_closed.get() {
+                    show_verbose_status(
+                        load.ui_handles.as_ref(),
+                        "management forms load finished after dialog closed",
+                    );
                     return;
                 }
+                show_verbose_status(
+                    load.ui_handles.as_ref(),
+                    format!(
+                        "management forms loaded; {}",
+                        management_loaded_forms_summary(&loaded)
+                    ),
+                );
                 start_management_forms_render(load, loaded);
             }
             Err(_) => {
+                show_verbose_status(
+                    load.ui_handles.as_ref(),
+                    "management forms load task canceled",
+                );
                 load.status_handle.set_loading(false);
                 load.status.set_text(&tr(
                     "Management loading canceled: the background task stopped unexpectedly.",
@@ -450,6 +474,22 @@ fn load_management_forms_data() -> ManagementLoadedForms {
     }
 }
 
+fn management_loaded_forms_summary(loaded: &ManagementLoadedForms) -> String {
+    format!(
+        "rules={}; budgets={}; aliases={}",
+        management_loaded_count(&loaded.rules),
+        management_loaded_count(&loaded.budgets),
+        management_loaded_count(&loaded.aliases)
+    )
+}
+
+fn management_loaded_count<T>(result: &Result<std::collections::VecDeque<T>, String>) -> String {
+    match result {
+        Ok(items) => items.len().to_string(),
+        Err(_) => "error".to_string(),
+    }
+}
+
 fn ordered_management_budgets(budgets: Vec<EditableBudget>) -> Vec<EditableBudget> {
     let (planned_income_budget, mut regular_budgets) = partition_planned_income_budget(budgets);
     let mut ordered =
@@ -462,6 +502,13 @@ fn ordered_management_budgets(budgets: Vec<EditableBudget>) -> Vec<EditableBudge
 }
 
 fn start_management_forms_render(load: ManagementFormsLoad, loaded: ManagementLoadedForms) {
+    show_verbose_status(
+        load.ui_handles.as_ref(),
+        format!(
+            "management forms render started; batch_size={MANAGEMENT_FORM_RENDER_BATCH_SIZE}; {}",
+            management_loaded_forms_summary(&loaded)
+        ),
+    );
     ui::clear_box(&load.rules_list);
     load.rules_forms.borrow_mut().clear();
     ui::clear_box(&load.budgets_list);
@@ -523,6 +570,13 @@ fn render_rule_forms_batch(render: &mut ManagementFormsRender, remaining: &mut u
         Ok(rules) => {
             while *remaining > 0 {
                 let Some(rule) = rules.pop_front() else {
+                    show_verbose_status(
+                        render.load.ui_handles.as_ref(),
+                        format!(
+                            "management rules render finished; forms={}",
+                            render.load.rules_forms.borrow().len()
+                        ),
+                    );
                     render.stage = ManagementFormsRenderStage::Budgets;
                     return true;
                 };
@@ -538,6 +592,10 @@ fn render_rule_forms_batch(render: &mut ManagementFormsRender, remaining: &mut u
             false
         }
         Err(err) => {
+            show_verbose_status(
+                render.load.ui_handles.as_ref(),
+                format!("management rules render failed; error={err}"),
+            );
             render
                 .load
                 .rules_list
@@ -556,6 +614,13 @@ fn render_budget_forms_batch(render: &mut ManagementFormsRender, remaining: &mut
         Ok(budgets) => {
             while *remaining > 0 {
                 let Some(budget) = budgets.pop_front() else {
+                    show_verbose_status(
+                        render.load.ui_handles.as_ref(),
+                        format!(
+                            "management budgets render finished; forms={}",
+                            render.load.budgets_forms.borrow().len()
+                        ),
+                    );
                     render.stage = ManagementFormsRenderStage::Aliases;
                     return true;
                 };
@@ -581,6 +646,10 @@ fn render_budget_forms_batch(render: &mut ManagementFormsRender, remaining: &mut
             false
         }
         Err(err) => {
+            show_verbose_status(
+                render.load.ui_handles.as_ref(),
+                format!("management budgets render failed; error={err}"),
+            );
             let message = if render.load.advanced_features {
                 "Could not read budget codes: {error}"
             } else {
@@ -604,6 +673,13 @@ fn render_alias_forms_batch(render: &mut ManagementFormsRender, remaining: &mut 
         Ok(aliases) => {
             while *remaining > 0 {
                 let Some(alias) = aliases.pop_front() else {
+                    show_verbose_status(
+                        render.load.ui_handles.as_ref(),
+                        format!(
+                            "management aliases render finished; forms={}",
+                            render.load.aliases_forms.borrow().len()
+                        ),
+                    );
                     render.stage = ManagementFormsRenderStage::Done;
                     return true;
                 };
@@ -613,6 +689,10 @@ fn render_alias_forms_batch(render: &mut ManagementFormsRender, remaining: &mut 
             false
         }
         Err(err) => {
+            show_verbose_status(
+                render.load.ui_handles.as_ref(),
+                format!("management aliases render failed; error={err}"),
+            );
             render
                 .load
                 .aliases_list
@@ -627,6 +707,15 @@ fn render_alias_forms_batch(render: &mut ManagementFormsRender, remaining: &mut 
 }
 
 fn finish_management_forms_render(load: &ManagementFormsLoad) {
+    show_verbose_status(
+        load.ui_handles.as_ref(),
+        format!(
+            "management forms render finished; rules={}; budgets={}; aliases={}",
+            load.rules_forms.borrow().len(),
+            load.budgets_forms.borrow().len(),
+            load.aliases_forms.borrow().len()
+        ),
+    );
     apply_management_filter(
         &load.filter_entry.text(),
         &load.rules_forms.borrow(),
