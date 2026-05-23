@@ -96,7 +96,8 @@ use fake_transactions::{
 use field_alias::{field_alias_combo, FIELD_ALIAS_SPECS};
 use filters::{
     active_search, apply_search_preset, connect_search, current_page, filtered_app_data,
-    page_data_for_render, show_transactions_filter, AppPage, SearchFilter, TransactionFilter,
+    page_data_for_render, search_preset_specs, show_transactions_filter, AppPage, SearchFilter,
+    SearchPresetSection, TransactionFilter, SEARCH_PRESET_ACTION, SEARCH_PRESET_DETAILED_ACTION,
 };
 use form_autofill::{
     app_budget_autofill_entries, app_budget_code_values, app_category_values,

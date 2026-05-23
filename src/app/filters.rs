@@ -95,6 +95,105 @@ fn page_hides_canceled_transactions(
                 .unwrap_or(false))
 }
 
+pub(in crate::app) const SEARCH_PRESET_ACTION: &str = "search-preset";
+pub(in crate::app) const SEARCH_PRESET_DETAILED_ACTION: &str = "app.search-preset";
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+pub(in crate::app) enum SearchPresetSection {
+    General,
+    Transactions,
+    Diagnostics,
+}
+
+impl SearchPresetSection {
+    pub(in crate::app) fn label(self) -> Option<&'static str> {
+        match self {
+            Self::General => None,
+            Self::Transactions => Some("Transactions"),
+            Self::Diagnostics => Some("Diagnostics"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+pub(in crate::app) struct SearchPresetSpec {
+    pub(in crate::app) section: SearchPresetSection,
+    pub(in crate::app) label: &'static str,
+    pub(in crate::app) id: &'static str,
+}
+
+const SEARCH_PRESET_SPECS: &[SearchPresetSpec] = &[
+    SearchPresetSpec {
+        section: SearchPresetSection::General,
+        label: "Clear Filter",
+        id: "clear",
+    },
+    SearchPresetSpec {
+        section: SearchPresetSection::Transactions,
+        label: "Income / positive",
+        id: "income",
+    },
+    SearchPresetSpec {
+        section: SearchPresetSection::Transactions,
+        label: "Costs / negative",
+        id: "expense",
+    },
+    SearchPresetSpec {
+        section: SearchPresetSection::Transactions,
+        label: "Transfers",
+        id: "transfer",
+    },
+    SearchPresetSpec {
+        section: SearchPresetSection::Transactions,
+        label: "Current Month",
+        id: "current-month",
+    },
+    SearchPresetSpec {
+        section: SearchPresetSection::Transactions,
+        label: "Current Year",
+        id: "current-year",
+    },
+    SearchPresetSpec {
+        section: SearchPresetSection::Diagnostics,
+        label: "Unconfigured Budgets",
+        id: "unconfigured-budgets",
+    },
+    SearchPresetSpec {
+        section: SearchPresetSection::Diagnostics,
+        label: "Other Categories",
+        id: "other-categories",
+    },
+    SearchPresetSpec {
+        section: SearchPresetSection::Diagnostics,
+        label: "Warnings",
+        id: "warnings",
+    },
+    SearchPresetSpec {
+        section: SearchPresetSection::Diagnostics,
+        label: "Detected Patterns",
+        id: "patterns",
+    },
+    SearchPresetSpec {
+        section: SearchPresetSection::Diagnostics,
+        label: "Import Reports",
+        id: "imports",
+    },
+    SearchPresetSpec {
+        section: SearchPresetSection::Diagnostics,
+        label: "Field Mappings",
+        id: "fields",
+    },
+    SearchPresetSpec {
+        section: SearchPresetSection::Diagnostics,
+        label: "Rules",
+        id: "rules",
+    },
+];
+
+pub(in crate::app) fn search_preset_specs() -> &'static [SearchPresetSpec] {
+    SEARCH_PRESET_SPECS
+}
+
 pub(in crate::app) fn apply_search_preset(
     state: &Rc<RefCell<AppData>>,
     ui: &Rc<UiHandles>,
@@ -825,6 +924,16 @@ mod tests {
 
         assert!(amount_filter.matches_summary("rent budget"));
         assert!(!text_filter.matches_summary("rent budget"));
+    }
+
+    #[test]
+    fn search_preset_specs_have_unique_ids_and_known_queries() {
+        let mut ids = std::collections::BTreeSet::new();
+
+        for spec in search_preset_specs() {
+            assert!(ids.insert(spec.id));
+            assert!(SearchPreset::from_id(spec.id).is_some());
+        }
     }
 
     #[test]

@@ -134,7 +134,7 @@ pub(in crate::app) fn connect_actions(
     let state_for_search_preset = Rc::clone(state);
     let ui_for_search_preset = Rc::clone(ui);
     let search_preset_action =
-        gtk::gio::SimpleAction::new("search-preset", Some(&String::static_variant_type()));
+        gtk::gio::SimpleAction::new(SEARCH_PRESET_ACTION, Some(&String::static_variant_type()));
     search_preset_action.connect_activate(move |_, parameter| {
         let Some(preset) = parameter.and_then(|value| value.get::<String>()) else {
             return;
