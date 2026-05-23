@@ -3424,5 +3424,5 @@ msgstr "Open eerst Meer opties."
 msgid "Choose a different category first."
 msgstr "Kies eerst een andere categorie."
 
-msgid "{code} · {direction}"
-msgstr "{code} · {direction}"
+msgid "{code} · {description}"
+msgstr "{code} · {description}"

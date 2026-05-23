@@ -3424,5 +3424,5 @@ msgstr "Oeffnen Sie zuerst Weitere Optionen."
 msgid "Choose a different category first."
 msgstr "Waehlen Sie zuerst eine andere Kategorie."
 
-msgid "{code} · {direction}"
-msgstr "{code} · {direction}"
+msgid "{code} · {description}"
+msgstr "{code} · {description}"

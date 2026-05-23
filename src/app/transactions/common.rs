@@ -1046,14 +1046,21 @@ fn transaction_budget_target_subtitle(
     target: &TransactionBudgetTarget,
     advanced_features: bool,
 ) -> String {
-    let direction = transaction_budget_direction_label(target.direction);
+    let description = target.description.trim();
     if advanced_features {
-        trf(
-            "{code} · {direction}",
-            &[("code", target.code.clone()), ("direction", direction)],
-        )
+        if description.is_empty() {
+            target.code.clone()
+        } else {
+            trf(
+                "{code} · {description}",
+                &[
+                    ("code", target.code.clone()),
+                    ("description", description.to_string()),
+                ],
+            )
+        }
     } else {
-        direction
+        description.to_string()
     }
 }
 
@@ -1072,6 +1079,7 @@ fn transaction_budget_target_search_keywords(
 ) -> Vec<String> {
     let mut keywords = vec![
         target.category.clone(),
+        target.description.clone(),
         transaction_budget_direction_label(target.direction),
         match_summary.to_string(),
     ];
@@ -1118,6 +1126,7 @@ fn transaction_budget_more_options_visible(advanced_features: bool) -> bool {
 struct TransactionBudgetTarget {
     code: String,
     category: String,
+    description: String,
     direction: BudgetDirection,
 }
 
@@ -1137,6 +1146,7 @@ fn transaction_budget_move_targets(
             let target = TransactionBudgetTarget {
                 code: code.to_string(),
                 category: budget.category.trim().to_string(),
+                description: budget.notes.trim().to_string(),
                 direction: budget.direction,
             };
             transaction_budget_target_allowed(tx, budgets, &target, advanced_features)
@@ -1705,11 +1715,13 @@ mod tests {
         let income_target = TransactionBudgetTarget {
             code: "SALARY".to_string(),
             category: "Salary".to_string(),
+            description: "Monthly pay".to_string(),
             direction: BudgetDirection::Income,
         };
         let expense_target = TransactionBudgetTarget {
             code: "FOOD".to_string(),
             category: "Groceries".to_string(),
+            description: "Food and household shopping".to_string(),
             direction: BudgetDirection::Expense,
         };
 
@@ -1764,11 +1776,13 @@ mod tests {
         let current = TransactionBudgetTarget {
             code: "FOOD".to_string(),
             category: "Groceries".to_string(),
+            description: "Food and household shopping".to_string(),
             direction: BudgetDirection::Expense,
         };
         let other = TransactionBudgetTarget {
             code: "OTHER".to_string(),
             category: "Other".to_string(),
+            description: "Other expenses".to_string(),
             direction: BudgetDirection::Expense,
         };
 
@@ -1790,6 +1804,7 @@ mod tests {
         let same_category = TransactionBudgetTarget {
             code: "UTIL".to_string(),
             category: "Fixed costs".to_string(),
+            description: "Monthly bills".to_string(),
             direction: BudgetDirection::Expense,
         };
 
@@ -1806,10 +1821,36 @@ mod tests {
     }
 
     #[test]
+    fn budget_move_list_subtitle_uses_budget_description() {
+        let target = TransactionBudgetTarget {
+            code: "SHOP".to_string(),
+            category: "Groceries".to_string(),
+            description: "Food and household shopping".to_string(),
+            direction: BudgetDirection::Expense,
+        };
+
+        assert_eq!(
+            transaction_budget_target_subtitle(&target, false),
+            "Food and household shopping"
+        );
+        assert_eq!(
+            transaction_budget_target_subtitle(&target, true),
+            trf(
+                "{code} · {description}",
+                &[
+                    ("code", "SHOP".to_string()),
+                    ("description", "Food and household shopping".to_string()),
+                ],
+            )
+        );
+    }
+
+    #[test]
     fn budget_move_list_search_includes_budget_code_only_in_advanced_mode() {
         let target = TransactionBudgetTarget {
             code: "SHOP".to_string(),
             category: "Groceries".to_string(),
+            description: "Food and groceries".to_string(),
             direction: BudgetDirection::Expense,
         };
 

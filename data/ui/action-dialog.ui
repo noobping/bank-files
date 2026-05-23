@@ -72,9 +72,10 @@
             <child>
               <object class="GtkButton" id="action_close_button">
                 <property name="icon-name">window-close-symbolic</property>
+                <property name="valign">center</property>
                 <style>
-                  <class name="flat"/>
-                  <class name="image-button"/>
+                  <class name="titlebutton"/>
+                  <class name="close"/>
                 </style>
               </object>
             </child>
