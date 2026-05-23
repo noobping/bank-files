@@ -360,15 +360,8 @@ fn same_budget_autofill_entry(left: &BudgetAutofillEntry, right: &BudgetAutofill
 }
 
 fn set_text_combo_value(combo: &gtk::ComboBoxText, value: &str) {
-    if value.is_empty() || ui::combo_text(combo).eq_ignore_ascii_case(value) {
-        return;
-    }
-
-    combo.set_active_id(Some(value));
-    if ui::combo_text(combo).eq_ignore_ascii_case(value) {
-        return;
-    }
-
+    let value = value.trim();
+    combo.set_active_id(if value.is_empty() { None } else { Some(value) });
     if let Some(entry) = combo
         .child()
         .and_then(|child| child.downcast::<gtk::Entry>().ok())

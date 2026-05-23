@@ -99,19 +99,24 @@ pub fn text_combo(selected: &str, values: impl IntoIterator<Item = String>) -> g
 }
 
 pub fn combo_text(combo: &gtk::ComboBoxText) -> String {
-    if let Some(text) = combo
-        .child()
-        .and_then(|child| child.downcast::<gtk::Entry>().ok())
-        .map(|entry| entry.text().trim().to_string())
-        .filter(|text| !text.is_empty())
-    {
-        return text;
-    }
+    combo_text_value(
+        combo.active_text().map(|text| text.to_string()),
+        combo
+            .child()
+            .and_then(|child| child.downcast::<gtk::Entry>().ok())
+            .map(|entry| entry.text().to_string()),
+    )
+}
 
-    combo
-        .active_text()
-        .map(|text| text.trim().to_string())
+fn combo_text_value(active_text: Option<String>, entry_text: Option<String>) -> String {
+    normalized_combo_text(active_text)
+        .or_else(|| normalized_combo_text(entry_text))
         .unwrap_or_default()
+}
+
+fn normalized_combo_text(text: Option<String>) -> Option<String> {
+    text.map(|text| text.trim().to_string())
+        .filter(|text| !text.is_empty())
 }
 
 pub fn combo_from_options(options: &[(&str, &str)], active: &str) -> gtk::ComboBoxText {
@@ -143,4 +148,29 @@ pub fn budget_direction_id(input: &str) -> &'static str {
 
 pub fn budget_income_basis_id(input: &str) -> &'static str {
     crate::model::BudgetIncomeBasis::parse(input).as_str()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn combo_text_value_prefers_selected_row_over_stale_entry() {
+        assert_eq!(
+            combo_text_value(Some("Selected".to_string()), Some("Old entry".to_string())),
+            "Selected"
+        );
+    }
+
+    #[test]
+    fn combo_text_value_falls_back_to_entry_text() {
+        assert_eq!(
+            combo_text_value(None, Some(" Custom value ".to_string())),
+            "Custom value"
+        );
+        assert_eq!(
+            combo_text_value(Some("   ".to_string()), Some(" Custom value ".to_string())),
+            "Custom value"
+        );
+    }
 }
