@@ -8,6 +8,7 @@ const COMMON_ACTION_ACCELERATORS: &[ActionAccelerators] = &[
     ("app.find", &["<primary>F"]),
     ("app.reload", &["<primary>R"]),
     ("app.reload-all", &["<primary><shift>R"]),
+    ("app.clear-cache-and-reload", &["<primary><shift>Delete"]),
     ("app.copy-page", &["<primary><shift>C"]),
     ("app.print-page", &["<primary>P"]),
     ("app.export-csv", &["<primary>E"]),
@@ -94,6 +95,7 @@ pub(in crate::app) fn build_shortcuts_dialog(
         ShortcutSpec::action("Export CSV", "app.export-csv"),
         ShortcutSpec::action("Quick Reload", "app.reload"),
         ShortcutSpec::action("Reload All", "app.reload-all"),
+        ShortcutSpec::action("Clear Cache and Reload", "app.clear-cache-and-reload"),
     ];
     dialog.add(shortcuts_section("Files", &file_shortcuts));
     dialog.add(shortcuts_section(

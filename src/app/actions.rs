@@ -122,6 +122,17 @@ pub(in crate::app) fn connect_actions(
     });
     app.add_action(&reload_all_action);
 
+    let state_for_clear_cache = Rc::clone(state);
+    let ui_for_clear_cache = Rc::clone(ui);
+    let clear_cache_action = gtk::gio::SimpleAction::new("clear-cache-and-reload", None);
+    clear_cache_action.connect_activate(move |action, _| {
+        if !action.is_enabled() {
+            return;
+        }
+        clear_cache_and_reload_state(&state_for_clear_cache, &ui_for_clear_cache);
+    });
+    app.add_action(&clear_cache_action);
+
     let ui_for_find = Rc::clone(ui);
     let find_action = gtk::gio::SimpleAction::new("find", None);
     find_action.connect_activate(move |_, _| {

@@ -291,6 +291,7 @@ pub(in crate::app) fn refresh_write_actions(ui: &UiHandles) {
     let idle = not_loading && !ui.management_dialog_active.get();
     set_app_action_enabled(ui, "reload", not_loading);
     set_app_action_enabled(ui, "reload-all", not_loading);
+    set_app_action_enabled(ui, "clear-cache-and-reload", not_loading);
     set_app_action_enabled(ui, "copy-page", not_loading);
     set_app_action_enabled(ui, "print-page", not_loading);
     set_app_action_enabled(ui, "export-csv", not_loading);

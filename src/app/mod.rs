@@ -111,9 +111,9 @@ use form_autofill::{
     transaction_rule_search_values,
 };
 use import::{
-    connect_drop_target, current_sources_for_reload, import_uris_into_session,
-    open_paths_in_background, reload_state, reload_state_with_scope, reload_state_with_status,
-    set_dedupe_enabled, set_remember_mode,
+    clear_cache_and_reload_state, connect_drop_target, current_sources_for_reload,
+    import_uris_into_session, open_paths_in_background, reload_state, reload_state_with_scope,
+    reload_state_with_status, set_dedupe_enabled, set_remember_mode,
 };
 use management::show_management_dialog;
 use money::{

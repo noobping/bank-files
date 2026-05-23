@@ -46,6 +46,10 @@ pub(in crate::app) fn build_menu_model(
     if advanced_features {
         menu.append(Some(&tr("Quick Reload")), Some("app.reload"));
         menu.append(Some(&tr("Reload All")), Some("app.reload-all"));
+        menu.append(
+            Some(&tr("Clear Cache and Reload")),
+            Some("app.clear-cache-and-reload"),
+        );
     }
     menu.append(Some(&tr("Print Page")), Some("app.print-page"));
 
