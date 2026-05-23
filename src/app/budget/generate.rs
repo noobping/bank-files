@@ -7,6 +7,19 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
     ui: &Rc<UiHandles>,
     dialog_status: Option<StatusHandle>,
 ) {
+    if !smart_pattern_detection_enabled(ui.show_predictions.get()) {
+        show_config_status(
+            ui.as_ref(),
+            dialog_status.as_ref(),
+            "Automatic Configuration needs Smart Insights. Enable Smart Insights to generate configuration from transactions.",
+        );
+        show_verbose_status(
+            ui.as_ref(),
+            "automatic configuration skipped; smart insights disabled",
+        );
+        return;
+    }
+
     let busy_message = "Another edit or save is already running.";
     if !try_begin_config_operation(ui, busy_message) {
         if let Some(status) = dialog_status.as_ref() {

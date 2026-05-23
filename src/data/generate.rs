@@ -47,14 +47,14 @@ pub fn generate_automatic_configuration(
     let transactions = uncategorized_transactions(&data.transactions);
     let period = generation_period(&transactions);
     let analysis_transactions = complete_period_transactions(&transactions, &period);
-    let patterns = smart_insights_enabled
-        .then(|| {
-            analytics::transaction_pattern_analysis(
-                &analysis_transactions,
-                data.dedupe_mode.is_enabled(),
-            )
-        })
-        .unwrap_or_default();
+    let patterns = if smart_insights_enabled {
+        analytics::transaction_pattern_analysis(
+            &analysis_transactions,
+            data.dedupe_mode.is_enabled(),
+        )
+    } else {
+        Default::default()
+    };
     let ignored_patterns = generated_ignored_patterns(&patterns.patterns);
     let mut excluded_keys = cancellation_pattern_keys(&patterns.patterns);
     excluded_keys.extend(transfer_pattern_keys(&patterns.patterns));

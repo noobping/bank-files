@@ -274,12 +274,14 @@ pub fn load_app_data_read_only_aware(
     load_app_data_from_dirs(
         &dirs,
         &capabilities,
-        mode,
-        auto_clean_config,
-        scope,
-        RememberMode::DataOnly,
-        &[],
-        smart_insights_enabled,
+        AppDataLoadRequest {
+            mode,
+            auto_clean_config,
+            scope,
+            remember_mode: RememberMode::DataOnly,
+            sources: &[],
+            smart_insights_enabled,
+        },
     )
 }
 
@@ -296,35 +298,43 @@ pub fn load_app_data_with_sources(
     load_app_data_from_dirs(
         &dirs,
         &capabilities,
-        mode,
-        auto_clean_config,
-        scope,
-        remember_mode,
-        sources,
-        smart_insights_enabled,
+        AppDataLoadRequest {
+            mode,
+            auto_clean_config,
+            scope,
+            remember_mode,
+            sources,
+            smart_insights_enabled,
+        },
     )
+}
+
+#[derive(Clone, Copy)]
+struct AppDataLoadRequest<'a> {
+    mode: DedupeMode,
+    auto_clean_config: bool,
+    scope: TransactionLoadScope,
+    remember_mode: RememberMode,
+    sources: &'a [TransactionSource],
+    smart_insights_enabled: bool,
 }
 
 fn load_app_data_from_dirs(
     dirs: &AppDirs,
     capabilities: &StorageCapabilities,
-    mode: DedupeMode,
-    auto_clean_config: bool,
-    scope: TransactionLoadScope,
-    remember_mode: RememberMode,
-    sources: &[TransactionSource],
-    smart_insights_enabled: bool,
+    request: AppDataLoadRequest<'_>,
 ) -> Result<(AppData, StorageCapabilities)> {
-    let cache_key = remember_mode
+    let cache_key = request
+        .remember_mode
         .uses_analytics_cache()
         .then(|| {
             app_data_cache_key(
                 dirs,
-                mode,
-                scope,
-                remember_mode,
-                sources,
-                smart_insights_enabled,
+                request.mode,
+                request.scope,
+                request.remember_mode,
+                request.sources,
+                request.smart_insights_enabled,
             )
         })
         .transpose()?;
@@ -337,16 +347,7 @@ fn load_app_data_from_dirs(
             }
             Ok(None) => {}
             Err(error) => {
-                let mut data = load_app_data_uncached(
-                    dirs,
-                    capabilities,
-                    mode,
-                    auto_clean_config,
-                    scope,
-                    remember_mode,
-                    sources,
-                    smart_insights_enabled,
-                )?;
+                let mut data = load_app_data_uncached(dirs, capabilities, request)?;
                 data.warnings
                     .push(format!("Data and analytics cache ignored: {error:#}"));
                 write_cache_status(cache_key, &mut data);
@@ -355,16 +356,7 @@ fn load_app_data_from_dirs(
         }
     }
 
-    let mut data = load_app_data_uncached(
-        dirs,
-        capabilities,
-        mode,
-        auto_clean_config,
-        scope,
-        remember_mode,
-        sources,
-        smart_insights_enabled,
-    )?;
+    let mut data = load_app_data_uncached(dirs, capabilities, request)?;
     if let Some(cache_key) = cache_key.as_deref() {
         write_cache_status(cache_key, &mut data);
     }
@@ -374,14 +366,9 @@ fn load_app_data_from_dirs(
 fn load_app_data_uncached(
     dirs: &AppDirs,
     capabilities: &StorageCapabilities,
-    mode: DedupeMode,
-    auto_clean_config: bool,
-    scope: TransactionLoadScope,
-    remember_mode: RememberMode,
-    sources: &[TransactionSource],
-    smart_insights_enabled: bool,
+    request: AppDataLoadRequest<'_>,
 ) -> Result<AppData> {
-    if auto_clean_config && capabilities.config_writable {
+    if request.auto_clean_config && capabilities.config_writable {
         remove_orphaned_rules()?;
     }
     let AppDataLoadInputs {
@@ -389,20 +376,28 @@ fn load_app_data_uncached(
         rules,
         budgets,
         transaction_sources,
-    } = load_app_data_inputs(dirs, scope, remember_mode, sources)?;
-    if capabilities.data_writable && sources.is_empty() && !remember_mode.opens_live_files() {
+    } = load_app_data_inputs(dirs, request.scope, request.remember_mode, request.sources)?;
+    if capabilities.data_writable
+        && request.sources.is_empty()
+        && !request.remember_mode.opens_live_files()
+    {
         outcome
             .warnings
             .extend(mark_existing_transaction_csvs_readonly(dirs));
     }
-    if auto_clean_config && !capabilities.config_writable {
+    if request.auto_clean_config && !capabilities.config_writable {
         outcome.warnings.push(
             "Auto Clean Config skipped because configuration storage is read-only.".to_string(),
         );
     }
     let (mut transactions, duplicate_count) =
-        dedupe(std::mem::take(&mut outcome.transactions), mode);
-    apply_rules(&mut transactions, &rules, &budgets, smart_insights_enabled);
+        dedupe(std::mem::take(&mut outcome.transactions), request.mode);
+    apply_rules(
+        &mut transactions,
+        &rules,
+        &budgets,
+        request.smart_insights_enabled,
+    );
     sort_transactions(&mut transactions);
 
     let available_months = if outcome.available_months.is_empty() {
@@ -419,16 +414,16 @@ fn load_app_data_uncached(
         reports: outcome.reports,
         warnings: outcome.warnings,
         duplicate_count,
-        dedupe_mode: mode,
+        dedupe_mode: request.mode,
         budgets,
         rules_count: rules.iter().filter(|r| r.active).count(),
         available_years,
         available_months,
         default_month,
         loaded_scope: outcome.loaded_scope,
-        remember_mode,
+        remember_mode: request.remember_mode,
         transaction_sources,
-        cache_status: if remember_mode.uses_analytics_cache() {
+        cache_status: if request.remember_mode.uses_analytics_cache() {
             DataCacheStatus::Skipped
         } else {
             DataCacheStatus::Disabled
@@ -940,12 +935,14 @@ mod tests {
         let (data, returned_capabilities) = load_app_data_from_dirs(
             &dirs,
             &capabilities,
-            DedupeMode::Disabled,
-            true,
-            TransactionLoadScope::All,
-            RememberMode::DataOnly,
-            &[],
-            true,
+            AppDataLoadRequest {
+                mode: DedupeMode::Disabled,
+                auto_clean_config: true,
+                scope: TransactionLoadScope::All,
+                remember_mode: RememberMode::DataOnly,
+                sources: &[],
+                smart_insights_enabled: true,
+            },
         )
         .expect("read-only load should use embedded defaults");
 
@@ -990,12 +987,14 @@ mod tests {
         let (data, returned_capabilities) = load_app_data_from_dirs(
             &dirs,
             &capabilities,
-            DedupeMode::Disabled,
-            false,
-            TransactionLoadScope::All,
-            RememberMode::Forget,
-            &sources,
-            true,
+            AppDataLoadRequest {
+                mode: DedupeMode::Disabled,
+                auto_clean_config: false,
+                scope: TransactionLoadScope::All,
+                remember_mode: RememberMode::Forget,
+                sources: &sources,
+                smart_insights_enabled: true,
+            },
         )
         .expect("live load should read the selected CSV");
 
@@ -1058,34 +1057,40 @@ mod tests {
         let (first, _) = load_app_data_from_dirs(
             &dirs,
             &capabilities,
-            DedupeMode::Disabled,
-            false,
-            TransactionLoadScope::All,
-            RememberMode::DataAndAnalytics,
-            &sources,
-            true,
+            AppDataLoadRequest {
+                mode: DedupeMode::Disabled,
+                auto_clean_config: false,
+                scope: TransactionLoadScope::All,
+                remember_mode: RememberMode::DataAndAnalytics,
+                sources: &sources,
+                smart_insights_enabled: true,
+            },
         )
         .expect("first full-cache load should parse and cache data");
         let (second, _) = load_app_data_from_dirs(
             &dirs,
             &capabilities,
-            DedupeMode::Disabled,
-            false,
-            TransactionLoadScope::All,
-            RememberMode::DataAndAnalytics,
-            &sources,
-            true,
+            AppDataLoadRequest {
+                mode: DedupeMode::Disabled,
+                auto_clean_config: false,
+                scope: TransactionLoadScope::All,
+                remember_mode: RememberMode::DataAndAnalytics,
+                sources: &sources,
+                smart_insights_enabled: true,
+            },
         )
         .expect("second full-cache load should reuse cached data");
         let (facts_only, _) = load_app_data_from_dirs(
             &dirs,
             &capabilities,
-            DedupeMode::Disabled,
-            false,
-            TransactionLoadScope::All,
-            RememberMode::DataAndAnalytics,
-            &sources,
-            false,
+            AppDataLoadRequest {
+                mode: DedupeMode::Disabled,
+                auto_clean_config: false,
+                scope: TransactionLoadScope::All,
+                remember_mode: RememberMode::DataAndAnalytics,
+                sources: &sources,
+                smart_insights_enabled: false,
+            },
         )
         .expect("facts-only full-cache load should use a separate cache key");
 

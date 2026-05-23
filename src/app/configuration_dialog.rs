@@ -26,7 +26,10 @@ pub(in crate::app) fn show_configuration_dialog(
         "configuration",
         &status_bar.label,
         ui_handles,
-        configuration_page_snapshot(),
+        configuration_page_snapshot(
+            ui_handles.advanced_features.get(),
+            ui_handles.show_predictions.get(),
+        ),
     );
     let status = StatusHandle::from_status_bar(&status_bar);
     status.set_text(&tr("Configuration actions report progress here."));
@@ -57,40 +60,60 @@ pub(in crate::app) fn show_configuration_dialog(
     dialog.present(Some(parent));
 }
 
-fn configuration_page_snapshot() -> StaticPageSnapshot {
+fn configuration_page_snapshot(
+    advanced_features: bool,
+    smart_insights_enabled: bool,
+) -> StaticPageSnapshot {
     StaticPageSnapshot::new(
         "configuration",
         "Configuration",
         "Configuration actions report progress here.",
         &["Group", "Action", "Description"],
-        vec![
-            vec![
-                tr("Configuration Backup"),
-                tr("Back Up Current Configuration"),
-                tr("Replace the existing backup in the config folder."),
-            ],
-            vec![
-                tr("Configuration Backup"),
-                tr("Restore Configuration Backup"),
-                tr("Restore rules, budgets, and field names from the backup."),
-            ],
-            vec![
-                tr("Automatic Configuration"),
-                tr("Generate Configuration from Transactions"),
-                tr("Create a working setup from imported transactions."),
-            ],
-            vec![
-                tr("Automatic Configuration"),
-                tr("Use Default Configuration"),
-                tr("Replace rules, budgets, and field names with the built-in defaults."),
-            ],
-            vec![
-                tr("Automatic Configuration"),
-                tr("Use Empty Configuration"),
-                tr("Remove all rules and budget codes while keeping CSV field names for imports."),
-            ],
-        ],
+        configuration_snapshot_rows(advanced_features, smart_insights_enabled),
     )
+}
+
+fn configuration_snapshot_rows(
+    advanced_features: bool,
+    smart_insights_enabled: bool,
+) -> Vec<Vec<String>> {
+    let mut rows = vec![
+        vec![
+            tr("Configuration Backup"),
+            tr("Back Up Current Configuration"),
+            tr("Replace the existing backup in the config folder."),
+        ],
+        vec![
+            tr("Configuration Backup"),
+            tr("Restore Configuration Backup"),
+            tr("Restore rules, budgets, and field names from the backup."),
+        ],
+    ];
+
+    if automatic_configuration_generation_visible(advanced_features, smart_insights_enabled) {
+        rows.push(vec![
+            tr("Automatic Configuration"),
+            tr("Generate Configuration from Transactions"),
+            tr(automatic_configuration_generation_subtitle(
+                advanced_features,
+                smart_insights_enabled,
+            )),
+        ]);
+    }
+
+    rows.extend([
+        vec![
+            tr("Automatic Configuration"),
+            tr("Use Default Configuration"),
+            tr("Replace rules, budgets, and field names with the built-in defaults."),
+        ],
+        vec![
+            tr("Automatic Configuration"),
+            tr("Use Empty Configuration"),
+            tr("Remove all rules and budget codes while keeping CSV field names for imports."),
+        ],
+    ]);
+    rows
 }
 
 fn archive_group(
@@ -165,16 +188,38 @@ fn automatic_configuration_group(
         .description(tr(description))
         .build();
     let mut search_group = SearchablePreferencesGroup::new(&group, title, description);
+    let advanced_features = ui_handles.advanced_features.get();
+    let smart_insights_enabled = ui_handles.show_predictions.get();
 
-    let generate_title = "Generate Configuration from Transactions";
-    let generate_subtitle = if ui_handles.advanced_features.get() {
-        "Create rules, budget codes, field mappings, and hidden refund/split patterns from imported transactions."
-    } else {
-        "Create a working setup from imported transactions and hide refund/split patterns."
-    };
-    let generate_row = action_row("view-refresh-symbolic", generate_title, generate_subtitle);
-    search_group.add_row(&generate_row, generate_title, generate_subtitle);
-    group.add(&generate_row);
+    if automatic_configuration_generation_visible(advanced_features, smart_insights_enabled) {
+        let generate_title = "Generate Configuration from Transactions";
+        let generate_subtitle =
+            automatic_configuration_generation_subtitle(advanced_features, smart_insights_enabled);
+        let generate_row = action_row("view-refresh-symbolic", generate_title, generate_subtitle);
+        if !automatic_configuration_generation_enabled(smart_insights_enabled) {
+            generate_row.set_sensitive(false);
+            generate_row.set_tooltip_text(Some(&tr(
+                "Enable Smart Insights to generate configuration from transactions.",
+            )));
+        }
+        search_group.add_row(&generate_row, generate_title, generate_subtitle);
+        group.add(&generate_row);
+        register_config_widget(ui_handles, &generate_row);
+
+        let state_for_generate = Rc::clone(state);
+        let ui_for_generate = Rc::clone(ui_handles);
+        let status_for_generate = status.clone();
+        generate_row.connect_activated(move |row| {
+            if !row.is_sensitive() {
+                return;
+            }
+            generate_configuration_from_transactions_with_status(
+                &state_for_generate,
+                &ui_for_generate,
+                Some(status_for_generate.clone()),
+            );
+        });
+    }
 
     let defaults_title = "Use Default Configuration";
     let defaults_subtitle = "Replace rules, budgets, and field names with the built-in defaults.";
@@ -192,23 +237,8 @@ fn automatic_configuration_group(
     let empty_row = action_row("edit-clear-symbolic", empty_title, empty_subtitle);
     search_group.add_row(&empty_row, empty_title, empty_subtitle);
     group.add(&empty_row);
-    register_config_widget(ui_handles, &generate_row);
     register_config_widget(ui_handles, &defaults_row);
     register_config_widget(ui_handles, &empty_row);
-
-    let state_for_generate = Rc::clone(state);
-    let ui_for_generate = Rc::clone(ui_handles);
-    let status_for_generate = status.clone();
-    generate_row.connect_activated(move |row| {
-        if !row.is_sensitive() {
-            return;
-        }
-        generate_configuration_from_transactions_with_status(
-            &state_for_generate,
-            &ui_for_generate,
-            Some(status_for_generate.clone()),
-        );
-    });
 
     let state_for_defaults = Rc::clone(state);
     let ui_for_defaults = Rc::clone(ui_handles);
@@ -239,6 +269,30 @@ fn automatic_configuration_group(
     });
 
     (group, search_group)
+}
+
+fn automatic_configuration_generation_visible(
+    advanced_features: bool,
+    smart_insights_enabled: bool,
+) -> bool {
+    smart_insights_enabled || advanced_features
+}
+
+fn automatic_configuration_generation_enabled(smart_insights_enabled: bool) -> bool {
+    smart_pattern_detection_enabled(smart_insights_enabled)
+}
+
+fn automatic_configuration_generation_subtitle(
+    advanced_features: bool,
+    smart_insights_enabled: bool,
+) -> &'static str {
+    if !smart_insights_enabled {
+        "Requires Smart Insights. Enable Smart Insights to generate configuration from transactions."
+    } else if advanced_features {
+        "Create rules, budget codes, field mappings, and hidden refund/split patterns from imported transactions."
+    } else {
+        "Create a working setup from imported transactions and hide refund/split patterns."
+    }
 }
 
 fn action_row(icon_name: &str, title: &str, subtitle: &str) -> adw::ActionRow {
@@ -466,4 +520,29 @@ fn show_dialog_status(ui_handles: &UiHandles, status: &StatusHandle, message: &s
 fn show_dialog_status_text(ui_handles: &UiHandles, status: &StatusHandle, message: &str) {
     status.set_text(message);
     show_status(ui_handles, message);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn automatic_configuration_generation_hides_in_simple_mode_without_smart_insights() {
+        assert!(!automatic_configuration_generation_visible(false, false));
+    }
+
+    #[test]
+    fn automatic_configuration_generation_shows_disabled_in_advanced_mode_without_smart_insights() {
+        assert!(automatic_configuration_generation_visible(true, false));
+        assert!(!automatic_configuration_generation_enabled(false));
+    }
+
+    #[test]
+    fn configuration_snapshot_follows_generation_visibility() {
+        let simple_rows = configuration_snapshot_rows(false, false);
+        let advanced_rows = configuration_snapshot_rows(true, false);
+
+        assert_eq!(simple_rows.len(), 4);
+        assert_eq!(advanced_rows.len(), 5);
+    }
 }

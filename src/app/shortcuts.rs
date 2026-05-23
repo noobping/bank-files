@@ -127,10 +127,12 @@ pub(in crate::app) fn build_shortcuts_dialog(
         ShortcutSpec::action("Toggle Smart Insights", "app.show-predictions"),
     ];
     #[cfg(not(feature = "flatpak"))]
-    settings_shortcuts.push(ShortcutSpec::action(
-        "Toggle Online Smart Insights",
-        "app.online-smart-insights",
-    ));
+    if smart_patterns_enabled || advanced_features {
+        settings_shortcuts.push(ShortcutSpec::action(
+            "Toggle Online Smart Insights",
+            "app.online-smart-insights",
+        ));
+    }
     settings_shortcuts.extend([
         ShortcutSpec::action("Toggle Smart Autofill", "app.advanced-autofill"),
         ShortcutSpec::action("Toggle Duplicate Filtering", "app.dedupe-enabled"),
@@ -142,7 +144,7 @@ pub(in crate::app) fn build_shortcuts_dialog(
         ShortcutSpec::action("Toggle Auto Clean Config", "app.auto-clean-config"),
         ShortcutSpec::action("Toggle Status Autohide", "app.autohide-status"),
     ]);
-    if smart_patterns_enabled {
+    if smart_patterns_enabled || advanced_features {
         settings_shortcuts.push(ShortcutSpec::action(
             "Toggle Hide Refunded Transactions",
             "app.hide-canceled-transactions",

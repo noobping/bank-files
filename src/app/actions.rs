@@ -406,10 +406,23 @@ pub(in crate::app) fn connect_actions(
             set_simple_action_enabled(
                 &app_for_predictions,
                 "hide-canceled-transactions",
-                smart_pattern_detection_enabled(enabled)
-                    && ui_for_predictions
+                smart_dependent_action_enabled(
+                    enabled,
+                    ui_for_predictions
                         .preferences
                         .action_is_writable("hide-canceled-transactions"),
+                ),
+            );
+            #[cfg(not(feature = "flatpak"))]
+            set_simple_action_enabled(
+                &app_for_predictions,
+                "online-smart-insights",
+                smart_dependent_action_enabled(
+                    enabled,
+                    ui_for_predictions
+                        .preferences
+                        .action_is_writable("online-smart-insights"),
+                ),
             );
             if !enabled
                 && matches!(
@@ -464,8 +477,10 @@ pub(in crate::app) fn connect_actions(
                 );
             },
         );
-        online_smart_insights_action
-            .set_enabled(ui.preferences.action_is_writable("online-smart-insights"));
+        online_smart_insights_action.set_enabled(smart_dependent_action_enabled(
+            ui.show_predictions.get(),
+            ui.preferences.action_is_writable("online-smart-insights"),
+        ));
     }
 
     let state_for_compare_categories = Rc::clone(state);
@@ -582,12 +597,11 @@ pub(in crate::app) fn connect_actions(
             );
         },
     );
-    hide_canceled_action.set_enabled(
-        smart_pattern_detection_enabled(ui.show_predictions.get())
-            && ui
-                .preferences
-                .action_is_writable("hide-canceled-transactions"),
-    );
+    hide_canceled_action.set_enabled(smart_dependent_action_enabled(
+        ui.show_predictions.get(),
+        ui.preferences
+            .action_is_writable("hide-canceled-transactions"),
+    ));
 
     #[cfg(all(target_os = "linux", feature = "setup", not(feature = "flatpak")))]
     {

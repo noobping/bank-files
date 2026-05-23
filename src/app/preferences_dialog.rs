@@ -16,6 +16,7 @@ pub(in crate::app) fn show_preferences_dialog(
         .icon_name("preferences-system-symbolic")
         .build();
     let mut search_groups = Vec::new();
+    let smart_insights_enabled = ui.show_predictions.get();
 
     if let Some((group, search_group)) = preference_group(
         "Interface",
@@ -35,6 +36,7 @@ pub(in crate::app) fn show_preferences_dialog(
             ),
         ],
         ui.advanced_features.get(),
+        smart_insights_enabled,
         &ui.preferences,
     ) {
         page.add(&group);
@@ -48,12 +50,15 @@ pub(in crate::app) fn show_preferences_dialog(
         ui.show_predictions.get(),
     )];
     #[cfg(not(feature = "flatpak"))]
-    insight_preferences.push(PreferenceSpec::new(
-        "Online Smart Insights",
-        "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
-        "app.online-smart-insights",
-        ui.online_smart_insights.get(),
-    ));
+    insight_preferences.push(
+        PreferenceSpec::new(
+            "Online Smart Insights",
+            "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
+            "app.online-smart-insights",
+            ui.online_smart_insights.get(),
+        )
+        .requires_smart_insights(),
+    );
     insight_preferences.push(PreferenceSpec::new(
         "Compare Spending with Previous Period",
         "Compare spending cards with the previous month or year.",
@@ -66,6 +71,7 @@ pub(in crate::app) fn show_preferences_dialog(
         "Control smart forecasts, detected transaction patterns, smart transfer detection, and previous-period spending comparisons.",
         &insight_preferences,
         ui.advanced_features.get(),
+        smart_insights_enabled,
         &ui.preferences,
     ) {
         page.add(&group);
@@ -106,9 +112,11 @@ pub(in crate::app) fn show_preferences_dialog(
                 "Requires Smart Insights. Exclude detected refunds and offsetting groups from normal views.",
                 "app.hide-canceled-transactions",
                 ui.hide_canceled_transactions.get(),
-            ),
+            )
+            .requires_smart_insights(),
         ],
         ui.advanced_features.get(),
+        smart_insights_enabled,
         &ui.preferences,
     ) {
         page.add(&group);
@@ -124,7 +132,11 @@ pub(in crate::app) fn show_preferences_dialog(
         "preferences",
         &status_bar.label,
         ui,
-        preferences_page_snapshot(ui.advanced_features.get(), &ui.preferences),
+        preferences_page_snapshot(
+            ui.advanced_features.get(),
+            smart_insights_enabled,
+            &ui.preferences,
+        ),
     );
     status_bar
         .label
@@ -148,6 +160,7 @@ pub(in crate::app) fn show_preferences_dialog(
 
 fn preferences_page_snapshot(
     advanced_features: bool,
+    smart_insights_enabled: bool,
     preferences: &Preferences,
 ) -> StaticPageSnapshot {
     let mut rows = Vec::new();
@@ -159,37 +172,44 @@ fn preferences_page_snapshot(
                 "Autohide Status Bar",
                 "Hide status messages automatically after a short delay.",
                 "app.autohide-status",
+                false,
             ),
             (
                 "Always Show Full Lists",
                 "Show every item immediately and hide More buttons.",
                 "app.show-all",
+                false,
             ),
         ],
         advanced_features,
+        smart_insights_enabled,
         preferences,
     );
     let mut insight_rows = vec![(
         "Smart Insights",
         "Show forecast cards and detect transaction patterns, including possible transfers, from imported transactions.",
         "app.show-predictions",
+        false,
     )];
     #[cfg(not(feature = "flatpak"))]
     insight_rows.push((
         "Online Smart Insights",
         "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
         "app.online-smart-insights",
+        true,
     ));
     insight_rows.push((
         "Compare Spending with Previous Period",
         "Compare spending cards with the previous month or year.",
         "app.compare-categories-previous-period",
+        false,
     ));
     add_preference_snapshot_rows(
         &mut rows,
         "Insights",
         &insight_rows,
         advanced_features,
+        smart_insights_enabled,
         preferences,
     );
     add_preference_snapshot_rows(
@@ -199,8 +219,10 @@ fn preferences_page_snapshot(
             "Remember",
             "Choose whether opened CSV data is forgotten after this session, remembered as data, or remembered with reusable analysis cache.",
             "app.remember-mode",
+            false,
         )],
         advanced_features,
+        smart_insights_enabled,
         preferences,
     );
     add_preference_snapshot_rows(
@@ -211,24 +233,29 @@ fn preferences_page_snapshot(
                 "Advanced Features",
                 "Allow rule editing and budget direction controls.",
                 "app.advanced-features",
+                false,
             ),
             (
                 "Smart Autofill",
                 "Let forms fill related fields from context, such as matching categories and directions.",
                 "app.advanced-autofill",
+                false,
             ),
             (
                 "Auto Clean Config",
                 "Remove orphaned rules automatically during reload and import.",
                 "app.auto-clean-config",
+                false,
             ),
             (
                 "Hide Refunded Transactions",
                 "Requires Smart Insights. Exclude detected refunds and offsetting groups from normal views.",
                 "app.hide-canceled-transactions",
+                true,
             ),
         ],
         advanced_features,
+        smart_insights_enabled,
         preferences,
     );
 
@@ -244,15 +271,21 @@ fn preferences_page_snapshot(
 fn add_preference_snapshot_rows(
     rows: &mut Vec<Vec<String>>,
     group_title: &str,
-    specs: &[(&str, &str, &str)],
+    specs: &[(&str, &str, &str, bool)],
     advanced_features: bool,
+    smart_insights_enabled: bool,
     preferences: &Preferences,
 ) {
-    for (title, subtitle, action_name) in specs {
+    for (title, subtitle, action_name, requires_smart_insights) in specs {
         let writable = Preferences::key_for_action(action_name)
             .map(|key| preferences.is_writable(key))
             .unwrap_or(true);
-        if preference_row_visible(writable, advanced_features) {
+        if preference_row_visible(
+            writable,
+            advanced_features,
+            smart_insights_enabled,
+            *requires_smart_insights,
+        ) {
             rows.push(vec![tr(group_title), tr(title), tr(subtitle)]);
         }
     }
@@ -263,6 +296,7 @@ struct PreferenceSpec<'a> {
     subtitle: &'a str,
     action_name: &'a str,
     active: bool,
+    requires_smart_insights: bool,
 }
 
 impl<'a> PreferenceSpec<'a> {
@@ -272,7 +306,35 @@ impl<'a> PreferenceSpec<'a> {
             subtitle,
             action_name,
             active,
+            requires_smart_insights: false,
         }
+    }
+
+    fn requires_smart_insights(mut self) -> Self {
+        self.requires_smart_insights = true;
+        self
+    }
+
+    fn visible(
+        &self,
+        writable: bool,
+        advanced_features: bool,
+        smart_insights_enabled: bool,
+    ) -> bool {
+        preference_row_visible(
+            writable,
+            advanced_features,
+            smart_insights_enabled,
+            self.requires_smart_insights,
+        )
+    }
+
+    fn enabled(&self, writable: bool, smart_insights_enabled: bool) -> bool {
+        preference_row_enabled(
+            writable,
+            smart_insights_enabled,
+            self.requires_smart_insights,
+        )
     }
 }
 
@@ -286,7 +348,12 @@ fn remember_preference_group(
     let writable = Preferences::key_for_action("app.remember-mode")
         .map(|key| ui.preferences.is_writable(key))
         .unwrap_or(true);
-    if !preference_row_visible(writable, advanced_features) {
+    if !preference_row_visible(
+        writable,
+        advanced_features,
+        ui.show_predictions.get(),
+        false,
+    ) {
         return None;
     }
 
@@ -352,6 +419,7 @@ fn preference_group(
     description: &str,
     rows: &[PreferenceSpec<'_>],
     advanced_features: bool,
+    smart_insights_enabled: bool,
     preferences: &Preferences,
 ) -> Option<(adw::PreferencesGroup, SearchablePreferencesGroup)> {
     let group = adw::PreferencesGroup::builder()
@@ -364,10 +432,10 @@ fn preference_group(
         let writable = Preferences::key_for_action(spec.action_name)
             .map(|key| preferences.is_writable(key))
             .unwrap_or(true);
-        if !preference_row_visible(writable, advanced_features) {
+        if !spec.visible(writable, advanced_features, smart_insights_enabled) {
             continue;
         }
-        let row = preference_row(spec, writable);
+        let row = preference_row(spec, writable, smart_insights_enabled);
         search_group.add_row(&row, spec.title, spec.subtitle);
         group.add(&row);
         added = true;
@@ -375,21 +443,44 @@ fn preference_group(
     added.then_some((group, search_group))
 }
 
-fn preference_row_visible(writable: bool, advanced_features: bool) -> bool {
-    writable || advanced_features
+fn preference_row_visible(
+    writable: bool,
+    advanced_features: bool,
+    smart_insights_enabled: bool,
+    requires_smart_insights: bool,
+) -> bool {
+    (writable || advanced_features)
+        && (!requires_smart_insights || smart_insights_enabled || advanced_features)
 }
 
-fn preference_row(spec: &PreferenceSpec<'_>, writable: bool) -> adw::SwitchRow {
+fn preference_row_enabled(
+    writable: bool,
+    smart_insights_enabled: bool,
+    requires_smart_insights: bool,
+) -> bool {
+    writable && (!requires_smart_insights || smart_insights_enabled)
+}
+
+fn preference_row(
+    spec: &PreferenceSpec<'_>,
+    writable: bool,
+    smart_insights_enabled: bool,
+) -> adw::SwitchRow {
     let row = adw::SwitchRow::builder()
         .title(tr(spec.title))
         .subtitle(tr(spec.subtitle))
         .build();
     row.set_active(spec.active);
-    if writable {
+    if spec.enabled(writable, smart_insights_enabled) {
         row.set_action_name(Some(spec.action_name));
     } else {
         row.set_sensitive(false);
-        row.set_tooltip_text(Some(&tr("This preference is managed by the system.")));
+        let message = if !writable {
+            "This preference is managed by the system."
+        } else {
+            "Enable Smart Insights to use this preference."
+        };
+        row.set_tooltip_text(Some(&tr(message)));
     }
     row
 }
@@ -400,9 +491,23 @@ mod tests {
 
     #[test]
     fn preference_row_visibility_follows_managed_state_and_mode() {
-        assert!(preference_row_visible(true, false));
-        assert!(preference_row_visible(true, true));
-        assert!(!preference_row_visible(false, false));
-        assert!(preference_row_visible(false, true));
+        assert!(preference_row_visible(true, false, false, false));
+        assert!(preference_row_visible(true, true, false, false));
+        assert!(!preference_row_visible(false, false, false, false));
+        assert!(preference_row_visible(false, true, false, false));
+    }
+
+    #[test]
+    fn smart_dependent_preferences_hide_in_simple_mode_and_show_in_advanced_mode() {
+        assert!(preference_row_visible(true, false, true, true));
+        assert!(!preference_row_visible(true, false, false, true));
+        assert!(preference_row_visible(true, true, false, true));
+    }
+
+    #[test]
+    fn smart_dependent_preferences_disable_without_smart_insights() {
+        assert!(preference_row_enabled(true, true, true));
+        assert!(!preference_row_enabled(true, false, true));
+        assert!(!preference_row_enabled(false, true, true));
     }
 }
