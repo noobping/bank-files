@@ -7,8 +7,8 @@ mod page;
 mod period;
 
 pub(in crate::app) use edit::{
-    budget_direction_change, budget_edit_button, confirm_budget_direction_changes,
-    show_budget_edit_dialog, BudgetDirectionChange,
+    budget_direction_change, budget_direction_editable, budget_edit_button,
+    confirm_budget_direction_changes, show_budget_edit_dialog, BudgetDirectionChange,
 };
 pub(in crate::app) use forms::{bind_percentage_basis_visibility, budget_values_use_percentage};
 pub(in crate::app) use generate::generate_configuration_from_transactions_with_status;

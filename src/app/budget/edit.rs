@@ -171,6 +171,10 @@ fn save_budget_with_reload(
     });
 }
 
+pub(in crate::app) fn budget_direction_editable(advanced_features: bool, persisted: bool) -> bool {
+    advanced_features || !persisted
+}
+
 pub(in crate::app) fn budget_edit_button(
     code: &str,
     category: &str,
@@ -254,7 +258,7 @@ pub(in crate::app) fn show_budget_edit_dialog(
         &[("real", "Real income"), ("planned", "Planned income")],
         ui::budget_income_basis_id(&initial.income_basis),
     );
-    if !advanced_features {
+    if !budget_direction_editable(advanced_features, can_delete_budget) {
         direction.set_sensitive(false);
     }
     let notes = ui::entry(&initial.notes, "Note");
@@ -689,6 +693,13 @@ fn delete_budget(code: &str) -> anyhow::Result<bool> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn budget_direction_editability_allows_simple_new_budgets() {
+        assert!(budget_direction_editable(false, false));
+        assert!(!budget_direction_editable(false, true));
+        assert!(budget_direction_editable(true, true));
+    }
 
     #[test]
     fn budget_direction_change_confirms_expense_income_crossing() {

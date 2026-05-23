@@ -110,27 +110,6 @@ fn set_option_combo(combo: &gtk::ComboBoxText, value: &str) {
     }
 }
 
-fn connect_simple_budget_direction_inference(
-    category: &gtk::ComboBoxText,
-    code: &gtk::ComboBoxText,
-    direction: &gtk::ComboBoxText,
-) {
-    let category_for_update = category.clone();
-    let code_for_update = code.clone();
-    let direction_for_update = direction.clone();
-    let update_direction: Rc<dyn Fn()> = Rc::new(move || {
-        let inferred = BudgetDirection::parse(
-            "",
-            &ui::combo_text(&code_for_update),
-            &ui::combo_text(&category_for_update),
-        );
-        set_option_combo(&direction_for_update, inferred.as_str());
-    });
-    connect_combo_summary(category, &update_direction);
-    connect_combo_summary(code, &update_direction);
-    update_direction();
-}
-
 fn connect_delete_button(button: &gtk::Button, deleted: &Rc<Cell<bool>>, form_box: &gtk::Box) {
     let deleted_for_button = Rc::clone(deleted);
     let form_box_for_delete = form_box.clone();
@@ -841,11 +820,8 @@ pub(in crate::app) fn append_budget_form(
             editable_budget_autofill_entries(),
             advanced_autofill,
         );
-    } else {
+    } else if !budget_direction_editable(advanced_features, persisted) {
         direction.set_sensitive(false);
-        if !persisted {
-            connect_simple_budget_direction_inference(&category, &code, &direction);
-        }
     }
     let notes = entry(&budget.notes, "Note");
     let income_basis_label = if advanced_features {

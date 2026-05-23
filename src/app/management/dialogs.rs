@@ -152,7 +152,7 @@ pub(in crate::app) fn show_new_budget_dialog(
         if advanced_features {
             "Create a budget code. It is only saved when you press Save."
         } else {
-            "Create a category. A budget code is generated automatically when you press Add."
+            "Create a category. Choose whether it is spending, income, or transfer. A budget code is generated automatically when you press Add."
         },
         "Add",
         620,
@@ -183,8 +183,6 @@ pub(in crate::app) fn show_new_budget_dialog(
             editable_budget_autofill_entries(),
             advanced_autofill,
         );
-    } else {
-        direction.set_visible(false);
     }
     let notes = entry("", "Note");
     let income_basis_label = if advanced_features {
@@ -201,8 +199,9 @@ pub(in crate::app) fn show_new_budget_dialog(
         add_labeled(&grid, 0, "Category", &category);
         add_labeled(&grid, 1, "Monthly budget", &monthly_budget);
         add_labeled(&grid, 2, "Yearly budget", &yearly_budget);
-        let income_basis_label = add_labeled(&grid, 3, "Percentage basis", &income_basis);
-        add_labeled(&grid, 4, "Note", &notes);
+        add_labeled(&grid, 3, "Direction", &direction);
+        let income_basis_label = add_labeled(&grid, 4, "Percentage basis", &income_basis);
+        add_labeled(&grid, 5, "Note", &notes);
         income_basis_label
     };
     bind_percentage_basis_visibility(
@@ -252,12 +251,7 @@ pub(in crate::app) fn show_new_budget_dialog(
             generated_budget_code_for_category(&category_text, &existing_codes)
         };
 
-        let direction_text = budget_direction_for_save(
-            &code_text,
-            &category_text,
-            &combo_active_id(&direction),
-            advanced_features,
-        );
+        let direction_text = budget_direction_for_save(&combo_active_id(&direction));
         let budget = EditableBudget {
             code: code_text,
             category: category_text,
@@ -288,19 +282,10 @@ pub(in crate::app) fn show_new_budget_dialog(
     dialog.present(Some(parent));
 }
 
-fn budget_direction_for_save(
-    code: &str,
-    category: &str,
-    selected_direction: &str,
-    advanced_features: bool,
-) -> String {
-    if advanced_features {
-        selected_direction.to_string()
-    } else {
-        BudgetDirection::parse("", code, category)
-            .as_str()
-            .to_string()
-    }
+fn budget_direction_for_save(selected_direction: &str) -> String {
+    BudgetDirection::parse(selected_direction, "", "")
+        .as_str()
+        .to_string()
 }
 
 pub(in crate::app) fn show_new_alias_dialog(
@@ -409,26 +394,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn simple_budget_direction_is_inferred_from_context() {
-        assert_eq!(
-            budget_direction_for_save("INC-OTHER", "Other income", "expense", false),
-            "income"
-        );
-        assert_eq!(
-            budget_direction_for_save("TRANSFER", "Transfers", "expense", false),
-            "transfer"
-        );
-        assert_eq!(
-            budget_direction_for_save("MISC", "Unclear", "income", false),
-            "expense"
-        );
+    fn new_budget_direction_uses_selected_value() {
+        assert_eq!(budget_direction_for_save("income"), "income");
+        assert_eq!(budget_direction_for_save("transfer"), "transfer");
+        assert_eq!(budget_direction_for_save("expense"), "expense");
     }
 
     #[test]
-    fn advanced_budget_direction_uses_selected_value() {
-        assert_eq!(
-            budget_direction_for_save("MISC", "Unclear", "income", true),
-            "income"
-        );
+    fn new_budget_direction_falls_back_to_expense() {
+        assert_eq!(budget_direction_for_save("unknown"), "expense");
     }
 }
