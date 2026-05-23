@@ -51,33 +51,34 @@ impl StatusHandle {
 }
 
 pub(in crate::app) fn build_status_bar() -> StatusBar {
-    let container = gtk::Box::new(gtk::Orientation::Horizontal, 8);
-    container.add_css_class("toolbar");
-    container.set_margin_start(6);
-
-    let status_icon = gtk::Image::from_icon_name("dialog-information-symbolic");
-    status_icon.add_css_class("dim-label");
-
-    let spinner = ui::loading_spinner();
-    spinner.add_css_class("dim-label");
-    spinner.set_visible(false);
-
-    let label = ui::wrapped_label("");
-    label.set_selectable(false);
-    label.set_hexpand(true);
-
-    let history_button = status_button("document-open-recent-symbolic", "Show message history");
-    let page_actions_button = build_page_actions_menu_button("app");
-    let hide_button = status_button("window-close-symbolic", "Hide message");
-    let action_group = ui::linked_button_group();
-    action_group.append(&history_button);
-    action_group.append(&page_actions_button);
-    action_group.append(&hide_button);
-
-    container.append(&status_icon);
-    container.append(&spinner);
-    container.append(&label);
-    container.append(&action_group);
+    let builder = ui::builder_from_resource("status-bar.ui");
+    let container = builder
+        .object::<gtk::Box>("status_bar")
+        .expect("status-bar.ui should define status_bar");
+    let status_icon = builder
+        .object::<gtk::Image>("status_icon")
+        .expect("status-bar.ui should define status_icon");
+    let spinner = builder
+        .object::<adw::Spinner>("status_spinner")
+        .expect("status-bar.ui should define status_spinner");
+    let label = builder
+        .object::<gtk::Label>("status_label")
+        .expect("status-bar.ui should define status_label");
+    let action_group = builder
+        .object::<gtk::Box>("status_action_group")
+        .expect("status-bar.ui should define status_action_group");
+    let history_button = builder
+        .object::<gtk::Button>("status_history_button")
+        .expect("status-bar.ui should define status_history_button");
+    history_button.set_tooltip_text(Some(&tr("Show message history")));
+    let page_actions_button = builder
+        .object::<gtk::MenuButton>("status_page_actions_button")
+        .expect("status-bar.ui should define status_page_actions_button");
+    set_page_actions_menu_namespace(&page_actions_button, "app");
+    let hide_button = builder
+        .object::<gtk::Button>("status_hide_button")
+        .expect("status-bar.ui should define status_hide_button");
+    hide_button.set_tooltip_text(Some(&tr("Hide message")));
 
     StatusBar {
         container,
@@ -89,19 +90,6 @@ pub(in crate::app) fn build_status_bar() -> StatusBar {
         page_actions_button,
         hide_button,
     }
-}
-
-pub(in crate::app) fn build_page_actions_menu_button(action_namespace: &str) -> gtk::MenuButton {
-    let menu_button = gtk::MenuButton::builder()
-        .icon_name("view-more-symbolic")
-        .tooltip_text(tr("Page actions"))
-        .has_frame(false)
-        .build();
-    menu_button.add_css_class("flat");
-    menu_button.add_css_class("image-button");
-    menu_button.add_css_class("status-page-actions");
-    set_page_actions_menu_namespace(&menu_button, action_namespace);
-    menu_button
 }
 
 pub(in crate::app) fn set_page_actions_menu_namespace(

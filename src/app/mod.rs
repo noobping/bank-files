@@ -125,7 +125,7 @@ use preferences_dialog::show_preferences_dialog;
 use print::{current_print_report, print_report, table_print_report};
 use render::{render_loading_placeholder, render_views, request_render_views};
 use settings_dialog::{
-    build_settings_header, connect_preference_search, SearchablePreferencesGroup,
+    build_settings_dialog_shell, connect_preference_search, SearchablePreferencesGroup,
 };
 #[cfg(all(target_os = "linux", feature = "setup", not(feature = "flatpak")))]
 use shell::build_menu_model;

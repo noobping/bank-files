@@ -25,6 +25,15 @@ pub fn month_name(month: u32) -> String {
     gettext(name)
 }
 
+pub fn builder_from_resource(file_name: &str) -> gtk::Builder {
+    let builder = gtk::Builder::new();
+    let path = format!("{}/ui/{file_name}", crate::app_info::RESOURCE_ID);
+    builder
+        .add_from_resource(&path)
+        .unwrap_or_else(|err| panic!("Failed to load GTK UI resource {path}: {err}"));
+    builder
+}
+
 pub fn icon_button(icon_name: &str, tooltip: &str) -> gtk::Button {
     gtk::Button::builder()
         .icon_name(icon_name)

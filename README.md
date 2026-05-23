@@ -62,7 +62,7 @@ meson compile -C build
 sudo meson install -C build
 ```
 
-The GTK resource bundle is installed to `share/bank-files/bank-files.gresource` and loaded from there by default Linux builds. Plain Cargo development builds and setup/self-contained builds keep GTK resources embedded. The AI bundle is installed to `share/bank-files/models/ai`. Setup builds embed the AI assets instead of installing sidecar files:
+The GTK resource bundle is installed to `share/bank-files/bank-files.gresource` and loaded from there by normal Linux release installs. Plain Cargo development builds, Meson developer/debug builds, Windows builds, and setup/self-contained builds keep GTK resources embedded. The AI bundle is installed to `share/bank-files/models/ai`. Setup builds embed the AI assets instead of installing sidecar files:
 
 ```bash
 meson setup build -Dcargo_variant=release -Dsetup=true

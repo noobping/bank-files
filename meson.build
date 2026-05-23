@@ -76,7 +76,7 @@ endif
 
 embedded_ai_feature_enabled = feature_tokens.contains('embedded-ai-model') or feature_tokens.contains('setup')
 install_ai_assets = not embedded_ai_feature_enabled
-install_gtk_resources = not feature_tokens.contains('setup')
+install_gtk_resources = not feature_tokens.contains('setup') and cargo_variant != 'developer'
 installed_gresource = join_paths(installed_datadir, project_binary, project_binary + '.gresource')
 installed_resource_mode = 'false'
 if install_gtk_resources

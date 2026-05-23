@@ -42,4 +42,20 @@ mod tests {
         adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
             .expect("embedded action icon should be available");
     }
+
+    #[test]
+    fn embedded_status_bar_ui_is_available() {
+        register().expect("register embedded resources");
+        let path = format!("{RESOURCE_ID}/ui/status-bar.ui");
+        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
+            .expect("embedded status bar UI should be available");
+    }
+
+    #[test]
+    fn embedded_settings_dialog_ui_is_available() {
+        register().expect("register embedded resources");
+        let path = format!("{RESOURCE_ID}/ui/settings-dialog.ui");
+        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
+            .expect("embedded settings dialog UI should be available");
+    }
 }

@@ -5,27 +5,11 @@ pub(in crate::app) fn show_configuration_dialog(
     state: &Rc<RefCell<AppData>>,
     ui_handles: &Rc<UiHandles>,
 ) {
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    let (header, search_button) = build_settings_header("Configuration");
-    root.append(&header);
-
-    let search_entry = gtk::SearchEntry::builder()
-        .placeholder_text(tr("Search configuration"))
-        .hexpand(true)
-        .build();
-    let search_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    search_box.set_margin_top(8);
-    search_box.set_margin_bottom(8);
-    search_box.set_margin_start(12);
-    search_box.set_margin_end(12);
-    search_box.append(&search_entry);
-    let search_bar = gtk::SearchBar::builder()
-        .child(&search_box)
-        .show_close_button(true)
-        .search_mode_enabled(false)
-        .build();
-    search_bar.connect_entry(&search_entry);
-    root.append(&search_bar);
+    let shell = build_settings_dialog_shell("Configuration", "Search configuration");
+    let root = shell.root;
+    let search_button = shell.search_button;
+    let search_bar = shell.search_bar;
+    let search_entry = shell.search_entry;
 
     let page = adw::PreferencesPage::builder()
         .title(tr("Configuration"))

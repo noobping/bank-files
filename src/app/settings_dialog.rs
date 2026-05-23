@@ -1,14 +1,45 @@
 use super::*;
 
-pub(in crate::app) fn build_settings_header(title: &str) -> (adw::HeaderBar, gtk::Button) {
-    let header = adw::HeaderBar::new();
+pub(in crate::app) struct SettingsDialogShell {
+    pub(in crate::app) root: gtk::Box,
+    pub(in crate::app) search_button: gtk::Button,
+    pub(in crate::app) search_bar: gtk::SearchBar,
+    pub(in crate::app) search_entry: gtk::SearchEntry,
+}
+
+pub(in crate::app) fn build_settings_dialog_shell(
+    title: &str,
+    search_placeholder: &str,
+) -> SettingsDialogShell {
+    let builder = ui::builder_from_resource("settings-dialog.ui");
+    let root = builder
+        .object::<gtk::Box>("settings_root")
+        .expect("settings-dialog.ui should define settings_root");
+    let header = builder
+        .object::<adw::HeaderBar>("settings_header")
+        .expect("settings-dialog.ui should define settings_header");
     header.set_title_widget(Some(&adw::WindowTitle::new(&tr(title), "")));
 
-    let search_button = ui::icon_button("edit-find-symbolic", "Search");
-    search_button.add_css_class("flat");
-    header.pack_start(&search_button);
+    let search_button = builder
+        .object::<gtk::Button>("settings_search_button")
+        .expect("settings-dialog.ui should define settings_search_button");
+    search_button.set_tooltip_text(Some(&tr("Search")));
 
-    (header, search_button)
+    let search_bar = builder
+        .object::<gtk::SearchBar>("settings_search_bar")
+        .expect("settings-dialog.ui should define settings_search_bar");
+    let search_entry = builder
+        .object::<gtk::SearchEntry>("settings_search_entry")
+        .expect("settings-dialog.ui should define settings_search_entry");
+    search_entry.set_placeholder_text(Some(&tr(search_placeholder)));
+    search_bar.connect_entry(&search_entry);
+
+    SettingsDialogShell {
+        root,
+        search_button,
+        search_bar,
+        search_entry,
+    }
 }
 
 pub(in crate::app) struct SearchablePreferencesGroup {
