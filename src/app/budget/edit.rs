@@ -87,7 +87,7 @@ struct BudgetSaveUi {
     delete_button: Option<gtk::Button>,
     delete_button_sensitive: bool,
     status: gtk::Label,
-    dialog: adw::Window,
+    dialog: adw::Dialog,
 }
 
 fn save_budget_with_reload(
@@ -216,12 +216,10 @@ pub(in crate::app) fn show_budget_edit_dialog(
     delete_button.add_css_class("destructive-action");
     delete_button.set_sensitive(can_delete_budget);
     let save_button = ui::primary_text_icon_button("document-save-symbolic", "Save", "Save budget");
-    let action_buttons = gtk::Box::new(gtk::Orientation::Horizontal, 6);
-    action_buttons.append(&save_button);
-    action_buttons.append(&delete_button);
     register_exclusive_config_widget(ui_handles, &save_button);
     register_exclusive_config_widget(ui_handles, &delete_button);
-    header.pack_end(&action_buttons);
+    header.pack_start(&delete_button);
+    header.pack_end(&save_button);
     root.append(&header);
 
     let page = ui::page_box();
@@ -275,14 +273,12 @@ pub(in crate::app) fn show_budget_edit_dialog(
     page.append(&status);
     root.append(&ui::action_dialog_scroll(&page));
 
-    let dialog = ui::popup_window(
-        &ui_handles.window,
-        "Edit Budget",
-        620,
-        None,
-        &save_button,
-        &root,
-    );
+    let dialog = adw::Dialog::builder()
+        .title(tr("Edit Budget"))
+        .content_width(620)
+        .default_widget(&save_button)
+        .child(&root)
+        .build();
 
     let state_for_save = Rc::clone(state);
     let ui_for_save = Rc::clone(ui_handles);
@@ -346,14 +342,14 @@ pub(in crate::app) fn show_budget_edit_dialog(
         ui_handles: Rc::clone(ui_handles),
     });
 
-    dialog.present();
+    dialog.present(Some(&ui_handles.window));
 }
 
 struct BudgetDeleteAction<'a> {
     delete_button: &'a gtk::Button,
     save_button: &'a gtk::Button,
     status: &'a gtk::Label,
-    dialog: &'a adw::Window,
+    dialog: &'a adw::Dialog,
     code: String,
     state: Rc<RefCell<AppData>>,
     ui_handles: Rc<UiHandles>,
@@ -470,12 +466,10 @@ fn show_planned_income_budget_edit_dialog(
         "Save",
         "Save planned income budget",
     );
-    let action_buttons = gtk::Box::new(gtk::Orientation::Horizontal, 6);
-    action_buttons.append(&save_button);
-    action_buttons.append(&delete_button);
     register_exclusive_config_widget(ui_handles, &save_button);
     register_exclusive_config_widget(ui_handles, &delete_button);
-    header.pack_end(&action_buttons);
+    header.pack_start(&delete_button);
+    header.pack_end(&save_button);
     root.append(&header);
 
     let page = ui::page_box();
@@ -534,14 +528,12 @@ fn show_planned_income_budget_edit_dialog(
     page.append(&status);
     root.append(&ui::action_dialog_scroll(&page));
 
-    let dialog = ui::popup_window(
-        &ui_handles.window,
-        "Edit Planned Income",
-        620,
-        None,
-        &save_button,
-        &root,
-    );
+    let dialog = adw::Dialog::builder()
+        .title(tr("Edit Planned Income"))
+        .content_width(620)
+        .default_widget(&save_button)
+        .child(&root)
+        .build();
 
     let state_for_save = Rc::clone(state);
     let ui_for_save = Rc::clone(ui_handles);
@@ -586,7 +578,7 @@ fn show_planned_income_budget_edit_dialog(
         ui_handles: Rc::clone(ui_handles),
     });
 
-    dialog.present();
+    dialog.present(Some(&ui_handles.window));
 }
 
 fn editable_budget_for(code: &str, fallback_category: &str) -> (EditableBudget, bool) {

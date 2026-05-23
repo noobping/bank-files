@@ -1054,14 +1054,12 @@ fn show_transaction_pattern_rule_dialog(
     page.append(&status);
     shell.add_form_page(&ui::action_dialog_scroll(&page));
 
-    let dialog = ui::popup_window(
-        &ui_handles.window,
-        "Create Rule",
-        650,
-        None,
-        &save_button,
-        &shell.root,
-    );
+    let dialog = adw::Dialog::builder()
+        .title(tr("Create Rule"))
+        .content_width(650)
+        .default_widget(&save_button)
+        .child(&shell.root)
+        .build();
 
     let ui_for_save = Rc::clone(ui_handles);
     let dialog_for_save = dialog.clone();
@@ -1099,7 +1097,7 @@ fn show_transaction_pattern_rule_dialog(
         dialog_for_save.close();
     });
 
-    dialog.present();
+    dialog.present(Some(&ui_handles.window));
 }
 
 fn editable_rule_for_pattern(

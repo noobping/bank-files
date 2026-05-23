@@ -494,14 +494,12 @@ fn show_forecast_details(
     page.append(&grid);
     root.append(&ui::action_dialog_scroll(&page));
 
-    let dialog = ui::popup_window(
-        &ui_handles.window,
-        title,
-        620,
-        None,
-        &transactions_button,
-        &root,
-    );
+    let dialog = adw::Dialog::builder()
+        .title(tr(title))
+        .content_width(620)
+        .default_widget(&transactions_button)
+        .child(&root)
+        .build();
 
     let state_for_transactions = Rc::clone(state);
     let ui_for_transactions = Rc::clone(ui_handles);
@@ -515,7 +513,7 @@ fn show_forecast_details(
         );
     });
 
-    dialog.present();
+    dialog.present(Some(&ui_handles.window));
 }
 
 fn add_forecast_detail(grid: &gtk::Grid, row: i32, label: &str, value: String) {

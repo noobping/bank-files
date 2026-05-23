@@ -41,27 +41,18 @@ pub(in crate::app) fn show_field_mapping_dialog(
     state: &Rc<RefCell<AppData>>,
     ui_handles: &Rc<UiHandles>,
 ) {
-    let dialog = field_mapping_dialog(
-        parent,
-        headers,
-        canonical,
-        label,
-        current_value,
-        state,
-        ui_handles,
-    );
-    dialog.present();
+    let dialog = field_mapping_dialog(headers, canonical, label, current_value, state, ui_handles);
+    dialog.present(Some(parent));
 }
 
 fn field_mapping_dialog(
-    parent: &adw::ApplicationWindow,
     headers: &[String],
     canonical: &str,
     label: &str,
     current_value: Option<&str>,
     state: &Rc<RefCell<AppData>>,
     ui_handles: &Rc<UiHandles>,
-) -> adw::Window {
+) -> adw::Dialog {
     let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let header = ui::cancelable_dialog_header("Map CSV Field", label);
 
@@ -107,7 +98,12 @@ fn field_mapping_dialog(
     page.append(&status);
     root.append(&ui::action_dialog_scroll(&page));
 
-    let dialog = ui::popup_window(parent, "Map CSV Field", 620, None, &save_button, &root);
+    let dialog = adw::Dialog::builder()
+        .title(tr("Map CSV Field"))
+        .content_width(620)
+        .default_widget(&save_button)
+        .child(&root)
+        .build();
 
     let canonical = canonical.to_string();
     let label = label.to_string();
