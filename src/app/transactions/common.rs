@@ -462,7 +462,7 @@ fn transaction_detail_actions(
                 &menu,
                 &menu_actions,
                 "edit-budget-code",
-                "Budget code",
+                "Edit Budget",
                 enabled,
                 move || {
                     if transaction_detail_config_action_blocked(
