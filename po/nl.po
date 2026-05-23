@@ -3043,8 +3043,8 @@ msgstr "Beheer eenvoudige modus, slim invullen, opschonen en zichtbaarheid van t
 msgid "Smart Autofill"
 msgstr "Slim invullen"
 
-msgid "Let forms fill related fields from context, such as matching categories and budget codes."
-msgstr "Laat formulieren verwante velden invullen vanuit de context, zoals passende categorieen en budgetcodes."
+msgid "Let forms fill related fields from context, such as matching categories and directions."
+msgstr "Laat formulieren verwante velden invullen vanuit de context, zoals passende categorieen en richtingen."
 
 msgid "Advanced Features enabled. Rule editing and direction controls are available."
 msgstr "Geavanceerde functies ingeschakeld. Regelbewerking en richtinginstellingen zijn beschikbaar."
@@ -3052,8 +3052,8 @@ msgstr "Geavanceerde functies ingeschakeld. Regelbewerking en richtinginstelling
 msgid "Simple mode enabled. Rule editing and direction controls are hidden."
 msgstr "Eenvoudige modus ingeschakeld. Regelbewerking en richtinginstellingen zijn verborgen."
 
-msgid "Smart Autofill enabled. Forms can fill matching categories and budget codes."
-msgstr "Slim invullen ingeschakeld. Formulieren kunnen passende categorieen en budgetcodes invullen."
+msgid "Smart Autofill enabled. Forms can fill matching categories and directions."
+msgstr "Slim invullen ingeschakeld. Formulieren kunnen passende categorieen en richtingen invullen."
 
 msgid "Smart Autofill disabled. Forms only use values you select."
 msgstr "Slim invullen uitgeschakeld. Formulieren gebruiken alleen waarden die je zelf kiest."
@@ -3107,11 +3107,11 @@ msgstr "Slimme inzichten zijn uitgeschakeld. Schakel Slimme inzichten in om tran
 msgid "New Category"
 msgstr "Nieuwe categorie"
 
-msgid "Create a category. A budget code is generated automatically when you press Add."
-msgstr "Maak een categorie. Een budgetcode wordt automatisch gemaakt wanneer je op Toevoegen drukt."
+msgid "Create a category and choose whether it is spending, income, or transfer. It is only saved when you press Save."
+msgstr "Maak een categorie en kies of het uitgaven, inkomsten of overboekingen zijn. De categorie wordt pas opgeslagen met Opslaan."
 
-msgid "Create a new category with a budget"
-msgstr "Nieuwe categorie met budget maken"
+msgid "Create a new category with monthly or yearly amounts"
+msgstr "Nieuwe categorie met maand- of jaarbedragen maken"
 
 msgid "Use categories with fixed amounts or percentages."
 msgstr "Gebruik categorieen met vaste bedragen of percentages."

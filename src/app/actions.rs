@@ -508,7 +508,7 @@ pub(in crate::app) fn connect_actions(
             show_status(
                 &ui_for_advanced_autofill,
                 if enabled {
-                    "Smart Autofill enabled. Forms can fill matching categories and budget codes."
+                    "Smart Autofill enabled. Forms can fill matching categories and directions."
                 } else {
                     "Smart Autofill disabled. Forms only use values you select."
                 },

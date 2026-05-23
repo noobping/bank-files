@@ -91,7 +91,7 @@ pub(in crate::app) fn show_preferences_dialog(
             ),
             PreferenceSpec::new(
                 "Smart Autofill",
-                "Let forms fill related fields from context, such as matching categories and budget codes.",
+                "Let forms fill related fields from context, such as matching categories and directions.",
                 "app.advanced-autofill",
                 ui.advanced_autofill.get(),
             ),
@@ -221,7 +221,7 @@ fn preferences_page_snapshot(
             ),
             (
                 "Smart Autofill",
-                "Let forms fill related fields from context, such as matching categories and budget codes.",
+                "Let forms fill related fields from context, such as matching categories and directions.",
                 "app.advanced-autofill",
             ),
             (

@@ -34,7 +34,7 @@
     <key name="advanced-autofill" type="b">
       <default>true</default>
       <summary>Smart autofill</summary>
-      <description>Whether forms may infer related values, such as selecting the TRANSFER budget code when transfer direction is selected.</description>
+      <description>Whether forms may infer related values, such as selecting a matching category when transfer direction is selected.</description>
     </key>
     <key name="advanced-features" type="b">
       <default>false</default>

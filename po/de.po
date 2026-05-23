@@ -3043,8 +3043,8 @@ msgstr "Einfachen Modus, intelligentes Ausfuellen, Bereinigung und Sichtbarkeit 
 msgid "Smart Autofill"
 msgstr "Intelligentes Ausfuellen"
 
-msgid "Let forms fill related fields from context, such as matching categories and budget codes."
-msgstr "Formulare koennen passende Felder aus dem Kontext fuellen, zum Beispiel Kategorien und Budgetcodes."
+msgid "Let forms fill related fields from context, such as matching categories and directions."
+msgstr "Formulare koennen passende Felder aus dem Kontext fuellen, zum Beispiel Kategorien und Richtungen."
 
 msgid "Advanced Features enabled. Rule editing and direction controls are available."
 msgstr "Erweiterte Funktionen aktiviert. Regelbearbeitung und Richtungseinstellungen sind verfuegbar."
@@ -3052,8 +3052,8 @@ msgstr "Erweiterte Funktionen aktiviert. Regelbearbeitung und Richtungseinstellu
 msgid "Simple mode enabled. Rule editing and direction controls are hidden."
 msgstr "Einfacher Modus aktiviert. Regelbearbeitung und Richtungseinstellungen sind ausgeblendet."
 
-msgid "Smart Autofill enabled. Forms can fill matching categories and budget codes."
-msgstr "Intelligentes Ausfuellen aktiviert. Formulare koennen passende Kategorien und Budgetcodes eintragen."
+msgid "Smart Autofill enabled. Forms can fill matching categories and directions."
+msgstr "Intelligentes Ausfuellen aktiviert. Formulare koennen passende Kategorien und Richtungen eintragen."
 
 msgid "Smart Autofill disabled. Forms only use values you select."
 msgstr "Intelligentes Ausfuellen deaktiviert. Formulare verwenden nur ausgewaehlte Werte."
@@ -3107,11 +3107,11 @@ msgstr "Intelligente Einblicke sind deaktiviert. Aktiviere Intelligente Einblick
 msgid "New Category"
 msgstr "Neue Kategorie"
 
-msgid "Create a category. A budget code is generated automatically when you press Add."
-msgstr "Erstelle eine Kategorie. Ein Budgetcode wird automatisch erzeugt, wenn du Hinzufuegen drueckst."
+msgid "Create a category and choose whether it is spending, income, or transfer. It is only saved when you press Save."
+msgstr "Erstelle eine Kategorie und waehle, ob sie Ausgaben, Einnahmen oder Umbuchungen enthaelt. Sie wird erst gespeichert, wenn du Speichern drueckst."
 
-msgid "Create a new category with a budget"
-msgstr "Neue Kategorie mit Budget erstellen"
+msgid "Create a new category with monthly or yearly amounts"
+msgstr "Neue Kategorie mit monatlichen oder jaehrlichen Betraegen erstellen"
 
 msgid "Use categories with fixed amounts or percentages."
 msgstr "Verwende Kategorien mit festen Betraegen oder Prozentwerten."

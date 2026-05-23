@@ -134,7 +134,7 @@ pub(in crate::app) fn show_management_dialog(
         if advanced_features {
             "Create a new budget"
         } else {
-            "Create a new category with a budget"
+            "Create a new category with monthly or yearly amounts"
         },
     );
     let move_budget_code_button = ui::plain_text_icon_button(

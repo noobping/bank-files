@@ -152,7 +152,7 @@ pub(in crate::app) fn show_new_budget_dialog(
         if advanced_features {
             "Create a budget code. It is only saved when you press Save."
         } else {
-            "Create a category. Choose whether it is spending, income, or transfer. A budget code is generated automatically when you press Add."
+            "Create a category and choose whether it is spending, income, or transfer. It is only saved when you press Save."
         },
         "Add",
         620,
