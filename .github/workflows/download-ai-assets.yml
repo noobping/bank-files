@@ -57,6 +57,7 @@ jobs:
           trap 'rm -rf "$tmp_dir"' EXIT
 
           python - "$tmp_dir" <<'PY'
+          import ast
           import json
           import os
           import sys
@@ -88,7 +89,27 @@ jobs:
           }
 
           def normalize_license(value):
-              normalized = str(value or "").strip().lower()
+              if isinstance(value, (list, tuple, set)):
+                  normalized_values = [
+                      normalize_license(item)
+                      for item in value
+                      if str(item or "").strip()
+                  ]
+                  unique_values = sorted(set(normalized_values))
+                  if len(unique_values) > 1:
+                      raise SystemExit(
+                          f"Expected one model license, found {unique_values!r}"
+                      )
+                  return unique_values[0] if unique_values else ""
+
+              raw = str(value or "").strip()
+              if raw.startswith("[") and raw.endswith("]"):
+                  try:
+                      return normalize_license(ast.literal_eval(raw))
+                  except (SyntaxError, ValueError):
+                      pass
+
+              normalized = raw.lower()
               return LICENSE_ALIASES.get(normalized, normalized)
 
           tmp_dir = Path(sys.argv[1])
