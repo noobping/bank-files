@@ -12,7 +12,9 @@ concurrency:
 
 env:
   BANK_FILES_AI_CLASSIFIER_MODEL: prajjwal1/bert-tiny
+  BANK_FILES_AI_CLASSIFIER_MODEL_TYPE: bert
   BANK_FILES_AI_GENERATOR_MODEL: google/t5-efficient-tiny
+  BANK_FILES_AI_GENERATOR_MODEL_TYPE: t5
   BANK_FILES_AI_ALLOWED_LICENSES: "apache-2.0 mit"
   BANK_FILES_AI_MAX_FILE_MB: "95"
 
@@ -115,6 +117,8 @@ jobs:
           tmp_dir = Path(sys.argv[1])
           classifier_model = os.environ["BANK_FILES_AI_CLASSIFIER_MODEL"]
           generator_model = os.environ["BANK_FILES_AI_GENERATOR_MODEL"]
+          classifier_model_type = os.environ.get("BANK_FILES_AI_CLASSIFIER_MODEL_TYPE", "")
+          generator_model_type = os.environ.get("BANK_FILES_AI_GENERATOR_MODEL_TYPE", "")
           allowed_licenses = {
               normalize_license(item)
               for item in os.environ["BANK_FILES_AI_ALLOWED_LICENSES"].split()
@@ -167,6 +171,30 @@ jobs:
                       files.append({"filename": candidate, "text": text})
               return files
 
+          def ensure_transformers_model_type(source_dir, model_id, fallback_model_type, role):
+              config_path = source_dir / "config.json"
+              if not config_path.is_file():
+                  raise SystemExit(f"{model_id} did not provide config.json for {role}")
+
+              config = json.loads(config_path.read_text(encoding="utf-8"))
+              model_type = str(config.get("model_type") or "").strip()
+              if model_type:
+                  return model_type, "config.json"
+
+              fallback_model_type = str(fallback_model_type or "").strip().lower()
+              if not fallback_model_type:
+                  raise SystemExit(
+                      f"{model_id} config.json has no model_type. Set "
+                      f"BANK_FILES_AI_{role.upper()}_MODEL_TYPE to the Transformers model type."
+                  )
+
+              config["model_type"] = fallback_model_type
+              config_path.write_text(
+                  json.dumps(config, indent=2, sort_keys=True) + "\n",
+                  encoding="utf-8",
+              )
+              return fallback_model_type, "workflow-env"
+
           def collect_model_license(api, model_id, role):
               try:
                   info = api.model_info(model_id)
@@ -204,13 +232,26 @@ jobs:
               "generator": collect_model_license(api, generator_model, "generator"),
           }
 
+          model_type_fallbacks = {
+              "classifier": classifier_model_type,
+              "generator": generator_model_type,
+          }
           for key, entry in models.items():
+              source_dir = tmp_dir / f"{key}-source"
               snapshot_download(
                   repo_id=entry["model"],
                   repo_type="model",
                   revision=entry["revision"],
-                  local_dir=tmp_dir / f"{key}-source",
+                  local_dir=source_dir,
               )
+              model_type, model_type_source = ensure_transformers_model_type(
+                  source_dir,
+                  entry["model"],
+                  model_type_fallbacks[key],
+                  key,
+              )
+              entry["model_type"] = model_type
+              entry["model_type_source"] = model_type_source
 
           (tmp_dir / "asset-metadata.json").write_text(
               json.dumps(models, indent=2, sort_keys=True) + "\n",
@@ -285,15 +326,19 @@ jobs:
                   "license": metadata["classifier"]["license"],
                   "license_source": metadata["classifier"]["license_source"],
                   "model_card_url": metadata["classifier"]["model_card_url"],
+                  "model_type": metadata["classifier"]["model_type"],
+                  "model_type_source": metadata["classifier"]["model_type_source"],
               },
               "generator_source": {
                   "model": metadata["generator"]["model"],
                   "revision": metadata["generator"]["revision"],
-                  "architecture": "t5",
+                  "architecture": metadata["generator"]["model_type"],
                   "intended_backend": "candle",
                   "license": metadata["generator"]["license"],
                   "license_source": metadata["generator"]["license_source"],
                   "model_card_url": metadata["generator"]["model_card_url"],
+                  "model_type": metadata["generator"]["model_type"],
+                  "model_type_source": metadata["generator"]["model_type_source"],
               },
               "runtime_status": "assets-built-runtime-adapter-pending",
               "description": (
