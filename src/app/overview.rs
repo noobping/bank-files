@@ -30,13 +30,13 @@ pub(in crate::app) fn render_overview(
     );
 
     if let Some(filter) = search {
-        append_partial_load_notice(&ui_handles.overview, data);
+        append_partial_load_notice(&ui_handles.overview, ui_handles, data);
         render_overview_search(data, ui_handles, state, &filter);
         return;
     }
 
     if data.transactions.is_empty() {
-        append_partial_load_notice(&ui_handles.overview, data);
+        append_partial_load_notice(&ui_handles.overview, ui_handles, data);
         let empty = adw::StatusPage::builder()
             .icon_name("document-open-symbolic")
             .title(tr("No transactions yet"))
@@ -53,7 +53,7 @@ pub(in crate::app) fn render_overview(
         let warnings = annual_budget_attention_warnings(data, year);
         append_attention_warning_card(&ui_handles.overview, &warnings);
     }
-    append_partial_load_notice(&ui_handles.overview, data);
+    append_partial_load_notice(&ui_handles.overview, ui_handles, data);
 
     let dashboard = analytics::dashboard(data);
     let latest = dashboard

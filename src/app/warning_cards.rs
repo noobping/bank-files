@@ -1,8 +1,9 @@
 use super::warnings::{attention_warning_card_message, AttentionWarning};
-use super::{trf, AppData, TransactionLoadScope};
+use super::{register_loading_sensitive_widget, trf, AppData, TransactionLoadScope, UiHandles};
 use crate::ui;
 use adw::gtk;
 use adw::prelude::*;
+use std::rc::Rc;
 
 pub(in crate::app) fn append_attention_warning_card(
     container: &gtk::Box,
@@ -19,7 +20,11 @@ struct PartialLoadRecordCounts {
     total: usize,
 }
 
-pub(in crate::app) fn append_partial_load_notice(container: &gtk::Box, data: &AppData) {
+pub(in crate::app) fn append_partial_load_notice(
+    container: &gtk::Box,
+    ui_handles: &Rc<UiHandles>,
+    data: &AppData,
+) {
     let Some(counts) = partial_load_record_counts(data) else {
         return;
     };
@@ -31,10 +36,48 @@ pub(in crate::app) fn append_partial_load_notice(container: &gtk::Box, data: &Ap
             ("total", counts.total.to_string()),
         ],
     );
-    container.append(&ui::warning_card(
-        "Only part of the CSV records is loaded",
-        &message,
-    ));
+    container.append(&partial_load_info_card(ui_handles, &message));
+}
+
+fn partial_load_info_card(ui_handles: &Rc<UiHandles>, message: &str) -> gtk::Box {
+    let card = ui::card_container();
+    let content = ui::card_content(gtk::Orientation::Horizontal, 12);
+
+    let icon = gtk::Image::from_icon_name("dialog-information-symbolic");
+    icon.add_css_class("dim-label");
+    icon.set_pixel_size(28);
+    icon.set_valign(gtk::Align::Start);
+    content.append(&icon);
+
+    let text_box = gtk::Box::new(gtk::Orientation::Vertical, 4);
+    text_box.set_hexpand(true);
+
+    let title = gtk::Label::new(Some(&super::tr("Only part of the CSV records is loaded")));
+    title.add_css_class("title-4");
+    title.set_xalign(0.0);
+    title.set_width_chars(1);
+    title.set_wrap(true);
+    title.set_wrap_mode(gtk::pango::WrapMode::WordChar);
+    text_box.append(&title);
+
+    let label = ui::selectable_wrapped_label(message);
+    label.set_width_chars(1);
+    label.set_max_width_chars(78);
+    text_box.append(&label);
+    content.append(&text_box);
+
+    let reload_button = ui::plain_text_icon_button(
+        "view-refresh-symbolic",
+        "Reload All",
+        "Force reload all CSV files",
+    );
+    reload_button.set_valign(gtk::Align::Start);
+    reload_button.set_action_name(Some("app.reload-all"));
+    register_loading_sensitive_widget(ui_handles, &reload_button);
+    content.append(&reload_button);
+
+    card.append(&content);
+    card
 }
 
 fn partial_load_record_counts(data: &AppData) -> Option<PartialLoadRecordCounts> {
