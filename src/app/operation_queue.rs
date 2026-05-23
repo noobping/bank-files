@@ -380,9 +380,11 @@ fn refresh_operation_queue_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) 
 
 fn set_operation_queue_button_style(button: &gtk::Button, actionable: usize) {
     if operation_queue_button_is_suggested(actionable) {
+        button.remove_css_class("flat");
         button.add_css_class("suggested-action");
     } else {
         button.remove_css_class("suggested-action");
+        button.add_css_class("flat");
     }
 }
 

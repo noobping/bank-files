@@ -686,7 +686,6 @@ fn show_transaction_budget_code_dialog(
     let cancel_button_for_save = cancel_button.clone();
     let budget_targets_for_save = Rc::clone(&budget_targets);
     save_button.connect_clicked(move |button| {
-        let category_text = ui::combo_text(&category);
         let budget_code_text = if advanced_features {
             ui::combo_text(&budget_code)
         } else {
@@ -701,18 +700,9 @@ fn show_transaction_budget_code_dialog(
             budget_code.grab_focus();
             return;
         }
-        if category_text.is_empty() {
-            status.set_text(&tr(if advanced_features {
-                "Choose a budget code first."
-            } else {
-                "Choose a category first."
-            }));
-            budget_code.grab_focus();
-            return;
-        }
 
-        let direction_text = if advanced_features {
-            ui::combo_active_id(&direction)
+        let simple_target = if advanced_features {
+            None
         } else {
             let Some(target) = transaction_budget_target_for_code(
                 budget_targets_for_save.as_ref(),
@@ -736,8 +726,27 @@ fn show_transaction_budget_code_dialog(
                 budget_code.grab_focus();
                 return;
             }
-            target.direction.as_str().to_string()
+            Some(target.clone())
         };
+
+        let category_text = simple_target
+            .as_ref()
+            .map(|target| target.category.clone())
+            .unwrap_or_else(|| ui::combo_text(&category));
+        if category_text.is_empty() {
+            status.set_text(&tr(if advanced_features {
+                "Choose a budget code first."
+            } else {
+                "Choose a category first."
+            }));
+            budget_code.grab_focus();
+            return;
+        }
+
+        let direction_text = simple_target
+            .as_ref()
+            .map(|target| target.direction.as_str().to_string())
+            .unwrap_or_else(|| ui::combo_active_id(&direction));
 
         let direction_changes = if advanced_features {
             transaction_budget_direction_change(
