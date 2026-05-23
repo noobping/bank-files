@@ -1,7 +1,9 @@
+!data/resources.xml
 **/*.rs.bk
 **/mutants.out*/
 *.gresource
 *.lock
+*.log
 *.pdb
 .flatpak-builder
 .flatpak/
@@ -9,5 +11,4 @@
 _build/
 debug
 resources.xml
-!data/resources.xml
 target
