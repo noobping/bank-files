@@ -3396,3 +3396,33 @@ msgstr "Er is nog geen jaar beschikbaar voor dit filter."
 
 msgid "This filter is not available yet."
 msgstr "Dit filter is nog niet beschikbaar."
+
+msgid "Budget targets"
+msgstr "Budgetdoelen"
+
+msgid "More Options"
+msgstr "Meer opties"
+
+msgid "Edit the category, budget code, direction, and confirmation details."
+msgstr "Bewerk de categorie, budgetcode, richting en bevestigingsdetails."
+
+msgid "Search categories"
+msgstr "Categorieen zoeken"
+
+msgid "Search rule fields"
+msgstr "Regelvelden zoeken"
+
+msgid "Search budget codes"
+msgstr "Budgetcodes zoeken"
+
+msgid "No matching categories."
+msgstr "Geen overeenkomende categorieen."
+
+msgid "Open More Options first."
+msgstr "Open eerst Meer opties."
+
+msgid "Choose a different category first."
+msgstr "Kies eerst een andere categorie."
+
+msgid "{code} · {direction}"
+msgstr "{code} · {direction}"

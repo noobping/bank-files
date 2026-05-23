@@ -418,19 +418,17 @@ fn show_transaction_rule_dialog(
 ) {
     let initial = editable_rule_for_transaction(tx, direction_override);
 
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    let header = ui::cancelable_dialog_header(
+    let shell = build_action_dialog_shell(
         "Create Rule",
         "Create a categorization rule from this transaction.",
+        "Save",
+        "document-save-symbolic",
+        "Save rule",
+        "Search rule fields",
     );
-
-    let cancel_button = gtk::Button::with_label(&tr("Cancel"));
-    cancel_button.add_css_class("flat");
-    let save_button = ui::primary_text_icon_button("document-save-symbolic", "Save", "Save rule");
+    shell.set_form_only();
+    let save_button = shell.submit_button.clone();
     register_config_widget(ui_handles, &save_button);
-    header.pack_start(&cancel_button);
-    header.pack_end(&save_button);
-    root.append(&header);
 
     let page = ui::page_box();
     let grid = ui::form_grid();
@@ -498,24 +496,23 @@ fn show_transaction_rule_dialog(
     let status = ui::wrapped_label(&tr("Save adds this rule to the processing queue."));
     status.add_css_class("dim-label");
     page.append(&status);
-    root.append(&ui::action_dialog_scroll(&page));
+    shell.add_form_page(&ui::action_dialog_scroll(&page));
 
     let dialog = adw::Dialog::builder()
         .title(tr("Create Rule"))
         .content_width(680)
         .content_height(-1)
         .default_widget(&save_button)
-        .child(&root)
+        .child(&shell.root)
         .build();
 
-    let dialog_for_cancel = dialog.clone();
-    cancel_button.connect_clicked(move |_| {
-        dialog_for_cancel.close();
+    let dialog_for_close = dialog.clone();
+    shell.close_button.connect_clicked(move |_| {
+        dialog_for_close.close();
     });
 
     let ui_for_save = Rc::clone(ui_handles);
     let dialog_for_save = dialog.clone();
-    let cancel_button_for_save = cancel_button.clone();
     ui::connect_button_activation(&save_button, move |button| {
         let search_text = ui::combo_text(&search);
         let category_text = ui::combo_text(&category);
@@ -546,7 +543,6 @@ fn show_transaction_rule_dialog(
 
         enqueue_rule_operation(&ui_for_save, rule, true, OperationSource::CreateRule);
         button.set_sensitive(false);
-        cancel_button_for_save.set_label(&tr("Close"));
         status.set_text(&tr("Rule added to processing queue."));
         dialog_for_save.close();
     });
@@ -577,56 +573,195 @@ fn show_transaction_budget_code_dialog(
     } else {
         "Move this transaction to another category."
     };
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    let header = ui::cancelable_dialog_header(dialog_title, dialog_subtitle);
-
-    let cancel_button = gtk::Button::with_label(&tr("Cancel"));
-    cancel_button.add_css_class("flat");
-    let save_button = ui::primary_text_icon_button(
-        "document-save-symbolic",
-        "Save",
-        if advanced_features {
-            "Save budget code move"
-        } else {
-            "Save category move"
-        },
-    );
-    register_config_widget(ui_handles, &save_button);
-    header.pack_start(&cancel_button);
-    header.pack_end(&save_button);
-    root.append(&header);
-
-    let page = ui::page_box();
-    let match_summary = trf(
-        "Matching by {field}: {value}",
-        &[
-            ("field", tr(rule_field_label(&initial.field))),
-            ("value", truncate(&initial.search, 80)),
-        ],
-    );
-    let form = ui::form_box();
-    ui::add_labeled_stacked(&form, "Rule match", &ui::wrapped_label(&match_summary));
-
-    let budget_targets = Rc::new(transaction_budget_move_targets(
-        tx,
-        &state.borrow().budgets,
-        advanced_features,
-    ));
-    let category = category_combo(&state.borrow(), &initial.category);
-    let budget_code = if advanced_features {
-        budget_code_combo(&state.borrow(), &initial.budget_code)
+    let match_name = truncate(&initial.search, 60);
+    let header_title = transaction_budget_move_dialog_title(&match_name, dialog_title);
+    let submit_tooltip = if advanced_features {
+        "Save budget code move"
     } else {
-        transaction_budget_target_combo(budget_targets.as_ref(), &initial.budget_code)
+        "Save category move"
     };
-    let direction = ui::combo_from_options(
-        &[
-            ("expense", "Expenses"),
-            ("income", "Income"),
-            ("transfer", "Transfers"),
-        ],
-        &initial.direction,
+    let shell = build_action_dialog_shell(
+        &header_title,
+        dialog_subtitle,
+        "Save",
+        "document-save-symbolic",
+        submit_tooltip,
+        "Search categories",
     );
+    register_config_widget(ui_handles, &shell.submit_button);
+    shell.submit_button.set_sensitive(false);
+
+    let match_summary = transaction_budget_move_match_summary(&initial);
+    let budget_targets =
+        transaction_budget_move_targets(tx, &state.borrow().budgets, advanced_features);
+
+    let list_page = adw::PreferencesPage::new();
+    let choices_group = adw::PreferencesGroup::new();
+    let selected_target: Rc<RefCell<Option<TransactionBudgetTarget>>> = Rc::new(RefCell::new(None));
+    let mut row_widgets = Vec::new();
+    let mut search_rows = Vec::<SearchableActionRow>::new();
+
+    for target in &budget_targets {
+        let title = transaction_budget_target_title(target, advanced_features);
+        let subtitle = transaction_budget_target_subtitle(target, advanced_features);
+        let row = adw::ActionRow::builder()
+            .title(title.as_str())
+            .subtitle(subtitle.as_str())
+            .build();
+        row.set_title_lines(1);
+        row.set_subtitle_lines(2);
+        row.set_activatable(true);
+        row.set_focusable(true);
+
+        let check = gtk::Image::from_icon_name("object-select-symbolic");
+        check.add_css_class("accent");
+        check.set_visible(false);
+        row.add_suffix(&check);
+
+        choices_group.add(&row);
+        search_rows.push(searchable_action_row(
+            &row,
+            &title,
+            &subtitle,
+            &transaction_budget_target_search_keywords(target, advanced_features, &match_summary),
+        ));
+        row_widgets.push(TransactionBudgetTargetRow {
+            row,
+            check,
+            target: target.clone(),
+        });
+    }
+
+    let empty_search = ui::wrapped_label(&tr("No matching categories."));
+    empty_search.add_css_class("dim-label");
+    empty_search.set_visible(false);
+    choices_group.add(&empty_search);
+    list_page.add(&choices_group);
+
+    if transaction_budget_more_options_visible(advanced_features) {
+        let advanced_group = adw::PreferencesGroup::new();
+        let more_row = adw::ActionRow::builder()
+            .title(tr("More Options"))
+            .subtitle(tr(
+                "Edit the category, budget code, direction, and confirmation details.",
+            ))
+            .build();
+        more_row.set_activatable(true);
+        more_row.add_prefix(&gtk::Image::from_icon_name("emblem-system-symbolic"));
+        more_row.add_suffix(&gtk::Image::from_icon_name("go-next-symbolic"));
+        advanced_group.add(&more_row);
+        list_page.add(&advanced_group);
+
+        let shell_for_more = shell.page_handle();
+        more_row.connect_activated(move |_| {
+            shell_for_more.set_form_page();
+        });
+    }
+
+    let status = ui::wrapped_label("");
+    status.add_css_class("dim-label");
+    status.set_visible(false);
+    choices_group.add(&status);
+
+    let rows = Rc::new(row_widgets);
+    for index in 0..rows.len() {
+        let row = rows[index].row.clone();
+        let rows_for_click = Rc::clone(&rows);
+        let selected_for_click = Rc::clone(&selected_target);
+        let save_for_click = shell.submit_button.clone();
+        let tx_for_click = tx.clone();
+        let click = gtk::GestureClick::new();
+        click.set_button(0);
+        click.connect_pressed(move |_, n_press, _, _| {
+            select_transaction_budget_target_row(
+                rows_for_click.as_ref(),
+                &selected_for_click,
+                &save_for_click,
+                &tx_for_click,
+                advanced_features,
+                index,
+            );
+            if n_press >= 2 && save_for_click.is_sensitive() {
+                save_for_click.emit_clicked();
+            }
+        });
+        row.add_controller(click);
+
+        let rows_for_key = Rc::clone(&rows);
+        let selected_for_key = Rc::clone(&selected_target);
+        let save_for_key = shell.submit_button.clone();
+        let tx_for_key = tx.clone();
+        let key = gtk::EventControllerKey::new();
+        key.connect_key_pressed(move |_, key, _, _| {
+            let activates = matches!(
+                key,
+                gtk::gdk::Key::Return | gtk::gdk::Key::KP_Enter | gtk::gdk::Key::space
+            );
+            if !activates {
+                return gtk::glib::Propagation::Proceed;
+            }
+            select_transaction_budget_target_row(
+                rows_for_key.as_ref(),
+                &selected_for_key,
+                &save_for_key,
+                &tx_for_key,
+                advanced_features,
+                index,
+            );
+            if save_for_key.is_sensitive() {
+                save_for_key.emit_clicked();
+            }
+            gtk::glib::Propagation::Stop
+        });
+        row.add_controller(key);
+    }
+
+    let list_max_height = transaction_budget_move_list_max_height(&ui_handles.window);
+    let list_min_height = transaction_budget_move_list_min_height(rows.len()).min(list_max_height);
+    shell.add_list_page(&ui::action_dialog_scroll_with_limits(
+        &list_page,
+        list_min_height,
+        list_max_height,
+    ));
+    if let Some(selected_index) = rows
+        .iter()
+        .position(|row| transaction_budget_target_is_current(tx, &row.target, advanced_features))
+    {
+        select_transaction_budget_target_row(
+            rows.as_ref(),
+            &selected_target,
+            &shell.submit_button,
+            tx,
+            advanced_features,
+            selected_index,
+        );
+    }
+    connect_action_search(
+        &shell.search_entry,
+        search_rows,
+        Some(empty_search.clone().upcast::<gtk::Widget>()),
+    );
+
+    let mut form_category: Option<gtk::ComboBoxText> = None;
+    let mut form_budget_code: Option<gtk::ComboBoxText> = None;
+    let mut form_direction: Option<gtk::ComboBoxText> = None;
+    let mut form_status: Option<gtk::Label> = None;
+
     if advanced_features {
+        let form_page = ui::page_box();
+        let form = ui::form_box();
+        ui::add_labeled_stacked(&form, "Rule match", &ui::wrapped_label(&match_summary));
+
+        let category = category_combo(&state.borrow(), &initial.category);
+        let budget_code = budget_code_combo(&state.borrow(), &initial.budget_code);
+        let direction = ui::combo_from_options(
+            &[
+                ("expense", "Expenses"),
+                ("income", "Income"),
+                ("transfer", "Transfers"),
+            ],
+            &initial.direction,
+        );
         connect_budget_fields_autofill(
             &category,
             &budget_code,
@@ -635,200 +770,348 @@ fn show_transaction_budget_code_dialog(
             &ui_handles.advanced_autofill,
         );
         ui::focus_button_after_combo_selections(
-            &save_button,
+            &shell.submit_button,
             &[&category, &budget_code, &direction],
         );
         ui::add_labeled_stacked(&form, "Category", &category);
         ui::add_labeled_stacked(&form, "Budget code", &budget_code);
         ui::add_labeled_stacked(&form, "Direction", &direction);
-    } else {
-        category.set_visible(false);
-        direction.set_visible(false);
-        connect_transaction_budget_target_autofill(
-            &budget_code,
-            &category,
-            &direction,
-            Rc::clone(&budget_targets),
-        );
-        ui::focus_button_after_combo_selection(&budget_code, &save_button);
-        ui::add_labeled_stacked(&form, "Category", &budget_code);
-    }
-    page.append(&form);
+        form_page.append(&form);
 
-    let status = ui::wrapped_label(&tr(if advanced_features {
-        "Save adds a categorization rule to the processing queue. The original bank CSV is not changed."
-    } else {
-        "Save moves matching transactions to this category. The original bank CSV is not changed."
-    }));
-    status.add_css_class("dim-label");
-    page.append(&status);
-    root.append(&ui::action_dialog_scroll(&page));
+        let advanced_status = ui::wrapped_label(&tr(
+            "Save adds a categorization rule to the processing queue. The original bank CSV is not changed.",
+        ));
+        advanced_status.add_css_class("dim-label");
+        form_page.append(&advanced_status);
+        shell.add_form_page(&ui::action_dialog_scroll(&form_page));
+
+        form_category = Some(category);
+        form_budget_code = Some(budget_code);
+        form_direction = Some(direction);
+        form_status = Some(advanced_status);
+    }
+
+    shell.set_list_page();
 
     let dialog = adw::Dialog::builder()
         .title(tr(dialog_title))
         .content_width(680)
         .content_height(-1)
-        .default_widget(&save_button)
-        .child(&root)
+        .default_widget(&shell.submit_button)
+        .child(&shell.root)
         .build();
+    ui::connect_search_shortcut(&shell.root, &shell.search_bar, &shell.search_entry);
 
-    let dialog_for_cancel = dialog.clone();
-    cancel_button.connect_clicked(move |_| {
-        dialog_for_cancel.close();
+    let dialog_for_close = dialog.clone();
+    shell.close_button.connect_clicked(move |_| {
+        dialog_for_close.close();
+    });
+
+    let shell_for_back = shell.page_handle();
+    shell.back_button.connect_clicked(move |_| {
+        shell_for_back.set_list_page();
     });
 
     let state_for_save = Rc::clone(state);
     let ui_for_save = Rc::clone(ui_handles);
     let dialog_for_save = dialog.clone();
     let tx_for_save = tx.clone();
-    let initial_field = initial.field.clone();
-    let initial_search = initial.search.clone();
-    let initial_is_regex = initial.is_regex;
-    let initial_amount_min = initial.amount_min.clone();
-    let initial_amount_max = initial.amount_max.clone();
-    let cancel_button_for_save = cancel_button.clone();
-    let budget_targets_for_save = Rc::clone(&budget_targets);
-    let budget_code_for_auto_submit = budget_code.clone();
-    ui::connect_button_activation(&save_button, move |button| {
-        let budget_code_text = if advanced_features {
-            ui::combo_text(&budget_code)
+    let initial_for_save = initial.clone();
+    let selected_for_save = Rc::clone(&selected_target);
+    let stack_for_save = shell.stack.clone();
+    let list_status_for_save = status.clone();
+    let form_status_for_save = form_status.clone();
+    ui::connect_button_activation(&shell.submit_button, move |button| {
+        let using_form = stack_for_save.visible_child_name().as_deref() == Some("form");
+        let active_status = if using_form {
+            form_status_for_save
+                .as_ref()
+                .unwrap_or(&list_status_for_save)
+                .clone()
         } else {
-            ui::combo_active_id(&budget_code)
+            list_status_for_save.clone()
         };
-        if budget_code_text.is_empty() {
-            status.set_text(&tr(if advanced_features {
-                "Enter a budget code first."
-            } else {
-                "Choose a category first."
-            }));
-            budget_code.grab_focus();
-            return;
-        }
 
-        let simple_target = if advanced_features {
-            None
-        } else {
-            let Some(target) = transaction_budget_target_for_code(
-                budget_targets_for_save.as_ref(),
-                &budget_code_text,
-            ) else {
-                status.set_text(&tr(
-                    "This category is not available in simple mode. Enable Advanced Features to change direction.",
-                ));
-                budget_code.grab_focus();
+        let move_values = if using_form {
+            let Some(category) = form_category.as_ref() else {
+                set_action_status(&active_status, "Open More Options first.");
                 return;
             };
-            if !transaction_budget_target_allowed(
-                &tx_for_save,
-                &state_for_save.borrow().budgets,
-                target,
-                false,
-            ) {
-                status.set_text(&tr(
-                    "This move changes direction. Enable Advanced Features to continue.",
-                ));
+            let Some(budget_code) = form_budget_code.as_ref() else {
+                set_action_status(&active_status, "Open More Options first.");
+                return;
+            };
+            let Some(direction) = form_direction.as_ref() else {
+                set_action_status(&active_status, "Open More Options first.");
+                return;
+            };
+            let budget_code_text = ui::combo_text(budget_code);
+            if budget_code_text.is_empty() {
+                set_action_status(&active_status, "Enter a budget code first.");
                 budget_code.grab_focus();
                 return;
             }
-            Some(target.clone())
+            let category_text = ui::combo_text(category);
+            if category_text.is_empty() {
+                set_action_status(&active_status, "Choose a budget code first.");
+                budget_code.grab_focus();
+                return;
+            }
+            TransactionBudgetMoveValues {
+                category: category_text,
+                budget_code: budget_code_text,
+                direction: ui::combo_active_id(direction),
+            }
+        } else {
+            let Some(target) = selected_for_save.borrow().clone() else {
+                set_action_status(&active_status, "Choose a category first.");
+                return;
+            };
+            if !transaction_budget_target_is_changed(&tx_for_save, &target, advanced_features) {
+                set_action_status(&active_status, "Choose a different category first.");
+                return;
+            }
+            if !transaction_budget_target_allowed(
+                &tx_for_save,
+                &state_for_save.borrow().budgets,
+                &target,
+                advanced_features,
+            ) {
+                set_action_status(
+                    &active_status,
+                    "This move changes direction. Enable Advanced Features to continue.",
+                );
+                return;
+            }
+            TransactionBudgetMoveValues {
+                category: target.category,
+                budget_code: target.code,
+                direction: target.direction.as_str().to_string(),
+            }
         };
-
-        let category_text = simple_target
-            .as_ref()
-            .map(|target| target.category.clone())
-            .unwrap_or_else(|| ui::combo_text(&category));
-        if category_text.is_empty() {
-            status.set_text(&tr(if advanced_features {
-                "Choose a budget code first."
-            } else {
-                "Choose a category first."
-            }));
-            budget_code.grab_focus();
-            return;
-        }
-
-        let direction_text = simple_target
-            .as_ref()
-            .map(|target| target.direction.as_str().to_string())
-            .unwrap_or_else(|| ui::combo_active_id(&direction));
 
         let direction_changes = if advanced_features {
             transaction_budget_direction_change(
                 &tx_for_save,
                 &state_for_save.borrow().budgets,
-                &budget_code_text,
-                &category_text,
-                &direction_text,
+                &move_values.budget_code,
+                &move_values.category,
+                &move_values.direction,
             )
             .into_iter()
             .collect()
         } else {
             Vec::new()
         };
-        let rule = EditableRule {
-            priority: 140,
-            active: true,
-            field: initial_field.clone(),
-            search: initial_search.clone(),
-            is_regex: initial_is_regex,
-            category: category_text,
-            budget_code: budget_code_text,
-            direction: direction_text,
-            amount_min: initial_amount_min.clone(),
-            amount_max: initial_amount_max.clone(),
-            notes: tr(if advanced_features {
-                "Generated from transaction budget code change."
-            } else {
-                "Generated from transaction category change."
-            }),
-        };
+        let rule = transaction_budget_move_rule(&initial_for_save, move_values, advanced_features);
 
         let button = button.clone();
-        let cancel_button = cancel_button_for_save.clone();
-        let status = status.clone();
+        let status = active_status.clone();
         let ui_for_save = Rc::clone(&ui_for_save);
         let dialog_for_confirm = dialog_for_save.clone();
         let dialog_for_save = dialog_for_save.clone();
         confirm_budget_direction_changes(&dialog_for_confirm, direction_changes, move || {
             enqueue_rule_operation(&ui_for_save, rule, true, OperationSource::ChangeBudgetCode);
             button.set_sensitive(false);
-            cancel_button.set_label(&tr("Close"));
-            status.set_text(&tr(if advanced_features {
-                "Budget code move added to processing queue."
-            } else {
-                "Category move added to processing queue."
-            }));
+            set_action_status(
+                &status,
+                if advanced_features {
+                    "Budget code move added to processing queue."
+                } else {
+                    "Category move added to processing queue."
+                },
+            );
             dialog_for_save.close();
         });
     });
 
-    if !advanced_features {
-        connect_simple_budget_move_autosubmit(&budget_code_for_auto_submit, &save_button);
-    }
-
     dialog.present(Some(&ui_handles.window));
 }
 
-fn connect_simple_budget_move_autosubmit(
-    budget_code: &gtk::ComboBoxText,
-    save_button: &gtk::Button,
-) {
-    let pending = Rc::new(Cell::new(false));
-    let save_button_for_change = save_button.clone();
-    budget_code.connect_changed(move |_| {
-        if pending.replace(true) {
-            return;
-        }
+fn transaction_budget_move_dialog_title(match_name: &str, fallback_title: &str) -> String {
+    if match_name.trim().is_empty() {
+        tr(fallback_title)
+    } else {
+        match_name.to_string()
+    }
+}
 
-        let pending_for_submit = Rc::clone(&pending);
-        let save_button_for_submit = save_button_for_change.clone();
-        gtk::glib::idle_add_local_once(move || {
-            pending_for_submit.set(false);
-            if save_button_for_submit.is_visible() && save_button_for_submit.is_sensitive() {
-                save_button_for_submit.emit_clicked();
-            }
-        });
-    });
+fn transaction_budget_move_match_summary(initial: &EditableRule) -> String {
+    trf(
+        "Matching by {field}: {value}",
+        &[
+            ("field", tr(rule_field_label(&initial.field))),
+            ("value", truncate(&initial.search, 80)),
+        ],
+    )
+}
+
+fn transaction_budget_move_list_min_height(row_count: usize) -> i32 {
+    let visible_rows = row_count.clamp(3, 7) as i32;
+    72 + visible_rows * 54
+}
+
+fn transaction_budget_move_list_max_height(window: &impl IsA<gtk::Widget>) -> i32 {
+    transaction_budget_move_list_max_height_for_window(window.as_ref().allocated_height())
+}
+
+fn transaction_budget_move_list_max_height_for_window(window_height: i32) -> i32 {
+    if window_height <= 0 {
+        return 620;
+    }
+    window_height.saturating_sub(96).clamp(180, 900)
+}
+
+fn set_action_status(status: &gtk::Label, message: &str) {
+    status.set_text(&tr(message));
+    status.set_visible(true);
+}
+
+fn select_transaction_budget_target_row(
+    rows: &[TransactionBudgetTargetRow],
+    selected_target: &Rc<RefCell<Option<TransactionBudgetTarget>>>,
+    save_button: &gtk::Button,
+    tx: &Transaction,
+    advanced_features: bool,
+    selected_index: usize,
+) {
+    let mut selected = None;
+    for (index, row) in rows.iter().enumerate() {
+        let row_selected = index == selected_index;
+        row.check.set_visible(row_selected);
+        if row_selected {
+            selected = Some(row.target.clone());
+        }
+    }
+    save_button.set_sensitive(
+        selected.as_ref().is_some_and(|target| {
+            transaction_budget_target_is_changed(tx, target, advanced_features)
+        }),
+    );
+    *selected_target.borrow_mut() = selected;
+}
+
+#[derive(Clone)]
+struct TransactionBudgetTargetRow {
+    row: adw::ActionRow,
+    check: gtk::Image,
+    target: TransactionBudgetTarget,
+}
+
+#[derive(Clone)]
+struct TransactionBudgetMoveValues {
+    category: String,
+    budget_code: String,
+    direction: String,
+}
+
+fn transaction_budget_move_rule(
+    initial: &EditableRule,
+    values: TransactionBudgetMoveValues,
+    advanced_features: bool,
+) -> EditableRule {
+    EditableRule {
+        priority: 140,
+        active: true,
+        field: initial.field.clone(),
+        search: initial.search.clone(),
+        is_regex: initial.is_regex,
+        category: values.category,
+        budget_code: values.budget_code,
+        direction: values.direction,
+        amount_min: initial.amount_min.clone(),
+        amount_max: initial.amount_max.clone(),
+        notes: tr(if advanced_features {
+            "Generated from transaction budget code change."
+        } else {
+            "Generated from transaction category change."
+        }),
+    }
+}
+
+fn transaction_budget_target_title(
+    target: &TransactionBudgetTarget,
+    advanced_features: bool,
+) -> String {
+    if !target.category.trim().is_empty() {
+        target.category.clone()
+    } else if advanced_features {
+        target.code.clone()
+    } else {
+        tr("Uncategorized")
+    }
+}
+
+fn transaction_budget_target_subtitle(
+    target: &TransactionBudgetTarget,
+    advanced_features: bool,
+) -> String {
+    let direction = transaction_budget_direction_label(target.direction);
+    if advanced_features {
+        trf(
+            "{code} · {direction}",
+            &[("code", target.code.clone()), ("direction", direction)],
+        )
+    } else {
+        direction
+    }
+}
+
+fn transaction_budget_direction_label(direction: BudgetDirection) -> String {
+    tr(match direction {
+        BudgetDirection::Income => "Income",
+        BudgetDirection::Transfer => "Transfers",
+        BudgetDirection::Expense => "Expenses",
+    })
+}
+
+fn transaction_budget_target_search_keywords(
+    target: &TransactionBudgetTarget,
+    advanced_features: bool,
+    match_summary: &str,
+) -> Vec<String> {
+    let mut keywords = vec![
+        target.category.clone(),
+        transaction_budget_direction_label(target.direction),
+        match_summary.to_string(),
+    ];
+    if advanced_features {
+        keywords.push(target.code.clone());
+    }
+    keywords
+}
+
+fn transaction_budget_target_is_current(
+    tx: &Transaction,
+    target: &TransactionBudgetTarget,
+    advanced_features: bool,
+) -> bool {
+    if !advanced_features
+        && !tx.category.trim().is_empty()
+        && target
+            .category
+            .trim()
+            .eq_ignore_ascii_case(tx.category.trim())
+    {
+        return true;
+    }
+
+    target
+        .code
+        .trim()
+        .eq_ignore_ascii_case(tx.budget_code.trim())
+}
+
+fn transaction_budget_target_is_changed(
+    tx: &Transaction,
+    target: &TransactionBudgetTarget,
+    advanced_features: bool,
+) -> bool {
+    !transaction_budget_target_is_current(tx, target, advanced_features)
+}
+
+fn transaction_budget_more_options_visible(advanced_features: bool) -> bool {
+    advanced_features
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -892,76 +1175,7 @@ fn transaction_budget_move_available(
 ) -> bool {
     transaction_budget_move_targets(tx, budgets, advanced_features)
         .iter()
-        .any(|target| !target.code.eq_ignore_ascii_case(tx.budget_code.trim()))
-}
-
-fn transaction_budget_target_for_code<'a>(
-    targets: &'a [TransactionBudgetTarget],
-    code: &str,
-) -> Option<&'a TransactionBudgetTarget> {
-    let code = code.trim();
-    targets
-        .iter()
-        .find(|target| target.code.eq_ignore_ascii_case(code))
-}
-
-fn transaction_budget_target_combo(
-    targets: &[TransactionBudgetTarget],
-    active: &str,
-) -> gtk::ComboBoxText {
-    let combo = gtk::ComboBoxText::new();
-    for target in targets {
-        combo.append(Some(&target.code), &target.category);
-    }
-    if !active.trim().is_empty() {
-        combo.set_active_id(Some(active.trim()));
-    }
-    if combo.active_id().is_none() {
-        combo.set_active(Some(0));
-    }
-    combo
-}
-
-fn connect_transaction_budget_target_autofill(
-    budget_code: &gtk::ComboBoxText,
-    category: &gtk::ComboBoxText,
-    direction: &gtk::ComboBoxText,
-    targets: Rc<Vec<TransactionBudgetTarget>>,
-) {
-    apply_transaction_budget_target(budget_code, category, direction, targets.as_ref());
-    let category = category.clone();
-    let direction = direction.clone();
-    budget_code.connect_changed(move |combo| {
-        apply_transaction_budget_target(combo, &category, &direction, targets.as_ref());
-    });
-}
-
-fn apply_transaction_budget_target(
-    budget_code: &gtk::ComboBoxText,
-    category: &gtk::ComboBoxText,
-    direction: &gtk::ComboBoxText,
-    targets: &[TransactionBudgetTarget],
-) {
-    let code = ui::combo_active_id(budget_code);
-    let Some(target) = transaction_budget_target_for_code(targets, &code) else {
-        return;
-    };
-    set_text_combo_value(category, &target.category);
-    direction.set_active_id(Some(target.direction.as_str()));
-}
-
-fn set_text_combo_value(combo: &gtk::ComboBoxText, value: &str) {
-    combo.set_active_id(if value.trim().is_empty() {
-        None
-    } else {
-        Some(value.trim())
-    });
-    if let Some(entry) = combo
-        .child()
-        .and_then(|child| child.downcast::<gtk::Entry>().ok())
-    {
-        entry.set_text(value.trim());
-    }
+        .any(|target| transaction_budget_target_is_changed(tx, target, advanced_features))
 }
 
 fn rule_search_combo(tx: &Transaction, selected: &str) -> gtk::ComboBoxText {
@@ -1523,6 +1737,106 @@ mod tests {
             &expense_target,
             false,
         ));
+    }
+
+    #[test]
+    fn budget_move_dialog_title_uses_match_value_only() {
+        assert_eq!(
+            transaction_budget_move_dialog_title("FNV", "Move Category"),
+            "FNV"
+        );
+        assert_eq!(
+            transaction_budget_move_dialog_title("", "Move Category"),
+            tr("Move Category")
+        );
+    }
+
+    #[test]
+    fn budget_move_list_height_tracks_window_height() {
+        assert_eq!(transaction_budget_move_list_max_height_for_window(0), 620);
+        assert_eq!(transaction_budget_move_list_max_height_for_window(320), 224);
+        assert_eq!(transaction_budget_move_list_max_height_for_window(800), 704);
+    }
+
+    #[test]
+    fn budget_move_list_save_requires_changed_target() {
+        let transaction = tx(-100, "FOOD", "Groceries");
+        let current = TransactionBudgetTarget {
+            code: "FOOD".to_string(),
+            category: "Groceries".to_string(),
+            direction: BudgetDirection::Expense,
+        };
+        let other = TransactionBudgetTarget {
+            code: "OTHER".to_string(),
+            category: "Other".to_string(),
+            direction: BudgetDirection::Expense,
+        };
+
+        assert!(!transaction_budget_target_is_changed(
+            &transaction,
+            &current,
+            false
+        ));
+        assert!(transaction_budget_target_is_changed(
+            &transaction,
+            &other,
+            false
+        ));
+    }
+
+    #[test]
+    fn simple_budget_move_current_target_matches_visible_category() {
+        let transaction = tx(-100, "HIDDEN", "Fixed costs");
+        let same_category = TransactionBudgetTarget {
+            code: "UTIL".to_string(),
+            category: "Fixed costs".to_string(),
+            direction: BudgetDirection::Expense,
+        };
+
+        assert!(transaction_budget_target_is_current(
+            &transaction,
+            &same_category,
+            false
+        ));
+        assert!(!transaction_budget_target_is_current(
+            &transaction,
+            &same_category,
+            true
+        ));
+    }
+
+    #[test]
+    fn budget_move_list_search_includes_budget_code_only_in_advanced_mode() {
+        let target = TransactionBudgetTarget {
+            code: "SHOP".to_string(),
+            category: "Groceries".to_string(),
+            direction: BudgetDirection::Expense,
+        };
+
+        let simple_keywords = transaction_budget_target_search_keywords(
+            &target,
+            false,
+            "Matching by Counterparty: Store",
+        )
+        .join(" ")
+        .to_lowercase();
+        let advanced_keywords = transaction_budget_target_search_keywords(
+            &target,
+            true,
+            "Matching by Counterparty: Store",
+        )
+        .join(" ")
+        .to_lowercase();
+
+        assert!(simple_keywords.contains("grocer"));
+        assert!(!simple_keywords.contains("shop"));
+        assert!(advanced_keywords.contains("shop"));
+    }
+
+    #[test]
+    fn budget_move_more_options_are_advanced_only() {
+        assert!(!transaction_budget_more_options_visible(false));
+        assert!(transaction_budget_more_options_visible(true));
     }
 
     #[test]

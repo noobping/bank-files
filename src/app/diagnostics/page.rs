@@ -971,19 +971,17 @@ fn show_transaction_pattern_rule_dialog(
 ) {
     let initial = editable_rule_for_pattern(pattern, &state.borrow());
 
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    let header = ui::cancelable_dialog_header(
+    let shell = build_action_dialog_shell(
         "Create Rule",
         "Create a categorization rule from this detected transaction pattern.",
+        "Save",
+        "document-save-symbolic",
+        "Save rule",
+        "Search rule fields",
     );
-
-    let cancel_button = gtk::Button::with_label(&tr("Cancel"));
-    cancel_button.add_css_class("flat");
-    let save_button = ui::primary_text_icon_button("document-save-symbolic", "Save", "Save rule");
+    shell.set_form_only();
+    let save_button = shell.submit_button.clone();
     register_config_widget(ui_handles, &save_button);
-    header.pack_start(&cancel_button);
-    header.pack_end(&save_button);
-    root.append(&header);
 
     let page = ui::page_box();
     let grid = ui::form_grid();
@@ -1054,24 +1052,23 @@ fn show_transaction_pattern_rule_dialog(
     let status = ui::wrapped_label(&tr("Save adds this rule to the processing queue."));
     status.add_css_class("dim-label");
     page.append(&status);
-    root.append(&ui::action_dialog_scroll(&page));
+    shell.add_form_page(&ui::action_dialog_scroll(&page));
 
     let dialog = adw::Dialog::builder()
         .title(tr("Create Rule"))
         .content_width(650)
         .content_height(-1)
         .default_widget(&save_button)
-        .child(&root)
+        .child(&shell.root)
         .build();
 
-    let dialog_for_cancel = dialog.clone();
-    cancel_button.connect_clicked(move |_| {
-        dialog_for_cancel.close();
+    let dialog_for_close = dialog.clone();
+    shell.close_button.connect_clicked(move |_| {
+        dialog_for_close.close();
     });
 
     let ui_for_save = Rc::clone(ui_handles);
     let dialog_for_save = dialog.clone();
-    let cancel_button_for_save = cancel_button.clone();
     ui::connect_button_activation(&save_button, move |button| {
         let search_text = ui::combo_text(&search);
         let category_text = ui::combo_text(&category);
@@ -1102,7 +1099,6 @@ fn show_transaction_pattern_rule_dialog(
 
         enqueue_rule_operation(&ui_for_save, rule, true, OperationSource::CreateRule);
         button.set_sensitive(false);
-        cancel_button_for_save.set_label(&tr("Close"));
         status.set_text(&tr("Rule added to processing queue."));
         dialog_for_save.close();
     });

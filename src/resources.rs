@@ -68,6 +68,14 @@ mod tests {
     }
 
     #[test]
+    fn embedded_action_dialog_ui_is_available() {
+        register().expect("register embedded resources");
+        let path = format!("{RESOURCE_ID}/ui/action-dialog.ui");
+        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
+            .expect("embedded action dialog UI should be available");
+    }
+
+    #[test]
     fn embedded_status_history_popover_ui_is_available() {
         register().expect("register embedded resources");
         let path = format!("{RESOURCE_ID}/ui/status-history-popover.ui");

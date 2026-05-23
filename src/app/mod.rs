@@ -24,6 +24,7 @@ use std::cell::{Cell, RefCell};
 use std::path::PathBuf;
 use std::rc::Rc;
 
+mod action_dialog;
 mod actions;
 mod annual;
 mod budget;
@@ -61,6 +62,9 @@ pub use core::run;
 #[cfg(target_os = "linux")]
 pub(crate) use transactions::transaction_search_text;
 
+use action_dialog::{
+    build_action_dialog_shell, connect_action_search, searchable_action_row, SearchableActionRow,
+};
 use actions::connect_actions;
 use annual::{
     annual_budget_matches, annual_budgets_section, annual_category_matches,

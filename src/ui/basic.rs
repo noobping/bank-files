@@ -67,12 +67,6 @@ pub fn set_button_icon(button: &gtk::Button, icon_name: &str) {
     }
 }
 
-pub fn flat_text_icon_button(icon_name: &str, label: &str, tooltip: &str) -> gtk::Button {
-    let button = plain_text_icon_button(icon_name, label, tooltip);
-    button.add_css_class("flat");
-    button
-}
-
 pub fn primary_text_icon_button(icon_name: &str, label: &str, tooltip: &str) -> gtk::Button {
     let button = plain_text_icon_button(icon_name, label, tooltip);
     button.add_css_class("suggested-action");
@@ -144,6 +138,23 @@ pub fn scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
 }
 
 pub fn action_dialog_scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
+    action_dialog_scroll_with_min(child, 0)
+}
+
+pub fn action_dialog_scroll_with_min(
+    child: &impl IsA<gtk::Widget>,
+    min_content_height: i32,
+) -> gtk::ScrolledWindow {
+    action_dialog_scroll_with_limits(child, min_content_height, ACTION_DIALOG_MAX_HEIGHT)
+}
+
+pub fn action_dialog_scroll_with_limits(
+    child: &impl IsA<gtk::Widget>,
+    min_content_height: i32,
+    max_content_height: i32,
+) -> gtk::ScrolledWindow {
+    let min_content_height = min_content_height.max(0);
+    let max_content_height = max_content_height.max(min_content_height).max(1);
     let clamp = adw::Clamp::builder()
         .maximum_size(1080)
         .tightening_threshold(640)
@@ -152,7 +163,8 @@ pub fn action_dialog_scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindo
     gtk::ScrolledWindow::builder()
         .hexpand(true)
         .vexpand(false)
-        .max_content_height(ACTION_DIALOG_MAX_HEIGHT)
+        .min_content_height(min_content_height)
+        .max_content_height(max_content_height)
         .propagate_natural_height(true)
         .hscrollbar_policy(gtk::PolicyType::Never)
         .child(&clamp)

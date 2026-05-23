@@ -14,7 +14,6 @@ pub(in crate::app) fn show_new_rule_dialog(
         "New Rule",
         "Fill in the rule first. It is only saved when you press Save.",
         "Add",
-        650,
     );
 
     let grid = form_grid();
@@ -155,7 +154,6 @@ pub(in crate::app) fn show_new_budget_dialog(
             "Create a category and choose whether it is spending, income, or transfer. It is only saved when you press Save."
         },
         "Add",
-        620,
     );
 
     let grid = form_grid();
@@ -301,7 +299,6 @@ pub(in crate::app) fn show_new_alias_dialog(
         "New Field Name",
         "Map a bank column to a fixed field. It is only saved when you press Save.",
         "Add",
-        620,
     );
 
     let grid = form_grid();
@@ -350,31 +347,31 @@ pub(in crate::app) fn new_record_dialog(
     title: &str,
     subtitle: &str,
     add_label: &str,
-    content_height: i32,
 ) -> (adw::Dialog, gtk::Box, gtk::Button, gtk::Button, gtk::Label) {
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    let header = ui::cancelable_dialog_header(title, "Not saved");
-
-    let cancel_button = gtk::Button::with_label(&tr("Cancel"));
-    cancel_button.add_css_class("flat");
-    let add_button = ui::flat_text_icon_button("list-add-symbolic", add_label, "Add to changes");
-    header.pack_start(&cancel_button);
-    header.pack_end(&add_button);
-    root.append(&header);
+    let shell = build_action_dialog_shell(
+        title,
+        subtitle,
+        add_label,
+        "list-add-symbolic",
+        "Add to changes",
+        "Search",
+    );
+    shell.set_form_only();
 
     let page = ui::page_box();
-    page.append(&ui::section_title(title, subtitle));
-    root.append(&ui::scroll(&page));
+    shell.add_form_page(&ui::action_dialog_scroll(&page));
 
     let dialog_status = ui::wrapped_label("");
     dialog_status.add_css_class("dim-label");
 
+    let add_button = shell.submit_button.clone();
+    let cancel_button = shell.close_button.clone();
     let dialog = adw::Dialog::builder()
         .title(tr(title))
         .content_width(680)
-        .content_height(content_height)
+        .content_height(-1)
         .default_widget(&add_button)
-        .child(&root)
+        .child(&shell.root)
         .build();
 
     (dialog, page, cancel_button, add_button, dialog_status)
