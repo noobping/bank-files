@@ -162,14 +162,19 @@ pub(in crate::app) fn render_diagnostics_page(
             "Choose CSV files or drop bank files onto the window to see import diagnostics.",
         ));
     } else {
+        let report_section_matches = search
+            .as_ref()
+            .map(import_report_section_matches)
+            .unwrap_or(true);
         let reports = data
             .reports
             .iter()
             .filter(|report| {
-                search
-                    .as_ref()
-                    .map(|filter| import_report_matches(report, filter))
-                    .unwrap_or(true)
+                report_section_matches
+                    || search
+                        .as_ref()
+                        .map(|filter| import_report_matches(report, filter))
+                        .unwrap_or(true)
             })
             .collect::<Vec<_>>();
         if !reports.is_empty() {
@@ -194,14 +199,16 @@ pub(in crate::app) fn render_diagnostics_page(
         }
     }
 
+    let warnings_section_matches = search.as_ref().map(warning_section_matches).unwrap_or(true);
     let warnings = data
         .warnings
         .iter()
         .filter(|warning| {
-            search
-                .as_ref()
-                .map(|filter| filter.matches(warning))
-                .unwrap_or(true)
+            warnings_section_matches
+                || search
+                    .as_ref()
+                    .map(|filter| filter.matches(warning))
+                    .unwrap_or(true)
         })
         .collect::<Vec<_>>();
     if !warnings.is_empty() {
@@ -1283,6 +1290,16 @@ where
     ui::activatable_card(card, on_activate)
 }
 
+fn import_report_section_matches(filter: &SearchFilter) -> bool {
+    filter.matches(
+        "csv files imports import reports field mappings detected fields guessed fields headers",
+    )
+}
+
+fn warning_section_matches(filter: &SearchFilter) -> bool {
+    filter.matches("warnings warning alerts problems import checks")
+}
+
 pub(in crate::app) fn import_report_matches(report: &ImportReport, filter: &SearchFilter) -> bool {
     let field_text = diagnostic_field_items(&report.guessed_fields)
         .into_iter()
@@ -1344,5 +1361,25 @@ mod tests {
             Some(&warnings_search),
             true
         ));
+    }
+
+    #[test]
+    fn import_and_field_presets_match_import_report_section() {
+        let import_search = SearchFilter::from_text("imports").unwrap();
+        let field_search = SearchFilter::from_text("fields").unwrap();
+        let unrelated_search = SearchFilter::from_text("groceries").unwrap();
+
+        assert!(import_report_section_matches(&import_search));
+        assert!(import_report_section_matches(&field_search));
+        assert!(!import_report_section_matches(&unrelated_search));
+    }
+
+    #[test]
+    fn warnings_preset_matches_warning_section() {
+        let warning_search = SearchFilter::from_text("warnings").unwrap();
+        let unrelated_search = SearchFilter::from_text("groceries").unwrap();
+
+        assert!(warning_section_matches(&warning_search));
+        assert!(!warning_section_matches(&unrelated_search));
     }
 }
