@@ -850,15 +850,17 @@ fn show_transaction_budget_code_dialog(
             &ui_handles.advanced_autofill,
         );
         connect_transaction_budget_move_form_save_sensitivity(
-            &shell.stack,
-            &shell.submit_button,
-            tx,
-            &selected_target,
-            &initial,
-            &category,
-            &budget_code,
-            &direction,
-            advanced_features,
+            TransactionBudgetMoveFormSensitivity {
+                stack: &shell.stack,
+                save_button: &shell.submit_button,
+                tx,
+                selected_target: &selected_target,
+                initial: &initial,
+                category: &category,
+                budget_code: &budget_code,
+                direction: &direction,
+                advanced_features,
+            },
         );
         ui::focus_button_after_combo_selections(
             &shell.submit_button,
@@ -1062,17 +1064,32 @@ fn set_action_status(status: &gtk::Label, message: &str) {
     status.set_visible(true);
 }
 
-fn connect_transaction_budget_move_form_save_sensitivity(
-    stack: &gtk::Stack,
-    save_button: &gtk::Button,
-    tx: &Transaction,
-    selected_target: &Rc<RefCell<Option<TransactionBudgetTarget>>>,
-    initial: &EditableRule,
-    category: &gtk::ComboBoxText,
-    budget_code: &gtk::ComboBoxText,
-    direction: &gtk::ComboBoxText,
+struct TransactionBudgetMoveFormSensitivity<'a> {
+    stack: &'a gtk::Stack,
+    save_button: &'a gtk::Button,
+    tx: &'a Transaction,
+    selected_target: &'a Rc<RefCell<Option<TransactionBudgetTarget>>>,
+    initial: &'a EditableRule,
+    category: &'a gtk::ComboBoxText,
+    budget_code: &'a gtk::ComboBoxText,
+    direction: &'a gtk::ComboBoxText,
     advanced_features: bool,
+}
+
+fn connect_transaction_budget_move_form_save_sensitivity(
+    controls: TransactionBudgetMoveFormSensitivity<'_>,
 ) {
+    let TransactionBudgetMoveFormSensitivity {
+        stack,
+        save_button,
+        tx,
+        selected_target,
+        initial,
+        category,
+        budget_code,
+        direction,
+        advanced_features,
+    } = controls;
     let update: Rc<dyn Fn()> = Rc::new({
         let stack = stack.clone();
         let save_button = save_button.clone();

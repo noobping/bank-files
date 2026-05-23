@@ -789,21 +789,25 @@ pub(in crate::app) fn show_transactions_filter(
     filter: TransactionFilter,
 ) {
     let query = filter.query();
+    show_transaction_search(state, ui, &query, Some(filter));
+}
+
+pub(in crate::app) fn show_transaction_search(
+    state: &Rc<RefCell<AppData>>,
+    ui: &Rc<UiHandles>,
+    query: &str,
+    transaction_filter: Option<TransactionFilter>,
+) {
     ui.stack.set_visible_child_name("transactions");
-    *ui.active_transaction_filter.borrow_mut() = Some(filter);
-    *ui.search_query.borrow_mut() = query.clone();
+    *ui.active_transaction_filter.borrow_mut() = transaction_filter;
+    *ui.search_query.borrow_mut() = query.to_string();
+    ui.search_bar.set_search_mode(!query.is_empty());
 
-    if query.is_empty() {
-        ui.search_bar.set_search_mode(false);
-    } else {
-        ui.search_bar.set_search_mode(true);
-    }
-
-    if ui.search_entry.text().as_str() != query.as_str() {
-        ui.search_entry.set_text(&query);
+    if ui.search_entry.text().as_str() != query {
+        ui.search_entry.set_text(query);
     }
     render_views(&state.borrow(), ui, state);
-    show_search_status(ui, &query);
+    show_search_status(ui, query);
 }
 
 fn show_search_status(ui: &UiHandles, query: &str) {

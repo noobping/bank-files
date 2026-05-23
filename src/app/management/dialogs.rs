@@ -126,16 +126,28 @@ pub(in crate::app) fn show_new_rule_dialog(
     dialog.present(Some(parent));
 }
 
-pub(in crate::app) fn show_new_budget_dialog(
-    parent: &adw::Dialog,
-    container: &gtk::Box,
-    forms: &Rc<RefCell<Vec<BudgetForm>>>,
-    scrolled_window: &gtk::ScrolledWindow,
-    status: &gtk::Label,
-    filter_entry: &gtk::SearchEntry,
-    advanced_autofill: &Rc<Cell<bool>>,
-    advanced_features: bool,
-) {
+pub(in crate::app) struct NewBudgetDialogRequest<'a> {
+    pub(in crate::app) parent: &'a adw::Dialog,
+    pub(in crate::app) container: &'a gtk::Box,
+    pub(in crate::app) forms: &'a Rc<RefCell<Vec<BudgetForm>>>,
+    pub(in crate::app) scrolled_window: &'a gtk::ScrolledWindow,
+    pub(in crate::app) status: &'a gtk::Label,
+    pub(in crate::app) filter_entry: &'a gtk::SearchEntry,
+    pub(in crate::app) advanced_autofill: &'a Rc<Cell<bool>>,
+    pub(in crate::app) advanced_features: bool,
+}
+
+pub(in crate::app) fn show_new_budget_dialog(request: NewBudgetDialogRequest<'_>) {
+    let NewBudgetDialogRequest {
+        parent,
+        container,
+        forms,
+        scrolled_window,
+        status,
+        filter_entry,
+        advanced_autofill,
+        advanced_features,
+    } = request;
     let budget = EditableBudget::new_default();
     let (dialog, page, add_button, dialog_status) = new_record_dialog(
         if advanced_features {

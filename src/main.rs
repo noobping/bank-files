@@ -2,7 +2,6 @@
     all(not(debug_assertions), target_os = "windows"),
     windows_subsystem = "windows"
 )]
-
 #![deny(unused, dead_code, unreachable_code)]
 
 #[cfg(all(feature = "flatpak", feature = "setup"))]

@@ -900,12 +900,15 @@ async fn reload_after_queue_apply(
     ui: Rc<UiHandles>,
     counts: ApplyCounts,
 ) {
-    let borrowed = state.borrow();
-    let mode = borrowed.dedupe_mode;
     let remember_mode = ui.remember_mode.get();
-    let sources = current_sources_for_reload(&borrowed, remember_mode);
-    let scope = current_transaction_load_scope(&borrowed, ui.as_ref());
-    drop(borrowed);
+    let (mode, sources, scope) = {
+        let borrowed = state.borrow();
+        (
+            borrowed.dedupe_mode,
+            current_sources_for_reload(&borrowed, remember_mode),
+            current_transaction_load_scope(&borrowed, ui.as_ref()),
+        )
+    };
     let auto_clean_config = ui.preferences.auto_clean_config();
     show_verbose_status(
         ui.as_ref(),

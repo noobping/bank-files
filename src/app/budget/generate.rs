@@ -93,7 +93,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
             .0;
             anyhow::Ok(GeneratedConfigurationOutcome::Generated {
                 summary,
-                data,
+                data: Box::new(data),
                 ai_status: ai_outcome.status,
             })
         });
@@ -104,7 +104,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 data,
                 ai_status,
             })) => {
-                *state_for_generate.borrow_mut() = data;
+                *state_for_generate.borrow_mut() = *data;
                 show_verbose_status(
                     ui_for_generate.as_ref(),
                     format!(
@@ -246,7 +246,7 @@ fn online_smart_insights_network_available() -> bool {
 enum GeneratedConfigurationOutcome {
     Generated {
         summary: data::GeneratedConfigurationSummary,
-        data: AppData,
+        data: Box<AppData>,
         ai_status: Option<String>,
     },
     None {

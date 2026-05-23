@@ -696,7 +696,7 @@ fn reload_transaction_source_file_with_dirs(
     let file = validated_transaction_source_file(source, dirs)?;
     let source_file = source_file_name(&file)?;
     let aliases = FieldAliases::load(&dirs.config)?;
-    let outcome = import_files(&[file.clone()], &aliases, data.loaded_scope)?;
+    let outcome = import_files(std::slice::from_ref(&file), &aliases, data.loaded_scope)?;
     let rules = load_rules(&dirs.config)?;
     let budgets = load_budget_codes(&dirs.config)?;
     let ImportOutcome {
@@ -881,10 +881,19 @@ mod tests {
     use chrono::NaiveDate;
     use rust_decimal::Decimal;
     use std::fs;
+    #[cfg(unix)]
+    use std::os::unix::fs::PermissionsExt;
     use std::sync::Mutex;
     use std::time::{SystemTime, UNIX_EPOCH};
 
     static CACHE_ENV_LOCK: Mutex<()> = Mutex::new(());
+
+    fn make_permissions_writable(permissions: &mut fs::Permissions) {
+        #[cfg(unix)]
+        permissions.set_mode(permissions.mode() | 0o200);
+        #[cfg(not(unix))]
+        permissions.set_readonly(false);
+    }
 
     #[test]
     fn read_only_load_uses_defaults_without_creating_missing_config() {
@@ -1073,7 +1082,7 @@ mod tests {
         let mut permissions = fs::metadata(&dirs.data)
             .expect("data metadata should exist")
             .permissions();
-        permissions.set_readonly(false);
+        make_permissions_writable(&mut permissions);
         let _ = fs::set_permissions(&dirs.data, permissions);
         fs::remove_dir_all(root).ok();
     }
@@ -1101,7 +1110,7 @@ mod tests {
         let mut permissions = fs::metadata(&csv)
             .expect("csv metadata should exist")
             .permissions();
-        permissions.set_readonly(false);
+        make_permissions_writable(&mut permissions);
         let _ = fs::set_permissions(&csv, permissions);
         fs::remove_dir_all(root).ok();
     }

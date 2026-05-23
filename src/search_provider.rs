@@ -8,6 +8,7 @@ use adw::glib::variant::ToVariant;
 use adw::glib::{self, MainLoop, Variant};
 use sha2::{Digest, Sha256};
 
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::ffi::OsString;
 use std::process::Command;
@@ -64,14 +65,14 @@ pub(crate) fn run() -> i32 {
 
     let main_loop = MainLoop::new(None, false);
     let service = Rc::new(SearchProviderService::new(interface_info));
-    let service_for_bus = service.clone();
+    let service_for_bus = Rc::clone(&service);
     let loop_for_failure = main_loop.clone();
     let owner_id = gio::bus_own_name(
         BusType::Session,
         SEARCH_PROVIDER_BUS_NAME,
         BusNameOwnerFlags::NONE,
         move |connection, _name| {
-            if let Err(err) = service_for_bus.register(&connection) {
+            if let Err(err) = Rc::clone(&service_for_bus).register(&connection) {
                 eprintln!("Failed to export search provider object: {err}");
                 loop_for_failure.quit();
             }
@@ -92,100 +93,131 @@ pub(crate) fn run() -> i32 {
 
 struct SearchProviderService {
     interface_info: DBusInterfaceInfo,
+    index: RefCell<Option<SearchProviderIndex>>,
 }
 
 impl SearchProviderService {
     fn new(interface_info: DBusInterfaceInfo) -> Self {
-        Self { interface_info }
+        Self {
+            interface_info,
+            index: RefCell::new(None),
+        }
     }
 
-    fn register(&self, connection: &DBusConnection) -> Result<(), glib::Error> {
+    fn register(self: Rc<Self>, connection: &DBusConnection) -> Result<(), glib::Error> {
+        let service = Rc::clone(&self);
         let _registration_id = connection
             .register_object(SEARCH_PROVIDER_OBJECT_PATH, &self.interface_info)
             .method_call(
-                |_connection,
-                 _sender,
-                 _object_path,
-                 _interface_name,
-                 method_name,
-                 parameters,
-                 invocation| match method_name {
-                    "GetInitialResultSet" => {
-                        invocation.return_result(handle_get_initial_result_set(&parameters));
-                    }
-                    "GetSubsearchResultSet" => {
-                        invocation.return_result(handle_get_subsearch_result_set(&parameters));
-                    }
-                    "GetResultMetas" => {
-                        invocation.return_result(handle_get_result_metas(&parameters));
-                    }
-                    "ActivateResult" => {
-                        invocation.return_result(handle_activate_result(&parameters));
-                    }
-                    "LaunchSearch" => {
-                        invocation.return_result(handle_launch_search(&parameters));
-                    }
-                    _ => {
-                        eprintln!("Unknown search provider method: {method_name}.");
-                        invocation.return_result(Ok(None));
-                    }
+                move |_connection,
+                      _sender,
+                      _object_path,
+                      _interface_name,
+                      method_name,
+                      parameters,
+                      invocation| {
+                    invocation.return_result(service.handle_method_call(method_name, &parameters));
                 },
             )
             .build()?;
 
         Ok(())
     }
-}
 
-fn handle_get_initial_result_set(parameters: &Variant) -> Result<Option<Variant>, glib::Error> {
-    let Some((terms,)) = parameters.get::<(Vec<String>,)>() else {
-        eprintln!("Search provider GetInitialResultSet received invalid parameters.");
-        return Ok(Some((Vec::<String>::new(),).to_variant()));
-    };
-
-    Ok(Some((search_result_ids(&terms),).to_variant()))
-}
-
-fn handle_get_subsearch_result_set(parameters: &Variant) -> Result<Option<Variant>, glib::Error> {
-    let Some((_previous_results, terms)) = parameters.get::<(Vec<String>, Vec<String>)>() else {
-        eprintln!("Search provider GetSubsearchResultSet received invalid parameters.");
-        return Ok(Some((Vec::<String>::new(),).to_variant()));
-    };
-
-    Ok(Some((search_result_ids(&terms),).to_variant()))
-}
-
-fn handle_get_result_metas(parameters: &Variant) -> Result<Option<Variant>, glib::Error> {
-    let Some((identifiers,)) = parameters.get::<(Vec<String>,)>() else {
-        eprintln!("Search provider GetResultMetas received invalid parameters.");
-        return Ok(Some((Vec::<HashMap<String, Variant>>::new(),).to_variant()));
-    };
-
-    let data = load_search_data();
-    let metas = identifiers
-        .into_iter()
-        .map(|identifier| {
-            meta_for_identifier(&identifier, &data).unwrap_or_else(|| fallback_meta(&identifier))
-        })
-        .collect::<Vec<_>>();
-    Ok(Some((metas,).to_variant()))
-}
-
-fn handle_activate_result(parameters: &Variant) -> Result<Option<Variant>, glib::Error> {
-    let Some((identifier, terms, _timestamp)) = parameters.get::<(String, Vec<String>, u32)>()
-    else {
-        eprintln!("Search provider ActivateResult received invalid parameters.");
-        return Ok(None);
-    };
-
-    let data = load_search_data();
-    let query = transaction_for_identifier(&identifier, &data)
-        .map(transaction_activation_query)
-        .unwrap_or_else(|| join_search_terms(&terms));
-    if let Err(err) = launch_search_query(&query) {
-        eprintln!("Failed to launch transaction search result: {err}");
+    fn handle_method_call(
+        &self,
+        method_name: &str,
+        parameters: &Variant,
+    ) -> Result<Option<Variant>, glib::Error> {
+        match method_name {
+            "GetInitialResultSet" => self.handle_get_initial_result_set(parameters),
+            "GetSubsearchResultSet" => self.handle_get_subsearch_result_set(parameters),
+            "GetResultMetas" => self.handle_get_result_metas(parameters),
+            "ActivateResult" => self.handle_activate_result(parameters),
+            "LaunchSearch" => handle_launch_search(parameters),
+            _ => {
+                eprintln!("Unknown search provider method: {method_name}.");
+                Ok(None)
+            }
+        }
     }
-    Ok(None)
+
+    fn handle_get_initial_result_set(
+        &self,
+        parameters: &Variant,
+    ) -> Result<Option<Variant>, glib::Error> {
+        let Some((terms,)) = parameters.get::<(Vec<String>,)>() else {
+            eprintln!("Search provider GetInitialResultSet received invalid parameters.");
+            return Ok(Some((Vec::<String>::new(),).to_variant()));
+        };
+
+        Ok(Some((self.search_result_ids(&terms),).to_variant()))
+    }
+
+    fn handle_get_subsearch_result_set(
+        &self,
+        parameters: &Variant,
+    ) -> Result<Option<Variant>, glib::Error> {
+        let Some((_previous_results, terms)) = parameters.get::<(Vec<String>, Vec<String>)>()
+        else {
+            eprintln!("Search provider GetSubsearchResultSet received invalid parameters.");
+            return Ok(Some((Vec::<String>::new(),).to_variant()));
+        };
+
+        Ok(Some((self.search_result_ids(&terms),).to_variant()))
+    }
+
+    fn handle_get_result_metas(
+        &self,
+        parameters: &Variant,
+    ) -> Result<Option<Variant>, glib::Error> {
+        let Some((identifiers,)) = parameters.get::<(Vec<String>,)>() else {
+            eprintln!("Search provider GetResultMetas received invalid parameters.");
+            return Ok(Some((Vec::<HashMap<String, Variant>>::new(),).to_variant()));
+        };
+
+        let metas = self.with_index(|index| {
+            identifiers
+                .into_iter()
+                .map(|identifier| {
+                    index
+                        .meta_for_identifier(&identifier)
+                        .unwrap_or_else(|| fallback_meta(&identifier))
+                })
+                .collect::<Vec<_>>()
+        });
+        Ok(Some((metas,).to_variant()))
+    }
+
+    fn handle_activate_result(&self, parameters: &Variant) -> Result<Option<Variant>, glib::Error> {
+        let Some((identifier, terms, _timestamp)) = parameters.get::<(String, Vec<String>, u32)>()
+        else {
+            eprintln!("Search provider ActivateResult received invalid parameters.");
+            return Ok(None);
+        };
+
+        let query = self
+            .with_index(|index| index.activation_query_for_identifier(&identifier))
+            .unwrap_or_else(|| join_search_terms(&terms));
+        if let Err(err) = launch_search_query(&query) {
+            eprintln!("Failed to launch transaction search result: {err}");
+        }
+        Ok(None)
+    }
+
+    fn search_result_ids(&self, terms: &[String]) -> Vec<String> {
+        self.with_index(|index| index.search_result_ids(terms, SEARCH_PROVIDER_RESULT_LIMIT))
+    }
+
+    fn with_index<T>(&self, f: impl FnOnce(&SearchProviderIndex) -> T) -> T {
+        if self.index.borrow().is_none() {
+            *self.index.borrow_mut() = Some(SearchProviderIndex::load());
+        }
+        let index = self.index.borrow();
+        f(index
+            .as_ref()
+            .expect("search provider index should be initialized"))
+    }
 }
 
 fn handle_launch_search(parameters: &Variant) -> Result<Option<Variant>, glib::Error> {
@@ -212,19 +244,6 @@ fn load_search_data() -> AppData {
         eprintln!("Failed to load transactions for GNOME search: {err}");
         AppData::default()
     })
-}
-
-fn meta_for_identifier(identifier: &str, data: &AppData) -> Option<HashMap<String, Variant>> {
-    let tx = transaction_for_identifier(identifier, data)?;
-    let mut meta = HashMap::new();
-    meta.insert("id".to_string(), identifier.to_variant());
-    meta.insert("name".to_string(), transaction_title(tx).to_variant());
-    meta.insert(
-        "description".to_string(),
-        transaction_description(tx).to_variant(),
-    );
-    meta.insert("gicon".to_string(), APP_ID.to_variant());
-    Some(meta)
 }
 
 fn fallback_meta(identifier: &str) -> HashMap<String, Variant> {
@@ -317,16 +336,6 @@ fn encode_result_id(tx: &Transaction) -> String {
         .collect()
 }
 
-fn transaction_for_identifier<'a>(identifier: &str, data: &'a AppData) -> Option<&'a Transaction> {
-    if !result_id_is_valid(identifier) {
-        return None;
-    }
-
-    data.transactions
-        .iter()
-        .find(|tx| encode_result_id(tx) == identifier)
-}
-
 fn result_id_is_valid(identifier: &str) -> bool {
     identifier.len() == 64 && identifier.chars().all(|ch| ch.is_ascii_hexdigit())
 }
@@ -347,21 +356,88 @@ fn transaction_activation_query(tx: &Transaction) -> String {
         })
 }
 
-fn search_provider_transactions<'a>(
-    data: &'a AppData,
-    terms: &[String],
-    limit: usize,
-) -> Vec<&'a Transaction> {
-    let terms = normalized_search_terms(terms);
-    if terms.is_empty() {
-        return Vec::new();
+#[derive(Default)]
+struct SearchProviderIndex {
+    entries: Vec<SearchProviderEntry>,
+}
+
+impl SearchProviderIndex {
+    fn load() -> Self {
+        Self::from_data(&load_search_data())
     }
 
-    data.transactions
-        .iter()
-        .filter(|tx| transaction_matches_terms(tx, &terms))
-        .take(limit)
-        .collect()
+    fn from_data(data: &AppData) -> Self {
+        Self {
+            entries: data
+                .transactions
+                .iter()
+                .map(SearchProviderEntry::from_transaction)
+                .collect(),
+        }
+    }
+
+    fn search_result_ids(&self, terms: &[String], limit: usize) -> Vec<String> {
+        let terms = normalized_search_terms(terms);
+        if terms.is_empty() {
+            return Vec::new();
+        }
+
+        self.entries
+            .iter()
+            .filter(|entry| entry.matches_terms(&terms))
+            .take(limit)
+            .map(|entry| entry.identifier.clone())
+            .collect()
+    }
+
+    fn entry_for_identifier(&self, identifier: &str) -> Option<&SearchProviderEntry> {
+        if !result_id_is_valid(identifier) {
+            return None;
+        }
+
+        self.entries
+            .iter()
+            .find(|entry| entry.identifier == identifier)
+    }
+
+    fn meta_for_identifier(&self, identifier: &str) -> Option<HashMap<String, Variant>> {
+        let entry = self.entry_for_identifier(identifier)?;
+        let mut meta = HashMap::new();
+        meta.insert("id".to_string(), entry.identifier.to_variant());
+        meta.insert("name".to_string(), entry.title.to_variant());
+        meta.insert("description".to_string(), entry.description.to_variant());
+        meta.insert("gicon".to_string(), APP_ID.to_variant());
+        Some(meta)
+    }
+
+    fn activation_query_for_identifier(&self, identifier: &str) -> Option<String> {
+        self.entry_for_identifier(identifier)
+            .map(|entry| entry.activation_query.clone())
+    }
+}
+
+struct SearchProviderEntry {
+    identifier: String,
+    search_text: String,
+    title: String,
+    description: String,
+    activation_query: String,
+}
+
+impl SearchProviderEntry {
+    fn from_transaction(tx: &Transaction) -> Self {
+        Self {
+            identifier: encode_result_id(tx),
+            search_text: transaction_search_text(tx).to_lowercase(),
+            title: transaction_title(tx),
+            description: transaction_description(tx),
+            activation_query: transaction_activation_query(tx),
+        }
+    }
+
+    fn matches_terms(&self, terms: &[String]) -> bool {
+        terms.iter().all(|term| self.search_text.contains(term))
+    }
 }
 
 fn normalized_search_terms(terms: &[String]) -> Vec<String> {
@@ -372,24 +448,11 @@ fn normalized_search_terms(terms: &[String]) -> Vec<String> {
         .collect()
 }
 
-fn transaction_matches_terms(tx: &Transaction, terms: &[String]) -> bool {
-    let haystack = transaction_search_text(tx).to_lowercase();
-    terms.iter().all(|term| haystack.contains(term))
-}
-
-fn search_result_ids(terms: &[String]) -> Vec<String> {
-    let data = load_search_data();
-    search_provider_transactions(&data, terms, SEARCH_PROVIDER_RESULT_LIMIT)
-        .into_iter()
-        .map(encode_result_id)
-        .collect()
-}
-
 #[cfg(test)]
 mod tests {
     use super::{
         encode_result_id, join_search_terms, normalized_search_terms, result_id_is_valid,
-        search_provider_transactions, transaction_matches_terms,
+        SearchProviderEntry, SearchProviderIndex,
     };
     use crate::model::{AppData, Transaction};
     use rust_decimal::Decimal;
@@ -444,12 +507,10 @@ mod tests {
     #[test]
     fn search_matches_all_normalized_terms() {
         let tx = transaction("Monthly rent", "Housing Company", "-950");
+        let entry = SearchProviderEntry::from_transaction(&tx);
 
-        assert!(transaction_matches_terms(
-            &tx,
-            &["rent".to_string(), "housing".to_string()]
-        ));
-        assert!(!transaction_matches_terms(&tx, &["salary".to_string()]));
+        assert!(entry.matches_terms(&["rent".to_string(), "housing".to_string()]));
+        assert!(!entry.matches_terms(&["salary".to_string()]));
     }
 
     #[test]
@@ -462,10 +523,36 @@ mod tests {
             ..AppData::default()
         };
 
-        let matches = search_provider_transactions(&data, &["coffee".to_string()], 1);
+        let index = SearchProviderIndex::from_data(&data);
+        let matches = index.search_result_ids(&["coffee".to_string()], 1);
 
         assert_eq!(matches.len(), 1);
-        assert_eq!(matches[0].description, "Coffee");
+        assert_eq!(matches[0], encode_result_id(&data.transactions[0]));
+    }
+
+    #[test]
+    fn index_returns_metas_and_activation_queries_by_identifier() {
+        let mut tx = transaction("Coffee", "Cafe", "-3.50");
+        tx.transaction_id = "tx-123".to_string();
+        let identifier = encode_result_id(&tx);
+        let data = AppData {
+            transactions: vec![tx],
+            ..AppData::default()
+        };
+        let index = SearchProviderIndex::from_data(&data);
+        let meta = index
+            .meta_for_identifier(&identifier)
+            .expect("known identifier should produce metadata");
+
+        assert_eq!(
+            index.activation_query_for_identifier(&identifier),
+            Some("tx-123".to_string())
+        );
+        assert!(meta.contains_key("name"));
+        assert_eq!(
+            index.activation_query_for_identifier("not-a-result-id"),
+            None
+        );
     }
 
     #[test]

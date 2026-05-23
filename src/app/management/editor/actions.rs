@@ -99,16 +99,16 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
     let ui_for_header_add = Rc::clone(ui_handles);
     add_button.connect_clicked(
         move |_| match stack_for_add.visible_child_name().as_deref() {
-            Some("budgets") => show_new_budget_dialog(
-                &management_dialog_for_header_add,
-                &budgets_list_for_header_add,
-                &budgets_forms_for_header_add,
-                &budgets_scroll_for_header_add,
-                &status_for_header_add,
-                &filter_entry_for_header_add,
-                &advanced_autofill_for_header_add,
-                ui_for_header_add.advanced_features.get(),
-            ),
+            Some("budgets") => show_new_budget_dialog(NewBudgetDialogRequest {
+                parent: &management_dialog_for_header_add,
+                container: &budgets_list_for_header_add,
+                forms: &budgets_forms_for_header_add,
+                scrolled_window: &budgets_scroll_for_header_add,
+                status: &status_for_header_add,
+                filter_entry: &filter_entry_for_header_add,
+                advanced_autofill: &advanced_autofill_for_header_add,
+                advanced_features: ui_for_header_add.advanced_features.get(),
+            }),
             Some("aliases") => show_new_alias_dialog(
                 &management_dialog_for_header_add,
                 &aliases_list_for_header_add,
@@ -300,16 +300,16 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
     let advanced_autofill_for_budget_add = Rc::clone(&ui_handles.advanced_autofill);
     let ui_for_budget_add = Rc::clone(ui_handles);
     add_budget_button.connect_clicked(move |_| {
-        show_new_budget_dialog(
-            &management_dialog_for_budget_add,
-            &budgets_list_for_budget_add,
-            &budgets_forms_for_budget_add,
-            &budgets_scroll_for_budget_add,
-            &status_for_budget_add,
-            &filter_entry_for_budget_add,
-            &advanced_autofill_for_budget_add,
-            ui_for_budget_add.advanced_features.get(),
-        );
+        show_new_budget_dialog(NewBudgetDialogRequest {
+            parent: &management_dialog_for_budget_add,
+            container: &budgets_list_for_budget_add,
+            forms: &budgets_forms_for_budget_add,
+            scrolled_window: &budgets_scroll_for_budget_add,
+            status: &status_for_budget_add,
+            filter_entry: &filter_entry_for_budget_add,
+            advanced_autofill: &advanced_autofill_for_budget_add,
+            advanced_features: ui_for_budget_add.advanced_features.get(),
+        });
     });
 
     let management_dialog_for_budget_move = management_dialog.clone();

@@ -1,4 +1,6 @@
 use super::*;
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
 
 pub fn export_transactions_to_path(transactions: &[Transaction], path: &Path) -> Result<PathBuf> {
     let mut wtr = csv::WriterBuilder::new()
@@ -41,6 +43,9 @@ fn remove_inbox_file_with_dirs(path: &Path, dirs: &AppDirs) -> Result<()> {
     if let Ok(metadata) = fs::metadata(&file) {
         let mut permissions = metadata.permissions();
         if permissions.readonly() {
+            #[cfg(unix)]
+            permissions.set_mode(permissions.mode() | 0o200);
+            #[cfg(not(unix))]
             permissions.set_readonly(false);
             fs::set_permissions(&file, permissions).with_context(|| {
                 format!("Could not prepare CSV for removal: {}", file.display())

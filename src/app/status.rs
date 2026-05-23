@@ -1175,11 +1175,14 @@ line two"
 
         assert_eq!(
             snapshot.text,
-            "Sample Page
-Rows visible on the sample page.
-
-Name	Notes
-Groceries	Line one line two"
+            [
+                tr("Sample Page"),
+                tr("Rows visible on the sample page."),
+                String::new(),
+                format!("{}	{}", tr("Name"), tr("Notes")),
+                "Groceries	Line one line two".to_string(),
+            ]
+            .join("\n")
         );
         assert!(snapshot.csv.contains("Name"));
         assert!(snapshot.csv.contains("Groceries"));

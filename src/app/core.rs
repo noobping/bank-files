@@ -138,21 +138,7 @@ fn apply_transaction_search(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>, qu
         return;
     }
 
-    ui.stack.set_visible_child_name("transactions");
-    ui.search_bar.set_search_mode(true);
-    *ui.search_query.borrow_mut() = query.to_string();
-    *ui.active_transaction_filter.borrow_mut() = TransactionFilter::from_query(query);
-    if ui.search_entry.text().as_str() != query {
-        ui.search_entry.set_text(query);
-    }
-    render_views(&state.borrow(), ui, state);
-    show_status(
-        ui,
-        &trf(
-            "Filter active: “{query}”. Clear the search text to show everything.",
-            &[("query", query.to_string())],
-        ),
-    );
+    show_transaction_search(state, ui, query, TransactionFilter::from_query(query));
     ui.window.present();
 }
 

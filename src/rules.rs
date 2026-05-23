@@ -333,6 +333,26 @@ fn non_empty(value: String, fallback: &str) -> String {
     }
 }
 
+fn localized_default_rules() -> &'static str {
+    localized_default(DEFAULT_RULES_EN, DEFAULT_RULES_NL, DEFAULT_RULES_DE)
+}
+
+fn localized_default_budgets() -> &'static str {
+    localized_default(DEFAULT_BUDGETS_EN, DEFAULT_BUDGETS_NL, DEFAULT_BUDGETS_DE)
+}
+
+fn localized_default(
+    english: &'static str,
+    dutch: &'static str,
+    german: &'static str,
+) -> &'static str {
+    match crate::i18n::active_language() {
+        crate::i18n::Language::English => english,
+        crate::i18n::Language::Dutch => dutch,
+        crate::i18n::Language::German => german,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -377,25 +397,5 @@ mod tests {
             strict_key: "strict".to_string(),
             loose_key: "loose".to_string(),
         }
-    }
-}
-
-fn localized_default_rules() -> &'static str {
-    localized_default(DEFAULT_RULES_EN, DEFAULT_RULES_NL, DEFAULT_RULES_DE)
-}
-
-fn localized_default_budgets() -> &'static str {
-    localized_default(DEFAULT_BUDGETS_EN, DEFAULT_BUDGETS_NL, DEFAULT_BUDGETS_DE)
-}
-
-fn localized_default(
-    english: &'static str,
-    dutch: &'static str,
-    german: &'static str,
-) -> &'static str {
-    match crate::i18n::active_language() {
-        crate::i18n::Language::English => english,
-        crate::i18n::Language::Dutch => dutch,
-        crate::i18n::Language::German => german,
     }
 }
