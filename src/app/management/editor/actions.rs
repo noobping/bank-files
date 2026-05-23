@@ -431,26 +431,7 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
         }
     });
 
-    let filter_search_bar_for_shortcut = filter_search_bar.clone();
-    let filter_entry_for_shortcut = filter_entry.clone();
-    let key_controller = gtk::EventControllerKey::new();
-    key_controller.connect_key_pressed(move |_, key, _, modifier| {
-        let is_find_shortcut = modifier.contains(gtk::gdk::ModifierType::CONTROL_MASK)
-            && matches!(key.to_unicode(), Some('f') | Some('F'));
-        if !is_find_shortcut {
-            return gtk::glib::Propagation::Proceed;
-        }
-
-        if filter_search_bar_for_shortcut.is_search_mode() {
-            filter_search_bar_for_shortcut.set_search_mode(false);
-        } else {
-            filter_search_bar_for_shortcut.set_search_mode(true);
-            filter_entry_for_shortcut.grab_focus();
-            filter_entry_for_shortcut.select_region(0, -1);
-        }
-        gtk::glib::Propagation::Stop
-    });
-    management_dialog.add_controller(key_controller);
+    ui::connect_search_shortcut(management_dialog, filter_search_bar, filter_entry);
 
     let management_dialog_for_save = management_dialog.clone();
     let rules_forms_for_save = Rc::clone(rules_forms);

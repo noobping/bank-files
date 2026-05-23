@@ -138,15 +138,8 @@ pub(in crate::app) fn show_preferences_dialog(
         .child(&root)
         .build();
 
-    let search_bar_for_button = search_bar.clone();
-    let search_entry_for_button = search_entry.clone();
-    search_button.connect_clicked(move |_| {
-        let enabled = !search_bar_for_button.is_search_mode();
-        search_bar_for_button.set_search_mode(enabled);
-        if enabled {
-            search_entry_for_button.grab_focus();
-        }
-    });
+    ui::connect_search_button(&search_button, &search_bar, &search_entry);
+    ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);
     search_bar.set_key_capture_widget(Some(&dialog));
     connect_preference_search(&search_entry, search_groups);
 

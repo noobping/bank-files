@@ -659,8 +659,7 @@ fn show_status_history_popover(
     let stack_for_search = header.stack.clone();
     let search_entry_for_button = header.search_entry.clone();
     header.search_button.connect_clicked(move |_| {
-        stack_for_search.set_visible_child_name(STATUS_HISTORY_SEARCH_PAGE);
-        search_entry_for_button.grab_focus();
+        show_status_history_search(&stack_for_search, &search_entry_for_button);
     });
 
     let window_for_copy = window.clone();
@@ -677,8 +676,17 @@ fn show_status_history_popover(
     let stack_for_back = header.stack.clone();
     let search_entry_for_back = header.search_entry.clone();
     header.back_button.connect_clicked(move |_| {
-        search_entry_for_back.set_text("");
-        stack_for_back.set_visible_child_name(STATUS_HISTORY_TITLE_PAGE);
+        hide_status_history_search(&stack_for_back, &search_entry_for_back);
+    });
+    let stack_for_stop = header.stack.clone();
+    let search_entry_for_stop = header.search_entry.clone();
+    header.search_entry.connect_stop_search(move |_| {
+        hide_status_history_search(&stack_for_stop, &search_entry_for_stop);
+    });
+    let stack_for_shortcut = header.stack.clone();
+    let search_entry_for_shortcut = header.search_entry.clone();
+    ui::connect_primary_f_shortcut(&root, move || {
+        toggle_status_history_search(&stack_for_shortcut, &search_entry_for_shortcut);
     });
     connect_status_history_search(&header.search_entry, rows, empty_label);
 
@@ -753,6 +761,25 @@ fn build_status_history_header() -> StatusHistoryHeader {
         save_button,
         back_button,
         search_entry,
+    }
+}
+
+fn show_status_history_search(stack: &gtk::Stack, search_entry: &gtk::SearchEntry) {
+    stack.set_visible_child_name(STATUS_HISTORY_SEARCH_PAGE);
+    search_entry.grab_focus();
+    search_entry.select_region(0, -1);
+}
+
+fn hide_status_history_search(stack: &gtk::Stack, search_entry: &gtk::SearchEntry) {
+    search_entry.set_text("");
+    stack.set_visible_child_name(STATUS_HISTORY_TITLE_PAGE);
+}
+
+fn toggle_status_history_search(stack: &gtk::Stack, search_entry: &gtk::SearchEntry) {
+    if stack.visible_child_name().as_deref() == Some(STATUS_HISTORY_SEARCH_PAGE) {
+        hide_status_history_search(stack, search_entry);
+    } else {
+        show_status_history_search(stack, search_entry);
     }
 }
 
@@ -920,7 +947,13 @@ fn status_log_keywords(entry: &StatusLogEntry) -> String {
 }
 
 fn status_log_matches_keywords(keywords: &str, query: &str) -> bool {
-    query.is_empty() || keywords.contains(query)
+    query.split_whitespace().all(|term| {
+        if let Some(excluded) = term.strip_prefix('!') {
+            excluded.is_empty() || !keywords.contains(excluded)
+        } else {
+            keywords.contains(term)
+        }
+    })
 }
 
 pub(in crate::app) fn schedule_status_autohide_after_loading(ui: &UiHandles) {
@@ -1080,6 +1113,29 @@ mod tests {
         assert!(status_log_matches_keywords(&keywords, "import"));
         assert!(status_log_matches_keywords(&keywords, ""));
         assert!(!status_log_matches_keywords(&keywords, "backup"));
+    }
+
+    #[test]
+    fn status_log_search_supports_negative_terms() {
+        let debug_entry = StatusLogEntry {
+            timestamp: "12:34:56".to_string(),
+            message: "[debug] render started".to_string(),
+        };
+        let normal_entry = StatusLogEntry {
+            timestamp: "12:35:00".to_string(),
+            message: "CSV import finished".to_string(),
+        };
+        let debug_keywords = status_log_keywords(&debug_entry);
+        let normal_keywords = status_log_keywords(&normal_entry);
+
+        assert!(!status_log_matches_keywords(&debug_keywords, "!debug"));
+        assert!(status_log_matches_keywords(&normal_keywords, "!debug"));
+        assert!(status_log_matches_keywords(&normal_keywords, "csv !debug"));
+        assert!(!status_log_matches_keywords(
+            &debug_keywords,
+            "render !debug"
+        ));
+        assert!(status_log_matches_keywords(&debug_keywords, "!"));
     }
 
     #[test]
