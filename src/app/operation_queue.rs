@@ -441,9 +441,10 @@ fn operation_row(
     operation: QueuedOperation,
 ) -> gtk::ListBoxRow {
     let row = gtk::ListBoxRow::builder()
-        .activatable(false)
+        .activatable(true)
         .selectable(false)
         .build();
+    row.set_tooltip_text(Some(&tr("Show operation details")));
 
     let content = gtk::Box::new(gtk::Orientation::Vertical, 0);
     content.set_hexpand(true);
@@ -459,15 +460,10 @@ fn operation_row(
     details_revealer.set_transition_type(gtk::RevealerTransitionType::SlideDown);
     details_revealer.set_reveal_child(false);
 
-    let expand_icon = gtk::Image::from_icon_name("pan-end-symbolic");
-    let expand_button = gtk::ToggleButton::builder()
-        .tooltip_text(tr("Show operation details"))
-        .build();
-    expand_button.add_css_class("flat");
-    expand_button.set_focus_on_click(false);
-    expand_button.set_valign(gtk::Align::Start);
-    expand_button.set_child(Some(&expand_icon));
-    summary.append(&expand_button);
+    let expand_icon = gtk::Image::from_icon_name(operation_details_icon_name(false));
+    expand_icon.add_css_class("dim-label");
+    expand_icon.set_valign(gtk::Align::Start);
+    summary.append(&expand_icon);
 
     let labels = gtk::Box::new(gtk::Orientation::Vertical, 2);
     labels.set_hexpand(true);
@@ -567,15 +563,11 @@ fn operation_row(
 
     let details_revealer_for_toggle = details_revealer.clone();
     let expand_icon_for_toggle = expand_icon.clone();
-    expand_button.connect_toggled(move |button| {
-        let expanded = button.is_active();
+    row.connect_activate(move |row| {
+        let expanded = !details_revealer_for_toggle.reveals_child();
         details_revealer_for_toggle.set_reveal_child(expanded);
-        expand_icon_for_toggle.set_icon_name(Some(if expanded {
-            "pan-down-symbolic"
-        } else {
-            "pan-end-symbolic"
-        }));
-        button.set_tooltip_text(Some(&tr(if expanded {
+        expand_icon_for_toggle.set_icon_name(Some(operation_details_icon_name(expanded)));
+        row.set_tooltip_text(Some(&tr(if expanded {
             "Hide operation details"
         } else {
             "Show operation details"
@@ -620,6 +612,14 @@ fn operation_subtitle(kind: &QueuedOperationKind) -> String {
                 ("direction", tr(rule_direction_label(&rule.direction))),
             ],
         ),
+    }
+}
+
+fn operation_details_icon_name(expanded: bool) -> &'static str {
+    if expanded {
+        "pan-down-symbolic"
+    } else {
+        "pan-end-symbolic"
     }
 }
 
@@ -1134,6 +1134,12 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec![failed, pending]
         );
+    }
+
+    #[test]
+    fn operation_details_icon_tracks_expansion_state() {
+        assert_eq!(operation_details_icon_name(false), "pan-end-symbolic");
+        assert_eq!(operation_details_icon_name(true), "pan-down-symbolic");
     }
 
     #[test]
