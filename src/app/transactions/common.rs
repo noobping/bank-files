@@ -296,6 +296,21 @@ fn transaction_detail_actions(
         safe_actions.append(&move_button);
     }
 
+    if visible_actions.contains(&TransactionDetailAction::MarkTransfer) {
+        let tx_for_transfer = tx.clone();
+        let ui_for_transfer = Rc::clone(ui_handles);
+        let button = ui::plain_text_icon_button(
+            "send-to-symbolic",
+            "Mark transfer",
+            "Create a transfer rule from this transaction",
+        );
+        register_config_widget(ui_handles, &button);
+        button.connect_clicked(move |_| {
+            apply_transaction_direction_rule(&tx_for_transfer, "transfer", &ui_for_transfer);
+        });
+        safe_actions.append(&button);
+    }
+
     let tx_for_fake = tx.clone();
     let state_for_fake = Rc::clone(state);
     let ui_for_fake = Rc::clone(ui_handles);
@@ -379,21 +394,6 @@ fn transaction_detail_actions(
             show_budget_edit_dialog(&code, &category, &state_for_budget, &ui_for_budget);
         });
         advanced_actions.append(&button);
-
-        if visible_actions.contains(&TransactionDetailAction::MarkTransfer) {
-            let tx_for_transfer = tx.clone();
-            let ui_for_transfer = Rc::clone(ui_handles);
-            let button = ui::plain_text_icon_button(
-                "send-to-symbolic",
-                "Mark transfer",
-                "Create a transfer rule from this transaction",
-            );
-            register_config_widget(ui_handles, &button);
-            button.connect_clicked(move |_| {
-                apply_transaction_direction_rule(&tx_for_transfer, "transfer", &ui_for_transfer);
-            });
-            advanced_actions.append(&button);
-        }
     }
 
     if safe_actions.first_child().is_some() {
@@ -734,15 +734,19 @@ fn show_transaction_budget_code_dialog(
             target.direction.as_str().to_string()
         };
 
-        let direction_changes = transaction_budget_direction_change(
-            &tx_for_save,
-            &state_for_save.borrow().budgets,
-            &budget_code_text,
-            &category_text,
-            &direction_text,
-        )
-        .into_iter()
-        .collect();
+        let direction_changes = if advanced_features {
+            transaction_budget_direction_change(
+                &tx_for_save,
+                &state_for_save.borrow().budgets,
+                &budget_code_text,
+                &category_text,
+                &direction_text,
+            )
+            .into_iter()
+            .collect()
+        } else {
+            Vec::new()
+        };
         let rule = EditableRule {
             priority: 140,
             active: true,
@@ -795,10 +799,9 @@ fn transaction_budget_move_targets(
     budgets: &[crate::model::BudgetCode],
     advanced_features: bool,
 ) -> Vec<TransactionBudgetTarget> {
-    let current_direction = transaction_budget_direction(tx, budgets);
+    let simple_direction = transaction_budget_simple_move_direction(tx, budgets);
     budgets
         .iter()
-        .filter(|budget| !planned_income::is_budget_code(&budget.code))
         .filter_map(|budget| {
             let code = budget.code.trim();
             if code.is_empty() {
@@ -812,8 +815,21 @@ fn transaction_budget_move_targets(
             transaction_budget_target_allowed(tx, budgets, &target, advanced_features)
                 .then_some(target)
         })
-        .filter(|target| advanced_features || target.direction == current_direction)
+        .filter(|target| advanced_features || target.direction == simple_direction)
         .collect()
+}
+
+fn transaction_budget_simple_move_direction(
+    tx: &Transaction,
+    budgets: &[crate::model::BudgetCode],
+) -> BudgetDirection {
+    if analytics::transaction_is_transfer(tx, budgets) {
+        BudgetDirection::Transfer
+    } else if tx.amount > Decimal::ZERO {
+        BudgetDirection::Income
+    } else {
+        BudgetDirection::Expense
+    }
 }
 
 fn transaction_budget_target_allowed(
@@ -822,7 +838,7 @@ fn transaction_budget_target_allowed(
     target: &TransactionBudgetTarget,
     advanced_features: bool,
 ) -> bool {
-    advanced_features || target.direction == transaction_budget_direction(tx, budgets)
+    advanced_features || target.direction == transaction_budget_simple_move_direction(tx, budgets)
 }
 
 fn transaction_budget_move_available(
@@ -830,7 +846,9 @@ fn transaction_budget_move_available(
     budgets: &[crate::model::BudgetCode],
     advanced_features: bool,
 ) -> bool {
-    transaction_budget_move_targets(tx, budgets, advanced_features).len() > 1
+    transaction_budget_move_targets(tx, budgets, advanced_features)
+        .iter()
+        .any(|target| !target.code.eq_ignore_ascii_case(tx.budget_code.trim()))
 }
 
 fn transaction_budget_target_for_code<'a>(
@@ -1343,11 +1361,12 @@ mod tests {
     }
 
     #[test]
-    fn simple_mode_budget_move_targets_match_transaction_direction() {
+    fn simple_mode_budget_move_targets_match_transaction_amount_direction() {
         let transaction = tx(-100, "FOOD", "Groceries");
         let budgets = vec![
             budget("FOOD", BudgetDirection::Expense),
             budget("OTHER", BudgetDirection::Expense),
+            budget("INC", BudgetDirection::Income),
             budget("SALARY", BudgetDirection::Income),
             budget("TRANSFER", BudgetDirection::Transfer),
         ];
@@ -1364,8 +1383,29 @@ mod tests {
             .collect::<Vec<_>>();
         assert_eq!(
             advanced_targets,
-            vec!["FOOD", "OTHER", "SALARY", "TRANSFER"]
+            vec!["FOOD", "OTHER", "INC", "SALARY", "TRANSFER"]
         );
+    }
+
+    #[test]
+    fn simple_mode_income_move_targets_include_inc_even_when_current_code_is_expense() {
+        let transaction = tx(100, "OTHER", "Other");
+        let budgets = vec![
+            budget("OTHER", BudgetDirection::Expense),
+            budget("INC", BudgetDirection::Income),
+            budget("INC-OTHER", BudgetDirection::Income),
+        ];
+
+        let simple_targets = transaction_budget_move_targets(&transaction, &budgets, false)
+            .into_iter()
+            .map(|target| target.code)
+            .collect::<Vec<_>>();
+        assert_eq!(simple_targets, vec!["INC", "INC-OTHER"]);
+        assert!(transaction_budget_move_available(
+            &transaction,
+            &budgets,
+            false
+        ));
     }
 
     #[test]
@@ -1400,26 +1440,44 @@ mod tests {
     }
 
     #[test]
-    fn simple_mode_blocks_budget_target_direction_changes() {
-        let transaction = tx(-100, "FOOD", "Groceries");
+    fn simple_mode_blocks_targets_that_do_not_match_transaction_amount_direction() {
+        let expense_transaction = tx(-100, "FOOD", "Groceries");
+        let income_transaction = tx(100, "OTHER", "Other");
         let budgets = vec![budget("FOOD", BudgetDirection::Expense)];
-        let target = TransactionBudgetTarget {
+        let income_target = TransactionBudgetTarget {
             code: "SALARY".to_string(),
             category: "Salary".to_string(),
             direction: BudgetDirection::Income,
         };
+        let expense_target = TransactionBudgetTarget {
+            code: "FOOD".to_string(),
+            category: "Groceries".to_string(),
+            direction: BudgetDirection::Expense,
+        };
 
         assert!(!transaction_budget_target_allowed(
-            &transaction,
+            &expense_transaction,
             &budgets,
-            &target,
+            &income_target,
             false,
         ));
         assert!(transaction_budget_target_allowed(
-            &transaction,
+            &expense_transaction,
             &budgets,
-            &target,
+            &income_target,
             true,
+        ));
+        assert!(transaction_budget_target_allowed(
+            &income_transaction,
+            &budgets,
+            &income_target,
+            false,
+        ));
+        assert!(!transaction_budget_target_allowed(
+            &income_transaction,
+            &budgets,
+            &expense_target,
+            false,
         ));
     }
 
