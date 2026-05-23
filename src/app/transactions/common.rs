@@ -94,6 +94,16 @@ pub(in crate::app) fn transaction_list(
         });
         row.add_prefix(&direction_icon);
 
+        if crate::rules::transaction_classification_is_auto_detected(tx) {
+            let badge = gtk::Label::new(Some(&tr("Auto detected")));
+            badge.add_css_class("caption");
+            badge.add_css_class("accent");
+            badge.set_tooltip_text(Some(&tr(
+                "This category and budget code were assigned by automatic detection.",
+            )));
+            row.add_suffix(&badge);
+        }
+
         let amount = gtk::Label::new(Some(&signed_money(tx.amount)));
         amount.add_css_class(if tx.amount >= Decimal::ZERO {
             "success"
@@ -169,6 +179,9 @@ fn transaction_details_table(
     ];
     if ui_handles.advanced_features.get() {
         rows.push(("Budget code", tx.budget_code.clone()));
+    }
+    if crate::rules::transaction_classification_is_auto_detected(tx) {
+        rows.push(("Classification", tr("Auto detected")));
     }
     rows.extend([
         ("Account", tx.account.clone()),

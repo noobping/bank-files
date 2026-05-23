@@ -430,14 +430,19 @@ fn generated_configuration_from_draft(
 
 fn normalize_generated_notes(configuration: &mut GeneratedConfiguration) {
     for budget in &mut configuration.budgets {
-        if budget.notes.trim().is_empty() {
-            budget.notes = LOCAL_AI_NOTE.to_string();
-        }
+        budget.notes = local_ai_note_with_detail(&budget.notes);
     }
     for rule in &mut configuration.rules {
-        if rule.notes.trim().is_empty() {
-            rule.notes = LOCAL_AI_NOTE.to_string();
-        }
+        rule.notes = local_ai_note_with_detail(&rule.notes);
+    }
+}
+
+fn local_ai_note_with_detail(notes: &str) -> String {
+    let notes = notes.trim();
+    if notes.is_empty() || notes == LOCAL_AI_NOTE {
+        LOCAL_AI_NOTE.to_string()
+    } else {
+        format!("{LOCAL_AI_NOTE} {notes}")
     }
 }
 

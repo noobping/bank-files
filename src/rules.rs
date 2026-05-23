@@ -18,6 +18,10 @@ const DEFAULT_RULES_DE: &str = include_str!("../data/defaults/editable_rules.de.
 const DEFAULT_BUDGETS_EN: &str = include_str!("../data/defaults/budgetcodes.csv");
 const DEFAULT_BUDGETS_NL: &str = include_str!("../data/defaults/budgetcodes.nl.csv");
 const DEFAULT_BUDGETS_DE: &str = include_str!("../data/defaults/budgetcodes.de.csv");
+const AUTO_DETECTED_CATEGORY_NOTE: &str = "Auto detected from built-in category keywords.";
+const GENERATED_AUTOMATIC_NOTE: &str = "Generated from automatic configuration.";
+const GENERATED_PATTERN_NOTE: &str = "Generated from detected transaction pattern.";
+const LOCAL_AI_NOTE: &str = "Generated with local AI smart insights.";
 
 #[derive(Debug, Clone)]
 pub struct Rule {
@@ -115,31 +119,65 @@ pub fn apply_rules(
     smart_insights_enabled: bool,
 ) {
     for tx in transactions {
-        let mut matched = false;
-        for rule in rules.iter().filter(|r| r.active) {
-            if !smart_insights_enabled && rule_is_smart_transfer(rule) {
-                continue;
-            }
-            if rule_matches(rule, tx) {
-                tx.category = rule.category.clone();
-                tx.budget_code = rule.budget_code.clone();
-                tx.notes = rule.notes.clone();
-                matched = true;
-                break;
-            }
+        if apply_matching_rule(tx, rules, false) {
+            continue;
+        }
+        if smart_insights_enabled && apply_matching_rule(tx, rules, true) {
+            continue;
         }
 
-        if !matched {
-            let (category, budget_code) = fallback_category(tx, budgets, smart_insights_enabled);
-            tx.category = category;
-            tx.budget_code = budget_code;
+        let assignment = fallback_category(tx, budgets, smart_insights_enabled);
+        tx.category = assignment.category;
+        tx.budget_code = assignment.budget_code;
+        if let Some(notes) = assignment.notes {
+            tx.notes = notes;
         }
     }
 }
 
-fn rule_is_smart_transfer(rule: &Rule) -> bool {
-    canonical_direction(&rule.direction).is_some_and(|direction| direction == "transfer")
-        || rule.budget_code.trim().eq_ignore_ascii_case("TRANSFER")
+pub fn transaction_classification_is_auto_detected(tx: &Transaction) -> bool {
+    note_is_auto_detection(&tx.notes)
+}
+
+fn apply_matching_rule(tx: &mut Transaction, rules: &[Rule], automatic: bool) -> bool {
+    for rule in rules
+        .iter()
+        .filter(|rule| rule.active && rule_is_automatic_detection(rule) == automatic)
+    {
+        if rule_matches(rule, tx) {
+            tx.category = rule.category.clone();
+            tx.budget_code = rule.budget_code.clone();
+            tx.notes = rule.notes.clone();
+            return true;
+        }
+    }
+    false
+}
+
+fn rule_is_automatic_detection(rule: &Rule) -> bool {
+    note_is_auto_detection(&rule.notes)
+}
+
+fn note_is_auto_detection(note: &str) -> bool {
+    [
+        AUTO_DETECTED_CATEGORY_NOTE,
+        GENERATED_AUTOMATIC_NOTE,
+        GENERATED_PATTERN_NOTE,
+        LOCAL_AI_NOTE,
+    ]
+    .iter()
+    .any(|expected| note_matches(note, expected))
+}
+
+fn note_matches(note: &str, expected: &str) -> bool {
+    let note = normalize_key(note);
+    let expected_key = normalize_key(expected);
+    let localized_key = normalize_key(&crate::i18n::gettext(expected));
+    !note.is_empty()
+        && (note == expected_key
+            || note.starts_with(&format!("{expected_key} "))
+            || note == localized_key
+            || note.starts_with(&format!("{localized_key} ")))
 }
 
 fn rule_matches(rule: &Rule, tx: &Transaction) -> bool {
@@ -210,7 +248,7 @@ fn fallback_category(
     tx: &Transaction,
     budgets: &[BudgetCode],
     smart_insights_enabled: bool,
-) -> (String, String) {
+) -> CategoryAssignment {
     let text = normalize_key(&format!(
         "{} {} {}",
         tx.description,
@@ -219,15 +257,18 @@ fn fallback_category(
     ));
     let amount = tx.amount;
 
-    for rule in fallback_category_rules() {
-        if !smart_insights_enabled && fallback_rule_is_smart_transfer(rule) {
-            continue;
-        }
-        if fallback_direction_matches(rule.direction, amount)
-            && any_keywords(&text, rule.keywords)
-            && configured_budget_code_exists(budgets, rule.budget_code)
-        {
-            return (rule.category.to_string(), rule.budget_code.to_string());
+    if smart_insights_enabled {
+        for rule in fallback_category_rules() {
+            if fallback_direction_matches(rule.direction, amount)
+                && any_keywords(&text, rule.keywords)
+                && configured_budget_code_exists(budgets, rule.budget_code)
+            {
+                return CategoryAssignment {
+                    category: rule.category.to_string(),
+                    budget_code: rule.budget_code.to_string(),
+                    notes: Some(crate::i18n::gettext(AUTO_DETECTED_CATEGORY_NOTE)),
+                };
+            }
         }
     }
 
@@ -236,7 +277,17 @@ fn fallback_category(
     } else {
         other_expense_fallback()
     };
-    (category.to_string(), budget_code.to_string())
+    CategoryAssignment {
+        category: category.to_string(),
+        budget_code: budget_code.to_string(),
+        notes: None,
+    }
+}
+
+struct CategoryAssignment {
+    category: String,
+    budget_code: String,
+    notes: Option<String>,
 }
 
 fn configured_budget_code_exists(budgets: &[BudgetCode], code: &str) -> bool {
@@ -311,10 +362,6 @@ fn fallback_categories() -> &'static str {
         crate::i18n::Language::Dutch => FALLBACK_CATEGORIES_NL,
         crate::i18n::Language::German => FALLBACK_CATEGORIES_DE,
     }
-}
-
-fn fallback_rule_is_smart_transfer(rule: FallbackCategoryRule) -> bool {
-    rule.direction.trim().eq_ignore_ascii_case("transfer")
 }
 
 fn fallback_direction_matches(direction: &str, amount: Decimal) -> bool {
@@ -394,7 +441,9 @@ mod tests {
             income_basis: BudgetIncomeBasis::RealIncome,
             notes: String::new(),
         }];
-        let (category, budget_code) = fallback_category(&tx, &budgets, true);
+        let assignment = fallback_category(&tx, &budgets, true);
+        let category = assignment.category;
+        let budget_code = assignment.budget_code;
 
         assert!(matches!(
             category.as_str(),
@@ -404,7 +453,7 @@ mod tests {
     }
 
     #[test]
-    fn fallback_skips_detected_transfer_when_smart_insights_disabled() {
+    fn fallback_skips_keyword_detection_when_smart_insights_disabled() {
         let tx = tx("Tikkie dinner", "Friend", -2300);
         let budgets = vec![
             BudgetCode {
@@ -427,15 +476,17 @@ mod tests {
             },
         ];
 
-        let (_, smart_code) = fallback_category(&tx, &budgets, true);
-        let (_, facts_only_code) = fallback_category(&tx, &budgets, false);
+        let smart_assignment = fallback_category(&tx, &budgets, true);
+        let facts_only_assignment = fallback_category(&tx, &budgets, false);
 
-        assert_eq!(smart_code, "TRANSFER");
-        assert_eq!(facts_only_code, "OTHER");
+        assert_eq!(smart_assignment.budget_code, "TRANSFER");
+        assert_eq!(facts_only_assignment.budget_code, "OTHER");
+        assert!(smart_assignment.notes.is_some());
+        assert!(facts_only_assignment.notes.is_none());
     }
 
     #[test]
-    fn apply_rules_skips_transfer_rules_when_smart_insights_disabled() {
+    fn apply_rules_skips_auto_detected_rules_when_smart_insights_disabled() {
         let mut smart_transactions = vec![tx("Tikkie dinner", "Friend", -2300)];
         let mut facts_only_transactions = smart_transactions.clone();
         let rules = vec![Rule {
@@ -476,6 +527,73 @@ mod tests {
 
         assert_eq!(smart_transactions[0].budget_code, "TRANSFER");
         assert_eq!(facts_only_transactions[0].budget_code, "OTHER");
+    }
+
+    #[test]
+    fn manual_rules_override_auto_detected_rules_even_with_lower_priority() {
+        let mut transactions = vec![tx("Tikkie dinner", "Friend", -2300)];
+        let rules = vec![
+            Rule {
+                priority: 200,
+                active: true,
+                field: "any".to_string(),
+                pattern: "Tikkie".to_string(),
+                category: "Transfers".to_string(),
+                budget_code: "TRANSFER".to_string(),
+                direction: "transfer".to_string(),
+                amount_min: None,
+                amount_max: None,
+                notes: GENERATED_AUTOMATIC_NOTE.to_string(),
+            },
+            Rule {
+                priority: 10,
+                active: true,
+                field: "any".to_string(),
+                pattern: "Tikkie".to_string(),
+                category: "Dining out".to_string(),
+                budget_code: "DINING".to_string(),
+                direction: "expense".to_string(),
+                amount_min: None,
+                amount_max: None,
+                notes: "Manual override".to_string(),
+            },
+        ];
+        let budgets = vec![
+            budget("TRANSFER", "Transfers", BudgetDirection::Transfer),
+            budget("DINING", "Dining out", BudgetDirection::Expense),
+            budget("OTHER", "Other", BudgetDirection::Expense),
+        ];
+
+        apply_rules(&mut transactions, &rules, &budgets, true);
+
+        assert_eq!(transactions[0].budget_code, "DINING");
+        assert_eq!(transactions[0].category, "Dining out");
+        assert!(!transaction_classification_is_auto_detected(
+            &transactions[0]
+        ));
+    }
+
+    #[test]
+    fn transaction_classification_indicator_follows_auto_detection_notes() {
+        let mut auto = tx("Tikkie dinner", "Friend", -2300);
+        auto.notes = AUTO_DETECTED_CATEGORY_NOTE.to_string();
+        let mut manual = tx("Tikkie dinner", "Friend", -2300);
+        manual.notes = "Manual override".to_string();
+
+        assert!(transaction_classification_is_auto_detected(&auto));
+        assert!(!transaction_classification_is_auto_detected(&manual));
+    }
+
+    fn budget(code: &str, category: &str, direction: BudgetDirection) -> BudgetCode {
+        BudgetCode {
+            code: code.to_string(),
+            category: category.to_string(),
+            monthly_budget: None,
+            yearly_budget: None,
+            direction,
+            income_basis: BudgetIncomeBasis::RealIncome,
+            notes: String::new(),
+        }
     }
 
     fn tx(description: &str, counterparty: &str, cents: i64) -> Transaction {
