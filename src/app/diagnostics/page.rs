@@ -972,7 +972,10 @@ fn show_transaction_pattern_rule_dialog(
     let initial = editable_rule_for_pattern(pattern, &state.borrow());
 
     let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    let header = ui::cancelable_dialog_header("Create Rule", &pattern.label);
+    let header = ui::cancelable_dialog_header(
+        "Create Rule",
+        "Create a categorization rule from this detected transaction pattern.",
+    );
 
     let cancel_button = gtk::Button::with_label(&tr("Cancel"));
     cancel_button.add_css_class("flat");
@@ -983,11 +986,6 @@ fn show_transaction_pattern_rule_dialog(
     root.append(&header);
 
     let page = ui::page_box();
-    page.append(&ui::section_title(
-        "Create Rule",
-        "Create a categorization rule from this detected transaction pattern.",
-    ));
-
     let grid = ui::form_grid();
     let active = gtk::Switch::builder()
         .active(initial.active)
@@ -1056,12 +1054,12 @@ fn show_transaction_pattern_rule_dialog(
     let status = ui::wrapped_label(&tr("Save adds this rule to the processing queue."));
     status.add_css_class("dim-label");
     page.append(&status);
-    root.append(&ui::scroll(&page));
+    root.append(&ui::action_dialog_scroll(&page));
 
     let dialog = adw::Dialog::builder()
         .title(tr("Create Rule"))
         .content_width(650)
-        .content_height(620)
+        .content_height(-1)
         .default_widget(&save_button)
         .child(&root)
         .build();

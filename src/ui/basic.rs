@@ -1,6 +1,7 @@
 use super::*;
 
 const POPOVER_SIZE: i32 = 320;
+const ACTION_DIALOG_MAX_HEIGHT: i32 = 620;
 
 pub fn month_label(month: MonthKey) -> String {
     format!("{} {}", month_name(month.month), month.year)
@@ -137,6 +138,22 @@ pub fn scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
     gtk::ScrolledWindow::builder()
         .hexpand(true)
         .vexpand(true)
+        .hscrollbar_policy(gtk::PolicyType::Never)
+        .child(&clamp)
+        .build()
+}
+
+pub fn action_dialog_scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
+    let clamp = adw::Clamp::builder()
+        .maximum_size(1080)
+        .tightening_threshold(640)
+        .child(child)
+        .build();
+    gtk::ScrolledWindow::builder()
+        .hexpand(true)
+        .vexpand(false)
+        .max_content_height(ACTION_DIALOG_MAX_HEIGHT)
+        .propagate_natural_height(true)
         .hscrollbar_policy(gtk::PolicyType::Never)
         .child(&clamp)
         .build()

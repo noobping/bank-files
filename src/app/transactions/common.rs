@@ -419,7 +419,10 @@ fn show_transaction_rule_dialog(
     let initial = editable_rule_for_transaction(tx, direction_override);
 
     let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    let header = ui::cancelable_dialog_header("Create Rule", &transaction_title(tx));
+    let header = ui::cancelable_dialog_header(
+        "Create Rule",
+        "Create a categorization rule from this transaction.",
+    );
 
     let cancel_button = gtk::Button::with_label(&tr("Cancel"));
     cancel_button.add_css_class("flat");
@@ -430,11 +433,6 @@ fn show_transaction_rule_dialog(
     root.append(&header);
 
     let page = ui::page_box();
-    page.append(&ui::section_title(
-        "Create Rule",
-        "Create a categorization rule from this transaction.",
-    ));
-
     let grid = ui::form_grid();
     let active = gtk::Switch::builder()
         .active(initial.active)
@@ -500,12 +498,12 @@ fn show_transaction_rule_dialog(
     let status = ui::wrapped_label(&tr("Save adds this rule to the processing queue."));
     status.add_css_class("dim-label");
     page.append(&status);
-    root.append(&ui::scroll(&page));
+    root.append(&ui::action_dialog_scroll(&page));
 
     let dialog = adw::Dialog::builder()
         .title(tr("Create Rule"))
         .content_width(680)
-        .content_height(620)
+        .content_height(-1)
         .default_widget(&save_button)
         .child(&root)
         .build();
@@ -574,8 +572,13 @@ fn show_transaction_budget_code_dialog(
     } else {
         "Move Category"
     };
+    let dialog_subtitle = if advanced_features {
+        "Move this transaction to another category or budget code."
+    } else {
+        "Move this transaction to another category."
+    };
     let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    let header = ui::action_dialog_header();
+    let header = ui::cancelable_dialog_header(dialog_title, dialog_subtitle);
 
     let cancel_button = gtk::Button::with_label(&tr("Cancel"));
     cancel_button.add_css_class("flat");
@@ -594,15 +597,6 @@ fn show_transaction_budget_code_dialog(
     root.append(&header);
 
     let page = ui::page_box();
-    page.append(&ui::section_title(
-        dialog_title,
-        if advanced_features {
-            "Move this transaction to another category or budget code."
-        } else {
-            "Move this transaction to another category."
-        },
-    ));
-
     let match_summary = trf(
         "Matching by {field}: {value}",
         &[
@@ -668,12 +662,12 @@ fn show_transaction_budget_code_dialog(
     }));
     status.add_css_class("dim-label");
     page.append(&status);
-    root.append(&ui::scroll(&page));
+    root.append(&ui::action_dialog_scroll(&page));
 
     let dialog = adw::Dialog::builder()
         .title(tr(dialog_title))
         .content_width(680)
-        .content_height(620)
+        .content_height(-1)
         .default_widget(&save_button)
         .child(&root)
         .build();

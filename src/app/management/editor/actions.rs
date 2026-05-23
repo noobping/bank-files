@@ -809,8 +809,10 @@ fn show_move_budget_code_dialog(
     }
 
     let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    let header =
-        ui::cancelable_dialog_header("Move Budget Code", "Move rules to another budget code.");
+    let header = ui::cancelable_dialog_header(
+        "Move Budget Code",
+        "Move matching rules to the target budget code. Choose whether to keep the source budget code.",
+    );
     let cancel_button = gtk::Button::with_label(&tr("Cancel"));
     cancel_button.add_css_class("flat");
     let move_button = ui::primary_text_icon_button("send-to-symbolic", "Move", "Move budget code");
@@ -819,10 +821,6 @@ fn show_move_budget_code_dialog(
     root.append(&header);
 
     let page = ui::page_box();
-    page.append(&ui::section_title(
-        "Move Budget Code",
-        "Move matching rules to the target budget code. Choose whether to keep the source budget code.",
-    ));
     let grid = ui::form_grid();
     let source = budget_move_combo(&options, Some(&options[0].code));
     let target = budget_move_combo(&options, options.get(1).map(|option| option.code.as_str()));
@@ -838,12 +836,12 @@ fn show_move_budget_code_dialog(
         ui::wrapped_label(&tr("Changes are staged here. Press Save to write them."));
     dialog_status.add_css_class("dim-label");
     page.append(&dialog_status);
-    root.append(&ui::scroll(&page));
+    root.append(&ui::action_dialog_scroll(&page));
 
     let dialog = adw::Dialog::builder()
         .title(tr("Move Budget Code"))
         .content_width(680)
-        .content_height(620)
+        .content_height(-1)
         .default_widget(&move_button)
         .child(&root)
         .build();
