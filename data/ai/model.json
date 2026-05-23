@@ -1,8 +1,22 @@
 {
-  "format": "bank-files-local-ai-v1",
-  "placeholder": true,
   "classifier": "classifier.onnx",
+  "classifier_source": {
+    "exporter": "optimum-cli export onnx",
+    "intended_backend": "tract-onnx",
+    "license": "mit",
+    "model": "prajjwal1/bert-tiny",
+    "task": "feature-extraction"
+  },
+  "description": "Workflow-built candidate assets. The manifest intentionally stays placeholder:true until src/local_ai/mod.rs has model-specific classifier and generator adapters.",
+  "format": "bank-files-local-ai-v1",
   "generator": "generator.safetensors",
-  "tokenizer": "tokenizer.json",
-  "description": "Placeholder model manifest. Replace these files with a real tiny local model before enabling inference."
+  "generator_source": {
+    "architecture": "t5",
+    "intended_backend": "candle",
+    "license": "apache-2.0",
+    "model": "google/t5-efficient-tiny"
+  },
+  "placeholder": true,
+  "runtime_status": "bootstrap-only",
+  "tokenizer": "tokenizer.json"
 }
