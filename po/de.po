@@ -3327,3 +3327,45 @@ msgstr "Dies sind gemerkte App-Kopien oder Live-CSV-Dateien für diese Sitzung. 
 
 msgid "Online Smart Insights are not available in this build. Automatic Configuration uses only local transactions."
 msgstr "Online Smart Insights sind in diesem Build nicht verfügbar. Die automatische Konfiguration verwendet nur lokale Transaktionen."
+
+msgid "Search filters"
+msgstr "Suchfilter"
+
+msgid "Clear Filter"
+msgstr "Filter leeren"
+
+msgid "Income / positive"
+msgstr "Einnahmen / positiv"
+
+msgid "Costs / negative"
+msgstr "Kosten / negativ"
+
+msgid "Current Month"
+msgstr "Aktueller Monat"
+
+msgid "Current Year"
+msgstr "Aktuelles Jahr"
+
+msgid "Unconfigured Budgets"
+msgstr "Nicht eingerichtete Budgets"
+
+msgid "Other Categories"
+msgstr "Andere Kategorien"
+
+msgid "Detected Patterns"
+msgstr "Erkannte Muster"
+
+msgid "Import Reports"
+msgstr "Importberichte"
+
+msgid "Field Mappings"
+msgstr "Feldzuordnungen"
+
+msgid "No month is available for this filter yet."
+msgstr "Fuer diesen Filter ist noch kein Monat verfuegbar."
+
+msgid "No year is available for this filter yet."
+msgstr "Fuer diesen Filter ist noch kein Jahr verfuegbar."
+
+msgid "This filter is not available yet."
+msgstr "Dieser Filter ist noch nicht verfuegbar."

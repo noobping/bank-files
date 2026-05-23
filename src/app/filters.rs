@@ -95,6 +95,118 @@ fn page_hides_canceled_transactions(
                 .unwrap_or(false))
 }
 
+pub(in crate::app) fn apply_search_preset(
+    state: &Rc<RefCell<AppData>>,
+    ui: &Rc<UiHandles>,
+    preset_id: &str,
+) {
+    let Some(preset) = SearchPreset::from_id(preset_id) else {
+        return;
+    };
+    let query = {
+        let data = state.borrow();
+        match preset.query(&data, ui) {
+            Some(query) => query,
+            None => {
+                show_status(ui, preset.unavailable_message());
+                return;
+            }
+        }
+    };
+
+    *ui.active_transaction_filter.borrow_mut() = TransactionFilter::from_query(&query);
+    *ui.search_query.borrow_mut() = query.clone();
+    ui.search_bar.set_search_mode(!query.is_empty());
+    if ui.search_entry.text().as_str() != query.as_str() {
+        ui.search_entry.set_text(&query);
+    }
+    if !query.is_empty() {
+        ui.search_entry.grab_focus();
+        ui.search_entry.select_region(0, -1);
+    }
+
+    render_views(&state.borrow(), ui, state);
+    show_search_status(ui, &query);
+}
+
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+enum SearchPreset {
+    Clear,
+    Income,
+    Expense,
+    Transfer,
+    CurrentMonth,
+    CurrentYear,
+    UnconfiguredBudgets,
+    OtherCategories,
+    Warnings,
+    Patterns,
+    Imports,
+    Fields,
+    Rules,
+}
+
+impl SearchPreset {
+    fn from_id(id: &str) -> Option<Self> {
+        match id {
+            "clear" => Some(Self::Clear),
+            "income" => Some(Self::Income),
+            "expense" => Some(Self::Expense),
+            "transfer" => Some(Self::Transfer),
+            "current-month" => Some(Self::CurrentMonth),
+            "current-year" => Some(Self::CurrentYear),
+            "unconfigured-budgets" => Some(Self::UnconfiguredBudgets),
+            "other-categories" => Some(Self::OtherCategories),
+            "warnings" => Some(Self::Warnings),
+            "patterns" => Some(Self::Patterns),
+            "imports" => Some(Self::Imports),
+            "fields" => Some(Self::Fields),
+            "rules" => Some(Self::Rules),
+            _ => None,
+        }
+    }
+
+    fn query(self, data: &AppData, ui: &UiHandles) -> Option<String> {
+        match self {
+            Self::Clear => Some(String::new()),
+            Self::Income => Some("amount:income".to_string()),
+            Self::Expense => Some("amount:expense".to_string()),
+            Self::Transfer => Some("amount:transfer".to_string()),
+            Self::CurrentMonth => selected_budget_month(data, ui)
+                .map(TransactionFilter::month)
+                .map(|filter| filter.query()),
+            Self::CurrentYear => selected_year(data, ui)
+                .map(TransactionFilter::year)
+                .map(|filter| filter.query()),
+            Self::UnconfiguredBudgets => Some(TransactionFilter::UnconfiguredBudgets.query()),
+            Self::OtherCategories => Some(TransactionFilter::OtherCategories.query()),
+            Self::Warnings => Some("warnings".to_string()),
+            Self::Patterns => Some("patterns".to_string()),
+            Self::Imports => Some("imports".to_string()),
+            Self::Fields => Some("fields".to_string()),
+            Self::Rules => Some("rules".to_string()),
+        }
+    }
+
+    fn unavailable_message(self) -> &'static str {
+        match self {
+            Self::CurrentMonth => "No month is available for this filter yet.",
+            Self::CurrentYear => "No year is available for this filter yet.",
+            Self::Clear
+            | Self::Income
+            | Self::Expense
+            | Self::Transfer
+            | Self::UnconfiguredBudgets
+            | Self::OtherCategories
+            | Self::Warnings
+            | Self::Patterns
+            | Self::Imports
+            | Self::Fields
+            | Self::Rules => "This filter is not available yet.",
+        }
+    }
+}
+
 pub(in crate::app) fn connect_search(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
     let state_for_search = Rc::clone(state);
     let ui_for_search = Rc::clone(ui);
@@ -115,17 +227,7 @@ pub(in crate::app) fn connect_search(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHan
             &ui_for_search,
             &state_for_search,
         );
-        if query.is_empty() {
-            show_status(&ui_for_search, "Filter cleared. All items are shown.");
-        } else {
-            show_status(
-                &ui_for_search,
-                &trf(
-                    "Filter active: “{query}”. Clear the search text to show everything.",
-                    &[("query", query)],
-                ),
-            );
-        }
+        show_search_status(&ui_for_search, &query);
     });
 
     let search_bar_for_stop = ui.search_bar.clone();
@@ -147,6 +249,7 @@ pub(in crate::app) fn connect_search(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHan
 pub(in crate::app) enum TransactionAmountFilter {
     Income,
     Expense,
+    Transfer,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -343,6 +446,7 @@ impl TransactionFilter {
                     tokens.push(match amount {
                         TransactionAmountFilter::Income => "amount:income".to_string(),
                         TransactionAmountFilter::Expense => "amount:expense".to_string(),
+                        TransactionAmountFilter::Transfer => "amount:transfer".to_string(),
                     });
                 }
                 tokens.join(" ")
@@ -393,12 +497,16 @@ impl TransactionFilter {
                     category = Some(decode_filter_value(value));
                 }
                 "amount" | "type" => match value.to_lowercase().as_str() {
-                    "income" | "in" => {
+                    "income" | "positive" | "in" => {
                         amount = Some(TransactionAmountFilter::Income);
                         recognized = true;
                     }
-                    "expense" | "expenses" | "out" => {
+                    "expense" | "expenses" | "cost" | "costs" | "negative" | "out" => {
                         amount = Some(TransactionAmountFilter::Expense);
+                        recognized = true;
+                    }
+                    "transfer" | "transfers" => {
+                        amount = Some(TransactionAmountFilter::Transfer);
                         recognized = true;
                     }
                     _ => {}
@@ -462,6 +570,9 @@ impl TransactionFilter {
                     Some(TransactionAmountFilter::Expense) => {
                         !analytics::transaction_is_transfer(tx, budgets)
                             && tx.amount < rust_decimal::Decimal::ZERO
+                    }
+                    Some(TransactionAmountFilter::Transfer) => {
+                        analytics::transaction_is_transfer(tx, budgets)
                     }
                     None => true,
                 }
@@ -562,6 +673,10 @@ pub(in crate::app) fn show_transactions_filter(
         ui.search_entry.set_text(&query);
     }
     render_views(&state.borrow(), ui, state);
+    show_search_status(ui, &query);
+}
+
+fn show_search_status(ui: &UiHandles, query: &str) {
     if query.is_empty() {
         show_status(ui, "Filter cleared. All items are shown.");
     } else {
@@ -569,7 +684,7 @@ pub(in crate::app) fn show_transactions_filter(
             ui,
             &trf(
                 "Filter active: “{query}”. Clear the search text to show everything.",
-                &[("query", query.clone())],
+                &[("query", query.to_string())],
             ),
         );
     }
@@ -606,6 +721,10 @@ impl SearchFilter {
 
     pub(in crate::app) fn matches(&self, text: &str) -> bool {
         text.to_lowercase().contains(&self.needle)
+    }
+
+    pub(in crate::app) fn matches_summary(&self, text: &str) -> bool {
+        self.transaction_filter.is_some() || self.matches(text)
     }
 
     pub(in crate::app) fn matches_transaction(
@@ -663,6 +782,49 @@ mod tests {
             TransactionFilter::CategoryForYear { ref category, year: 2024 }
                 if category == "Groceries"
         ));
+    }
+
+    #[test]
+    fn transaction_amount_filter_aliases_are_parsed() {
+        assert!(matches!(
+            TransactionFilter::from_query("amount:positive"),
+            Some(TransactionFilter::Scoped {
+                amount: Some(TransactionAmountFilter::Income),
+                ..
+            })
+        ));
+        assert!(matches!(
+            TransactionFilter::from_query("amount:costs"),
+            Some(TransactionFilter::Scoped {
+                amount: Some(TransactionAmountFilter::Expense),
+                ..
+            })
+        ));
+        assert!(matches!(
+            TransactionFilter::from_query("amount:transfer"),
+            Some(TransactionFilter::Scoped {
+                amount: Some(TransactionAmountFilter::Transfer),
+                ..
+            })
+        ));
+    }
+
+    #[test]
+    fn transaction_transfer_filter_round_trips() {
+        let Some(filter) = TransactionFilter::from_query("amount:transfer") else {
+            panic!("transfer amount filter should parse");
+        };
+
+        assert_eq!(filter.query(), "amount:transfer");
+    }
+
+    #[test]
+    fn structured_search_filters_match_summary_cards_after_data_filtering() {
+        let amount_filter = SearchFilter::from_text("amount:income").unwrap();
+        let text_filter = SearchFilter::from_text("groceries").unwrap();
+
+        assert!(amount_filter.matches_summary("rent budget"));
+        assert!(!text_filter.matches_summary("rent budget"));
     }
 
     #[test]

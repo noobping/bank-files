@@ -51,6 +51,17 @@
           </object>
         </child>
         <child>
+          <object class="GtkMenuButton" id="status_search_preset_button">
+            <property name="icon-name">view-filter-symbolic</property>
+            <property name="has-frame">False</property>
+            <property name="visible">False</property>
+            <style>
+              <class name="flat"/>
+              <class name="image-button"/>
+            </style>
+          </object>
+        </child>
+        <child>
           <object class="GtkMenuButton" id="status_page_actions_button">
             <property name="icon-name">view-more-symbolic</property>
             <property name="has-frame">False</property>

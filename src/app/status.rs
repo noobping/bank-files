@@ -20,6 +20,7 @@ pub(in crate::app) struct StatusBar {
     pub(in crate::app) label: gtk::Label,
     pub(in crate::app) action_group: gtk::Box,
     pub(in crate::app) history_button: gtk::Button,
+    pub(in crate::app) search_preset_button: gtk::MenuButton,
     pub(in crate::app) page_actions_button: gtk::MenuButton,
     pub(in crate::app) hide_button: gtk::Button,
 }
@@ -71,6 +72,10 @@ pub(in crate::app) fn build_status_bar() -> StatusBar {
         .object::<gtk::Button>("status_history_button")
         .expect("status-bar.ui should define status_history_button");
     history_button.set_tooltip_text(Some(&tr("Show message history")));
+    let search_preset_button = builder
+        .object::<gtk::MenuButton>("status_search_preset_button")
+        .expect("status-bar.ui should define status_search_preset_button");
+    set_search_preset_menu_model(&search_preset_button);
     let page_actions_button = builder
         .object::<gtk::MenuButton>("status_page_actions_button")
         .expect("status-bar.ui should define status_page_actions_button");
@@ -87,9 +92,49 @@ pub(in crate::app) fn build_status_bar() -> StatusBar {
         label,
         action_group,
         history_button,
+        search_preset_button,
         page_actions_button,
         hide_button,
     }
+}
+
+fn set_search_preset_menu_model(menu_button: &gtk::MenuButton) {
+    menu_button.set_tooltip_text(Some(&tr("Search filters")));
+
+    let menu = gtk::gio::Menu::new();
+    let general = gtk::gio::Menu::new();
+    append_search_preset(&general, "Clear Filter", "clear");
+    menu.append_section(None, &general);
+
+    let transaction_filters = gtk::gio::Menu::new();
+    append_search_preset(&transaction_filters, "Income / positive", "income");
+    append_search_preset(&transaction_filters, "Costs / negative", "expense");
+    append_search_preset(&transaction_filters, "Transfers", "transfer");
+    append_search_preset(&transaction_filters, "Current Month", "current-month");
+    append_search_preset(&transaction_filters, "Current Year", "current-year");
+    menu.append_section(Some(&tr("Transactions")), &transaction_filters);
+
+    let diagnostic_filters = gtk::gio::Menu::new();
+    append_search_preset(
+        &diagnostic_filters,
+        "Unconfigured Budgets",
+        "unconfigured-budgets",
+    );
+    append_search_preset(&diagnostic_filters, "Other Categories", "other-categories");
+    append_search_preset(&diagnostic_filters, "Warnings", "warnings");
+    append_search_preset(&diagnostic_filters, "Detected Patterns", "patterns");
+    append_search_preset(&diagnostic_filters, "Import Reports", "imports");
+    append_search_preset(&diagnostic_filters, "Field Mappings", "fields");
+    append_search_preset(&diagnostic_filters, "Rules", "rules");
+    menu.append_section(Some(&tr("Diagnostics")), &diagnostic_filters);
+
+    menu_button.set_menu_model(Some(&menu));
+}
+
+fn append_search_preset(menu: &gtk::gio::Menu, label: &str, preset: &str) {
+    let item = gtk::gio::MenuItem::new(Some(&tr(label)), Some("app.search-preset"));
+    item.set_attribute_value("target", Some(&preset.to_variant()));
+    menu.append_item(&item);
 }
 
 pub(in crate::app) fn set_page_actions_menu_namespace(

@@ -131,6 +131,18 @@ pub(in crate::app) fn connect_actions(
     });
     app.add_action(&find_action);
 
+    let state_for_search_preset = Rc::clone(state);
+    let ui_for_search_preset = Rc::clone(ui);
+    let search_preset_action =
+        gtk::gio::SimpleAction::new("search-preset", Some(&String::static_variant_type()));
+    search_preset_action.connect_activate(move |_, parameter| {
+        let Some(preset) = parameter.and_then(|value| value.get::<String>()) else {
+            return;
+        };
+        apply_search_preset(&state_for_search_preset, &ui_for_search_preset, &preset);
+    });
+    app.add_action(&search_preset_action);
+
     let window_for_configuration = window.clone();
     let state_for_configuration = Rc::clone(state);
     let ui_for_configuration = Rc::clone(ui);

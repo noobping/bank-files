@@ -670,7 +670,7 @@ pub(in crate::app) fn budget_usage_matches(
     budget: &analytics::BudgetUsage,
     filter: &SearchFilter,
 ) -> bool {
-    filter.matches(&format!(
+    filter.matches_summary(&format!(
         "{} {} {} {} {} {} {}",
         budget.code,
         budget.category,
@@ -686,7 +686,7 @@ pub(in crate::app) fn category_summary_matches(
     category: &analytics::CategorySummary,
     filter: &SearchFilter,
 ) -> bool {
-    filter.matches(&format!(
+    filter.matches_summary(&format!(
         "{} {} {} {} {} {}",
         category.category,
         category.budget_code,

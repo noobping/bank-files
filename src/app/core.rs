@@ -826,6 +826,8 @@ fn build_ui_with_startup_request(app: &adw::Application, startup_request: Startu
         preferences: preferences.clone(),
         storage_capabilities: Rc::new(RefCell::new(initial_storage_capabilities)),
     });
+    status_bar.search_preset_button.set_visible(true);
+    register_loading_sensitive_widget(&ui, &status_bar.search_preset_button);
     register_loading_sensitive_widget(&ui, &status_bar.page_actions_button);
     connect_navigation_history(&ui);
     connect_preference_sync(&ui);
