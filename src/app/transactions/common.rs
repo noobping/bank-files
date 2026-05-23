@@ -769,6 +769,17 @@ fn show_transaction_budget_code_dialog(
             app_budget_autofill_entries(&state.borrow()),
             &ui_handles.advanced_autofill,
         );
+        connect_transaction_budget_move_form_save_sensitivity(
+            &shell.stack,
+            &shell.submit_button,
+            tx,
+            &selected_target,
+            &initial,
+            &category,
+            &budget_code,
+            &direction,
+            advanced_features,
+        );
         ui::focus_button_after_combo_selections(
             &shell.submit_button,
             &[&category, &budget_code, &direction],
@@ -857,10 +868,20 @@ fn show_transaction_budget_code_dialog(
                 budget_code.grab_focus();
                 return;
             }
+            let direction_text = ui::combo_active_id(direction);
+            if !transaction_budget_move_form_values_changed(
+                &initial_for_save,
+                &category_text,
+                &budget_code_text,
+                &direction_text,
+            ) {
+                set_action_status(&active_status, "Choose a different category first.");
+                return;
+            }
             TransactionBudgetMoveValues {
                 category: category_text,
                 budget_code: budget_code_text,
-                direction: ui::combo_active_id(direction),
+                direction: direction_text,
             }
         } else {
             let Some(target) = selected_for_save.borrow().clone() else {
@@ -965,6 +986,82 @@ fn transaction_budget_move_list_max_height_for_window(window_height: i32) -> i32
 fn set_action_status(status: &gtk::Label, message: &str) {
     status.set_text(&tr(message));
     status.set_visible(true);
+}
+
+fn connect_transaction_budget_move_form_save_sensitivity(
+    stack: &gtk::Stack,
+    save_button: &gtk::Button,
+    tx: &Transaction,
+    selected_target: &Rc<RefCell<Option<TransactionBudgetTarget>>>,
+    initial: &EditableRule,
+    category: &gtk::ComboBoxText,
+    budget_code: &gtk::ComboBoxText,
+    direction: &gtk::ComboBoxText,
+    advanced_features: bool,
+) {
+    let update: Rc<dyn Fn()> = Rc::new({
+        let stack = stack.clone();
+        let save_button = save_button.clone();
+        let tx = tx.clone();
+        let selected_target = Rc::clone(selected_target);
+        let initial = initial.clone();
+        let category = category.clone();
+        let budget_code = budget_code.clone();
+        let direction = direction.clone();
+        move || {
+            let using_form = stack.visible_child_name().as_deref() == Some("form");
+            if using_form {
+                save_button.set_sensitive(transaction_budget_move_form_is_changed(
+                    &initial,
+                    &category,
+                    &budget_code,
+                    &direction,
+                ));
+            } else {
+                save_button.set_sensitive(selected_target.borrow().as_ref().is_some_and(
+                    |target| transaction_budget_target_is_changed(&tx, target, advanced_features),
+                ));
+            }
+        }
+    });
+
+    for combo in [category, budget_code, direction] {
+        let update_for_change = Rc::clone(&update);
+        combo.connect_changed(move |_| update_for_change());
+    }
+
+    let update_for_page = Rc::clone(&update);
+    stack.connect_visible_child_name_notify(move |_| update_for_page());
+    update();
+}
+
+fn transaction_budget_move_form_is_changed(
+    initial: &EditableRule,
+    category: &gtk::ComboBoxText,
+    budget_code: &gtk::ComboBoxText,
+    direction: &gtk::ComboBoxText,
+) -> bool {
+    transaction_budget_move_form_values_changed(
+        initial,
+        &ui::combo_text(category),
+        &ui::combo_text(budget_code),
+        &ui::combo_active_id(direction),
+    )
+}
+
+fn transaction_budget_move_form_values_changed(
+    initial: &EditableRule,
+    category: &str,
+    budget_code: &str,
+    direction: &str,
+) -> bool {
+    !same_form_text(category, &initial.category)
+        || !same_form_text(budget_code, &initial.budget_code)
+        || !same_form_text(direction, &initial.direction)
+}
+
+fn same_form_text(left: &str, right: &str) -> bool {
+    left.trim().eq_ignore_ascii_case(right.trim())
 }
 
 fn select_transaction_budget_target_row(
@@ -1768,6 +1865,48 @@ mod tests {
         assert_eq!(transaction_budget_move_list_max_height_for_window(0), 620);
         assert_eq!(transaction_budget_move_list_max_height_for_window(320), 224);
         assert_eq!(transaction_budget_move_list_max_height_for_window(800), 704);
+    }
+
+    #[test]
+    fn advanced_budget_move_form_save_tracks_changed_values() {
+        let initial = EditableRule {
+            priority: 140,
+            active: true,
+            field: "counterparty".to_string(),
+            search: "Store".to_string(),
+            is_regex: false,
+            category: "Groceries".to_string(),
+            budget_code: "FOOD".to_string(),
+            direction: "expense".to_string(),
+            amount_min: String::new(),
+            amount_max: String::new(),
+            notes: String::new(),
+        };
+
+        assert!(!transaction_budget_move_form_values_changed(
+            &initial,
+            "Groceries",
+            "FOOD",
+            "expense",
+        ));
+        assert!(transaction_budget_move_form_values_changed(
+            &initial,
+            "Fixed costs",
+            "FOOD",
+            "expense",
+        ));
+        assert!(transaction_budget_move_form_values_changed(
+            &initial,
+            "Groceries",
+            "UTIL",
+            "expense",
+        ));
+        assert!(transaction_budget_move_form_values_changed(
+            &initial,
+            "Groceries",
+            "FOOD",
+            "income",
+        ));
     }
 
     #[test]
