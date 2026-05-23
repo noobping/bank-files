@@ -4,6 +4,7 @@ use crate::model::{BudgetCode, ImportOutcome, ImportReport};
 use crate::rules::Rule;
 use anyhow::anyhow;
 use sha2::{Digest, Sha256};
+use std::io::ErrorKind;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StorageCapabilities {
@@ -519,6 +520,20 @@ fn read_cached_app_data(cache_key: &str) -> Result<Option<AppData>> {
     Ok(Some(data))
 }
 
+pub fn clear_processed_app_data_cache() -> Result<bool> {
+    let path = app_data_cache_root()?;
+    match fs::remove_dir_all(&path) {
+        Ok(()) => Ok(true),
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(false),
+        Err(error) => Err(error).with_context(|| {
+            format!(
+                "Could not remove data and analytics cache folder: {}",
+                path.display()
+            )
+        }),
+    }
+}
+
 fn write_cached_app_data(cache_key: &str, data: &AppData) -> Result<()> {
     let path = app_data_cache_path(cache_key)?;
     if let Some(parent) = path.parent() {
@@ -548,9 +563,11 @@ fn write_cached_app_data(cache_key: &str, data: &AppData) -> Result<()> {
 }
 
 fn app_data_cache_path(cache_key: &str) -> Result<PathBuf> {
-    Ok(app_cache_dir()?
-        .join("processed")
-        .join(format!("{cache_key}.json")))
+    Ok(app_data_cache_root()?.join(format!("{cache_key}.json")))
+}
+
+fn app_data_cache_root() -> Result<PathBuf> {
+    Ok(app_cache_dir()?.join("processed"))
 }
 
 fn app_data_cache_key(
@@ -954,6 +971,30 @@ mod tests {
         assert!(!dirs.inbox.exists());
         assert_eq!(returned_capabilities, capabilities);
 
+        fs::remove_dir_all(root).ok();
+    }
+
+    #[test]
+    fn clear_processed_app_data_cache_removes_only_processed_cache() {
+        let _guard = CACHE_ENV_LOCK
+            .lock()
+            .expect("cache env lock should be available");
+        let root = unique_test_dir("clear-processed-cache");
+        fs::create_dir_all(&root).expect("test root should be created");
+        std::env::set_var("BANK_FILES_CACHE", root.join("cache"));
+        let processed = root.join("cache").join("processed");
+        let sibling = root.join("cache").join("other");
+        fs::create_dir_all(&processed).expect("processed cache should be created");
+        fs::create_dir_all(&sibling).expect("sibling cache should be created");
+        fs::write(processed.join("entry.json"), "{}").expect("cache file should be written");
+        fs::write(sibling.join("keep.txt"), "keep").expect("sibling file should be written");
+
+        assert!(clear_processed_app_data_cache().expect("cache cleanup should succeed"));
+        assert!(!processed.exists());
+        assert!(sibling.exists());
+        assert!(!clear_processed_app_data_cache().expect("missing cache is ok"));
+
+        std::env::remove_var("BANK_FILES_CACHE");
         fs::remove_dir_all(root).ok();
     }
 

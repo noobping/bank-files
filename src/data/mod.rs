@@ -40,10 +40,10 @@ pub use generate::{
     GeneratedConfigurationSummary,
 };
 pub use storage::{
-    current_storage_capabilities, load_app_data_read_only_aware, load_app_data_with_sources,
-    mark_transaction_csv_readonly, prepare_app_storage, reload_transaction_source_file,
-    storage_capabilities, CsvCopyResult, EditableAlias, EditableBudget, EditableRule,
-    IgnoredTransactionPattern, StorageCapabilities,
+    clear_processed_app_data_cache, current_storage_capabilities, load_app_data_read_only_aware,
+    load_app_data_with_sources, mark_transaction_csv_readonly, prepare_app_storage,
+    reload_transaction_source_file, storage_capabilities, CsvCopyResult, EditableAlias,
+    EditableBudget, EditableRule, IgnoredTransactionPattern, StorageCapabilities,
 };
 
 use copy::unique_inbox_target;

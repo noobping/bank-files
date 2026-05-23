@@ -337,6 +337,7 @@ fn refresh_operation_queue_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) 
     let applied = ui.operation_queue.applied_count();
     widgets.badge.set_visible(actionable > 0);
     widgets.badge.set_text(&actionable.to_string());
+    set_operation_queue_button_style(&widgets.button, actionable);
     widgets.button.set_tooltip_text(Some(&trf(
         "Processing queue: {count} pending",
         &[("count", actionable.to_string())],
@@ -375,6 +376,18 @@ fn refresh_operation_queue_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) 
     for operation in operations {
         widgets.list.append(&operation_row(state, ui, operation));
     }
+}
+
+fn set_operation_queue_button_style(button: &gtk::Button, actionable: usize) {
+    if operation_queue_button_is_suggested(actionable) {
+        button.add_css_class("suggested-action");
+    } else {
+        button.remove_css_class("suggested-action");
+    }
+}
+
+fn operation_queue_button_is_suggested(actionable: usize) -> bool {
+    actionable > 0
 }
 
 fn queue_text_row(text: &str) -> gtk::ListBoxRow {
@@ -976,6 +989,12 @@ mod tests {
         assert_eq!(rules[0].search, "(?:alpha|beta)");
         assert!(rules[0].is_regex);
         assert_eq!(rules[1].search, "hosting");
+    }
+
+    #[test]
+    fn queue_button_is_suggested_only_for_pending_operations() {
+        assert!(!operation_queue_button_is_suggested(0));
+        assert!(operation_queue_button_is_suggested(1));
     }
 
     #[test]

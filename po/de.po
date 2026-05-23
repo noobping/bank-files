@@ -3307,6 +3307,12 @@ msgstr "Merk-Einstellung wird angewendet..."
 msgid "Remember is set to {mode}."
 msgstr "Merken ist auf {mode} gesetzt."
 
+msgid "Data and analytics cache removed."
+msgstr "Daten- und Analysecache entfernt."
+
+msgid "Could not remove data and analytics cache: {error}"
+msgstr "Daten- und Analysecache konnte nicht entfernt werden: {error}"
+
 msgid "Could not apply Remember preference: {error}"
 msgstr "Merk-Einstellung konnte nicht angewendet werden: {error}"
 

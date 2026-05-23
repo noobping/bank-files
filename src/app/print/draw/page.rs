@@ -12,13 +12,7 @@ pub(in crate::app) fn print_element_height(element: &PrintElement, width: f64) -
                 + (rows.saturating_sub(1)) as f64 * PRINT_METRIC_GAP
                 + 12.0
         }
-        PrintElement::SectionTitle { subtitle, .. } => {
-            if subtitle.is_empty() {
-                30.0
-            } else {
-                42.0
-            }
-        }
+        PrintElement::SectionTitle { subtitle, .. } => print_section_title_height(subtitle, width),
         PrintElement::Paragraph { body } => {
             let chars = printable_chars_per_line(print_content_width(width), 10.0).max(20);
             let lines = body
@@ -28,7 +22,9 @@ pub(in crate::app) fn print_element_height(element: &PrintElement, width: f64) -
             lines as f64 * 14.0 + 10.0
         }
         PrintElement::TableHeader { .. } => PRINT_TABLE_ROW_HEIGHT,
-        PrintElement::TableRow { .. } => PRINT_TABLE_ROW_HEIGHT,
+        PrintElement::TableRow { columns, cells, .. } => {
+            print_table_row_height(columns, cells, width)
+        }
     }
 }
 

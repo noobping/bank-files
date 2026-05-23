@@ -3307,6 +3307,12 @@ msgstr "Voorkeur Onthouden toepassen..."
 msgid "Remember is set to {mode}."
 msgstr "Onthouden is ingesteld op {mode}."
 
+msgid "Data and analytics cache removed."
+msgstr "Gegevens- en analysecache verwijderd."
+
+msgid "Could not remove data and analytics cache: {error}"
+msgstr "Kon gegevens- en analysecache niet verwijderen: {error}"
+
 msgid "Could not apply Remember preference: {error}"
 msgstr "Kon voorkeur Onthouden niet toepassen: {error}"
 

@@ -433,12 +433,15 @@ pub(in crate::app) fn set_remember_mode(
     state: &Rc<RefCell<AppData>>,
     ui: &Rc<UiHandles>,
 ) {
-    if ui.remember_mode.get() == remember_mode {
+    let previous_remember_mode = ui.remember_mode.get();
+    if previous_remember_mode == remember_mode {
         ui.preferences.set_remember_mode(remember_mode);
         show_status(ui, remember_mode.description());
         return;
     }
 
+    let cache_cleanup_message =
+        clear_cache_for_lower_remember_mode(previous_remember_mode, remember_mode, ui);
     ui.remember_mode.set(remember_mode);
     ui.preferences.set_remember_mode(remember_mode);
     {
@@ -453,13 +456,68 @@ pub(in crate::app) fn set_remember_mode(
         state,
         ui,
         "Applying Remember preference...",
-        trf(
-            "Remember is set to {mode}.",
-            &[("mode", tr(remember_mode.label()))],
-        ),
+        remember_mode_success_message(remember_mode, cache_cleanup_message),
         "Could not apply Remember preference: {error}",
         Vec::new(),
     );
+}
+
+fn clear_cache_for_lower_remember_mode(
+    previous: RememberMode,
+    current: RememberMode,
+    ui: &UiHandles,
+) -> Option<String> {
+    if !current.retains_less_than(previous) {
+        return None;
+    }
+
+    match data::clear_processed_app_data_cache() {
+        Ok(true) => {
+            show_verbose_status(
+                ui,
+                format!(
+                    "remember lowered from {previous:?} to {current:?}; processed cache removed"
+                ),
+            );
+            Some(tr("Data and analytics cache removed."))
+        }
+        Ok(false) => {
+            show_verbose_status(
+                ui,
+                format!(
+                    "remember lowered from {previous:?} to {current:?}; no processed cache present"
+                ),
+            );
+            None
+        }
+        Err(error) => {
+            show_verbose_status(
+                ui,
+                format!(
+                    "remember lowered from {previous:?} to {current:?}; processed cache cleanup failed: {error:#}"
+                ),
+            );
+            Some(trf(
+                "Could not remove data and analytics cache: {error}",
+                &[("error", format!("{error:#}"))],
+            ))
+        }
+    }
+}
+
+fn remember_mode_success_message(
+    remember_mode: RememberMode,
+    cache_message: Option<String>,
+) -> String {
+    let mut message = trf(
+        "Remember is set to {mode}.",
+        &[("mode", tr(remember_mode.label()))],
+    );
+    if let Some(cache_message) = cache_message {
+        message.push(' ');
+        message.push_str(&cache_message);
+    }
+    message
 }
 
 pub(in crate::app) fn set_dedupe_enabled(

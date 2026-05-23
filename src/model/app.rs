@@ -164,6 +164,18 @@ impl RememberMode {
     pub fn uses_analytics_cache(self) -> bool {
         matches!(self, Self::DataAndAnalytics)
     }
+
+    pub fn retains_less_than(self, other: Self) -> bool {
+        self.retention_level() < other.retention_level()
+    }
+
+    fn retention_level(self) -> u8 {
+        match self {
+            Self::Forget => 0,
+            Self::DataOnly => 1,
+            Self::DataAndAnalytics => 2,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Serialize, Deserialize)]
@@ -241,6 +253,14 @@ mod tests {
             .satisfies(TransactionLoadScope::Month(Some(MonthKey::new(2025, 5),))));
         assert!(TransactionLoadScope::All.satisfies(TransactionLoadScope::Year(None)));
         assert!(!TransactionLoadScope::All.satisfies(TransactionLoadScope::Unloaded));
+    }
+
+    #[test]
+    fn remember_mode_retention_levels_are_ordered() {
+        assert!(RememberMode::Forget.retains_less_than(RememberMode::DataOnly));
+        assert!(RememberMode::DataOnly.retains_less_than(RememberMode::DataAndAnalytics));
+        assert!(RememberMode::Forget.retains_less_than(RememberMode::DataAndAnalytics));
+        assert!(!RememberMode::DataAndAnalytics.retains_less_than(RememberMode::DataOnly));
     }
 
     #[test]
