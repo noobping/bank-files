@@ -3,10 +3,28 @@ use super::*;
 
 const TRANSACTION_PATTERN_VALUE_PREVIEW_LIMIT: usize = 6;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(in crate::app) enum DetectedFieldsVisibility {
+    FollowShowAll,
+    Collapsed,
+    Expanded,
+}
+
+impl DetectedFieldsVisibility {
+    fn reveal_initially(self, show_all: bool) -> bool {
+        match self {
+            Self::FollowShowAll => show_all,
+            Self::Collapsed => false,
+            Self::Expanded => true,
+        }
+    }
+}
+
 pub(in crate::app) fn diagnostic_file_card(
     report: &ImportReport,
     state: &Rc<RefCell<AppData>>,
     ui_handles: &Rc<UiHandles>,
+    fields_visibility: DetectedFieldsVisibility,
 ) -> gtk::Box {
     let card = gtk::Box::new(gtk::Orientation::Vertical, 10);
     card.add_css_class("card");
@@ -136,7 +154,12 @@ pub(in crate::app) fn diagnostic_file_card(
     row_label.add_css_class("dim-label");
     content.append(&row_label);
 
-    content.append(&detected_fields_toggle(report, state, ui_handles));
+    content.append(&detected_fields_toggle(
+        report,
+        state,
+        ui_handles,
+        fields_visibility,
+    ));
 
     card
 }
@@ -335,9 +358,10 @@ pub(in crate::app) fn detected_fields_toggle(
     report: &ImportReport,
     state: &Rc<RefCell<AppData>>,
     ui_handles: &Rc<UiHandles>,
+    fields_visibility: DetectedFieldsVisibility,
 ) -> gtk::Box {
     let container = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    let reveal_initially = ui_handles.show_all.get();
+    let reveal_initially = fields_visibility.reveal_initially(ui_handles.show_all.get());
     let button = gtk::Button::builder()
         .tooltip_text(tr(if reveal_initially {
             "Hide detected fields"

@@ -173,6 +173,7 @@ pub(in crate::app) fn render_diagnostics_page(
             .as_ref()
             .map(import_report_section_matches)
             .unwrap_or(true);
+        let fields_visibility = import_report_field_visibility(search.as_ref());
         let reports = data
             .reports
             .iter()
@@ -200,7 +201,12 @@ pub(in crate::app) fn render_diagnostics_page(
             ));
             let files = gtk::Box::new(gtk::Orientation::Vertical, 8);
             for report in reports {
-                files.append(&diagnostic_file_card(report, state, ui_handles));
+                files.append(&diagnostic_file_card(
+                    report,
+                    state,
+                    ui_handles,
+                    fields_visibility,
+                ));
             }
             ui_handles.debug.append(&files);
         }
@@ -1325,6 +1331,24 @@ fn import_report_section_matches(filter: &SearchFilter) -> bool {
     )
 }
 
+fn import_report_field_visibility(search: Option<&SearchFilter>) -> DetectedFieldsVisibility {
+    search
+        .map(|filter| {
+            let query = filter.raw.trim();
+            if query.eq_ignore_ascii_case("fields") || query.eq_ignore_ascii_case("field mappings")
+            {
+                DetectedFieldsVisibility::Expanded
+            } else if query.eq_ignore_ascii_case("imports")
+                || query.eq_ignore_ascii_case("import reports")
+            {
+                DetectedFieldsVisibility::Collapsed
+            } else {
+                DetectedFieldsVisibility::FollowShowAll
+            }
+        })
+        .unwrap_or(DetectedFieldsVisibility::FollowShowAll)
+}
+
 fn warning_section_matches(filter: &SearchFilter) -> bool {
     filter.matches("warnings warning alerts problems import checks")
 }
@@ -1401,6 +1425,40 @@ mod tests {
         assert!(import_report_section_matches(&import_search));
         assert!(import_report_section_matches(&field_search));
         assert!(!import_report_section_matches(&unrelated_search));
+    }
+
+    #[test]
+    fn import_and_field_presets_control_detected_field_visibility() {
+        let import_search = SearchFilter::from_text("imports").unwrap();
+        let import_report_search = SearchFilter::from_text("Import Reports").unwrap();
+        let field_search = SearchFilter::from_text("fields").unwrap();
+        let field_mapping_search = SearchFilter::from_text("Field Mappings").unwrap();
+        let unrelated_search = SearchFilter::from_text("groceries").unwrap();
+
+        assert_eq!(
+            import_report_field_visibility(Some(&import_search)),
+            DetectedFieldsVisibility::Collapsed
+        );
+        assert_eq!(
+            import_report_field_visibility(Some(&import_report_search)),
+            DetectedFieldsVisibility::Collapsed
+        );
+        assert_eq!(
+            import_report_field_visibility(Some(&field_search)),
+            DetectedFieldsVisibility::Expanded
+        );
+        assert_eq!(
+            import_report_field_visibility(Some(&field_mapping_search)),
+            DetectedFieldsVisibility::Expanded
+        );
+        assert_eq!(
+            import_report_field_visibility(Some(&unrelated_search)),
+            DetectedFieldsVisibility::FollowShowAll
+        );
+        assert_eq!(
+            import_report_field_visibility(None),
+            DetectedFieldsVisibility::FollowShowAll
+        );
     }
 
     #[test]
