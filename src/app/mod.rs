@@ -57,8 +57,6 @@ mod warning_cards;
 mod warnings;
 mod year;
 
-pub(in crate::app) const ONLINE_FEATURES_AVAILABLE: bool = !cfg!(feature = "flatpak");
-
 pub use core::run;
 #[cfg(target_os = "linux")]
 pub(crate) use transactions::transaction_search_text;

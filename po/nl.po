@@ -2479,6 +2479,12 @@ msgstr "Er kon nog geen configuratie worden gegenereerd. Importeer een volledig 
 msgid "Smart Insights are disabled. Online merchant enrichment and extra pattern hints are skipped."
 msgstr "Slimme inzichten zijn uitgeschakeld. Online bedrijfsverrijking en extra patroonhints worden overgeslagen."
 
+msgid "Smart Insights are disabled. Extra pattern hints are skipped."
+msgstr "Slimme inzichten zijn uitgeschakeld. Extra patroonhints worden overgeslagen."
+
+msgid "Automatic Configuration uses local transactions only in this build."
+msgstr "Automatische configuratie gebruikt in deze build alleen lokale transacties."
+
 msgid "Online Smart Insights are off by default. Automatic Configuration uses only local transactions, and no merchant names or transaction fields are sent."
 msgstr "Online slimme inzichten staan standaard uit. Automatische configuratie gebruikt alleen lokale transacties; er worden geen bedrijfsnamen of transactievelden verzonden."
 

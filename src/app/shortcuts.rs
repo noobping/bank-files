@@ -39,6 +39,7 @@ const COMMON_ACTION_ACCELERATORS: &[ActionAccelerators] = &[
 
 const CHECK_FOR_UPDATES_ACCELERATORS: ActionAccelerators =
     ("app.check-for-updates", &["<primary>U"]);
+#[cfg(not(feature = "flatpak"))]
 const ONLINE_SMART_INSIGHTS_ACCELERATORS: ActionAccelerators =
     ("app.online-smart-insights", &["<primary><alt>O"]);
 
@@ -50,12 +51,11 @@ pub(in crate::app) fn install_action_accelerators(app: &adw::Application) {
     for (action_name, accelerators) in COMMON_ACTION_ACCELERATORS {
         app.set_accels_for_action(action_name, accelerators);
     }
-    if ONLINE_FEATURES_AVAILABLE {
-        app.set_accels_for_action(
-            ONLINE_SMART_INSIGHTS_ACCELERATORS.0,
-            ONLINE_SMART_INSIGHTS_ACCELERATORS.1,
-        );
-    }
+    #[cfg(not(feature = "flatpak"))]
+    app.set_accels_for_action(
+        ONLINE_SMART_INSIGHTS_ACCELERATORS.0,
+        ONLINE_SMART_INSIGHTS_ACCELERATORS.1,
+    );
     if updater::supports_update_checks() {
         app.set_accels_for_action(
             CHECK_FOR_UPDATES_ACCELERATORS.0,
@@ -124,12 +124,11 @@ pub(in crate::app) fn build_shortcuts_dialog(
         ShortcutSpec::action("Toggle Advanced Features", "app.advanced-features"),
         ShortcutSpec::action("Toggle Smart Insights", "app.show-predictions"),
     ];
-    if ONLINE_FEATURES_AVAILABLE {
-        settings_shortcuts.push(ShortcutSpec::action(
-            "Toggle Online Smart Insights",
-            "app.online-smart-insights",
-        ));
-    }
+    #[cfg(not(feature = "flatpak"))]
+    settings_shortcuts.push(ShortcutSpec::action(
+        "Toggle Online Smart Insights",
+        "app.online-smart-insights",
+    ));
     settings_shortcuts.extend([
         ShortcutSpec::action("Toggle Smart Autofill", "app.advanced-autofill"),
         ShortcutSpec::action("Toggle Duplicate Filtering", "app.dedupe-enabled"),

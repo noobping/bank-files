@@ -63,14 +63,13 @@ pub(in crate::app) fn show_preferences_dialog(
         "app.show-predictions",
         ui.show_predictions.get(),
     )];
-    if ONLINE_FEATURES_AVAILABLE {
-        insight_preferences.push(PreferenceSpec::new(
-            "Online Smart Insights",
-            "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
-            "app.online-smart-insights",
-            ui.online_smart_insights.get(),
-        ));
-    }
+    #[cfg(not(feature = "flatpak"))]
+    insight_preferences.push(PreferenceSpec::new(
+        "Online Smart Insights",
+        "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
+        "app.online-smart-insights",
+        ui.online_smart_insights.get(),
+    ));
     insight_preferences.push(PreferenceSpec::new(
         "Compare Spending with Previous Period",
         "Compare spending cards with the previous month or year.",
@@ -198,13 +197,12 @@ fn preferences_page_snapshot(
         "Show forecast cards and detect transaction patterns from imported transactions.",
         "app.show-predictions",
     )];
-    if ONLINE_FEATURES_AVAILABLE {
-        insight_rows.push((
-            "Online Smart Insights",
-            "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
-            "app.online-smart-insights",
-        ));
-    }
+    #[cfg(not(feature = "flatpak"))]
+    insight_rows.push((
+        "Online Smart Insights",
+        "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
+        "app.online-smart-insights",
+    ));
     insight_rows.push((
         "Compare Spending with Previous Period",
         "Compare spending cards with the previous month or year.",

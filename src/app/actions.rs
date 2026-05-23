@@ -419,7 +419,8 @@ pub(in crate::app) fn connect_actions(
     );
     show_predictions_action.set_enabled(ui.preferences.action_is_writable("show-predictions"));
 
-    if ONLINE_FEATURES_AVAILABLE {
+    #[cfg(not(feature = "flatpak"))]
+    {
         let ui_for_online_smart_insights = Rc::clone(ui);
         let online_smart_insights_action = add_bool_toggle_action(
             app,

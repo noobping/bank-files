@@ -2479,6 +2479,12 @@ msgstr "Es konnte noch keine Konfiguration erzeugt werden. Importiere ein vollst
 msgid "Smart Insights are disabled. Online merchant enrichment and extra pattern hints are skipped."
 msgstr "Intelligente Einblicke sind deaktiviert. Online-Unternehmensanreicherung und zusaetzliche Musterhinweise werden uebersprungen."
 
+msgid "Smart Insights are disabled. Extra pattern hints are skipped."
+msgstr "Intelligente Einblicke sind deaktiviert. Zusaetzliche Musterhinweise werden uebersprungen."
+
+msgid "Automatic Configuration uses local transactions only in this build."
+msgstr "Die automatische Konfiguration verwendet in diesem Build nur lokale Transaktionen."
+
 msgid "Online Smart Insights are off by default. Automatic Configuration uses only local transactions, and no merchant names or transaction fields are sent."
 msgstr "Online-Intelligente Einblicke sind standardmaessig ausgeschaltet. Die automatische Konfiguration verwendet nur lokale Transaktionen; Unternehmensnamen oder Transaktionsfelder werden nicht gesendet."
 

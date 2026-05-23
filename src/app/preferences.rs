@@ -6,12 +6,33 @@ pub(in crate::app) struct Preferences {
 }
 
 impl Preferences {
+    #[cfg(not(feature = "flatpak"))]
     pub(in crate::app) const WRITABLE_KEYS: [&'static str; 17] = [
         "active-tab",
         "autohide-status-bar",
         "show-all",
         "show-predictions",
         "online-smart-insights",
+        "compare-categories-previous-period",
+        "advanced-autofill",
+        "advanced-features",
+        "remember-mode",
+        "auto-clean-config",
+        "dedupe-enabled",
+        "hide-canceled-transactions",
+        "selected-year",
+        "selected-budget-month",
+        "window-width",
+        "window-height",
+        "window-maximized",
+    ];
+
+    #[cfg(feature = "flatpak")]
+    pub(in crate::app) const WRITABLE_KEYS: [&'static str; 16] = [
+        "active-tab",
+        "autohide-status-bar",
+        "show-all",
+        "show-predictions",
         "compare-categories-previous-period",
         "advanced-autofill",
         "advanced-features",
@@ -73,14 +94,14 @@ impl Preferences {
         self.set_boolean("show-predictions", enabled);
     }
 
+    #[cfg(not(feature = "flatpak"))]
     pub(in crate::app) fn online_smart_insights(&self) -> bool {
-        ONLINE_FEATURES_AVAILABLE && self.boolean("online-smart-insights", false)
+        self.boolean("online-smart-insights", false)
     }
 
+    #[cfg(not(feature = "flatpak"))]
     pub(in crate::app) fn set_online_smart_insights(&self, enabled: bool) {
-        if ONLINE_FEATURES_AVAILABLE {
-            self.set_boolean("online-smart-insights", enabled);
-        }
+        self.set_boolean("online-smart-insights", enabled);
     }
 
     pub(in crate::app) fn compare_categories_previous_period(&self) -> bool {
@@ -192,6 +213,7 @@ impl Preferences {
             "autohide-status" => Some("autohide-status-bar"),
             "show-all" => Some("show-all"),
             "show-predictions" => Some("show-predictions"),
+            #[cfg(not(feature = "flatpak"))]
             "online-smart-insights" => Some("online-smart-insights"),
             "compare-categories-previous-period" => Some("compare-categories-previous-period"),
             "advanced-autofill" => Some("advanced-autofill"),
@@ -275,11 +297,21 @@ mod tests {
         assert_eq!(RememberMode::DataOnly.as_settings(), "data-only");
     }
 
+    #[cfg(not(feature = "flatpak"))]
     #[test]
     fn online_smart_insights_action_maps_to_preference_key() {
         assert_eq!(
             Preferences::key_for_action("app.online-smart-insights"),
             Some("online-smart-insights")
+        );
+    }
+
+    #[cfg(feature = "flatpak")]
+    #[test]
+    fn online_smart_insights_action_is_not_available_in_flatpak_builds() {
+        assert_eq!(
+            Preferences::key_for_action("app.online-smart-insights"),
+            None
         );
     }
 }

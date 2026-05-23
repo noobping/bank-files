@@ -1,5 +1,8 @@
 #![deny(unused, dead_code, unreachable_code)]
 
+#[cfg(all(feature = "flatpak", feature = "setup"))]
+compile_error!("The flatpak feature is an offline build mode and cannot be combined with setup.");
+
 mod analytics;
 mod app;
 mod app_info;
