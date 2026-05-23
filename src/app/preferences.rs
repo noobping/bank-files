@@ -130,7 +130,7 @@ impl Preferences {
 
     pub(in crate::app) fn remember_mode(&self) -> RememberMode {
         RememberMode::from_settings(
-            &self.string("remember-mode", RememberMode::DataOnly.as_settings()),
+            &self.string("remember-mode", RememberMode::default().as_settings()),
         )
     }
 
@@ -292,9 +292,12 @@ mod tests {
     use super::*;
 
     #[test]
-    fn remember_mode_uses_data_only_by_default() {
-        assert_eq!(RememberMode::from_settings(""), RememberMode::DataOnly);
-        assert_eq!(RememberMode::DataOnly.as_settings(), "data-only");
+    fn remember_mode_uses_data_and_analytics_by_default() {
+        assert_eq!(
+            RememberMode::from_settings(""),
+            RememberMode::DataAndAnalytics
+        );
+        assert_eq!(RememberMode::default().as_settings(), "data-and-analytics");
     }
 
     #[cfg(not(feature = "flatpak"))]

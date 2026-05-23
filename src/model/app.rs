@@ -116,8 +116,8 @@ fn desired_is_inside_months(desired: TransactionLoadScope, months: &[MonthKey]) 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Serialize, Deserialize)]
 pub enum RememberMode {
     Forget,
-    #[default]
     DataOnly,
+    #[default]
     DataAndAnalytics,
 }
 

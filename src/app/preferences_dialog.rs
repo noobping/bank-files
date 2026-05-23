@@ -312,37 +312,32 @@ fn remember_preference_row(
     state: &Rc<RefCell<AppData>>,
     ui: &Rc<UiHandles>,
     writable: bool,
-) -> adw::ActionRow {
-    let row = adw::ActionRow::builder()
-        .title(tr("Remember"))
-        .subtitle(tr("Forget opens CSVs live for this session. Data only remembers copied CSVs. Data and analytics also keeps a reusable processed cache."))
-        .build();
+) -> adw::ComboRow {
     let labels = RememberMode::SETTINGS_VALUES
         .iter()
         .map(|mode| tr(mode.label()))
         .collect::<Vec<_>>();
     let label_refs = labels.iter().map(String::as_str).collect::<Vec<_>>();
-    let dropdown = gtk::DropDown::from_strings(&label_refs);
-    dropdown.set_valign(gtk::Align::Center);
-    let selected = RememberMode::SETTINGS_VALUES
-        .iter()
-        .position(|mode| *mode == ui.remember_mode.get())
-        .unwrap_or(1) as u32;
-    dropdown.set_selected(selected);
-    row.add_suffix(&dropdown);
-    row.set_activatable_widget(Some(&dropdown));
+    let model = gtk::StringList::new(&label_refs);
+    let selected = remember_mode_index(ui.remember_mode.get());
+    let row = adw::ComboRow::builder()
+        .title(tr("Remember"))
+        .subtitle(tr("Forget opens CSVs live for this session. Data only remembers copied CSVs. Data and analytics also keeps a reusable processed cache."))
+        .model(&model)
+        .selected(selected)
+        .build();
 
     if writable {
-        let state_for_dropdown = Rc::clone(state);
-        let ui_for_dropdown = Rc::clone(ui);
-        dropdown.connect_selected_notify(move |dropdown| {
+        let state_for_row = Rc::clone(state);
+        let ui_for_row = Rc::clone(ui);
+        row.connect_selected_notify(move |row| {
             let Some(mode) = RememberMode::SETTINGS_VALUES
-                .get(dropdown.selected() as usize)
+                .get(row.selected() as usize)
                 .copied()
             else {
                 return;
             };
-            set_remember_mode(mode, &state_for_dropdown, &ui_for_dropdown);
+            set_remember_mode(mode, &state_for_row, &ui_for_row);
         });
     } else {
         row.set_sensitive(false);
@@ -350,6 +345,13 @@ fn remember_preference_row(
     }
 
     row
+}
+
+fn remember_mode_index(mode: RememberMode) -> u32 {
+    RememberMode::SETTINGS_VALUES
+        .iter()
+        .position(|candidate| *candidate == mode)
+        .unwrap_or(2) as u32
 }
 
 fn preference_group(
