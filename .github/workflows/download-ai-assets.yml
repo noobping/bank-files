@@ -99,8 +99,14 @@ jobs:
           if safetensors_files[0].name != "model.safetensors":
               shutil.copy2(safetensors_files[0], generator_dir / "model.safetensors")
 
-          if not (generator_dir / "tokenizer.json").is_file():
+          tokenizer_path = generator_dir / "tokenizer.json"
+          if not tokenizer_path.is_file():
               raise SystemExit("Generator tokenizer did not produce tokenizer.json")
+          tokenizer_json = json.loads(tokenizer_path.read_text(encoding="utf-8"))
+          tokenizer_path.write_text(
+              json.dumps(tokenizer_json, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
 
           manifest = {
               "format": "bank-files-local-ai-v1",
@@ -224,6 +230,44 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config http.lowSpeedLimit 0
+          git config http.lowSpeedTime 999999
           git add data/ai
           git commit -m "Update local AI model assets"
-          git push
+
+          branch="${GITHUB_REF_NAME:-$(git branch --show-current)}"
+          head_sha="$(git rev-parse HEAD)"
+
+          remote_has_commit() {
+            remote_sha="$(git ls-remote origin "refs/heads/${branch}" | awk '{print $1}')"
+            [ "$remote_sha" = "$head_sha" ]
+          }
+
+          push_commit() {
+            git -c http.version=HTTP/1.1 push --porcelain origin "HEAD:${branch}"
+          }
+
+          for attempt in 1 2 3; do
+            if push_commit; then
+              exit 0
+            fi
+
+            if remote_has_commit; then
+              echo "Remote branch already has ${head_sha}; treating interrupted push as successful."
+              exit 0
+            fi
+
+            if [ "$attempt" -lt 3 ]; then
+              sleep_seconds=$((attempt * 20))
+              echo "Push failed; retrying in ${sleep_seconds}s..."
+              sleep "$sleep_seconds"
+            fi
+          done
+
+          if remote_has_commit; then
+            echo "Remote branch has ${head_sha}; treating interrupted push as successful."
+            exit 0
+          fi
+
+          echo "Failed to push ${head_sha} to ${branch}." >&2
+          exit 1
