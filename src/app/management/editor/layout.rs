@@ -41,25 +41,21 @@ pub(in crate::app) fn show_management_dialog(
 
     let header = adw::HeaderBar::new();
     header.set_show_start_title_buttons(false);
-    header.set_show_end_title_buttons(false);
+    header.set_show_end_title_buttons(true);
     let switcher = adw::ViewSwitcher::builder()
         .stack(&stack)
         .policy(adw::ViewSwitcherPolicy::Wide)
         .build();
     header.set_title_widget(Some(&switcher));
-    let cancel_button = gtk::Button::with_label(&tr("Cancel"));
-    cancel_button.add_css_class("flat");
     let add_button = ui::plain_text_icon_button("list-add-symbolic", "New", "New item");
+    add_button.add_css_class("flat");
     let save_button = ui::primary_text_icon_button(
         "document-save-symbolic",
         "Save",
         "Save rules, budgets, and field names",
     );
-    let action_buttons = ui::linked_button_group();
-    action_buttons.append(&add_button);
-    action_buttons.append(&save_button);
-    header.pack_start(&cancel_button);
-    header.pack_end(&action_buttons);
+    header.pack_start(&add_button);
+    header.pack_end(&save_button);
     root.append(&header);
 
     let filter_placeholder = if advanced_features {
@@ -267,17 +263,6 @@ pub(in crate::app) fn show_management_dialog(
         .content_height(content_height)
         .child(&root)
         .build();
-    let management_dialog_for_cancel = management_dialog.clone();
-    let dialog_closed_for_cancel = Rc::clone(&dialog_closed);
-    let save_running_for_cancel = Rc::clone(&save_running);
-    let finish_for_cancel = Rc::clone(&finish_management_dialog);
-    cancel_button.connect_clicked(move |_| {
-        dialog_closed_for_cancel.set(true);
-        management_dialog_for_cancel.close();
-        if !save_running_for_cancel.get() {
-            finish_for_cancel();
-        }
-    });
     let dialog_closed_for_closed = Rc::clone(&dialog_closed);
     let save_running_for_closed = Rc::clone(&save_running);
     let finish_for_closed = Rc::clone(&finish_management_dialog);
@@ -305,7 +290,6 @@ pub(in crate::app) fn show_management_dialog(
         use_monthly_values_button: &use_monthly_values_button,
         use_yearly_values_button: &use_yearly_values_button,
         add_alias_button: &add_alias_button,
-        cancel_button: &cancel_button,
         save_button: &save_button,
         page_actions_button: &status_bar.page_actions_button,
         stack: &stack,

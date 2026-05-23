@@ -14,7 +14,6 @@ pub(in crate::app::management::editor) struct ManagementDialogActions<'a> {
     pub(in crate::app::management::editor) use_monthly_values_button: &'a gtk::Button,
     pub(in crate::app::management::editor) use_yearly_values_button: &'a gtk::Button,
     pub(in crate::app::management::editor) add_alias_button: &'a gtk::Button,
-    pub(in crate::app::management::editor) cancel_button: &'a gtk::Button,
     pub(in crate::app::management::editor) save_button: &'a gtk::Button,
     pub(in crate::app::management::editor) page_actions_button: &'a gtk::MenuButton,
     pub(in crate::app::management::editor) stack: &'a adw::ViewStack,
@@ -53,7 +52,6 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
         use_monthly_values_button,
         use_yearly_values_button,
         add_alias_button,
-        cancel_button,
         save_button,
         page_actions_button,
         stack,
@@ -440,7 +438,6 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
     let state_for_save = Rc::clone(state);
     let ui_for_save = Rc::clone(ui_handles);
     let status_for_save = status.clone();
-    let cancel_button_for_save = cancel_button.clone();
     let dialog_closed_for_save = Rc::clone(&dialog_closed);
     let save_running_for_save = Rc::clone(&save_running);
     let finish_for_save = Rc::clone(&finish_management_dialog);
@@ -465,7 +462,6 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
         let state_for_save = Rc::clone(&state_for_save);
         let ui_for_save = Rc::clone(&ui_for_save);
         let status_for_save = status_for_save.clone();
-        let cancel_button = cancel_button_for_save.clone();
         let dialog_closed_for_save = Rc::clone(&dialog_closed_for_save);
         let save_running_for_save = Rc::clone(&save_running_for_save);
         let finish_for_save = Rc::clone(&finish_for_save);
@@ -509,7 +505,6 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
                 let finish_for_save = Rc::clone(&finish_for_save);
                 save_running_for_save.set(true);
                 button.set_sensitive(false);
-                cancel_button.set_label(&tr("Close"));
                 status_for_save.set_text(&tr("Saving changes..."));
                 show_status(&ui_for_save, "Saving changes...");
 
@@ -529,7 +524,6 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
                         anyhow::Ok(new_data)
                     });
 
-                    let mut save_succeeded = false;
                     match task.await {
                         Ok(Ok(new_data)) => {
                             *state_for_save.borrow_mut() = new_data;
@@ -547,7 +541,6 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
                             status_for_save.set_text(&message);
                             show_status(&ui_for_save, &message);
                             show_verbose_status(ui_for_save.as_ref(), "management save finished");
-                            save_succeeded = true;
                         }
                         Ok(Err(err)) => {
                             let message =
@@ -572,11 +565,6 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
                         finish_for_save();
                     } else {
                         button.set_sensitive(true);
-                        cancel_button.set_label(&tr(if save_succeeded {
-                            "Close"
-                        } else {
-                            "Cancel"
-                        }));
                     }
                 });
             },
