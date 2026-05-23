@@ -325,19 +325,22 @@ fn transaction_detail_actions(
         let tx_for_pattern = tx.clone();
         let state_for_pattern = Rc::clone(state);
         let ui_for_pattern = Rc::clone(ui_handles);
+        let popover_for_pattern = menu_popover.clone();
         let button = ui::plain_text_icon_button(
             "view-refresh-symbolic",
             "Find pattern",
             "Search Diagnostics for related transaction patterns",
         );
+        button.add_css_class("flat");
         button.connect_clicked(move |_| {
+            popover_for_pattern.popdown();
             show_diagnostics_text_search(
                 &state_for_pattern,
                 &ui_for_pattern,
                 &similar_transaction_query(&tx_for_pattern),
             );
         });
-        primary_actions.append(&button);
+        menu_items.append(&button);
     }
 
     if visible_actions.contains(&TransactionDetailAction::MarkTransfer) {
