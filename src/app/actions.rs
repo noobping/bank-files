@@ -422,19 +422,18 @@ pub(in crate::app) fn connect_actions(
             {
                 *ui_for_predictions.active_transaction_filter.borrow_mut() = None;
             }
-            render_views(
-                &state_for_predictions.borrow(),
-                &ui_for_predictions,
+            let success_message = tr(if enabled {
+                "Smart Insights enabled. Forecast cards, transaction pattern detection, and smart transfer detection are available."
+            } else {
+                "Smart Insights disabled. Forecast cards, transaction pattern detection, and smart transfer detection are off."
+            });
+            reload_state_with_status(
                 &state_for_predictions,
-            );
-            refresh_menu(&ui_for_predictions, &state_for_predictions.borrow());
-            show_status(
                 &ui_for_predictions,
-                if enabled {
-                    "Smart Insights enabled. Forecast cards and transaction pattern detection are available."
-                } else {
-                    "Smart Insights disabled. Forecast cards and transaction pattern detection are hidden."
-                },
+                "Updating Smart Insights...",
+                success_message,
+                "Could not update Smart Insights: {error}",
+                Vec::new(),
             );
         },
     );

@@ -3,6 +3,7 @@ use crate::app_info::{APP_ID, SEARCH_PROVIDER_BUS_NAME, SEARCH_PROVIDER_OBJECT_P
 use crate::model::{AppData, DedupeMode, Transaction, TransactionLoadScope};
 use crate::util::signed_money;
 
+use adw::gio::prelude::SettingsExt;
 use adw::gio::{self, BusNameOwnerFlags, BusType, DBusConnection, DBusInterfaceInfo, DBusNodeInfo};
 use adw::glib::variant::ToVariant;
 use adw::glib::{self, MainLoop, Variant};
@@ -238,12 +239,20 @@ fn load_search_data() -> AppData {
         DedupeMode::Enabled,
         false,
         TransactionLoadScope::All,
+        search_smart_insights_enabled(),
     )
     .map(|(data, _capabilities)| data)
     .unwrap_or_else(|err| {
         eprintln!("Failed to load transactions for GNOME search: {err}");
         AppData::default()
     })
+}
+
+fn search_smart_insights_enabled() -> bool {
+    gio::SettingsSchemaSource::default()
+        .and_then(|source| source.lookup(APP_ID, true))
+        .map(|_| gio::Settings::new(APP_ID).boolean("show-predictions"))
+        .unwrap_or(false)
 }
 
 fn fallback_meta(identifier: &str) -> HashMap<String, Variant> {

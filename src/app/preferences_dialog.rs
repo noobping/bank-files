@@ -43,7 +43,7 @@ pub(in crate::app) fn show_preferences_dialog(
 
     let mut insight_preferences = vec![PreferenceSpec::new(
         "Smart Insights",
-        "Show forecast cards and detect transaction patterns from imported transactions.",
+        "Show forecast cards and detect transaction patterns, including possible transfers, from imported transactions.",
         "app.show-predictions",
         ui.show_predictions.get(),
     )];
@@ -63,7 +63,7 @@ pub(in crate::app) fn show_preferences_dialog(
 
     if let Some((group, search_group)) = preference_group(
         "Insights",
-        "Control smart forecasts, pattern detection, and previous-period spending comparisons.",
+        "Control smart forecasts, detected transaction patterns, smart transfer detection, and previous-period spending comparisons.",
         &insight_preferences,
         ui.advanced_features.get(),
         &ui.preferences,
@@ -171,7 +171,7 @@ fn preferences_page_snapshot(
     );
     let mut insight_rows = vec![(
         "Smart Insights",
-        "Show forecast cards and detect transaction patterns from imported transactions.",
+        "Show forecast cards and detect transaction patterns, including possible transfers, from imported transactions.",
         "app.show-predictions",
     )];
     #[cfg(not(feature = "flatpak"))]

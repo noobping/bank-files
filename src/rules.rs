@@ -108,10 +108,18 @@ pub fn load_budget_codes(config_dir: &Path) -> Result<Vec<BudgetCode>> {
     Ok(codes)
 }
 
-pub fn apply_rules(transactions: &mut [Transaction], rules: &[Rule], budgets: &[BudgetCode]) {
+pub fn apply_rules(
+    transactions: &mut [Transaction],
+    rules: &[Rule],
+    budgets: &[BudgetCode],
+    smart_insights_enabled: bool,
+) {
     for tx in transactions {
         let mut matched = false;
         for rule in rules.iter().filter(|r| r.active) {
+            if !smart_insights_enabled && rule_is_smart_transfer(rule) {
+                continue;
+            }
             if rule_matches(rule, tx) {
                 tx.category = rule.category.clone();
                 tx.budget_code = rule.budget_code.clone();
@@ -122,11 +130,16 @@ pub fn apply_rules(transactions: &mut [Transaction], rules: &[Rule], budgets: &[
         }
 
         if !matched {
-            let (category, budget_code) = fallback_category(tx, budgets);
+            let (category, budget_code) = fallback_category(tx, budgets, smart_insights_enabled);
             tx.category = category;
             tx.budget_code = budget_code;
         }
     }
+}
+
+fn rule_is_smart_transfer(rule: &Rule) -> bool {
+    canonical_direction(&rule.direction).is_some_and(|direction| direction == "transfer")
+        || rule.budget_code.trim().eq_ignore_ascii_case("TRANSFER")
 }
 
 fn rule_matches(rule: &Rule, tx: &Transaction) -> bool {
@@ -193,7 +206,11 @@ fn direction_matches(direction: &str, amount: Decimal) -> bool {
     }
 }
 
-fn fallback_category(tx: &Transaction, budgets: &[BudgetCode]) -> (String, String) {
+fn fallback_category(
+    tx: &Transaction,
+    budgets: &[BudgetCode],
+    smart_insights_enabled: bool,
+) -> (String, String) {
     let text = normalize_key(&format!(
         "{} {} {}",
         tx.description,
@@ -203,6 +220,9 @@ fn fallback_category(tx: &Transaction, budgets: &[BudgetCode]) -> (String, Strin
     let amount = tx.amount;
 
     for rule in fallback_category_rules() {
+        if !smart_insights_enabled && fallback_rule_is_smart_transfer(rule) {
+            continue;
+        }
         if fallback_direction_matches(rule.direction, amount)
             && any_keywords(&text, rule.keywords)
             && configured_budget_code_exists(budgets, rule.budget_code)
@@ -293,6 +313,10 @@ fn fallback_categories() -> &'static str {
     }
 }
 
+fn fallback_rule_is_smart_transfer(rule: FallbackCategoryRule) -> bool {
+    rule.direction.trim().eq_ignore_ascii_case("transfer")
+}
+
 fn fallback_direction_matches(direction: &str, amount: Decimal) -> bool {
     match direction {
         "expense" => amount < Decimal::ZERO,
@@ -370,13 +394,88 @@ mod tests {
             income_basis: BudgetIncomeBasis::RealIncome,
             notes: String::new(),
         }];
-        let (category, budget_code) = fallback_category(&tx, &budgets);
+        let (category, budget_code) = fallback_category(&tx, &budgets, true);
 
         assert!(matches!(
             category.as_str(),
             "Losses & fees" | "Verlies en kosten"
         ));
         assert_eq!(budget_code, "LOSS");
+    }
+
+    #[test]
+    fn fallback_skips_detected_transfer_when_smart_insights_disabled() {
+        let tx = tx("Tikkie dinner", "Friend", -2300);
+        let budgets = vec![
+            BudgetCode {
+                code: "TRANSFER".to_string(),
+                category: "Transfers".to_string(),
+                monthly_budget: None,
+                yearly_budget: None,
+                direction: BudgetDirection::Transfer,
+                income_basis: BudgetIncomeBasis::RealIncome,
+                notes: String::new(),
+            },
+            BudgetCode {
+                code: "OTHER".to_string(),
+                category: "Other".to_string(),
+                monthly_budget: None,
+                yearly_budget: None,
+                direction: BudgetDirection::Expense,
+                income_basis: BudgetIncomeBasis::RealIncome,
+                notes: String::new(),
+            },
+        ];
+
+        let (_, smart_code) = fallback_category(&tx, &budgets, true);
+        let (_, facts_only_code) = fallback_category(&tx, &budgets, false);
+
+        assert_eq!(smart_code, "TRANSFER");
+        assert_eq!(facts_only_code, "OTHER");
+    }
+
+    #[test]
+    fn apply_rules_skips_transfer_rules_when_smart_insights_disabled() {
+        let mut smart_transactions = vec![tx("Tikkie dinner", "Friend", -2300)];
+        let mut facts_only_transactions = smart_transactions.clone();
+        let rules = vec![Rule {
+            priority: 100,
+            active: true,
+            field: "any".to_string(),
+            pattern: "Tikkie".to_string(),
+            category: "Transfers".to_string(),
+            budget_code: "TRANSFER".to_string(),
+            direction: "transfer".to_string(),
+            amount_min: None,
+            amount_max: None,
+            notes: "Generated from automatic configuration.".to_string(),
+        }];
+        let budgets = vec![
+            BudgetCode {
+                code: "TRANSFER".to_string(),
+                category: "Transfers".to_string(),
+                monthly_budget: None,
+                yearly_budget: None,
+                direction: BudgetDirection::Transfer,
+                income_basis: BudgetIncomeBasis::RealIncome,
+                notes: String::new(),
+            },
+            BudgetCode {
+                code: "OTHER".to_string(),
+                category: "Other".to_string(),
+                monthly_budget: None,
+                yearly_budget: None,
+                direction: BudgetDirection::Expense,
+                income_basis: BudgetIncomeBasis::RealIncome,
+                notes: String::new(),
+            },
+        ];
+
+        apply_rules(&mut smart_transactions, &rules, &budgets, true);
+        apply_rules(&mut facts_only_transactions, &rules, &budgets, false);
+
+        assert_eq!(smart_transactions[0].budget_code, "TRANSFER");
+        assert_eq!(facts_only_transactions[0].budget_code, "OTHER");
     }
 
     fn tx(description: &str, counterparty: &str, cents: i64) -> Transaction {

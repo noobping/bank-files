@@ -113,6 +113,7 @@ pub(in crate::app) async fn import_and_reload_in_background<F>(
     let auto_clean_config = ui.preferences.auto_clean_config();
     let scope = current_transaction_load_scope(&state.borrow(), ui.as_ref());
     let remember_mode = ui.remember_mode.get();
+    let smart_insights_enabled = ui.show_predictions.get();
     show_verbose_status(
         ui.as_ref(),
         format!("import started; scope={scope:?}; remember={remember_mode:?}; dedupe={mode:?}"),
@@ -129,6 +130,7 @@ pub(in crate::app) async fn import_and_reload_in_background<F>(
                     scope,
                     remember_mode,
                     &[],
+                    smart_insights_enabled,
                 )
                 .map_err(|err| format!("{err:#}")),
             )
@@ -226,6 +228,7 @@ async fn open_live_sources_in_background(
     let auto_clean_config = ui.preferences.auto_clean_config();
     let scope = current_transaction_load_scope(&state.borrow(), ui.as_ref());
     let remember_mode = ui.remember_mode.get();
+    let smart_insights_enabled = ui.show_predictions.get();
     let sources = live_source_set(&state.borrow(), remember_mode, sources);
     render_loading_placeholder(ui.as_ref());
     begin_background_operation(ui.as_ref());
@@ -237,6 +240,7 @@ async fn open_live_sources_in_background(
             scope,
             remember_mode,
             &task_sources,
+            smart_insights_enabled,
         )
     });
 
@@ -330,6 +334,7 @@ pub(in crate::app) fn clear_cache_and_reload_state(
     let scope = current_transaction_load_scope(&borrowed, ui.as_ref());
     drop(borrowed);
     let auto_clean_config = ui.preferences.auto_clean_config();
+    let smart_insights_enabled = ui.show_predictions.get();
     let state_for_reload = Rc::clone(state);
     let ui_for_reload = Rc::clone(ui);
 
@@ -353,6 +358,7 @@ pub(in crate::app) fn clear_cache_and_reload_state(
                 scope,
                 remember_mode,
                 &sources,
+                smart_insights_enabled,
             )?;
             anyhow::Ok((removed, new_data, capabilities))
         });
@@ -453,6 +459,7 @@ pub(in crate::app) fn reload_state_with_scope(
     let sources = current_sources_for_reload(&borrowed, remember_mode);
     drop(borrowed);
     let auto_clean_config = ui.preferences.auto_clean_config();
+    let smart_insights_enabled = ui.show_predictions.get();
     let state_for_reload = Rc::clone(state);
     let ui_for_reload = Rc::clone(ui);
     show_verbose_status(
@@ -474,6 +481,7 @@ pub(in crate::app) fn reload_state_with_scope(
                 scope,
                 remember_mode,
                 &sources,
+                smart_insights_enabled,
             )
         });
         match task.await {
@@ -648,6 +656,7 @@ pub(in crate::app) fn set_dedupe_enabled(
     let scope = current_transaction_load_scope(&borrowed, ui.as_ref());
     drop(borrowed);
     let auto_clean_config = ui.preferences.auto_clean_config();
+    let smart_insights_enabled = ui.show_predictions.get();
     let state_for_dedupe = Rc::clone(state);
     let ui_for_dedupe = Rc::clone(ui);
     show_verbose_status(
@@ -669,6 +678,7 @@ pub(in crate::app) fn set_dedupe_enabled(
                 scope,
                 remember_mode,
                 &sources,
+                smart_insights_enabled,
             )
         });
         match task.await {

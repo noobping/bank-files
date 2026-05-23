@@ -43,19 +43,24 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
         "Automatic Configuration uses complete imported calendar years for budget amounts and ignores incomplete years.",
     );
     show_smart_enrichment_status(ui.as_ref(), dialog_status.as_ref());
-    if matches!(snapshot.loaded_scope, TransactionLoadScope::All) {
-        show_config_status(
-            ui.as_ref(),
-            dialog_status.as_ref(),
-            "Analysing loaded transactions, yearly comparisons, recurring patterns, transfers, and field mappings...",
-        );
-    } else {
-        show_config_status(
-            ui.as_ref(),
-            dialog_status.as_ref(),
-            "Loading all imported transactions before analysing yearly comparisons and patterns...",
-        );
-    }
+    let analysis_message = match (
+        matches!(snapshot.loaded_scope, TransactionLoadScope::All),
+        smart_insights_enabled,
+    ) {
+        (true, true) => {
+            "Analysing loaded transactions, yearly comparisons, recurring patterns, transfers, and field mappings..."
+        }
+        (true, false) => {
+            "Analysing loaded transactions, yearly comparisons, repeated categories, and field mappings..."
+        }
+        (false, true) => {
+            "Loading all imported transactions before analysing yearly comparisons, patterns, and transfers..."
+        }
+        (false, false) => {
+            "Loading all imported transactions before analysing yearly comparisons and repeated categories..."
+        }
+    };
+    show_config_status(ui.as_ref(), dialog_status.as_ref(), analysis_message);
     set_config_status_loading(dialog_status.as_ref(), true);
     begin_background_operation(ui.as_ref());
 
@@ -67,8 +72,10 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 auto_clean_config,
                 remember_mode,
                 &sources,
+                smart_insights_enabled,
             )?;
-            let generated = data::generate_automatic_configuration(&generation_data)?;
+            let generated =
+                data::generate_automatic_configuration(&generation_data, smart_insights_enabled)?;
             let ai_outcome = crate::local_ai::enhance_generated_configuration(
                 &generation_data,
                 generated,
@@ -89,6 +96,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 restore_scope,
                 remember_mode,
                 &sources,
+                smart_insights_enabled,
             )?
             .0;
             anyhow::Ok(GeneratedConfigurationOutcome::Generated {
@@ -181,6 +189,7 @@ fn generation_app_data(
     auto_clean_config: bool,
     remember_mode: RememberMode,
     sources: &[TransactionSource],
+    smart_insights_enabled: bool,
 ) -> anyhow::Result<AppData> {
     if matches!(snapshot.loaded_scope, TransactionLoadScope::All) {
         Ok(snapshot)
@@ -191,6 +200,7 @@ fn generation_app_data(
             TransactionLoadScope::All,
             remember_mode,
             sources,
+            smart_insights_enabled,
         )
         .map(|loaded| loaded.0)
     }
@@ -217,7 +227,7 @@ fn set_config_status_loading(dialog_status: Option<&StatusHandle>, loading: bool
 #[cfg(not(feature = "flatpak"))]
 fn show_smart_enrichment_status(ui: &UiHandles, dialog_status: Option<&StatusHandle>) {
     let message = if !ui.show_predictions.get() {
-        "Smart Insights are disabled. Online merchant enrichment and extra pattern hints are skipped."
+        "Smart Insights are disabled. Online merchant enrichment, detected transfers, and extra pattern hints are skipped."
     } else if !ui.online_smart_insights.get() {
         "Online Smart Insights are off by default. Automatic Configuration uses only local transactions, and no merchant names or transaction fields are sent."
     } else if !online_smart_insights_network_available() {
@@ -233,7 +243,7 @@ fn show_smart_enrichment_status(ui: &UiHandles, dialog_status: Option<&StatusHan
     let message = if ui.show_predictions.get() {
         "Automatic Configuration uses local transactions only in this build."
     } else {
-        "Smart Insights are disabled. Extra pattern hints are skipped."
+        "Smart Insights are disabled. Detected transfers and extra pattern hints are skipped."
     };
     show_config_status(ui, dialog_status, message);
 }

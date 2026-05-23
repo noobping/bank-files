@@ -910,6 +910,7 @@ async fn reload_after_queue_apply(
         )
     };
     let auto_clean_config = ui.preferences.auto_clean_config();
+    let smart_insights_enabled = ui.show_predictions.get();
     show_verbose_status(
         ui.as_ref(),
         format!(
@@ -927,6 +928,7 @@ async fn reload_after_queue_apply(
             scope,
             remember_mode,
             &sources,
+            smart_insights_enabled,
         )?
         .0;
         anyhow::Ok((new_data, combine_summary))

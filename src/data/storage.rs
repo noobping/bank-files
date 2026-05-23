@@ -267,6 +267,7 @@ pub fn load_app_data_read_only_aware(
     mode: DedupeMode,
     auto_clean_config: bool,
     scope: TransactionLoadScope,
+    smart_insights_enabled: bool,
 ) -> Result<(AppData, StorageCapabilities)> {
     let dirs = app_dirs()?;
     let capabilities = crate::data::storage_capabilities(&dirs);
@@ -278,6 +279,7 @@ pub fn load_app_data_read_only_aware(
         scope,
         RememberMode::DataOnly,
         &[],
+        smart_insights_enabled,
     )
 }
 
@@ -287,6 +289,7 @@ pub fn load_app_data_with_sources(
     scope: TransactionLoadScope,
     remember_mode: RememberMode,
     sources: &[TransactionSource],
+    smart_insights_enabled: bool,
 ) -> Result<(AppData, StorageCapabilities)> {
     let dirs = app_dirs()?;
     let capabilities = crate::data::storage_capabilities(&dirs);
@@ -298,6 +301,7 @@ pub fn load_app_data_with_sources(
         scope,
         remember_mode,
         sources,
+        smart_insights_enabled,
     )
 }
 
@@ -309,10 +313,20 @@ fn load_app_data_from_dirs(
     scope: TransactionLoadScope,
     remember_mode: RememberMode,
     sources: &[TransactionSource],
+    smart_insights_enabled: bool,
 ) -> Result<(AppData, StorageCapabilities)> {
     let cache_key = remember_mode
         .uses_analytics_cache()
-        .then(|| app_data_cache_key(dirs, mode, scope, remember_mode, sources))
+        .then(|| {
+            app_data_cache_key(
+                dirs,
+                mode,
+                scope,
+                remember_mode,
+                sources,
+                smart_insights_enabled,
+            )
+        })
         .transpose()?;
 
     if let Some(cache_key) = cache_key.as_deref() {
@@ -331,6 +345,7 @@ fn load_app_data_from_dirs(
                     scope,
                     remember_mode,
                     sources,
+                    smart_insights_enabled,
                 )?;
                 data.warnings
                     .push(format!("Data and analytics cache ignored: {error:#}"));
@@ -348,6 +363,7 @@ fn load_app_data_from_dirs(
         scope,
         remember_mode,
         sources,
+        smart_insights_enabled,
     )?;
     if let Some(cache_key) = cache_key.as_deref() {
         write_cache_status(cache_key, &mut data);
@@ -363,6 +379,7 @@ fn load_app_data_uncached(
     scope: TransactionLoadScope,
     remember_mode: RememberMode,
     sources: &[TransactionSource],
+    smart_insights_enabled: bool,
 ) -> Result<AppData> {
     if auto_clean_config && capabilities.config_writable {
         remove_orphaned_rules()?;
@@ -385,7 +402,7 @@ fn load_app_data_uncached(
     }
     let (mut transactions, duplicate_count) =
         dedupe(std::mem::take(&mut outcome.transactions), mode);
-    apply_rules(&mut transactions, &rules, &budgets);
+    apply_rules(&mut transactions, &rules, &budgets, smart_insights_enabled);
     sort_transactions(&mut transactions);
 
     let available_months = if outcome.available_months.is_empty() {
@@ -576,10 +593,13 @@ fn app_data_cache_key(
     scope: TransactionLoadScope,
     remember_mode: RememberMode,
     sources: &[TransactionSource],
+    smart_insights_enabled: bool,
 ) -> Result<String> {
     let mut digest = Sha256::new();
     digest.update(env!("CARGO_PKG_VERSION").as_bytes());
-    digest.update(format!("{mode:?}|{scope:?}|{remember_mode:?}").as_bytes());
+    digest.update(
+        format!("{mode:?}|{scope:?}|{remember_mode:?}|smart:{smart_insights_enabled}").as_bytes(),
+    );
     for source in effective_cache_sources(dirs, remember_mode, sources)? {
         digest.update(format!("{:?}|{}|", source.kind, source.path.display()).as_bytes());
         match fs::metadata(&source.path) {
@@ -649,6 +669,7 @@ pub fn reload_transaction_source_file(
     mode: DedupeMode,
     auto_clean_config: bool,
     remember_mode: RememberMode,
+    smart_insights_enabled: bool,
 ) -> Result<AppData> {
     let dirs = app_dirs()?;
     let capabilities = crate::data::storage_capabilities(&dirs);
@@ -659,6 +680,7 @@ pub fn reload_transaction_source_file(
         mode,
         auto_clean_config && capabilities.config_writable,
         remember_mode,
+        smart_insights_enabled,
     )
 }
 
@@ -678,6 +700,7 @@ fn reload_inbox_file_with_dirs(
         mode,
         auto_clean_config,
         RememberMode::DataOnly,
+        true,
     )
 }
 
@@ -688,6 +711,7 @@ fn reload_transaction_source_file_with_dirs(
     mode: DedupeMode,
     auto_clean_config: bool,
     remember_mode: RememberMode,
+    smart_insights_enabled: bool,
 ) -> Result<AppData> {
     if auto_clean_config {
         remove_orphaned_rules()?;
@@ -711,7 +735,7 @@ fn reload_transaction_source_file_with_dirs(
         .retain(|transaction| transaction.source_file != source_file);
     data.transactions.extend(transactions);
     let (mut transactions, duplicate_count) = dedupe(std::mem::take(&mut data.transactions), mode);
-    apply_rules(&mut transactions, &rules, &budgets);
+    apply_rules(&mut transactions, &rules, &budgets, smart_insights_enabled);
     sort_transactions(&mut transactions);
     data.transactions = transactions;
 
@@ -921,6 +945,7 @@ mod tests {
             TransactionLoadScope::All,
             RememberMode::DataOnly,
             &[],
+            true,
         )
         .expect("read-only load should use embedded defaults");
 
@@ -970,6 +995,7 @@ mod tests {
             TransactionLoadScope::All,
             RememberMode::Forget,
             &sources,
+            true,
         )
         .expect("live load should read the selected CSV");
 
@@ -1018,7 +1044,7 @@ mod tests {
         let live_csv = root.join("live.csv");
         fs::write(
             &live_csv,
-            "Date,Description,Amount\n2026-01-01,Coffee,-2.50\n",
+            "Date,Description,Amount\n2026-01-01,Tikkie dinner,-2.50\n",
         )
         .expect("live test csv should be written");
         let dirs = AppDirs {
@@ -1037,6 +1063,7 @@ mod tests {
             TransactionLoadScope::All,
             RememberMode::DataAndAnalytics,
             &sources,
+            true,
         )
         .expect("first full-cache load should parse and cache data");
         let (second, _) = load_app_data_from_dirs(
@@ -1047,12 +1074,27 @@ mod tests {
             TransactionLoadScope::All,
             RememberMode::DataAndAnalytics,
             &sources,
+            true,
         )
         .expect("second full-cache load should reuse cached data");
+        let (facts_only, _) = load_app_data_from_dirs(
+            &dirs,
+            &capabilities,
+            DedupeMode::Disabled,
+            false,
+            TransactionLoadScope::All,
+            RememberMode::DataAndAnalytics,
+            &sources,
+            false,
+        )
+        .expect("facts-only full-cache load should use a separate cache key");
 
         assert_eq!(first.cache_status, DataCacheStatus::Updated);
         assert_eq!(second.cache_status, DataCacheStatus::Hit);
+        assert_eq!(facts_only.cache_status, DataCacheStatus::Updated);
         assert_eq!(second.transactions.len(), 1);
+        assert_eq!(first.transactions[0].budget_code, "TRANSFER");
+        assert_eq!(facts_only.transactions[0].budget_code, "OTHER");
 
         std::env::remove_var("BANK_FILES_CACHE");
         fs::remove_dir_all(root).ok();

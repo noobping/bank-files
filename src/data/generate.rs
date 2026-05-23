@@ -40,14 +40,21 @@ pub struct GeneratedConfiguration {
     pub summary: GeneratedConfigurationSummary,
 }
 
-pub fn generate_automatic_configuration(data: &AppData) -> Result<GeneratedConfiguration> {
+pub fn generate_automatic_configuration(
+    data: &AppData,
+    smart_insights_enabled: bool,
+) -> Result<GeneratedConfiguration> {
     let transactions = uncategorized_transactions(&data.transactions);
     let period = generation_period(&transactions);
     let analysis_transactions = complete_period_transactions(&transactions, &period);
-    let patterns = analytics::transaction_pattern_analysis(
-        &analysis_transactions,
-        data.dedupe_mode.is_enabled(),
-    );
+    let patterns = smart_insights_enabled
+        .then(|| {
+            analytics::transaction_pattern_analysis(
+                &analysis_transactions,
+                data.dedupe_mode.is_enabled(),
+            )
+        })
+        .unwrap_or_default();
     let ignored_patterns = generated_ignored_patterns(&patterns.patterns);
     let mut excluded_keys = cancellation_pattern_keys(&patterns.patterns);
     excluded_keys.extend(transfer_pattern_keys(&patterns.patterns));
@@ -66,6 +73,7 @@ pub fn generate_automatic_configuration(data: &AppData) -> Result<GeneratedConfi
         &analysis_transactions,
         &excluded_keys,
         &period,
+        smart_insights_enabled,
         &mut reserved_codes,
         &mut budgets,
         &mut rules,
@@ -158,6 +166,7 @@ fn append_grouped_transaction_configuration(
     transactions: &[Transaction],
     ignored_keys: &HashSet<String>,
     period: &GenerationPeriod,
+    smart_insights_enabled: bool,
     reserved_codes: &mut BTreeSet<String>,
     budgets: &mut Vec<EditableBudget>,
     rules: &mut Vec<EditableRule>,
@@ -166,7 +175,7 @@ fn append_grouped_transaction_configuration(
     for transaction in transactions {
         if transaction.amount == Decimal::ZERO
             || ignored_keys.contains(&transaction_key(transaction))
-            || generated_transfer_hint(transaction)
+            || (smart_insights_enabled && generated_transfer_hint(transaction))
         {
             continue;
         }
@@ -728,7 +737,7 @@ mod tests {
 
     #[test]
     fn empty_input_generates_no_user_configuration() {
-        let generated = generate_automatic_configuration(&AppData::default()).unwrap();
+        let generated = generate_automatic_configuration(&AppData::default(), true).unwrap();
 
         assert!(generated.summary.is_empty());
         assert!(generated.rules.is_empty());
@@ -745,7 +754,7 @@ mod tests {
             "Coffee Shop",
         ));
 
-        let generated = generate_automatic_configuration(&data).unwrap();
+        let generated = generate_automatic_configuration(&data, true).unwrap();
 
         assert_eq!(generated.summary.complete_years, 1);
         assert_eq!(generated.summary.budget_months, 12);
@@ -768,7 +777,7 @@ mod tests {
             tx("2026-01-10", -700, "Coffee", "Coffee Shop", 2),
         ]);
 
-        let generated = generate_automatic_configuration(&data).unwrap();
+        let generated = generate_automatic_configuration(&data, true).unwrap();
 
         assert_eq!(generated.summary.complete_years, 0);
         assert_eq!(generated.summary.budget_months, 0);
@@ -787,7 +796,7 @@ mod tests {
         ));
         let data = app_data(transactions);
 
-        let generated = generate_automatic_configuration(&data).unwrap();
+        let generated = generate_automatic_configuration(&data, true).unwrap();
 
         assert_eq!(generated.summary.complete_years, 2);
         assert_eq!(generated.summary.budget_months, 24);
@@ -799,7 +808,7 @@ mod tests {
     fn detected_transfer_generates_only_transfer_configuration() {
         let data = app_data(complete_year_transfer_pairs(2025));
 
-        let generated = generate_automatic_configuration(&data).unwrap();
+        let generated = generate_automatic_configuration(&data, true).unwrap();
 
         assert_eq!(generated.budgets.len(), 1);
         assert_eq!(generated.budgets[0].code, TRANSFER_CODE);
@@ -811,12 +820,29 @@ mod tests {
     }
 
     #[test]
+    fn smart_insights_disabled_skips_detected_transfer_configuration() {
+        let data = app_data(complete_year_transfer_pairs(2025));
+
+        let generated = generate_automatic_configuration(&data, false).unwrap();
+
+        assert!(generated
+            .budgets
+            .iter()
+            .all(|budget| budget.code != TRANSFER_CODE));
+        assert!(generated
+            .rules
+            .iter()
+            .all(|rule| rule.budget_code != TRANSFER_CODE && rule.direction != "transfer"));
+        assert!(generated.ignored_patterns.is_empty());
+    }
+
+    #[test]
     fn refund_patterns_are_ignored_but_transfers_are_not() {
         let mut transactions = complete_year_refund_pairs(2025);
         transactions.extend(complete_year_transfer_pairs(2025));
         let data = app_data(transactions);
 
-        let generated = generate_automatic_configuration(&data).unwrap();
+        let generated = generate_automatic_configuration(&data, true).unwrap();
 
         assert!(generated.summary.ignored_patterns > 0);
         assert!(generated
@@ -842,7 +868,7 @@ mod tests {
             ..Default::default()
         });
 
-        let generated = generate_automatic_configuration(&data).unwrap();
+        let generated = generate_automatic_configuration(&data, true).unwrap();
 
         assert_eq!(generated.summary.field_mappings, 2);
         assert!(generated
@@ -863,7 +889,7 @@ mod tests {
             transaction.budget_code = "OLD".to_string();
         }
 
-        let generated = generate_automatic_configuration(&app_data(transactions)).unwrap();
+        let generated = generate_automatic_configuration(&app_data(transactions), true).unwrap();
 
         assert!(!generated.budgets.iter().any(|budget| budget.code == "OLD"));
         assert!(!generated.rules.iter().any(|rule| rule.budget_code == "OLD"));

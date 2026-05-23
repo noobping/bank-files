@@ -132,6 +132,7 @@ fn field_mapping_dialog(
         let scope = current_transaction_load_scope(&borrowed, ui_for_save.as_ref());
         drop(borrowed);
         let auto_clean_config = ui_for_save.preferences.auto_clean_config();
+        let smart_insights_enabled = ui_for_save.show_predictions.get();
         let state_for_save = Rc::clone(&state_for_save);
         let ui_for_save = Rc::clone(&ui_for_save);
         let dialog_for_save = dialog_for_save.clone();
@@ -142,7 +143,15 @@ fn field_mapping_dialog(
         gtk::glib::MainContext::default().spawn_local(async move {
             let task = gtk::gio::spawn_blocking(move || {
                 let saved = data::upsert_editable_alias(&canonical_for_save, &alias_for_save)?;
-                let new_data = data::load_app_data_with_sources(mode, auto_clean_config, scope, remember_mode, &sources)?.0;
+                let new_data = data::load_app_data_with_sources(
+                    mode,
+                    auto_clean_config,
+                    scope,
+                    remember_mode,
+                    &sources,
+                    smart_insights_enabled,
+                )?
+                .0;
                 anyhow::Ok((saved, new_data))
             });
 

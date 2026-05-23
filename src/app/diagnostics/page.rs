@@ -406,6 +406,7 @@ fn remove_orphaned_config_rules(
     let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
     drop(borrowed);
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
+    let smart_insights_enabled = ui_handles.show_predictions.get();
     let state_for_remove = Rc::clone(state);
     let ui_for_remove = Rc::clone(ui_handles);
     button.set_sensitive(false);
@@ -421,6 +422,7 @@ fn remove_orphaned_config_rules(
                 scope,
                 remember_mode,
                 &sources,
+                smart_insights_enabled,
             )?
             .0;
             anyhow::Ok((removed, new_data))
@@ -514,8 +516,12 @@ fn append_transaction_patterns_section_async(
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
             let data = if needs_all_reload {
-                let (data, _) =
-                    data::load_app_data_read_only_aware(mode, false, TransactionLoadScope::All)?;
+                let (data, _) = data::load_app_data_read_only_aware(
+                    mode,
+                    false,
+                    TransactionLoadScope::All,
+                    smart_insights_enabled,
+                )?;
                 data_with_fake_transactions(data, fake_transactions)
             } else {
                 data

@@ -19,7 +19,7 @@
     <key name="show-predictions" type="b">
       <default>false</default>
       <summary>Smart insights</summary>
-      <description>Whether forecast cards and detected transaction patterns are shown.</description>
+      <description>Whether forecast cards, detected transaction patterns, and smart transfer detection are enabled.</description>
     </key>
     <key name="online-smart-insights" type="b">
       <default>false</default>

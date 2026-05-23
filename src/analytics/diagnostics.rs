@@ -34,6 +34,7 @@ pub fn other_category_count(transactions: &[Transaction]) -> usize {
         .count()
 }
 
+#[derive(Default)]
 pub struct TransactionPatternAnalysis {
     pub patterns: Vec<TransactionPattern>,
     hidden_transaction_keys: HashSet<String>,
