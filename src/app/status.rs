@@ -4,6 +4,8 @@ const STATUS_AUTOHIDE_SECONDS: u32 = 6;
 const COPY_FEEDBACK_SECONDS: u32 = 3;
 const COPY_ICON: &str = "edit-copy-symbolic";
 const COPIED_ICON: &str = "object-select-symbolic";
+const SAVE_ICON: &str = "document-save-symbolic";
+const SAVE_ERROR_ICON: &str = "dialog-error-symbolic";
 const STATUS_HISTORY_TITLE_PAGE: &str = "title";
 const STATUS_HISTORY_SEARCH_PAGE: &str = "search";
 
@@ -534,6 +536,9 @@ fn show_status_history_popover(
     content.append(&empty_label);
 
     let entries = history.borrow().clone();
+    let has_entries = !entries.is_empty();
+    header.copy_button.set_sensitive(has_entries);
+    header.save_button.set_sensitive(has_entries);
     let rows = append_status_history_rows(window, &list, &entries);
     if rows.is_empty() {
         empty_label.set_text(&tr("No messages yet."));
@@ -551,6 +556,18 @@ fn show_status_history_popover(
         stack_for_search.set_visible_child_name(STATUS_HISTORY_SEARCH_PAGE);
         search_entry_for_button.grab_focus();
     });
+
+    let window_for_copy = window.clone();
+    let entries_for_copy = entries.clone();
+    let copy_button_for_copy = header.copy_button.clone();
+    let copy_feedback_generation = Rc::new(Cell::new(0u64));
+    header.copy_button.connect_clicked(move |_| {
+        window_for_copy
+            .clipboard()
+            .set_text(&status_log_text(&entries_for_copy));
+        show_copy_feedback(&copy_button_for_copy, &copy_feedback_generation);
+    });
+    connect_status_history_save(&header.save_button, entries);
     let stack_for_back = header.stack.clone();
     let search_entry_for_back = header.search_entry.clone();
     header.back_button.connect_clicked(move |_| {
@@ -571,6 +588,8 @@ fn show_status_history_popover(
 struct StatusHistoryHeader {
     stack: gtk::Stack,
     search_button: gtk::Button,
+    copy_button: gtk::Button,
+    save_button: gtk::Button,
     back_button: gtk::Button,
     search_entry: gtk::SearchEntry,
 }
@@ -604,8 +623,12 @@ fn build_status_history_header() -> StatusHistoryHeader {
     title_box.append(&subtitle);
 
     let search_button = ui::icon_button("edit-find-symbolic", "Search messages");
+    let copy_button = ui::icon_button(COPY_ICON, "Copy message history");
+    let save_button = ui::icon_button(SAVE_ICON, "Save message history");
     let title_actions = ui::linked_button_group();
     title_actions.append(&search_button);
+    title_actions.append(&copy_button);
+    title_actions.append(&save_button);
     title_header.append(&title_box);
     title_header.append(&title_actions);
 
@@ -626,9 +649,81 @@ fn build_status_history_header() -> StatusHistoryHeader {
     StatusHistoryHeader {
         stack,
         search_button,
+        copy_button,
+        save_button,
         back_button,
         search_entry,
     }
+}
+
+fn status_log_text(entries: &[StatusLogEntry]) -> String {
+    entries
+        .iter()
+        .map(|entry| {
+            format!(
+                "{}\t{}",
+                entry.timestamp,
+                compact_status_cell(&entry.message)
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+fn status_log_file_name() -> String {
+    format!(
+        "bank_files_messages_{}.log",
+        chrono::Local::now().format("%Y%m%d-%H%M%S")
+    )
+}
+
+fn connect_status_history_save(save_button: &gtk::Button, entries: Vec<StatusLogEntry>) {
+    let save_button_for_save = save_button.clone();
+    let save_feedback_generation = Rc::new(Cell::new(0u64));
+    save_button.connect_clicked(move |_| {
+        if entries.is_empty() || !save_button_for_save.is_sensitive() {
+            return;
+        }
+
+        save_button_for_save.set_sensitive(false);
+        let entries = entries.clone();
+        let save_button = save_button_for_save.clone();
+        let feedback_generation = Rc::clone(&save_feedback_generation);
+        gtk::glib::MainContext::default().spawn_local(async move {
+            let handle = rfd::AsyncFileDialog::new()
+                .set_title(tr("Save Message History"))
+                .add_filter(tr("Log files"), &["log", "txt"])
+                .set_file_name(status_log_file_name())
+                .save_file()
+                .await;
+
+            let Some(handle) = handle else {
+                save_button.set_sensitive(true);
+                return;
+            };
+
+            let path = handle.path().to_path_buf();
+            let contents = status_log_text(&entries);
+            let task = gtk::gio::spawn_blocking(move || {
+                std::fs::write(&path, contents)?;
+                anyhow::Ok(())
+            });
+            match task.await {
+                Ok(Ok(())) => {
+                    show_icon_feedback(&save_button, &feedback_generation, COPIED_ICON, SAVE_ICON);
+                }
+                Ok(Err(_)) | Err(_) => {
+                    show_icon_feedback(
+                        &save_button,
+                        &feedback_generation,
+                        SAVE_ERROR_ICON,
+                        SAVE_ICON,
+                    );
+                }
+            }
+            save_button.set_sensitive(true);
+        });
+    });
 }
 
 #[derive(Clone)]
@@ -831,15 +926,25 @@ fn schedule_status_autohide(ui: &UiHandles, generation: u64) {
 }
 
 fn show_copy_feedback(button: &gtk::Button, generation: &Rc<Cell<u64>>) {
+    show_icon_feedback(button, generation, COPIED_ICON, COPY_ICON);
+}
+
+fn show_icon_feedback(
+    button: &gtk::Button,
+    generation: &Rc<Cell<u64>>,
+    feedback_icon: &str,
+    restore_icon: &str,
+) {
     let current = generation.get().wrapping_add(1);
     generation.set(current);
-    ui::set_button_icon(button, COPIED_ICON);
+    ui::set_button_icon(button, feedback_icon);
 
     let button = button.clone();
     let generation = Rc::clone(generation);
+    let restore_icon = restore_icon.to_string();
     gtk::glib::timeout_add_seconds_local(COPY_FEEDBACK_SECONDS, move || {
         if generation.get() == current {
-            ui::set_button_icon(&button, COPY_ICON);
+            ui::set_button_icon(&button, &restore_icon);
         }
         gtk::glib::ControlFlow::Break
     });
@@ -875,5 +980,24 @@ mod tests {
         assert!(status_log_matches_keywords(&keywords, "import"));
         assert!(status_log_matches_keywords(&keywords, ""));
         assert!(!status_log_matches_keywords(&keywords, "backup"));
+    }
+
+    #[test]
+    fn status_log_text_includes_all_entries_and_sanitizes_messages() {
+        let entries = vec![
+            StatusLogEntry {
+                timestamp: "12:34:56".to_string(),
+                message: "CSV import finished".to_string(),
+            },
+            StatusLogEntry {
+                timestamp: "12:35:00".to_string(),
+                message: "Line one\nline two".to_string(),
+            },
+        ];
+
+        assert_eq!(
+            status_log_text(&entries),
+            "12:34:56\tCSV import finished\n12:35:00\tLine one line two"
+        );
     }
 }
