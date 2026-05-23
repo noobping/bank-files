@@ -139,15 +139,34 @@ pub fn combo_active_id(combo: &gtk::ComboBoxText) -> String {
 }
 
 pub fn focus_button_after_combo_selection(combo: &gtk::ComboBoxText, button: &gtk::Button) {
-    let button = button.clone();
+    let button_for_change = button.clone();
+    let combo_for_change = combo.clone();
     combo.connect_changed(move |_| {
-        let button = button.clone();
-        gtk::glib::idle_add_local_once(move || {
-            if button.is_visible() && button.is_sensitive() {
-                button.grab_focus();
-            }
-        });
+        combo_for_change.popdown();
+        focus_button_after_selection_commit(&button_for_change);
     });
+
+    let button_for_popdown = button.clone();
+    combo.connect_popdown(move |_| {
+        focus_button_after_selection_commit(&button_for_popdown);
+        false
+    });
+}
+
+fn focus_button_after_selection_commit(button: &gtk::Button) {
+    let button_for_idle = button.clone();
+    gtk::glib::idle_add_local_once(move || focus_button_if_available(&button_for_idle));
+
+    let button_for_timeout = button.clone();
+    gtk::glib::timeout_add_local_once(std::time::Duration::from_millis(80), move || {
+        focus_button_if_available(&button_for_timeout);
+    });
+}
+
+fn focus_button_if_available(button: &gtk::Button) {
+    if button.is_visible() && button.is_sensitive() {
+        button.grab_focus();
+    }
 }
 
 pub fn focus_button_after_combo_selections(button: &gtk::Button, combos: &[&gtk::ComboBoxText]) {
