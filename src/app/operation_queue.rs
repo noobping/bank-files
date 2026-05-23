@@ -445,12 +445,29 @@ fn operation_row(
         .selectable(false)
         .build();
 
-    let content = gtk::Box::new(gtk::Orientation::Horizontal, 10);
+    let content = gtk::Box::new(gtk::Orientation::Vertical, 0);
     content.set_hexpand(true);
     content.set_margin_top(8);
     content.set_margin_bottom(8);
     content.set_margin_start(10);
     content.set_margin_end(10);
+
+    let summary = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+    summary.set_hexpand(true);
+
+    let details_revealer = gtk::Revealer::new();
+    details_revealer.set_transition_type(gtk::RevealerTransitionType::SlideDown);
+    details_revealer.set_reveal_child(false);
+
+    let expand_icon = gtk::Image::from_icon_name("pan-end-symbolic");
+    let expand_button = gtk::ToggleButton::builder()
+        .tooltip_text(tr("Show operation details"))
+        .build();
+    expand_button.add_css_class("flat");
+    expand_button.set_focus_on_click(false);
+    expand_button.set_valign(gtk::Align::Start);
+    expand_button.set_child(Some(&expand_icon));
+    summary.append(&expand_button);
 
     let labels = gtk::Box::new(gtk::Orientation::Vertical, 2);
     labels.set_hexpand(true);
@@ -499,10 +516,11 @@ fn operation_row(
         error.set_ellipsize(gtk::pango::EllipsizeMode::End);
         labels.append(&error);
     }
-    content.append(&labels);
+    summary.append(&labels);
 
     let actions = ui::linked_button_group();
     actions.set_halign(gtk::Align::End);
+    actions.set_valign(gtk::Align::Start);
     let apply_button = ui::icon_button("object-select-symbolic", "Apply this operation");
     match config_write_availability(ui.as_ref()) {
         ActionAvailability::Available => {
@@ -534,7 +552,36 @@ fn operation_row(
 
     actions.append(&apply_button);
     actions.append(&remove_button);
-    content.append(&actions);
+    summary.append(&actions);
+    content.append(&summary);
+
+    let details =
+        ui::selectable_wrapped_label(&operation_details(&operation.kind, &operation.status));
+    details.add_css_class("dim-label");
+    details.set_width_chars(1);
+    details.set_max_width_chars(44);
+    details.set_margin_top(6);
+    details.set_margin_start(32);
+    details_revealer.set_child(Some(&details));
+    content.append(&details_revealer);
+
+    let details_revealer_for_toggle = details_revealer.clone();
+    let expand_icon_for_toggle = expand_icon.clone();
+    expand_button.connect_toggled(move |button| {
+        let expanded = button.is_active();
+        details_revealer_for_toggle.set_reveal_child(expanded);
+        expand_icon_for_toggle.set_icon_name(Some(if expanded {
+            "pan-down-symbolic"
+        } else {
+            "pan-end-symbolic"
+        }));
+        button.set_tooltip_text(Some(&tr(if expanded {
+            "Hide operation details"
+        } else {
+            "Show operation details"
+        })));
+    });
+
     row.set_child(Some(&content));
     row
 }
@@ -574,6 +621,73 @@ fn operation_subtitle(kind: &QueuedOperationKind) -> String {
             ],
         ),
     }
+}
+
+fn operation_details(kind: &QueuedOperationKind, status: &QueuedOperationStatus) -> String {
+    let mut lines = Vec::new();
+    match kind {
+        QueuedOperationKind::Rule {
+            rule,
+            ensure_budget,
+            ..
+        } => {
+            lines.push(operation_detail_line("Action", operation_title(kind)));
+            lines.push(operation_detail_line(
+                "Status",
+                operation_status_text(status),
+            ));
+            lines.push(operation_detail_line(
+                "Field",
+                tr(rule_field_label(&rule.field)),
+            ));
+            lines.push(operation_detail_line("Match", rule.search.trim()));
+            lines.push(operation_detail_line(
+                "Regular expression",
+                tr(if rule.is_regex { "Yes" } else { "No" }),
+            ));
+            lines.push(operation_detail_line("Category", rule.category.trim()));
+            lines.push(operation_detail_line(
+                "Budget code",
+                rule.budget_code.trim(),
+            ));
+            lines.push(operation_detail_line(
+                "Direction",
+                tr(rule_direction_label(&rule.direction)),
+            ));
+            if !rule.amount_min.trim().is_empty() {
+                lines.push(operation_detail_line(
+                    "Minimum amount",
+                    rule.amount_min.trim(),
+                ));
+            }
+            if !rule.amount_max.trim().is_empty() {
+                lines.push(operation_detail_line(
+                    "Maximum amount",
+                    rule.amount_max.trim(),
+                ));
+            }
+            if !rule.notes.trim().is_empty() {
+                lines.push(operation_detail_line("Notes", rule.notes.trim()));
+            }
+            lines.push(operation_detail_line(
+                "Create missing budget",
+                tr(if *ensure_budget { "Yes" } else { "No" }),
+            ));
+        }
+    }
+
+    if let QueuedOperationStatus::Failed(message) = status {
+        lines.push(operation_detail_line("Error", message));
+    }
+
+    lines.join("\n")
+}
+
+fn operation_detail_line(label: &str, value: impl AsRef<str>) -> String {
+    trf(
+        "{label}: {value}",
+        &[("label", tr(label)), ("value", value.as_ref().to_string())],
+    )
 }
 
 fn operation_status_text(status: &QueuedOperationStatus) -> String {
@@ -1020,6 +1134,52 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec![failed, pending]
         );
+    }
+
+    #[test]
+    fn operation_details_keep_full_rule_text() {
+        let long_search =
+            "a very long shop counterparty with multiple words that should not be truncated";
+        let kind = QueuedOperationKind::Rule {
+            rule: EditableRule {
+                field: "counterparty".to_string(),
+                search: long_search.to_string(),
+                is_regex: true,
+                category: "Groceries and daily shopping".to_string(),
+                budget_code: "GROCERY-LONG".to_string(),
+                direction: "expense".to_string(),
+                amount_min: "-100".to_string(),
+                notes: "Generated from repeated matches".to_string(),
+                ..EditableRule::new_default()
+            },
+            ensure_budget: true,
+            source: OperationSource::CreateRule,
+        };
+
+        let details = operation_details(&kind, &QueuedOperationStatus::Pending);
+
+        assert!(details.contains(long_search));
+        assert!(details.contains("Groceries and daily shopping"));
+        assert!(details.contains("GROCERY-LONG"));
+        assert!(details.contains("-100"));
+        assert!(details.contains("Generated from repeated matches"));
+    }
+
+    #[test]
+    fn operation_details_include_failure_message() {
+        let kind = QueuedOperationKind::Rule {
+            rule: rule("alpha"),
+            ensure_budget: false,
+            source: OperationSource::CreateRule,
+        };
+
+        let details = operation_details(
+            &kind,
+            &QueuedOperationStatus::Failed("full failure text".to_string()),
+        );
+
+        assert!(details.contains("alpha"));
+        assert!(details.contains("full failure text"));
     }
 
     #[test]
