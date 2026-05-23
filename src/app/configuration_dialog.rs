@@ -1,5 +1,7 @@
 use super::*;
 
+const CONFIGURATION_BUSY_MESSAGE: &str = "Another edit or save is already running.";
+
 pub(in crate::app) fn show_configuration_dialog(
     parent: &adw::ApplicationWindow,
     state: &Rc<RefCell<AppData>>,
@@ -261,19 +263,14 @@ fn archive_configuration(
     status: StatusHandle,
     restore_row: adw::ActionRow,
 ) {
-    let busy_message = "Another edit or save is already running.";
-    if !try_begin_config_operation(&ui_handles, busy_message) {
-        status.set_text(&tr(busy_message));
-        return;
-    }
-    show_dialog_status(
-        ui_handles.as_ref(),
+    if !begin_configuration_task(
+        &ui_handles,
         &status,
         "Backing up current configuration...",
-    );
-    show_verbose_status(ui_handles.as_ref(), "configuration backup started");
-    status.set_loading(true);
-    begin_background_operation(ui_handles.as_ref());
+        "configuration backup started",
+    ) {
+        return;
+    }
 
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(data::archive_configuration);
@@ -307,9 +304,7 @@ fn archive_configuration(
                 show_verbose_status(ui_handles.as_ref(), "configuration backup task canceled");
             }
         }
-        status.set_loading(false);
-        finish_background_operation(ui_handles.as_ref());
-        finish_config_operation(&ui_handles);
+        finish_configuration_task(&ui_handles, &status);
     });
 }
 
@@ -388,12 +383,6 @@ fn run_configuration_reload_task<F>(
 ) where
     F: FnOnce() -> anyhow::Result<()> + Send + 'static,
 {
-    let busy_message = "Another edit or save is already running.";
-    if !try_begin_config_operation(&ui_handles, busy_message) {
-        status.set_text(&tr(busy_message));
-        return;
-    }
-
     let borrowed = state.borrow();
     let mode = borrowed.dedupe_mode;
     let remember_mode = ui_handles.remember_mode.get();
@@ -401,13 +390,14 @@ fn run_configuration_reload_task<F>(
     let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
     drop(borrowed);
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
-    show_dialog_status(ui_handles.as_ref(), &status, messages.progress);
-    show_verbose_status(
-        ui_handles.as_ref(),
+    if !begin_configuration_task(
+        &ui_handles,
+        &status,
+        messages.progress,
         format!("configuration task started; progress={}", messages.progress),
-    );
-    status.set_loading(true);
-    begin_background_operation(ui_handles.as_ref());
+    ) {
+        return;
+    }
 
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
@@ -445,10 +435,32 @@ fn run_configuration_reload_task<F>(
                 show_verbose_status(ui_handles.as_ref(), "configuration task canceled");
             }
         }
-        status.set_loading(false);
-        finish_background_operation(ui_handles.as_ref());
-        finish_config_operation(&ui_handles);
+        finish_configuration_task(&ui_handles, &status);
     });
+}
+
+fn begin_configuration_task(
+    ui_handles: &Rc<UiHandles>,
+    status: &StatusHandle,
+    progress_message: &str,
+    debug_message: impl AsRef<str>,
+) -> bool {
+    if !try_begin_config_operation(ui_handles, CONFIGURATION_BUSY_MESSAGE) {
+        status.set_text(&tr(CONFIGURATION_BUSY_MESSAGE));
+        return false;
+    }
+
+    show_dialog_status(ui_handles.as_ref(), status, progress_message);
+    show_verbose_status(ui_handles.as_ref(), debug_message);
+    status.set_loading(true);
+    begin_background_operation(ui_handles.as_ref());
+    true
+}
+
+fn finish_configuration_task(ui_handles: &Rc<UiHandles>, status: &StatusHandle) {
+    status.set_loading(false);
+    finish_background_operation(ui_handles.as_ref());
+    finish_config_operation(ui_handles);
 }
 
 fn show_dialog_status(ui_handles: &UiHandles, status: &StatusHandle, message: &str) {

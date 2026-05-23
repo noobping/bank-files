@@ -129,10 +129,7 @@ fn append_search_preset(menu: &gtk::gio::Menu, label: &str, preset: &str) {
     menu.append_item(&item);
 }
 
-pub(in crate::app) fn set_page_actions_menu_namespace(
-    menu_button: &gtk::MenuButton,
-    action_namespace: &str,
-) {
+fn set_page_actions_menu_namespace(menu_button: &gtk::MenuButton, action_namespace: &str) {
     menu_button.set_tooltip_text(Some(&tr("Page actions")));
 
     let menu = gtk::gio::Menu::new();
@@ -178,6 +175,69 @@ impl StaticPageSnapshot {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::app) struct PageActionSnapshot {
+    key: String,
+    title: String,
+    subtitle: String,
+    columns: Vec<String>,
+    rows: Vec<Vec<String>>,
+    text: String,
+    csv: String,
+}
+
+impl PageActionSnapshot {
+    pub(in crate::app) fn from_rows(
+        key: &str,
+        title: &str,
+        subtitle: &str,
+        columns: Vec<String>,
+        rows: Vec<Vec<String>>,
+    ) -> anyhow::Result<Self> {
+        let text = page_action_text(title, subtitle, &columns, &rows);
+        let csv = page_action_csv(&columns, &rows)?;
+        Ok(Self {
+            key: key.to_string(),
+            title: title.to_string(),
+            subtitle: subtitle.to_string(),
+            columns,
+            rows,
+            text,
+            csv,
+        })
+    }
+
+    pub(in crate::app) fn from_csv(
+        key: &str,
+        title: &str,
+        subtitle: &str,
+        columns: Vec<String>,
+        rows: Vec<Vec<String>>,
+        csv: String,
+    ) -> Self {
+        let text = page_action_text(title, subtitle, &columns, &rows);
+        Self {
+            key: key.to_string(),
+            title: title.to_string(),
+            subtitle: subtitle.to_string(),
+            columns,
+            rows,
+            text,
+            csv,
+        }
+    }
+
+    fn from_static(snapshot: StaticPageSnapshot) -> anyhow::Result<Self> {
+        Self::from_rows(
+            &snapshot.key,
+            &snapshot.title,
+            &snapshot.subtitle,
+            snapshot.columns,
+            snapshot.rows,
+        )
+    }
+}
+
 pub(in crate::app) fn connect_static_page_actions(
     page_actions_button: &gtk::MenuButton,
     action_namespace: &str,
@@ -185,70 +245,130 @@ pub(in crate::app) fn connect_static_page_actions(
     ui_handles: &Rc<UiHandles>,
     snapshot: StaticPageSnapshot,
 ) {
+    connect_page_actions(
+        page_actions_button,
+        action_namespace,
+        status,
+        ui_handles,
+        move || PageActionSnapshot::from_static(snapshot.clone()),
+    );
+}
+
+pub(in crate::app) fn connect_page_actions<F>(
+    page_actions_button: &gtk::MenuButton,
+    action_namespace: &str,
+    status: &gtk::Label,
+    ui_handles: &Rc<UiHandles>,
+    snapshot_provider: F,
+) where
+    F: Fn() -> anyhow::Result<PageActionSnapshot> + 'static,
+{
     set_page_actions_menu_namespace(page_actions_button, action_namespace);
     register_loading_sensitive_widget(ui_handles, page_actions_button);
+    let snapshot_provider: Rc<dyn Fn() -> anyhow::Result<PageActionSnapshot>> =
+        Rc::new(snapshot_provider);
     let action_group = gtk::gio::SimpleActionGroup::new();
 
-    let snapshot_for_copy = snapshot.clone();
+    let snapshot_for_copy = Rc::clone(&snapshot_provider);
     let status_for_copy = status.clone();
     let ui_for_copy = Rc::clone(ui_handles);
     let copy_action = gtk::gio::SimpleAction::new("copy-page", None);
-    copy_action.connect_activate(move |_, _| {
-        ui_for_copy
-            .window
-            .clipboard()
-            .set_text(&static_page_text(&snapshot_for_copy));
-        status_for_copy.set_text(&trf(
-            "Copied {page}.",
-            &[("page", tr(&snapshot_for_copy.title))],
-        ));
+    copy_action.connect_activate(move |action, _| {
+        if !action.is_enabled() {
+            return;
+        }
+        match snapshot_for_copy() {
+            Ok(snapshot) => {
+                show_verbose_status(
+                    ui_for_copy.as_ref(),
+                    format!(
+                        "page copied; page={}; rows={}",
+                        snapshot.key,
+                        snapshot.rows.len()
+                    ),
+                );
+                ui_for_copy.window.clipboard().set_text(&snapshot.text);
+                status_for_copy.set_text(&trf("Copied {page}.", &[("page", tr(&snapshot.title))]));
+            }
+            Err(err) => status_for_copy.set_text(&trf(
+                "Copy failed: {error}",
+                &[("error", format!("{err:#}"))],
+            )),
+        }
     });
     action_group.add_action(&copy_action);
 
-    let snapshot_for_print = snapshot.clone();
+    let snapshot_for_print = Rc::clone(&snapshot_provider);
     let status_for_print = status.clone();
     let ui_for_print = Rc::clone(ui_handles);
     let print_action = gtk::gio::SimpleAction::new("print-page", None);
-    print_action.connect_activate(move |_, _| {
-        status_for_print.set_text(&trf(
-            "Printing {page}...",
-            &[("page", tr(&snapshot_for_print.title))],
-        ));
-        let report = table_print_report(
-            &snapshot_for_print.title,
-            &snapshot_for_print.subtitle,
-            &snapshot_for_print.columns,
-            &snapshot_for_print.rows,
-        );
-        print_report(&ui_for_print, report);
+    print_action.connect_activate(move |action, _| {
+        if !action.is_enabled() {
+            return;
+        }
+        match snapshot_for_print() {
+            Ok(snapshot) => {
+                show_verbose_status(
+                    ui_for_print.as_ref(),
+                    format!(
+                        "page print started; page={}; rows={}",
+                        snapshot.key,
+                        snapshot.rows.len()
+                    ),
+                );
+                status_for_print
+                    .set_text(&trf("Printing {page}...", &[("page", tr(&snapshot.title))]));
+                let report = table_print_report(
+                    &snapshot.title,
+                    &snapshot.subtitle,
+                    &snapshot.columns,
+                    &snapshot.rows,
+                );
+                print_report(&ui_for_print, report);
+            }
+            Err(err) => status_for_print.set_text(&trf(
+                "Printing failed: {error}",
+                &[("error", format!("{err:#}"))],
+            )),
+        }
     });
     action_group.add_action(&print_action);
 
-    let snapshot_for_export = snapshot;
+    let snapshot_for_export = Rc::clone(&snapshot_provider);
     let status_for_export = status.clone();
     let export_action = gtk::gio::SimpleAction::new("export-csv", None);
     export_action.connect_activate(move |action, _| {
         if !action.is_enabled() {
             return;
         }
-        export_static_page_snapshot(action, &status_for_export, snapshot_for_export.clone());
+        match snapshot_for_export() {
+            Ok(snapshot) => export_page_action_snapshot(action, &status_for_export, snapshot),
+            Err(err) => status_for_export.set_text(&trf(
+                "Export error: {error}",
+                &[("error", format!("{err:#}"))],
+            )),
+        }
     });
     action_group.add_action(&export_action);
 
     page_actions_button.insert_action_group(action_namespace, Some(&action_group));
 }
 
-fn static_page_text(snapshot: &StaticPageSnapshot) -> String {
-    let mut lines = vec![tr(&snapshot.title), tr(&snapshot.subtitle), String::new()];
+fn page_action_text(
+    title: &str,
+    subtitle: &str,
+    columns: &[String],
+    rows: &[Vec<String>],
+) -> String {
+    let mut lines = vec![tr(title), tr(subtitle), String::new()];
     lines.push(
-        snapshot
-            .columns
+        columns
             .iter()
             .map(|column| tr(column))
             .collect::<Vec<_>>()
             .join("\t"),
     );
-    lines.extend(snapshot.rows.iter().map(|row| {
+    lines.extend(rows.iter().map(|row| {
         row.iter()
             .map(|value| compact_status_cell(value))
             .collect::<Vec<_>>()
@@ -257,15 +377,11 @@ fn static_page_text(snapshot: &StaticPageSnapshot) -> String {
     lines.join("\n")
 }
 
-fn static_page_csv(snapshot: &StaticPageSnapshot) -> anyhow::Result<String> {
+fn page_action_csv(columns: &[String], rows: &[Vec<String>]) -> anyhow::Result<String> {
     let mut writer = csv::WriterBuilder::new().from_writer(Vec::new());
-    let columns = snapshot
-        .columns
-        .iter()
-        .map(|column| tr(column))
-        .collect::<Vec<_>>();
+    let columns = columns.iter().map(|column| tr(column)).collect::<Vec<_>>();
     writer.write_record(columns.iter().map(String::as_str))?;
-    for row in &snapshot.rows {
+    for row in rows {
         writer.write_record(row.iter().map(String::as_str))?;
     }
     let bytes = writer.into_inner()?;
@@ -276,10 +392,10 @@ fn compact_status_cell(value: &str) -> String {
     value.replace(['\t', '\n', '\r'], " ")
 }
 
-fn export_static_page_snapshot(
+fn export_page_action_snapshot(
     action: &gtk::gio::SimpleAction,
     status: &gtk::Label,
-    snapshot: StaticPageSnapshot,
+    snapshot: PageActionSnapshot,
 ) {
     action.set_enabled(false);
     status.set_text(&tr("Opening the file portal to save the CSV export..."));
@@ -290,7 +406,7 @@ fn export_static_page_snapshot(
         let handle = rfd::AsyncFileDialog::new()
             .set_title(tr("Save CSV export"))
             .add_filter(tr("CSV files"), &["csv"])
-            .set_file_name(static_page_export_file_name(&snapshot.key))
+            .set_file_name(page_action_export_file_name(&snapshot.key))
             .save_file()
             .await;
 
@@ -300,18 +416,8 @@ fn export_static_page_snapshot(
             return;
         };
 
-        let contents = match static_page_csv(&snapshot) {
-            Ok(contents) => contents,
-            Err(err) => {
-                action.set_enabled(true);
-                status.set_text(&trf(
-                    "Export error: {error}",
-                    &[("error", format!("{err:#}"))],
-                ));
-                return;
-            }
-        };
         let path = handle.path().to_path_buf();
+        let contents = snapshot.csv;
         status.set_text(&tr("Saving CSV export..."));
         let task = gtk::gio::spawn_blocking(move || {
             std::fs::write(&path, contents)?;
@@ -334,7 +440,7 @@ fn export_static_page_snapshot(
     });
 }
 
-fn static_page_export_file_name(key: &str) -> String {
+fn page_action_export_file_name(key: &str) -> String {
     format!(
         "bank_files_{key}_{}.csv",
         chrono::Local::now().format("%Y%m%d-%H%M%S")
@@ -993,5 +1099,33 @@ mod tests {
             status_log_text(&entries),
             "12:34:56\tCSV import finished\n12:35:00\tLine one line two"
         );
+    }
+
+    #[test]
+    fn page_action_snapshot_builds_copy_text_and_csv() {
+        let snapshot = PageActionSnapshot::from_rows(
+            "sample",
+            "Sample Page",
+            "Rows visible on the sample page.",
+            vec!["Name".to_string(), "Notes".to_string()],
+            vec![vec![
+                "Groceries".to_string(),
+                "Line one
+line two"
+                    .to_string(),
+            ]],
+        )
+        .expect("snapshot should serialize to CSV");
+
+        assert_eq!(
+            snapshot.text,
+            "Sample Page
+Rows visible on the sample page.
+
+Name	Notes
+Groceries	Line one line two"
+        );
+        assert!(snapshot.csv.contains("Name"));
+        assert!(snapshot.csv.contains("Groceries"));
     }
 }

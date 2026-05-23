@@ -246,7 +246,6 @@ pub(in crate::app) fn show_management_dialog(
 
     let status_bar = build_status_bar();
     connect_embedded_status_bar(window, &status_bar, Rc::clone(&ui_handles.status_autohide));
-    set_page_actions_menu_namespace(&status_bar.page_actions_button, "management");
     status_bar.page_actions_button.set_sensitive(false);
     let status_handle = StatusHandle::from_status_bar(&status_bar);
     status_handle.set_text(&tr("Loading management data..."));
