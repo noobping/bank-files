@@ -22,6 +22,14 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
     let auto_clean_config = ui.preferences.auto_clean_config();
     let restore_scope = current_transaction_load_scope(&snapshot, ui.as_ref());
     let smart_insights_enabled = ui.show_predictions.get();
+    show_verbose_status(
+        ui.as_ref(),
+        format!(
+            "automatic configuration requested; loaded_scope={:?}; transactions={}; smart_insights={smart_insights_enabled}",
+            snapshot.loaded_scope,
+            snapshot.transactions.len(),
+        ),
+    );
     let state_for_generate = Rc::clone(state);
     let ui_for_generate = Rc::clone(ui);
     show_config_status(
@@ -97,6 +105,18 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 ai_status,
             })) => {
                 *state_for_generate.borrow_mut() = data;
+                show_verbose_status(
+                    ui_for_generate.as_ref(),
+                    format!(
+                        "automatic configuration generated; years={}; months={}; budgets={}; rules={}; fields={}; hidden={}",
+                        summary.complete_years,
+                        summary.budget_months,
+                        summary.budgets,
+                        summary.rules,
+                        summary.field_mappings,
+                        summary.ignored_patterns,
+                    ),
+                );
                 render_views(
                     &state_for_generate.borrow(),
                     &ui_for_generate,
@@ -119,6 +139,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 show_config_status_text(ui_for_generate.as_ref(), dialog_status.as_ref(), &message);
             }
             Ok(Ok(GeneratedConfigurationOutcome::None { ai_status })) => {
+                show_verbose_status(ui_for_generate.as_ref(), "automatic configuration generated no changes");
                 if let Some(status) = ai_status {
                     show_config_status_text(ui_for_generate.as_ref(), dialog_status.as_ref(), &status);
                 }
@@ -129,17 +150,24 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 );
             }
             Ok(Err(error)) => {
+                show_verbose_status(
+                    ui_for_generate.as_ref(),
+                    format!("automatic configuration failed; error={error:#}"),
+                );
                 let message = trf(
                     "Could not generate configuration: {error}",
                     &[("error", format!("{error:#}"))],
                 );
                 show_config_status_text(ui_for_generate.as_ref(), dialog_status.as_ref(), &message);
             }
-            Err(_) => show_config_status(
-                ui_for_generate.as_ref(),
+            Err(_) => {
+                show_verbose_status(ui_for_generate.as_ref(), "automatic configuration task canceled");
+                show_config_status(
+                    ui_for_generate.as_ref(),
                 dialog_status.as_ref(),
-                "Configuration generation canceled: the background task stopped unexpectedly.",
-            ),
+                    "Configuration generation canceled: the background task stopped unexpectedly.",
+                )
+            }
         }
         set_config_status_loading(dialog_status.as_ref(), false);
         finish_background_operation(ui_for_generate.as_ref());

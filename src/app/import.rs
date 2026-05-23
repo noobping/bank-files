@@ -113,6 +113,10 @@ pub(in crate::app) async fn import_and_reload_in_background<F>(
     let auto_clean_config = ui.preferences.auto_clean_config();
     let scope = current_transaction_load_scope(&state.borrow(), ui.as_ref());
     let remember_mode = ui.remember_mode.get();
+    show_verbose_status(
+        ui.as_ref(),
+        format!("import started; scope={scope:?}; remember={remember_mode:?}; dedupe={mode:?}"),
+    );
     render_loading_placeholder(ui.as_ref());
     begin_background_operation(ui.as_ref());
     let task = gtk::gio::spawn_blocking(move || {
@@ -140,10 +144,25 @@ pub(in crate::app) async fn import_and_reload_in_background<F>(
             set_storage_capabilities(&ui, capabilities);
             render_views(&state.borrow(), &ui, &state);
             refresh_menu(&ui, &state.borrow());
+            let imported = result.imported();
+            show_verbose_status(
+                ui.as_ref(),
+                format!(
+                    "import finished; imported={imported}; transactions={}",
+                    state.borrow().transactions.len(),
+                ),
+            );
             let message = status_with_cache(import_status(result), &state.borrow());
             show_status(&ui, &message);
         }
         Ok(Ok((result, Some(Err(err))))) => {
+            show_verbose_status(
+                ui.as_ref(),
+                format!(
+                    "import reload failed; imported={}; error={err}",
+                    result.imported()
+                ),
+            );
             show_status(
                 &ui,
                 &trf(
@@ -165,6 +184,7 @@ pub(in crate::app) async fn import_and_reload_in_background<F>(
             render_views(&state.borrow(), &ui, &state);
         }
         Ok(Err(err)) => {
+            show_verbose_status(ui.as_ref(), format!("import failed; error={err:#}"));
             show_status(
                 &ui,
                 &trf("Open CSV error: {error}", &[("error", format!("{err:#}"))]),
@@ -172,6 +192,7 @@ pub(in crate::app) async fn import_and_reload_in_background<F>(
             render_views(&state.borrow(), &ui, &state);
         }
         Err(_) => {
+            show_verbose_status(ui.as_ref(), "import task canceled");
             show_status(
                 &ui,
                 "Open CSV canceled: the background task stopped unexpectedly.",
@@ -335,6 +356,13 @@ pub(in crate::app) fn reload_state_with_scope(
     let auto_clean_config = ui.preferences.auto_clean_config();
     let state_for_reload = Rc::clone(state);
     let ui_for_reload = Rc::clone(ui);
+    show_verbose_status(
+        ui.as_ref(),
+        format!(
+            "reload started; scope={scope:?}; remember={remember_mode:?}; sources={}; dedupe={mode:?}",
+            sources.len(),
+        ),
+    );
     show_status(ui, loading_message);
     render_loading_placeholder(ui.as_ref());
     begin_background_operation(ui.as_ref());
@@ -359,10 +387,22 @@ pub(in crate::app) fn reload_state_with_scope(
                     &state_for_reload,
                 );
                 refresh_menu(&ui_for_reload, &state_for_reload.borrow());
+                show_verbose_status(
+                    ui_for_reload.as_ref(),
+                    format!(
+                        "reload finished; transactions={}; reports={}",
+                        state_for_reload.borrow().transactions.len(),
+                        state_for_reload.borrow().reports.len(),
+                    ),
+                );
                 let message = status_with_cache(success_message, &state_for_reload.borrow());
                 show_status(&ui_for_reload, &message);
             }
             Ok(Err(err)) => {
+                show_verbose_status(
+                    ui_for_reload.as_ref(),
+                    format!("reload failed; error={err:#}"),
+                );
                 failure_replacements.push(("error", format!("{err:#}")));
                 show_status(&ui_for_reload, &trf(failure_message, &failure_replacements));
                 render_views(
@@ -372,6 +412,7 @@ pub(in crate::app) fn reload_state_with_scope(
                 );
             }
             Err(_) => {
+                show_verbose_status(ui_for_reload.as_ref(), "reload task canceled");
                 show_status(
                     &ui_for_reload,
                     "Reload canceled: the background task stopped unexpectedly.",
@@ -452,6 +493,13 @@ pub(in crate::app) fn set_dedupe_enabled(
     let auto_clean_config = ui.preferences.auto_clean_config();
     let state_for_dedupe = Rc::clone(state);
     let ui_for_dedupe = Rc::clone(ui);
+    show_verbose_status(
+        ui.as_ref(),
+        format!(
+            "dedupe reload started; enabled={enabled}; scope={scope:?}; remember={remember_mode:?}; sources={}",
+            sources.len(),
+        ),
+    );
     show_status(ui, "Updating duplicate filtering...");
     begin_background_operation(ui.as_ref());
     action.set_enabled(false);
@@ -479,6 +527,14 @@ pub(in crate::app) fn set_dedupe_enabled(
                     &state_for_dedupe,
                 );
                 refresh_menu(&ui_for_dedupe, &state_for_dedupe.borrow());
+                show_verbose_status(
+                    ui_for_dedupe.as_ref(),
+                    format!(
+                        "dedupe reload finished; transactions={}; reports={}",
+                        state_for_dedupe.borrow().transactions.len(),
+                        state_for_dedupe.borrow().reports.len(),
+                    ),
+                );
                 let message = status_with_cache(
                     trf(
                         "Duplicate filtering is {state}. {description}",

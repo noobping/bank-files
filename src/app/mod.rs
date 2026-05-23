@@ -140,7 +140,8 @@ use status::{
     build_status_bar, connect_embedded_status_bar, connect_static_page_actions,
     connect_status_actions, register_page_copy_feedback_button,
     schedule_status_autohide_after_loading, set_page_actions_menu_namespace,
-    show_page_copy_feedback, show_status, StaticPageSnapshot, StatusHandle, StatusLogEntry,
+    show_page_copy_feedback, show_status, show_verbose_status, StaticPageSnapshot, StatusHandle,
+    StatusLogEntry,
 };
 use text::truncate;
 use transactions::{

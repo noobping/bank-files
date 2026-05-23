@@ -485,7 +485,9 @@ fn update_header_navigation_button(ui: &UiHandles) {
 
 pub(in crate::app) fn begin_background_operation(ui: &UiHandles) {
     let active = ui.loading_count.get();
-    ui.loading_count.set(active.saturating_add(1));
+    let next = active.saturating_add(1);
+    ui.loading_count.set(next);
+    show_verbose_status(ui, format!("background operation started; active={next}"));
     if active == 0 {
         set_background_loading(ui, true);
     }
@@ -495,9 +497,12 @@ pub(in crate::app) fn finish_background_operation(ui: &UiHandles) {
     let active = ui.loading_count.get();
     if active <= 1 {
         ui.loading_count.set(0);
+        show_verbose_status(ui, "background operation finished; active=0");
         set_background_loading(ui, false);
     } else {
-        ui.loading_count.set(active - 1);
+        let next = active - 1;
+        ui.loading_count.set(next);
+        show_verbose_status(ui, format!("background operation finished; active={next}"));
     }
 }
 

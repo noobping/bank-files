@@ -6,6 +6,7 @@ const RENDER_REQUEST_DEBOUNCE_MS: u64 = 220;
 pub(in crate::app) fn request_render_views(ui: &Rc<UiHandles>, state: &Rc<RefCell<AppData>>) {
     let request = ui.render_request_generation.get().wrapping_add(1);
     ui.render_request_generation.set(request);
+    show_verbose_status(ui.as_ref(), format!("render requested; request={request}"));
     cancel_current_page_render(ui.as_ref());
 
     let ui = Rc::clone(ui);
@@ -14,6 +15,10 @@ pub(in crate::app) fn request_render_views(ui: &Rc<UiHandles>, state: &Rc<RefCel
         std::time::Duration::from_millis(RENDER_REQUEST_DEBOUNCE_MS),
         move || {
             if ui.render_request_generation.get() == request {
+                show_verbose_status(
+                    ui.as_ref(),
+                    format!("render request accepted; request={request}"),
+                );
                 render_views(&state.borrow(), &ui, &state);
             }
         },
@@ -34,9 +39,19 @@ pub(in crate::app) fn render_views(
     let generation = ui.render_generation.get().wrapping_add(1);
     ui.render_generation.set(generation);
     ui.render_loading_generation.set(None);
+    show_verbose_status(
+        ui.as_ref(),
+        format!(
+            "render started; generation={generation}; loaded_scope={:?}; desired_scope={:?}; transactions={}",
+            data.loaded_scope,
+            desired_scope,
+            scope_data.transactions.len(),
+        ),
+    );
 
     match scope_render_action(data.loaded_scope, desired_scope, ui.loading_count.get()) {
         ScopeRenderAction::StartLoad => {
+            show_verbose_status(ui.as_ref(), "render requested broader transaction scope");
             render_loading_placeholder(ui.as_ref());
             reload_state_with_scope(
                 state,
@@ -50,6 +65,7 @@ pub(in crate::app) fn render_views(
             return;
         }
         ScopeRenderAction::WaitForLoad => {
+            show_verbose_status(ui.as_ref(), "render waiting for active transaction load");
             render_loading_placeholder(ui.as_ref());
             return;
         }
@@ -72,6 +88,10 @@ pub(in crate::app) fn render_views(
         );
     }
 
+    show_verbose_status(
+        ui.as_ref(),
+        format!("render preparing visible page; generation={generation}"),
+    );
     prepare_visible_page_data(generation, Rc::clone(ui), Rc::clone(state));
 }
 
