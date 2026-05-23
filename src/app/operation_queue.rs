@@ -46,6 +46,7 @@ pub(in crate::app) struct OperationQueueWidgets {
     pub(in crate::app) apply_all_button: gtk::Button,
     pub(in crate::app) clear_done_button: gtk::Button,
     pub(in crate::app) list: gtk::ListBox,
+    pub(in crate::app) popover: gtk::Popover,
 }
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
@@ -280,6 +281,7 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
         apply_all_button,
         clear_done_button,
         list,
+        popover,
     }
 }
 
@@ -592,6 +594,7 @@ fn clear_done(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
     let removed = ui.operation_queue.clear_applied();
     refresh_operation_queue_ui(state, ui);
     if removed > 0 {
+        ui.operation_queue_widgets.popover.popdown();
         show_status(ui, "Completed queued operations cleared.");
     }
 }

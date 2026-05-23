@@ -251,6 +251,7 @@ pub(in crate::app) fn connect_fake_transactions(state: &Rc<RefCell<AppData>>, ui
                 |_, ui| {
                     if ui.fake_transactions.clear() > 0 {
                         show_fake_transaction_list(&ui.fake_transaction_widgets);
+                        ui.fake_transaction_widgets.popover.popdown();
                         FakeTransactionUpdateOutcome::Render("Fake transactions cleared.")
                     } else {
                         FakeTransactionUpdateOutcome::Skip
