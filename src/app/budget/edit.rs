@@ -216,9 +216,9 @@ pub(in crate::app) fn show_budget_edit_dialog(
     delete_button.add_css_class("destructive-action");
     delete_button.set_sensitive(can_delete_budget);
     let save_button = ui::primary_text_icon_button("document-save-symbolic", "Save", "Save budget");
-    let action_buttons = ui::linked_button_group();
-    action_buttons.append(&delete_button);
+    let action_buttons = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     action_buttons.append(&save_button);
+    action_buttons.append(&delete_button);
     register_exclusive_config_widget(ui_handles, &save_button);
     register_exclusive_config_widget(ui_handles, &delete_button);
     header.pack_end(&action_buttons);
@@ -273,13 +273,13 @@ pub(in crate::app) fn show_budget_edit_dialog(
     let status = ui::wrapped_label(&tr("Changes are saved to your budget configuration."));
     status.add_css_class("dim-label");
     page.append(&status);
-    root.append(&ui::scroll(&page));
+    root.append(&ui::action_dialog_scroll(&page));
 
     let dialog = ui::popup_window(
         &ui_handles.window,
         "Edit Budget",
         620,
-        Some(620),
+        None,
         &save_button,
         &root,
     );
@@ -470,9 +470,9 @@ fn show_planned_income_budget_edit_dialog(
         "Save",
         "Save planned income budget",
     );
-    let action_buttons = ui::linked_button_group();
-    action_buttons.append(&delete_button);
+    let action_buttons = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     action_buttons.append(&save_button);
+    action_buttons.append(&delete_button);
     register_exclusive_config_widget(ui_handles, &save_button);
     register_exclusive_config_widget(ui_handles, &delete_button);
     header.pack_end(&action_buttons);
@@ -532,13 +532,13 @@ fn show_planned_income_budget_edit_dialog(
     let status = ui::wrapped_label(&tr("Changes are saved to your budget configuration."));
     status.add_css_class("dim-label");
     page.append(&status);
-    root.append(&ui::scroll(&page));
+    root.append(&ui::action_dialog_scroll(&page));
 
     let dialog = ui::popup_window(
         &ui_handles.window,
         "Edit Planned Income",
         620,
-        Some(620),
+        None,
         &save_button,
         &root,
     );

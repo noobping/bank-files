@@ -492,13 +492,13 @@ fn show_forecast_details(
         signed_money(period.projected_balance),
     );
     page.append(&grid);
-    root.append(&ui::scroll(&page));
+    root.append(&ui::action_dialog_scroll(&page));
 
     let dialog = ui::popup_window(
         &ui_handles.window,
         title,
         620,
-        Some(620),
+        None,
         &transactions_button,
         &root,
     );

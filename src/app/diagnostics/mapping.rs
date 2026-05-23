@@ -105,9 +105,9 @@ fn field_mapping_dialog(
     let status = ui::wrapped_label(&status_text);
     status.add_css_class("dim-label");
     page.append(&status);
-    root.append(&ui::scroll(&page));
+    root.append(&ui::action_dialog_scroll(&page));
 
-    let dialog = ui::popup_window(parent, "Map CSV Field", 620, Some(620), &save_button, &root);
+    let dialog = ui::popup_window(parent, "Map CSV Field", 620, None, &save_button, &root);
 
     let canonical = canonical.to_string();
     let label = label.to_string();
