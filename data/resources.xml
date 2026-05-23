@@ -3,6 +3,7 @@
     <file>scalable/apps/io.github.noobping.BankFiles.svg</file>
     <file>symbolic/apps/io.github.noobping.BankFiles-symbolic.svg</file>
     <file>symbolic/actions/document-save-symbolic.svg</file>
+    <file>css/style.css</file>
     <file>ui/settings-dialog.ui</file>
     <file>ui/status-bar.ui</file>
   </gresource>

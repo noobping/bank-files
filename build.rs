@@ -29,6 +29,7 @@ fn main() {
     println!("cargo:rerun-if-changed=data/symbolic/actions");
     println!("cargo:rerun-if-changed=data/symbolic/apps");
     println!("cargo:rerun-if-changed=data/ui");
+    println!("cargo:rerun-if-changed=data/css");
     println!("cargo:rerun-if-changed=data/ai");
     println!("cargo:rerun-if-changed=data/bank-files.ico");
 }

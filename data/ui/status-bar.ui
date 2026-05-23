@@ -40,10 +40,12 @@
         <property name="spacing">0</property>
         <style>
           <class name="linked"/>
+          <class name="status-bar-actions"/>
         </style>
         <child>
           <object class="GtkButton" id="status_history_button">
             <property name="icon-name">document-open-recent-symbolic</property>
+            <property name="has-frame">False</property>
             <style>
               <class name="flat"/>
               <class name="image-button"/>
@@ -52,7 +54,7 @@
         </child>
         <child>
           <object class="GtkMenuButton" id="status_search_preset_button">
-            <property name="icon-name">view-filter-symbolic</property>
+            <property name="icon-name">edit-find-symbolic</property>
             <property name="has-frame">False</property>
             <property name="visible">False</property>
             <style>
@@ -68,13 +70,13 @@
             <style>
               <class name="flat"/>
               <class name="image-button"/>
-              <class name="status-page-actions"/>
             </style>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="status_hide_button">
             <property name="icon-name">window-close-symbolic</property>
+            <property name="has-frame">False</property>
             <style>
               <class name="flat"/>
               <class name="image-button"/>

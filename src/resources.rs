@@ -52,6 +52,14 @@ mod tests {
     }
 
     #[test]
+    fn embedded_style_css_is_available() {
+        register().expect("register embedded resources");
+        let path = format!("{RESOURCE_ID}/css/style.css");
+        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
+            .expect("embedded style CSS should be available");
+    }
+
+    #[test]
     fn embedded_settings_dialog_ui_is_available() {
         register().expect("register embedded resources");
         let path = format!("{RESOURCE_ID}/ui/settings-dialog.ui");
