@@ -19,6 +19,15 @@ impl AppPage {
             _ => Self::Overview,
         }
     }
+
+    fn stack_name(self) -> &'static str {
+        match self {
+            Self::Overview => "overview",
+            Self::Budget => "categories",
+            Self::Transactions => "transactions",
+            Self::Diagnostics => "debug",
+        }
+    }
 }
 
 pub(in crate::app) fn current_page(ui: &UiHandles) -> AppPage {
@@ -213,6 +222,12 @@ pub(in crate::app) fn apply_search_preset(
         }
     };
 
+    if let Some(page) = preset.target_page() {
+        if current_page(ui) != page {
+            ui.stack.set_visible_child_name(page.stack_name());
+        }
+    }
+
     *ui.active_transaction_filter.borrow_mut() = TransactionFilter::from_query(&query);
     *ui.search_query.borrow_mut() = query.clone();
     ui.search_bar.set_search_mode(!query.is_empty());
@@ -284,6 +299,22 @@ impl SearchPreset {
             Self::Imports => Some("imports".to_string()),
             Self::Fields => Some("fields".to_string()),
             Self::Rules => Some("rules".to_string()),
+        }
+    }
+
+    fn target_page(self) -> Option<AppPage> {
+        match self {
+            Self::Clear => None,
+            Self::Income
+            | Self::Expense
+            | Self::Transfer
+            | Self::CurrentMonth
+            | Self::CurrentYear
+            | Self::UnconfiguredBudgets
+            | Self::OtherCategories => Some(AppPage::Transactions),
+            Self::Warnings | Self::Patterns | Self::Imports | Self::Fields | Self::Rules => {
+                Some(AppPage::Diagnostics)
+            }
         }
     }
 
@@ -933,6 +964,39 @@ mod tests {
         for spec in search_preset_specs() {
             assert!(ids.insert(spec.id));
             assert!(SearchPreset::from_id(spec.id).is_some());
+        }
+    }
+
+    #[test]
+    fn search_presets_choose_their_most_useful_page() {
+        assert_eq!(SearchPreset::Clear.target_page(), None);
+        assert_eq!(
+            SearchPreset::Income.target_page(),
+            Some(AppPage::Transactions)
+        );
+        assert_eq!(
+            SearchPreset::UnconfiguredBudgets.target_page(),
+            Some(AppPage::Transactions)
+        );
+        assert_eq!(
+            SearchPreset::Warnings.target_page(),
+            Some(AppPage::Diagnostics)
+        );
+        assert_eq!(
+            SearchPreset::Patterns.target_page(),
+            Some(AppPage::Diagnostics)
+        );
+    }
+
+    #[test]
+    fn app_pages_round_trip_stack_names() {
+        for page in [
+            AppPage::Overview,
+            AppPage::Budget,
+            AppPage::Transactions,
+            AppPage::Diagnostics,
+        ] {
+            assert_eq!(AppPage::from_stack_name(Some(page.stack_name())), page);
         }
     }
 
