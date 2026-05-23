@@ -246,6 +246,50 @@ fn transaction_detail_action_visible(
     visible && (action != TransactionDetailAction::MarkTransfer || markable_as_transfer)
 }
 
+fn transaction_detail_config_action_enabled(ui_handles: &UiHandles) -> Option<bool> {
+    match config_write_availability(ui_handles) {
+        ActionAvailability::Available => {
+            Some(ui_handles.loading_count.get() == 0 && !ui_handles.management_dialog_active.get())
+        }
+        ActionAvailability::Hidden => None,
+        ActionAvailability::Disabled(_) => Some(false),
+    }
+}
+
+fn transaction_detail_config_action_blocked(
+    ui_handles: &Rc<UiHandles>,
+    busy_message: &str,
+) -> bool {
+    match config_write_availability(ui_handles.as_ref()) {
+        ActionAvailability::Available => config_operation_is_active(ui_handles, busy_message),
+        ActionAvailability::Hidden => true,
+        ActionAvailability::Disabled(reason) => {
+            show_status(ui_handles, &reason);
+            true
+        }
+    }
+}
+
+fn append_transaction_detail_menu_action<F>(
+    menu: &gtk::gio::Menu,
+    action_group: &gtk::gio::SimpleActionGroup,
+    action_name: &str,
+    label: &str,
+    enabled: bool,
+    on_activate: F,
+) where
+    F: Fn() + 'static,
+{
+    let action = gtk::gio::SimpleAction::new(action_name, None);
+    action.set_enabled(enabled);
+    action.connect_activate(move |_, _| on_activate());
+    action_group.add_action(&action);
+
+    let label = tr(label);
+    let detailed_action = format!("transaction-detail.{action_name}");
+    menu.append(Some(&label), Some(&detailed_action));
+}
+
 fn transaction_detail_actions(
     tx: &Transaction,
     state: &Rc<RefCell<AppData>>,
@@ -256,13 +300,9 @@ fn transaction_detail_actions(
 
     let primary_actions = ui::linked_button_group();
     primary_actions.set_halign(gtk::Align::Start);
-    let menu_items = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    menu_items.set_margin_top(6);
-    menu_items.set_margin_bottom(6);
-    menu_items.set_margin_start(6);
-    menu_items.set_margin_end(6);
-    let menu_popover = gtk::Popover::new();
-    menu_popover.set_child(Some(&menu_items));
+    let menu = gtk::gio::Menu::new();
+    let menu_actions = gtk::gio::SimpleActionGroup::new();
+    let mut has_menu_items = false;
 
     let advanced_features = ui_handles.advanced_features.get();
     let smart_patterns_enabled = smart_pattern_detection_enabled(ui_handles.show_predictions.get());
@@ -279,6 +319,7 @@ fn transaction_detail_actions(
         markable_as_transfer,
         budget_move_available,
     );
+    let config_menu_action_enabled = transaction_detail_config_action_enabled(ui_handles.as_ref());
 
     if visible_actions.contains(&TransactionDetailAction::MoveBudgetCode) {
         let tx_for_change = tx.clone();
@@ -325,112 +366,127 @@ fn transaction_detail_actions(
         let tx_for_pattern = tx.clone();
         let state_for_pattern = Rc::clone(state);
         let ui_for_pattern = Rc::clone(ui_handles);
-        let popover_for_pattern = menu_popover.clone();
-        let button = ui::plain_text_icon_button(
-            "view-refresh-symbolic",
+        append_transaction_detail_menu_action(
+            &menu,
+            &menu_actions,
+            "find-pattern",
             "Find pattern",
-            "Search Diagnostics for related transaction patterns",
+            true,
+            move || {
+                show_diagnostics_text_search(
+                    &state_for_pattern,
+                    &ui_for_pattern,
+                    &similar_transaction_query(&tx_for_pattern),
+                );
+            },
         );
-        button.add_css_class("flat");
-        button.connect_clicked(move |_| {
-            popover_for_pattern.popdown();
-            show_diagnostics_text_search(
-                &state_for_pattern,
-                &ui_for_pattern,
-                &similar_transaction_query(&tx_for_pattern),
-            );
-        });
-        menu_items.append(&button);
+        has_menu_items = true;
     }
 
     if visible_actions.contains(&TransactionDetailAction::MarkTransfer) {
-        let tx_for_transfer = tx.clone();
-        let ui_for_transfer = Rc::clone(ui_handles);
-        let popover_for_transfer = menu_popover.clone();
-        let button = ui::plain_text_icon_button(
-            "send-to-symbolic",
-            "Mark transfer",
-            "Create a transfer rule from this transaction",
-        );
-        button.add_css_class("flat");
-        register_config_widget(ui_handles, &button);
-        button.connect_clicked(move |_| {
-            popover_for_transfer.popdown();
-            apply_transaction_direction_rule(&tx_for_transfer, "transfer", &ui_for_transfer);
-        });
-        menu_items.append(&button);
+        if let Some(enabled) = config_menu_action_enabled {
+            let tx_for_transfer = tx.clone();
+            let ui_for_transfer = Rc::clone(ui_handles);
+            append_transaction_detail_menu_action(
+                &menu,
+                &menu_actions,
+                "mark-transfer",
+                "Mark transfer",
+                enabled,
+                move || {
+                    if transaction_detail_config_action_blocked(
+                        &ui_for_transfer,
+                        "Another edit or save is already running.",
+                    ) {
+                        return;
+                    }
+                    apply_transaction_direction_rule(
+                        &tx_for_transfer,
+                        "transfer",
+                        &ui_for_transfer,
+                    );
+                },
+            );
+            has_menu_items = true;
+        }
     }
 
     if visible_actions.contains(&TransactionDetailAction::DuplicateAsFake) {
         let tx_for_fake = tx.clone();
         let state_for_fake = Rc::clone(state);
         let ui_for_fake = Rc::clone(ui_handles);
-        let popover_for_fake = menu_popover.clone();
-        let button = ui::plain_text_icon_button(
-            "document-new-symbolic",
+        append_transaction_detail_menu_action(
+            &menu,
+            &menu_actions,
+            "duplicate-as-fake",
             "Duplicate as Fake",
-            "Duplicate this transaction as a runtime fake transaction",
+            true,
+            move || {
+                duplicate_transaction_as_fake(&state_for_fake, &ui_for_fake, &tx_for_fake);
+            },
         );
-        button.add_css_class("flat");
-        button.connect_clicked(move |_| {
-            popover_for_fake.popdown();
-            duplicate_transaction_as_fake(&state_for_fake, &ui_for_fake, &tx_for_fake);
-        });
-        menu_items.append(&button);
+        has_menu_items = true;
     }
 
     if visible_actions.contains(&TransactionDetailAction::CreateRule) {
-        let tx_for_rule = tx.clone();
-        let state_for_rule = Rc::clone(state);
-        let ui_for_rule = Rc::clone(ui_handles);
-        let popover_for_rule = menu_popover.clone();
-        let button = ui::plain_text_icon_button(
-            "document-new-symbolic",
-            "Create rule",
-            "Create a categorization rule from this transaction",
-        );
-        button.add_css_class("flat");
-        register_config_widget(ui_handles, &button);
-        button.connect_clicked(move |_| {
-            popover_for_rule.popdown();
-            show_transaction_rule_dialog(&tx_for_rule, &state_for_rule, &ui_for_rule, None);
-        });
-        menu_items.append(&button);
+        if let Some(enabled) = config_menu_action_enabled {
+            let tx_for_rule = tx.clone();
+            let state_for_rule = Rc::clone(state);
+            let ui_for_rule = Rc::clone(ui_handles);
+            append_transaction_detail_menu_action(
+                &menu,
+                &menu_actions,
+                "create-rule",
+                "Create rule",
+                enabled,
+                move || {
+                    if transaction_detail_config_action_blocked(
+                        &ui_for_rule,
+                        "Another edit or save is already running.",
+                    ) {
+                        return;
+                    }
+                    show_transaction_rule_dialog(&tx_for_rule, &state_for_rule, &ui_for_rule, None);
+                },
+            );
+            has_menu_items = true;
+        }
     }
 
     if visible_actions.contains(&TransactionDetailAction::EditBudgetCode) {
-        let tx_for_budget = tx.clone();
-        let state_for_budget = Rc::clone(state);
-        let ui_for_budget = Rc::clone(ui_handles);
-        let popover_for_budget = menu_popover.clone();
-        let button = ui::plain_text_icon_button(
-            "document-edit-symbolic",
-            "Budget code",
-            "Create or edit the budget code for this transaction",
-        );
-        button.add_css_class("flat");
-        register_exclusive_config_widget(ui_handles, &button);
-        button.connect_clicked(move |_| {
-            popover_for_budget.popdown();
-            let code = suggested_budget_code(&tx_for_budget, None);
-            let category = suggested_category(&tx_for_budget, None);
-            if config_operation_is_active(
-                &ui_for_budget,
-                "Another edit or save is already running.",
-            ) {
-                return;
-            }
-            show_budget_edit_dialog(&code, &category, &state_for_budget, &ui_for_budget);
-        });
-        menu_items.append(&button);
+        if let Some(enabled) = config_menu_action_enabled {
+            let tx_for_budget = tx.clone();
+            let state_for_budget = Rc::clone(state);
+            let ui_for_budget = Rc::clone(ui_handles);
+            append_transaction_detail_menu_action(
+                &menu,
+                &menu_actions,
+                "edit-budget-code",
+                "Budget code",
+                enabled,
+                move || {
+                    if transaction_detail_config_action_blocked(
+                        &ui_for_budget,
+                        "Another edit or save is already running.",
+                    ) {
+                        return;
+                    }
+                    let code = suggested_budget_code(&tx_for_budget, None);
+                    let category = suggested_category(&tx_for_budget, None);
+                    show_budget_edit_dialog(&code, &category, &state_for_budget, &ui_for_budget);
+                },
+            );
+            has_menu_items = true;
+        }
     }
 
-    if menu_items.first_child().is_some() {
+    if has_menu_items {
         let more_button = gtk::MenuButton::builder()
             .icon_name("view-more-symbolic")
             .tooltip_text(tr("More"))
             .build();
-        more_button.set_popover(Some(&menu_popover));
+        more_button.insert_action_group("transaction-detail", Some(&menu_actions));
+        more_button.set_menu_model(Some(&menu));
         primary_actions.append(&more_button);
     }
 
