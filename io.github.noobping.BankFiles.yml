@@ -53,5 +53,5 @@ modules:
     sources:
       - type: git
         url: https://github.com/noobping/bank-files.git
-        commit: f23db1a2f8c7befc8f0ba470ab1428d7a97a2501
+        commit: f93fce3a4e2b2339fc151a3f87a9480847497498
       - cargo-sources.yml
