@@ -120,6 +120,7 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
         .tooltip_text(tr("Fake transactions"))
         .build();
     button.add_css_class("flat");
+    button.set_focus_on_click(false);
     button.set_child(Some(&button_content));
 
     let root = gtk::Box::new(gtk::Orientation::Vertical, 10);

@@ -88,6 +88,7 @@ pub fn plain_text_icon_button(icon_name: &str, label: &str, tooltip: &str) -> gt
     content.append(&label);
 
     let button = gtk::Button::builder().tooltip_text(tooltip).build();
+    button.add_css_class("text-button");
     button.set_tooltip_text(Some(&gettext(tooltip)));
     button.set_child(Some(&content));
     button

@@ -218,6 +218,7 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
         .tooltip_text(tr("Processing queue"))
         .build();
     button.add_css_class("flat");
+    button.set_focus_on_click(false);
     button.set_child(Some(&button_content));
 
     let root = gtk::Box::new(gtk::Orientation::Vertical, 10);

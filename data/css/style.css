@@ -30,21 +30,26 @@ flowboxchild:focus-visible {
     color: @warning_color;
 }
 
-.status-bar-actions button {
+.status-bar-actions > button,
+.status-bar-actions > menubutton > button {
     background: transparent;
     border-color: transparent;
     box-shadow: none;
 }
 
-.status-bar-actions button:hover {
+.status-bar-actions > button:hover,
+.status-bar-actions > menubutton > button:hover {
     background: alpha(currentColor, 0.08);
 }
 
-.status-bar-actions button:active,
-.status-bar-actions button:checked {
+.status-bar-actions > button:active,
+.status-bar-actions > button:checked,
+.status-bar-actions > menubutton > button:active,
+.status-bar-actions > menubutton > button:checked {
     background: alpha(currentColor, 0.14);
 }
 
-.status-bar-actions button:disabled {
+.status-bar-actions > button:disabled,
+.status-bar-actions > menubutton > button:disabled {
     background: transparent;
 }
