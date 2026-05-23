@@ -694,6 +694,7 @@ fn show_transaction_budget_code_dialog(
     let initial_amount_max = initial.amount_max.clone();
     let cancel_button_for_save = cancel_button.clone();
     let budget_targets_for_save = Rc::clone(&budget_targets);
+    let budget_code_for_auto_submit = budget_code.clone();
     ui::connect_button_activation(&save_button, move |button| {
         let budget_code_text = if advanced_features {
             ui::combo_text(&budget_code)
@@ -807,7 +808,33 @@ fn show_transaction_budget_code_dialog(
         });
     });
 
+    if !advanced_features {
+        connect_simple_budget_move_autosubmit(&budget_code_for_auto_submit, &save_button);
+    }
+
     dialog.present(Some(&ui_handles.window));
+}
+
+fn connect_simple_budget_move_autosubmit(
+    budget_code: &gtk::ComboBoxText,
+    save_button: &gtk::Button,
+) {
+    let pending = Rc::new(Cell::new(false));
+    let save_button_for_change = save_button.clone();
+    budget_code.connect_changed(move |_| {
+        if pending.replace(true) {
+            return;
+        }
+
+        let pending_for_submit = Rc::clone(&pending);
+        let save_button_for_submit = save_button_for_change.clone();
+        gtk::glib::idle_add_local_once(move || {
+            pending_for_submit.set(false);
+            if save_button_for_submit.is_visible() && save_button_for_submit.is_sensitive() {
+                save_button_for_submit.emit_clicked();
+            }
+        });
+    });
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
