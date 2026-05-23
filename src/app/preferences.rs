@@ -6,7 +6,7 @@ pub(in crate::app) struct Preferences {
 }
 
 impl Preferences {
-    #[cfg(not(feature = "flatpak"))]
+    #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
     pub(in crate::app) const WRITABLE_KEYS: [&'static str; 17] = [
         "active-tab",
         "autohide-status-bar",
@@ -27,7 +27,7 @@ impl Preferences {
         "window-maximized",
     ];
 
-    #[cfg(feature = "flatpak")]
+    #[cfg(all(feature = "smart-insights", feature = "flatpak"))]
     pub(in crate::app) const WRITABLE_KEYS: [&'static str; 16] = [
         "active-tab",
         "autohide-status-bar",
@@ -40,6 +40,23 @@ impl Preferences {
         "auto-clean-config",
         "dedupe-enabled",
         "hide-canceled-transactions",
+        "selected-year",
+        "selected-budget-month",
+        "window-width",
+        "window-height",
+        "window-maximized",
+    ];
+
+    #[cfg(not(feature = "smart-insights"))]
+    pub(in crate::app) const WRITABLE_KEYS: [&'static str; 13] = [
+        "active-tab",
+        "autohide-status-bar",
+        "show-all",
+        "advanced-autofill",
+        "advanced-features",
+        "remember-mode",
+        "auto-clean-config",
+        "dedupe-enabled",
         "selected-year",
         "selected-budget-month",
         "window-width",
@@ -87,27 +104,35 @@ impl Preferences {
     }
 
     pub(in crate::app) fn show_predictions(&self) -> bool {
-        self.boolean("show-predictions", false)
+        cfg!(feature = "smart-insights") && self.boolean("show-predictions", false)
     }
 
+    #[cfg(feature = "smart-insights")]
     pub(in crate::app) fn set_show_predictions(&self, enabled: bool) {
         self.set_boolean("show-predictions", enabled);
     }
 
-    #[cfg(not(feature = "flatpak"))]
+    #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
     pub(in crate::app) fn online_smart_insights(&self) -> bool {
         self.boolean("online-smart-insights", false)
     }
 
-    #[cfg(not(feature = "flatpak"))]
+    #[cfg(all(not(feature = "smart-insights"), not(feature = "flatpak")))]
+    pub(in crate::app) fn online_smart_insights(&self) -> bool {
+        false
+    }
+
+    #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
     pub(in crate::app) fn set_online_smart_insights(&self, enabled: bool) {
         self.set_boolean("online-smart-insights", enabled);
     }
 
     pub(in crate::app) fn compare_categories_previous_period(&self) -> bool {
-        self.boolean("compare-categories-previous-period", false)
+        cfg!(feature = "smart-insights")
+            && self.boolean("compare-categories-previous-period", false)
     }
 
+    #[cfg(feature = "smart-insights")]
     pub(in crate::app) fn set_compare_categories_previous_period(&self, enabled: bool) {
         self.set_boolean("compare-categories-previous-period", enabled);
     }
@@ -155,9 +180,10 @@ impl Preferences {
     }
 
     pub(in crate::app) fn hide_canceled_transactions(&self) -> bool {
-        self.boolean("hide-canceled-transactions", false)
+        cfg!(feature = "smart-insights") && self.boolean("hide-canceled-transactions", false)
     }
 
+    #[cfg(feature = "smart-insights")]
     pub(in crate::app) fn set_hide_canceled_transactions(&self, enabled: bool) {
         self.set_boolean("hide-canceled-transactions", enabled);
     }
@@ -212,15 +238,18 @@ impl Preferences {
         match action_name.strip_prefix("app.").unwrap_or(action_name) {
             "autohide-status" => Some("autohide-status-bar"),
             "show-all" => Some("show-all"),
+            #[cfg(feature = "smart-insights")]
             "show-predictions" => Some("show-predictions"),
-            #[cfg(not(feature = "flatpak"))]
+            #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
             "online-smart-insights" => Some("online-smart-insights"),
+            #[cfg(feature = "smart-insights")]
             "compare-categories-previous-period" => Some("compare-categories-previous-period"),
             "advanced-autofill" => Some("advanced-autofill"),
             "advanced-features" => Some("advanced-features"),
             "remember-mode" => Some("remember-mode"),
             "auto-clean-config" => Some("auto-clean-config"),
             "dedupe-enabled" => Some("dedupe-enabled"),
+            #[cfg(feature = "smart-insights")]
             "hide-canceled-transactions" => Some("hide-canceled-transactions"),
             _ => None,
         }
@@ -300,7 +329,7 @@ mod tests {
         assert_eq!(RememberMode::default().as_settings(), "data-and-analytics");
     }
 
-    #[cfg(not(feature = "flatpak"))]
+    #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
     #[test]
     fn online_smart_insights_action_maps_to_preference_key() {
         assert_eq!(
@@ -309,11 +338,25 @@ mod tests {
         );
     }
 
-    #[cfg(feature = "flatpak")]
+    #[cfg(any(not(feature = "smart-insights"), feature = "flatpak"))]
     #[test]
-    fn online_smart_insights_action_is_not_available_in_flatpak_builds() {
+    fn online_smart_insights_action_is_not_available_without_hosted_smart_insights() {
         assert_eq!(
             Preferences::key_for_action("app.online-smart-insights"),
+            None
+        );
+    }
+
+    #[cfg(not(feature = "smart-insights"))]
+    #[test]
+    fn smart_insights_actions_are_not_available_without_feature() {
+        assert_eq!(Preferences::key_for_action("app.show-predictions"), None);
+        assert_eq!(
+            Preferences::key_for_action("app.compare-categories-previous-period"),
+            None
+        );
+        assert_eq!(
+            Preferences::key_for_action("app.hide-canceled-transactions"),
             None
         );
     }

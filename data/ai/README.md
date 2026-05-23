@@ -55,6 +55,7 @@ personal fields as AI input.
 7. Add golden tests with small fixture assets or mocked model output for valid
    drafts, invalid drafts, fallback behavior, and Smart Insights disabled.
 8. Rebuild and test these paths:
+   - `cargo test --locked --features smart-insights`
    - `cargo test --locked --features local-ai`
    - `cargo test --locked --features embedded-ai-model`
    - `cargo test --locked --features setup`

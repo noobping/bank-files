@@ -3,6 +3,7 @@ use crate::app_info::{APP_ID, SEARCH_PROVIDER_BUS_NAME, SEARCH_PROVIDER_OBJECT_P
 use crate::model::{AppData, DedupeMode, Transaction, TransactionLoadScope};
 use crate::util::signed_money;
 
+#[cfg(feature = "smart-insights")]
 use adw::gio::prelude::SettingsExt;
 use adw::gio::{self, BusNameOwnerFlags, BusType, DBusConnection, DBusInterfaceInfo, DBusNodeInfo};
 use adw::glib::variant::ToVariant;
@@ -248,11 +249,17 @@ fn load_search_data() -> AppData {
     })
 }
 
+#[cfg(feature = "smart-insights")]
 fn search_smart_insights_enabled() -> bool {
     gio::SettingsSchemaSource::default()
         .and_then(|source| source.lookup(APP_ID, true))
         .map(|_| gio::Settings::new(APP_ID).boolean("show-predictions"))
         .unwrap_or(false)
+}
+
+#[cfg(not(feature = "smart-insights"))]
+fn search_smart_insights_enabled() -> bool {
+    false
 }
 
 fn fallback_meta(identifier: &str) -> HashMap<String, Variant> {

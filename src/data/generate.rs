@@ -110,7 +110,7 @@ pub fn generated_budget_code_for_category(category: &str, existing_codes: &[Stri
 }
 
 fn ensure_smart_insights_for_automatic_configuration(smart_insights_enabled: bool) -> Result<()> {
-    if smart_insights_enabled {
+    if cfg!(feature = "smart-insights") && smart_insights_enabled {
         Ok(())
     } else {
         anyhow::bail!(SMART_INSIGHTS_REQUIRED_MESSAGE)
@@ -735,7 +735,7 @@ fn transaction_key(transaction: &Transaction) -> String {
     )
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "smart-insights"))]
 mod tests {
     use super::*;
     use chrono::NaiveDate;
@@ -1023,5 +1023,26 @@ mod tests {
             strict_key: format!("strict-{row}"),
             loose_key: format!("loose-{row}"),
         }
+    }
+}
+
+#[cfg(all(test, not(feature = "smart-insights")))]
+mod smart_insights_disabled_tests {
+    use super::*;
+
+    #[test]
+    fn automatic_configuration_requires_smart_insights_feature() {
+        let error = generate_automatic_configuration(&AppData::default(), true).unwrap_err();
+
+        assert!(format!("{error:#}").contains(SMART_INSIGHTS_REQUIRED_MESSAGE));
+    }
+
+    #[test]
+    fn generated_budget_code_uses_readable_category_slug_without_smart_insights() {
+        assert_eq!(
+            generated_budget_code_for_category("Dining out & coffee", &[]),
+            "DINING-OUT-COFFEE"
+        );
+        assert_eq!(generated_budget_code_for_category("!!!", &[]), "BUDGET");
     }
 }

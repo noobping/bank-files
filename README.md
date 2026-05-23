@@ -54,7 +54,7 @@ meson compile -C build
 sudo meson install -C build
 ```
 
-For local AI as sidecar files, use a non-setup build and enable the Cargo feature:
+Smart Insights are optional at compile time. Use `-Dcargo_features=smart-insights` for deterministic Smart Insights without local AI. For local AI as sidecar files, use `local-ai`.
 
 ```bash
 meson setup build -Dcargo_variant=release -Dcargo_features=local-ai

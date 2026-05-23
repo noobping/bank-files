@@ -140,10 +140,9 @@ use shell::{
     build_menu, open_files, refresh_menu,
 };
 use shortcuts::{build_shortcuts_dialog, install_action_accelerators};
-use smart::{
-    effective_hide_canceled_transactions, smart_dependent_action_enabled,
-    smart_pattern_detection_enabled,
-};
+#[cfg(feature = "smart-insights")]
+use smart::smart_dependent_action_enabled;
+use smart::{effective_hide_canceled_transactions, smart_pattern_detection_enabled};
 use status::{
     build_status_bar, connect_embedded_status_bar, connect_page_actions,
     connect_static_page_actions, connect_status_actions, register_page_copy_feedback_button,

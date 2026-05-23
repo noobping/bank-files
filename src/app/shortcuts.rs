@@ -24,14 +24,8 @@ const COMMON_ACTION_ACCELERATORS: &[ActionAccelerators] = &[
     ("app.dedupe-enabled", &["<primary>D"]),
     ("app.advanced-features", &["<primary><alt>A"]),
     ("app.show-all", &["<primary><alt>L"]),
-    ("app.show-predictions", &["<primary><alt>S"]),
-    (
-        "app.compare-categories-previous-period",
-        &["<primary><alt>P"],
-    ),
     ("app.advanced-autofill", &["<primary><alt>F"]),
     ("app.auto-clean-config", &["<primary><alt>C"]),
-    ("app.hide-canceled-transactions", &["<primary><alt>H"]),
     ("app.autohide-status", &["<primary><alt>M"]),
     ("app.about", &["<primary>I"]),
     ("app.shortcuts", &["F1", "<primary>question"]),
@@ -40,7 +34,16 @@ const COMMON_ACTION_ACCELERATORS: &[ActionAccelerators] = &[
 
 const CHECK_FOR_UPDATES_ACCELERATORS: ActionAccelerators =
     ("app.check-for-updates", &["<primary>U"]);
-#[cfg(not(feature = "flatpak"))]
+#[cfg(feature = "smart-insights")]
+const SMART_INSIGHTS_ACCELERATORS: &[ActionAccelerators] = &[
+    ("app.show-predictions", &["<primary><alt>S"]),
+    (
+        "app.compare-categories-previous-period",
+        &["<primary><alt>P"],
+    ),
+    ("app.hide-canceled-transactions", &["<primary><alt>H"]),
+];
+#[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
 const ONLINE_SMART_INSIGHTS_ACCELERATORS: ActionAccelerators =
     ("app.online-smart-insights", &["<primary><alt>O"]);
 
@@ -52,7 +55,11 @@ pub(in crate::app) fn install_action_accelerators(app: &adw::Application) {
     for (action_name, accelerators) in COMMON_ACTION_ACCELERATORS {
         app.set_accels_for_action(action_name, accelerators);
     }
-    #[cfg(not(feature = "flatpak"))]
+    #[cfg(feature = "smart-insights")]
+    for (action_name, accelerators) in SMART_INSIGHTS_ACCELERATORS {
+        app.set_accels_for_action(action_name, accelerators);
+    }
+    #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
     app.set_accels_for_action(
         ONLINE_SMART_INSIGHTS_ACCELERATORS.0,
         ONLINE_SMART_INSIGHTS_ACCELERATORS.1,
@@ -124,31 +131,42 @@ pub(in crate::app) fn build_shortcuts_dialog(
         ShortcutSpec::action("Open Preferences", "app.preferences"),
         ShortcutSpec::action("Open Configuration", "app.configuration"),
         ShortcutSpec::action("Toggle Advanced Features", "app.advanced-features"),
-        ShortcutSpec::action("Toggle Smart Insights", "app.show-predictions"),
     ];
-    #[cfg(not(feature = "flatpak"))]
-    if smart_patterns_enabled || advanced_features {
+    #[cfg(not(feature = "smart-insights"))]
+    let _ = smart_patterns_enabled;
+    #[cfg(feature = "smart-insights")]
+    {
         settings_shortcuts.push(ShortcutSpec::action(
-            "Toggle Online Smart Insights",
-            "app.online-smart-insights",
+            "Toggle Smart Insights",
+            "app.show-predictions",
         ));
+        #[cfg(not(feature = "flatpak"))]
+        if smart_patterns_enabled || advanced_features {
+            settings_shortcuts.push(ShortcutSpec::action(
+                "Toggle Online Smart Insights",
+                "app.online-smart-insights",
+            ));
+        }
     }
     settings_shortcuts.extend([
         ShortcutSpec::action("Toggle Smart Autofill", "app.advanced-autofill"),
         ShortcutSpec::action("Toggle Duplicate Filtering", "app.dedupe-enabled"),
         ShortcutSpec::action("Toggle Full Lists", "app.show-all"),
-        ShortcutSpec::action(
-            "Toggle Spending Comparison",
-            "app.compare-categories-previous-period",
-        ),
         ShortcutSpec::action("Toggle Auto Clean Config", "app.auto-clean-config"),
         ShortcutSpec::action("Toggle Status Autohide", "app.autohide-status"),
     ]);
-    if smart_patterns_enabled || advanced_features {
+    #[cfg(feature = "smart-insights")]
+    {
         settings_shortcuts.push(ShortcutSpec::action(
-            "Toggle Hide Refunded Transactions",
-            "app.hide-canceled-transactions",
+            "Toggle Spending Comparison",
+            "app.compare-categories-previous-period",
         ));
+        if smart_patterns_enabled || advanced_features {
+            settings_shortcuts.push(ShortcutSpec::action(
+                "Toggle Hide Refunded Transactions",
+                "app.hide-canceled-transactions",
+            ));
+        }
     }
     dialog.add(shortcuts_section("Settings", &settings_shortcuts));
 

@@ -11,9 +11,16 @@ repository = "https://github.com/noobping/bank-files"
 [features]
 default = []
 flatpak = []
-local-ai = ["dep:tract-onnx", "dep:candle-core", "dep:candle-transformers", "dep:tokenizers"]
+smart-insights = []
+local-ai = [
+    "smart-insights",
+    "dep:tract-onnx",
+    "dep:candle-core",
+    "dep:candle-transformers",
+    "dep:tokenizers",
+]
 embedded-ai-model = ["local-ai"]
-setup = ["dep:reqwest", "dep:semver", "embedded-ai-model"]
+setup = ["dep:reqwest", "dep:semver"]
 
 [dependencies]
 anyhow = "1"

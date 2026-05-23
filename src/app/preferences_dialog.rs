@@ -43,28 +43,35 @@ pub(in crate::app) fn show_preferences_dialog(
         search_groups.push(search_group);
     }
 
-    let mut insight_preferences = vec![PreferenceSpec::new(
-        "Smart Insights",
-        "Show forecast cards and detect transaction patterns, including possible transfers, from imported transactions.",
-        "app.show-predictions",
-        ui.show_predictions.get(),
-    )];
-    #[cfg(not(feature = "flatpak"))]
-    insight_preferences.push(
-        PreferenceSpec::new(
-            "Online Smart Insights",
-            "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
-            "app.online-smart-insights",
-            ui.online_smart_insights.get(),
-        )
-        .requires_smart_insights(),
-    );
-    insight_preferences.push(PreferenceSpec::new(
-        "Compare Spending with Previous Period",
-        "Compare spending cards with the previous month or year.",
-        "app.compare-categories-previous-period",
-        ui.compare_categories_previous_period.get(),
-    ));
+    #[cfg(feature = "smart-insights")]
+    let mut insight_preferences = Vec::new();
+    #[cfg(not(feature = "smart-insights"))]
+    let insight_preferences = Vec::new();
+    #[cfg(feature = "smart-insights")]
+    {
+        insight_preferences.push(PreferenceSpec::new(
+            "Smart Insights",
+            "Show forecast cards and detect transaction patterns, including possible transfers, from imported transactions.",
+            "app.show-predictions",
+            ui.show_predictions.get(),
+        ));
+        #[cfg(not(feature = "flatpak"))]
+        insight_preferences.push(
+            PreferenceSpec::new(
+                "Online Smart Insights",
+                "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
+                "app.online-smart-insights",
+                ui.online_smart_insights.get(),
+            )
+            .requires_smart_insights(),
+        );
+        insight_preferences.push(PreferenceSpec::new(
+            "Compare Spending with Previous Period",
+            "Compare spending cards with the previous month or year.",
+            "app.compare-categories-previous-period",
+            ui.compare_categories_previous_period.get(),
+        ));
+    }
 
     if let Some((group, search_group)) = preference_group(
         "Insights",
@@ -85,36 +92,63 @@ pub(in crate::app) fn show_preferences_dialog(
         search_groups.push(search_group);
     }
 
+    #[cfg(feature = "smart-insights")]
+    let mut forms_preferences = vec![
+        PreferenceSpec::new(
+            "Advanced Features",
+            "Allow rule editing and budget direction controls.",
+            "app.advanced-features",
+            ui.advanced_features.get(),
+        ),
+        PreferenceSpec::new(
+            "Smart Autofill",
+            "Let forms fill related fields from context, such as matching categories and directions.",
+            "app.advanced-autofill",
+            ui.advanced_autofill.get(),
+        ),
+        PreferenceSpec::new(
+            "Auto Clean Config",
+            "Remove orphaned rules automatically during reload and import.",
+            "app.auto-clean-config",
+            ui.auto_clean_config.get(),
+        ),
+    ];
+    #[cfg(not(feature = "smart-insights"))]
+    let forms_preferences = vec![
+        PreferenceSpec::new(
+            "Advanced Features",
+            "Allow rule editing and budget direction controls.",
+            "app.advanced-features",
+            ui.advanced_features.get(),
+        ),
+        PreferenceSpec::new(
+            "Smart Autofill",
+            "Let forms fill related fields from context, such as matching categories and directions.",
+            "app.advanced-autofill",
+            ui.advanced_autofill.get(),
+        ),
+        PreferenceSpec::new(
+            "Auto Clean Config",
+            "Remove orphaned rules automatically during reload and import.",
+            "app.auto-clean-config",
+            ui.auto_clean_config.get(),
+        ),
+    ];
+    #[cfg(feature = "smart-insights")]
+    forms_preferences.push(
+        PreferenceSpec::new(
+            "Hide Refunded Transactions",
+            "Requires Smart Insights. Exclude detected refunds and offsetting groups from normal views.",
+            "app.hide-canceled-transactions",
+            ui.hide_canceled_transactions.get(),
+        )
+        .requires_smart_insights(),
+    );
+
     if let Some((group, search_group)) = preference_group(
         "Forms and Data",
         "Control simple mode, smart form filling, cleanup, and refunded transaction visibility.",
-        &[
-            PreferenceSpec::new(
-                "Advanced Features",
-                "Allow rule editing and budget direction controls.",
-                "app.advanced-features",
-                ui.advanced_features.get(),
-            ),
-            PreferenceSpec::new(
-                "Smart Autofill",
-                "Let forms fill related fields from context, such as matching categories and directions.",
-                "app.advanced-autofill",
-                ui.advanced_autofill.get(),
-            ),
-            PreferenceSpec::new(
-                "Auto Clean Config",
-                "Remove orphaned rules automatically during reload and import.",
-                "app.auto-clean-config",
-                ui.auto_clean_config.get(),
-            ),
-            PreferenceSpec::new(
-                "Hide Refunded Transactions",
-                "Requires Smart Insights. Exclude detected refunds and offsetting groups from normal views.",
-                "app.hide-canceled-transactions",
-                ui.hide_canceled_transactions.get(),
-            )
-            .requires_smart_insights(),
-        ],
+        &forms_preferences,
         ui.advanced_features.get(),
         smart_insights_enabled,
         &ui.preferences,
@@ -185,25 +219,32 @@ fn preferences_page_snapshot(
         smart_insights_enabled,
         preferences,
     );
-    let mut insight_rows = vec![(
-        "Smart Insights",
-        "Show forecast cards and detect transaction patterns, including possible transfers, from imported transactions.",
-        "app.show-predictions",
-        false,
-    )];
-    #[cfg(not(feature = "flatpak"))]
-    insight_rows.push((
-        "Online Smart Insights",
-        "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
-        "app.online-smart-insights",
-        true,
-    ));
-    insight_rows.push((
-        "Compare Spending with Previous Period",
-        "Compare spending cards with the previous month or year.",
-        "app.compare-categories-previous-period",
-        false,
-    ));
+    #[cfg(feature = "smart-insights")]
+    let mut insight_rows = Vec::new();
+    #[cfg(not(feature = "smart-insights"))]
+    let insight_rows = Vec::new();
+    #[cfg(feature = "smart-insights")]
+    {
+        insight_rows.push((
+            "Smart Insights",
+            "Show forecast cards and detect transaction patterns, including possible transfers, from imported transactions.",
+            "app.show-predictions",
+            false,
+        ));
+        #[cfg(not(feature = "flatpak"))]
+        insight_rows.push((
+            "Online Smart Insights",
+            "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
+            "app.online-smart-insights",
+            true,
+        ));
+        insight_rows.push((
+            "Compare Spending with Previous Period",
+            "Compare spending cards with the previous month or year.",
+            "app.compare-categories-previous-period",
+            false,
+        ));
+    }
     add_preference_snapshot_rows(
         &mut rows,
         "Insights",
@@ -225,35 +266,59 @@ fn preferences_page_snapshot(
         smart_insights_enabled,
         preferences,
     );
+    #[cfg(feature = "smart-insights")]
+    let mut forms_rows = vec![
+        (
+            "Advanced Features",
+            "Allow rule editing and budget direction controls.",
+            "app.advanced-features",
+            false,
+        ),
+        (
+            "Smart Autofill",
+            "Let forms fill related fields from context, such as matching categories and directions.",
+            "app.advanced-autofill",
+            false,
+        ),
+        (
+            "Auto Clean Config",
+            "Remove orphaned rules automatically during reload and import.",
+            "app.auto-clean-config",
+            false,
+        ),
+    ];
+    #[cfg(not(feature = "smart-insights"))]
+    let forms_rows = vec![
+        (
+            "Advanced Features",
+            "Allow rule editing and budget direction controls.",
+            "app.advanced-features",
+            false,
+        ),
+        (
+            "Smart Autofill",
+            "Let forms fill related fields from context, such as matching categories and directions.",
+            "app.advanced-autofill",
+            false,
+        ),
+        (
+            "Auto Clean Config",
+            "Remove orphaned rules automatically during reload and import.",
+            "app.auto-clean-config",
+            false,
+        ),
+    ];
+    #[cfg(feature = "smart-insights")]
+    forms_rows.push((
+        "Hide Refunded Transactions",
+        "Requires Smart Insights. Exclude detected refunds and offsetting groups from normal views.",
+        "app.hide-canceled-transactions",
+        true,
+    ));
     add_preference_snapshot_rows(
         &mut rows,
         "Forms and Data",
-        &[
-            (
-                "Advanced Features",
-                "Allow rule editing and budget direction controls.",
-                "app.advanced-features",
-                false,
-            ),
-            (
-                "Smart Autofill",
-                "Let forms fill related fields from context, such as matching categories and directions.",
-                "app.advanced-autofill",
-                false,
-            ),
-            (
-                "Auto Clean Config",
-                "Remove orphaned rules automatically during reload and import.",
-                "app.auto-clean-config",
-                false,
-            ),
-            (
-                "Hide Refunded Transactions",
-                "Requires Smart Insights. Exclude detected refunds and offsetting groups from normal views.",
-                "app.hide-canceled-transactions",
-                true,
-            ),
-        ],
+        &forms_rows,
         advanced_features,
         smart_insights_enabled,
         preferences,
@@ -310,6 +375,7 @@ impl<'a> PreferenceSpec<'a> {
         }
     }
 
+    #[cfg(feature = "smart-insights")]
     fn requires_smart_insights(mut self) -> Self {
         self.requires_smart_insights = true;
         self

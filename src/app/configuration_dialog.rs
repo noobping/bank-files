@@ -275,7 +275,7 @@ fn automatic_configuration_generation_visible(
     advanced_features: bool,
     smart_insights_enabled: bool,
 ) -> bool {
-    smart_insights_enabled || advanced_features
+    cfg!(feature = "smart-insights") && (smart_insights_enabled || advanced_features)
 }
 
 fn automatic_configuration_generation_enabled(smart_insights_enabled: bool) -> bool {
@@ -532,8 +532,11 @@ mod tests {
     }
 
     #[test]
-    fn automatic_configuration_generation_shows_disabled_in_advanced_mode_without_smart_insights() {
-        assert!(automatic_configuration_generation_visible(true, false));
+    fn automatic_configuration_generation_shows_disabled_in_advanced_mode_when_feature_exists() {
+        assert_eq!(
+            automatic_configuration_generation_visible(true, false),
+            cfg!(feature = "smart-insights")
+        );
         assert!(!automatic_configuration_generation_enabled(false));
     }
 
@@ -541,8 +544,13 @@ mod tests {
     fn configuration_snapshot_follows_generation_visibility() {
         let simple_rows = configuration_snapshot_rows(false, false);
         let advanced_rows = configuration_snapshot_rows(true, false);
+        let expected_advanced_rows = if cfg!(feature = "smart-insights") {
+            5
+        } else {
+            4
+        };
 
         assert_eq!(simple_rows.len(), 4);
-        assert_eq!(advanced_rows.len(), 5);
+        assert_eq!(advanced_rows.len(), expected_advanced_rows);
     }
 }
