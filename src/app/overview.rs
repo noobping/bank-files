@@ -458,14 +458,11 @@ fn show_forecast_details(
     let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let header = ui::cancelable_dialog_header(title, period_label);
 
-    let close_button = gtk::Button::with_label(&tr("Close"));
-    close_button.add_css_class("flat");
     let transactions_button = ui::primary_text_icon_button(
         "view-list-symbolic",
         "Show transactions",
         "Open the transactions used for this forecast period",
     );
-    header.pack_start(&close_button);
     header.pack_end(&transactions_button);
     root.append(&header);
 
@@ -504,11 +501,6 @@ fn show_forecast_details(
         .default_widget(&transactions_button)
         .child(&root)
         .build();
-
-    let dialog_for_close = dialog.clone();
-    close_button.connect_clicked(move |_| {
-        dialog_for_close.close();
-    });
 
     let state_for_transactions = Rc::clone(state);
     let ui_for_transactions = Rc::clone(ui_handles);

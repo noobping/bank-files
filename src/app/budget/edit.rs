@@ -86,7 +86,6 @@ struct BudgetSaveUi {
     button: gtk::Button,
     delete_button: Option<gtk::Button>,
     delete_button_sensitive: bool,
-    cancel_button: gtk::Button,
     status: gtk::Label,
     dialog: adw::Dialog,
 }
@@ -105,7 +104,6 @@ fn save_budget_with_reload(
         button,
         delete_button,
         delete_button_sensitive,
-        cancel_button,
         status,
         dialog,
     } = save_ui;
@@ -113,7 +111,6 @@ fn save_budget_with_reload(
     if let Some(delete_button) = &delete_button {
         delete_button.set_sensitive(false);
     }
-    cancel_button.set_label(&tr("Close"));
     status.set_text(&tr("Saving budget..."));
 
     let borrowed = state.borrow();
@@ -154,7 +151,6 @@ fn save_budget_with_reload(
                 if let Some(delete_button) = &delete_button {
                     delete_button.set_sensitive(delete_button_sensitive);
                 }
-                cancel_button.set_label(&tr("Cancel"));
             }
             Err(_) => {
                 status.set_text(&tr(
@@ -164,7 +160,6 @@ fn save_budget_with_reload(
                 if let Some(delete_button) = &delete_button {
                     delete_button.set_sensitive(delete_button_sensitive);
                 }
-                cancel_button.set_label(&tr("Cancel"));
             }
         }
         finish_config_operation(&ui_handles);
@@ -217,8 +212,6 @@ pub(in crate::app) fn show_budget_edit_dialog(
     let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let header = ui::cancelable_dialog_header("Edit Budget", code);
 
-    let cancel_button = gtk::Button::with_label(&tr("Cancel"));
-    cancel_button.add_css_class("flat");
     let delete_button = ui::icon_button("user-trash-symbolic", "Delete budget");
     delete_button.add_css_class("destructive-action");
     delete_button.set_sensitive(can_delete_budget);
@@ -228,7 +221,6 @@ pub(in crate::app) fn show_budget_edit_dialog(
     action_buttons.append(&save_button);
     register_exclusive_config_widget(ui_handles, &save_button);
     register_exclusive_config_widget(ui_handles, &delete_button);
-    header.pack_start(&cancel_button);
     header.pack_end(&action_buttons);
     root.append(&header);
 
@@ -291,11 +283,6 @@ pub(in crate::app) fn show_budget_edit_dialog(
         .child(&root)
         .build();
 
-    let dialog_for_cancel = dialog.clone();
-    cancel_button.connect_clicked(move |_| {
-        dialog_for_cancel.close();
-    });
-
     let state_for_save = Rc::clone(state);
     let ui_for_save = Rc::clone(ui_handles);
     let dialog_for_save = dialog.clone();
@@ -304,7 +291,6 @@ pub(in crate::app) fn show_budget_edit_dialog(
     let direction_for_save = initial.direction.clone();
     let status_for_save = status.clone();
     let delete_button_for_save = delete_button.clone();
-    let cancel_button_for_save = cancel_button.clone();
     save_button.connect_clicked(move |button| {
         let category_text = ui::combo_text(&category);
         if category_text.is_empty() {
@@ -338,7 +324,6 @@ pub(in crate::app) fn show_budget_edit_dialog(
             button: button.clone(),
             delete_button: Some(delete_button_for_save.clone()),
             delete_button_sensitive: can_delete_budget,
-            cancel_button: cancel_button_for_save.clone(),
             status: status_for_save.clone(),
             dialog: dialog_for_save.clone(),
         };
@@ -353,7 +338,6 @@ pub(in crate::app) fn show_budget_edit_dialog(
     connect_budget_delete_action(BudgetDeleteAction {
         delete_button: &delete_button,
         save_button: &save_button,
-        cancel_button: &cancel_button,
         status: &status,
         dialog: &dialog,
         code: initial.code.clone(),
@@ -367,7 +351,6 @@ pub(in crate::app) fn show_budget_edit_dialog(
 struct BudgetDeleteAction<'a> {
     delete_button: &'a gtk::Button,
     save_button: &'a gtk::Button,
-    cancel_button: &'a gtk::Button,
     status: &'a gtk::Label,
     dialog: &'a adw::Dialog,
     code: String,
@@ -379,7 +362,6 @@ fn connect_budget_delete_action(action: BudgetDeleteAction<'_>) {
     let BudgetDeleteAction {
         delete_button,
         save_button,
-        cancel_button,
         status,
         dialog,
         code,
@@ -388,7 +370,6 @@ fn connect_budget_delete_action(action: BudgetDeleteAction<'_>) {
     } = action;
 
     let save_button_for_delete = save_button.clone();
-    let cancel_button_for_delete = cancel_button.clone();
     let status_for_delete = status.clone();
     let dialog_for_delete = dialog.clone();
     delete_button.connect_clicked(move |button| {
@@ -398,7 +379,6 @@ fn connect_budget_delete_action(action: BudgetDeleteAction<'_>) {
 
         let button = button.clone();
         let save_button = save_button_for_delete.clone();
-        let cancel_button = cancel_button_for_delete.clone();
         let code = code.clone();
         let borrowed = state.borrow();
         let mode = borrowed.dedupe_mode;
@@ -413,7 +393,6 @@ fn connect_budget_delete_action(action: BudgetDeleteAction<'_>) {
         let status_for_delete = status_for_delete.clone();
         button.set_sensitive(false);
         save_button.set_sensitive(false);
-        cancel_button.set_label(&tr("Close"));
         status_for_delete.set_text(&tr("Removing budget..."));
 
         gtk::glib::MainContext::default().spawn_local(async move {
@@ -443,7 +422,6 @@ fn connect_budget_delete_action(action: BudgetDeleteAction<'_>) {
                     status_for_delete.set_text(&tr("Budget was already removed."));
                     button.set_sensitive(false);
                     save_button.set_sensitive(true);
-                    cancel_button.set_label(&tr("Cancel"));
                 }
                 Ok(Err(err)) => {
                     status_for_delete.set_text(&trf(
@@ -452,7 +430,6 @@ fn connect_budget_delete_action(action: BudgetDeleteAction<'_>) {
                     ));
                     button.set_sensitive(true);
                     save_button.set_sensitive(true);
-                    cancel_button.set_label(&tr("Cancel"));
                 }
                 Err(_) => {
                     status_for_delete.set_text(&tr(
@@ -460,7 +437,6 @@ fn connect_budget_delete_action(action: BudgetDeleteAction<'_>) {
                     ));
                     button.set_sensitive(true);
                     save_button.set_sensitive(true);
-                    cancel_button.set_label(&tr("Cancel"));
                 }
             }
             finish_config_operation(&ui_handles);
@@ -485,8 +461,6 @@ fn show_planned_income_budget_edit_dialog(
         },
     );
 
-    let cancel_button = gtk::Button::with_label(&tr("Cancel"));
-    cancel_button.add_css_class("flat");
     let delete_button = ui::icon_button("user-trash-symbolic", "Delete planned income budget");
     delete_button.add_css_class("destructive-action");
     delete_button.set_sensitive(can_delete_budget);
@@ -500,7 +474,6 @@ fn show_planned_income_budget_edit_dialog(
     action_buttons.append(&save_button);
     register_exclusive_config_widget(ui_handles, &save_button);
     register_exclusive_config_widget(ui_handles, &delete_button);
-    header.pack_start(&cancel_button);
     header.pack_end(&action_buttons);
     root.append(&header);
 
@@ -568,16 +541,10 @@ fn show_planned_income_budget_edit_dialog(
         .child(&root)
         .build();
 
-    let dialog_for_cancel = dialog.clone();
-    cancel_button.connect_clicked(move |_| {
-        dialog_for_cancel.close();
-    });
-
     let state_for_save = Rc::clone(state);
     let ui_for_save = Rc::clone(ui_handles);
     let dialog_for_save = dialog.clone();
     let status_for_save = status.clone();
-    let cancel_button_for_save = cancel_button.clone();
     let delete_button_for_save = delete_button.clone();
     save_button.connect_clicked(move |button| {
         let category_text = ui::combo_text(&category);
@@ -599,7 +566,6 @@ fn show_planned_income_budget_edit_dialog(
                 button: button.clone(),
                 delete_button: Some(delete_button_for_save.clone()),
                 delete_button_sensitive: can_delete_budget,
-                cancel_button: cancel_button_for_save.clone(),
                 status: status_for_save.clone(),
                 dialog: dialog_for_save.clone(),
             },
@@ -611,7 +577,6 @@ fn show_planned_income_budget_edit_dialog(
     connect_budget_delete_action(BudgetDeleteAction {
         delete_button: &delete_button,
         save_button: &save_button,
-        cancel_button: &cancel_button,
         status: &status,
         dialog: &dialog,
         code: planned_income::BUDGET_CODE.to_string(),

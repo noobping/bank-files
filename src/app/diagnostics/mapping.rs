@@ -56,13 +56,10 @@ fn field_mapping_dialog(
     let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let header = ui::cancelable_dialog_header("Map CSV Field", label);
 
-    let cancel_button = gtk::Button::with_label(&tr("Cancel"));
-    cancel_button.add_css_class("flat");
     let save_button =
         ui::primary_text_icon_button("document-save-symbolic", "Save", "Save field mapping");
     save_button.set_sensitive(!headers.is_empty());
     register_config_widget(ui_handles, &save_button);
-    header.pack_start(&cancel_button);
     header.pack_end(&save_button);
     root.append(&header);
 
@@ -109,17 +106,11 @@ fn field_mapping_dialog(
         .child(&root)
         .build();
 
-    let dialog_for_cancel = dialog.clone();
-    cancel_button.connect_clicked(move |_| {
-        dialog_for_cancel.close();
-    });
-
     let canonical = canonical.to_string();
     let label = label.to_string();
     let state_for_save = Rc::clone(state);
     let ui_for_save = Rc::clone(ui_handles);
     let dialog_for_save = dialog.clone();
-    let cancel_button_for_save = cancel_button.clone();
     save_button.connect_clicked(move |button| {
         let alias = field
             .active_id()
@@ -131,7 +122,6 @@ fn field_mapping_dialog(
         }
 
         let button = button.clone();
-        let cancel_button = cancel_button_for_save.clone();
         let canonical_for_save = canonical.clone();
         let alias_for_save = alias.clone();
         let alias_for_message = alias.clone();
@@ -148,7 +138,6 @@ fn field_mapping_dialog(
         let dialog_for_save = dialog_for_save.clone();
         let status_for_save = status.clone();
         button.set_sensitive(false);
-        cancel_button.set_label(&tr("Close"));
         status_for_save.set_text(&tr("Saving field mapping..."));
 
         gtk::glib::MainContext::default().spawn_local(async move {
@@ -188,12 +177,10 @@ fn field_mapping_dialog(
                         &[("error", format!("{err:#}"))],
                     ));
                     button.set_sensitive(true);
-                    cancel_button.set_label(&tr("Cancel"));
                 }
                 Err(_) => {
                     status_for_save.set_text(&tr("Field mapping save canceled: the background task stopped unexpectedly."));
                     button.set_sensitive(true);
-                    cancel_button.set_label(&tr("Cancel"));
                 }
             }
         });

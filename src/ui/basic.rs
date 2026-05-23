@@ -102,6 +102,7 @@ pub fn action_dialog_header() -> adw::HeaderBar {
 
 pub fn cancelable_dialog_header(title: &str, subtitle: &str) -> adw::HeaderBar {
     let header = action_dialog_header();
+    header.set_show_end_title_buttons(true);
     header.set_title_widget(Some(&adw::WindowTitle::new(
         &gettext(title),
         &gettext(subtitle),
