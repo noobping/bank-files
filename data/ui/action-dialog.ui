@@ -8,7 +8,7 @@
     <child>
       <object class="AdwHeaderBar" id="action_header">
         <property name="show-start-title-buttons">False</property>
-        <property name="show-end-title-buttons">False</property>
+        <property name="show-end-title-buttons">True</property>
         <child type="start">
           <object class="GtkStack" id="action_start_stack">
             <property name="transition-type">crossfade</property>
@@ -67,16 +67,6 @@
                     <property name="label">Save</property>
                   </object>
                 </property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="action_close_button">
-                <property name="icon-name">window-close-symbolic</property>
-                <property name="valign">center</property>
-                <style>
-                  <class name="titlebutton"/>
-                  <class name="close"/>
-                </style>
               </object>
             </child>
           </object>

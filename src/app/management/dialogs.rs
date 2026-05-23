@@ -10,7 +10,7 @@ pub(in crate::app) fn show_new_rule_dialog(
     advanced_autofill: &Rc<Cell<bool>>,
 ) {
     let rule = EditableRule::new_default();
-    let (dialog, page, cancel_button, add_button, dialog_status) = new_record_dialog(
+    let (dialog, page, add_button, dialog_status) = new_record_dialog(
         "New Rule",
         "Fill in the rule first. It is only saved when you press Save.",
         "Add",
@@ -76,11 +76,6 @@ pub(in crate::app) fn show_new_rule_dialog(
     page.append(&dialog_status);
     dialog.set_focus(Some(&search));
 
-    let dialog_for_cancel = dialog.clone();
-    cancel_button.connect_clicked(move |_| {
-        dialog_for_cancel.close();
-    });
-
     let container_for_add = container.clone();
     let forms_for_add = Rc::clone(forms);
     let scrolled_window_for_add = scrolled_window.clone();
@@ -142,7 +137,7 @@ pub(in crate::app) fn show_new_budget_dialog(
     advanced_features: bool,
 ) {
     let budget = EditableBudget::new_default();
-    let (dialog, page, cancel_button, add_button, dialog_status) = new_record_dialog(
+    let (dialog, page, add_button, dialog_status) = new_record_dialog(
         if advanced_features {
             "New Budget"
         } else {
@@ -211,11 +206,6 @@ pub(in crate::app) fn show_new_budget_dialog(
     page.append(&grid);
     page.append(&dialog_status);
     dialog.set_focus(Some(if advanced_features { &code } else { &category }));
-
-    let dialog_for_cancel = dialog.clone();
-    cancel_button.connect_clicked(move |_| {
-        dialog_for_cancel.close();
-    });
 
     let container_for_add = container.clone();
     let forms_for_add = Rc::clone(forms);
@@ -295,7 +285,7 @@ pub(in crate::app) fn show_new_alias_dialog(
     filter_entry: &gtk::SearchEntry,
 ) {
     let alias = EditableAlias::new_default();
-    let (dialog, page, cancel_button, add_button, dialog_status) = new_record_dialog(
+    let (dialog, page, add_button, dialog_status) = new_record_dialog(
         "New Field Name",
         "Map a bank column to a fixed field. It is only saved when you press Save.",
         "Add",
@@ -309,11 +299,6 @@ pub(in crate::app) fn show_new_alias_dialog(
     page.append(&grid);
     page.append(&dialog_status);
     dialog.set_focus(Some(&alias_entry));
-
-    let dialog_for_cancel = dialog.clone();
-    cancel_button.connect_clicked(move |_| {
-        dialog_for_cancel.close();
-    });
 
     let container_for_add = container.clone();
     let forms_for_add = Rc::clone(forms);
@@ -347,7 +332,7 @@ pub(in crate::app) fn new_record_dialog(
     title: &str,
     subtitle: &str,
     add_label: &str,
-) -> (adw::Dialog, gtk::Box, gtk::Button, gtk::Button, gtk::Label) {
+) -> (adw::Dialog, gtk::Box, gtk::Button, gtk::Label) {
     let shell = build_action_dialog_shell(
         title,
         subtitle,
@@ -365,7 +350,6 @@ pub(in crate::app) fn new_record_dialog(
     dialog_status.add_css_class("dim-label");
 
     let add_button = shell.submit_button.clone();
-    let cancel_button = shell.close_button.clone();
     let dialog = adw::Dialog::builder()
         .title(tr(title))
         .content_width(680)
@@ -374,7 +358,7 @@ pub(in crate::app) fn new_record_dialog(
         .child(&shell.root)
         .build();
 
-    (dialog, page, cancel_button, add_button, dialog_status)
+    (dialog, page, add_button, dialog_status)
 }
 
 pub(in crate::app) fn scroll_to_bottom(scrolled_window: &gtk::ScrolledWindow) {

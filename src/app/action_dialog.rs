@@ -7,7 +7,6 @@ pub(in crate::app) struct ActionDialogShell {
     pub(in crate::app) root: gtk::Box,
     pub(in crate::app) back_button: gtk::Button,
     pub(in crate::app) submit_button: gtk::Button,
-    pub(in crate::app) close_button: gtk::Button,
     pub(in crate::app) search_bar: gtk::SearchBar,
     pub(in crate::app) search_entry: gtk::SearchEntry,
     pub(in crate::app) stack: gtk::Stack,
@@ -101,11 +100,6 @@ pub(in crate::app) fn build_action_dialog_shell(
     submit_content.set_icon_name(submit_icon_name);
     submit_button.set_tooltip_text(Some(&tr(submit_tooltip)));
 
-    let close_button = builder
-        .object::<gtk::Button>("action_close_button")
-        .expect("action-dialog.ui should define action_close_button");
-    close_button.set_tooltip_text(Some(&tr("Close")));
-
     let search_bar = builder
         .object::<gtk::SearchBar>("action_search_bar")
         .expect("action-dialog.ui should define action_search_bar");
@@ -124,7 +118,6 @@ pub(in crate::app) fn build_action_dialog_shell(
         root,
         back_button,
         submit_button,
-        close_button,
         search_bar,
         search_entry,
         stack,

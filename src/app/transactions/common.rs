@@ -506,11 +506,6 @@ fn show_transaction_rule_dialog(
         .child(&shell.root)
         .build();
 
-    let dialog_for_close = dialog.clone();
-    shell.close_button.connect_clicked(move |_| {
-        dialog_for_close.close();
-    });
-
     let ui_for_save = Rc::clone(ui_handles);
     let dialog_for_save = dialog.clone();
     ui::connect_button_activation(&save_button, move |button| {
@@ -812,11 +807,6 @@ fn show_transaction_budget_code_dialog(
         .child(&shell.root)
         .build();
     ui::connect_search_shortcut(&shell.root, &shell.search_bar, &shell.search_entry);
-
-    let dialog_for_close = dialog.clone();
-    shell.close_button.connect_clicked(move |_| {
-        dialog_for_close.close();
-    });
 
     let shell_for_back = shell.page_handle();
     shell.back_button.connect_clicked(move |_| {

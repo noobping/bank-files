@@ -845,11 +845,6 @@ fn show_move_budget_code_dialog(
         .child(&shell.root)
         .build();
 
-    let dialog_for_close = dialog.clone();
-    shell.close_button.connect_clicked(move |_| {
-        dialog_for_close.close();
-    });
-
     let dialog_for_move = dialog.clone();
     let rules_forms_for_move = Rc::clone(rules_forms);
     let budgets_forms_for_move = Rc::clone(budgets_forms);

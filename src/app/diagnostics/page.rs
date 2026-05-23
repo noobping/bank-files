@@ -1062,11 +1062,6 @@ fn show_transaction_pattern_rule_dialog(
         .child(&shell.root)
         .build();
 
-    let dialog_for_close = dialog.clone();
-    shell.close_button.connect_clicked(move |_| {
-        dialog_for_close.close();
-    });
-
     let ui_for_save = Rc::clone(ui_handles);
     let dialog_for_save = dialog.clone();
     ui::connect_button_activation(&save_button, move |button| {
