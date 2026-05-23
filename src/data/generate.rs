@@ -11,6 +11,7 @@ const PLANNED_INCOME_CODE: &str = "INC";
 const GENERATED_NOTE: &str =
     "Generated from {count} complete imported year(s), covering {months} month(s), on {date}.";
 const GENERATED_RULE_NOTE: &str = "Generated from automatic configuration.";
+const SMART_INSIGHTS_REQUIRED_MESSAGE: &str = "Automatic Configuration requires Smart Insights.";
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct GeneratedConfigurationSummary {
@@ -44,17 +45,15 @@ pub fn generate_automatic_configuration(
     data: &AppData,
     smart_insights_enabled: bool,
 ) -> Result<GeneratedConfiguration> {
+    ensure_smart_insights_for_automatic_configuration(smart_insights_enabled)?;
+
     let transactions = uncategorized_transactions(&data.transactions);
     let period = generation_period(&transactions);
     let analysis_transactions = complete_period_transactions(&transactions, &period);
-    let patterns = if smart_insights_enabled {
-        analytics::transaction_pattern_analysis(
-            &analysis_transactions,
-            data.dedupe_mode.is_enabled(),
-        )
-    } else {
-        Default::default()
-    };
+    let patterns = analytics::transaction_pattern_analysis(
+        &analysis_transactions,
+        data.dedupe_mode.is_enabled(),
+    );
     let ignored_patterns = generated_ignored_patterns(&patterns.patterns);
     let mut excluded_keys = cancellation_pattern_keys(&patterns.patterns);
     excluded_keys.extend(transfer_pattern_keys(&patterns.patterns));
@@ -73,7 +72,6 @@ pub fn generate_automatic_configuration(
         &analysis_transactions,
         &excluded_keys,
         &period,
-        smart_insights_enabled,
         &mut reserved_codes,
         &mut budgets,
         &mut rules,
@@ -109,6 +107,14 @@ pub fn generated_budget_code_for_category(category: &str, existing_codes: &[Stri
         .map(|code| budget_code_key(code))
         .collect::<HashSet<_>>();
     generated_budget_code_with_reserved(category, &reserved)
+}
+
+fn ensure_smart_insights_for_automatic_configuration(smart_insights_enabled: bool) -> Result<()> {
+    if smart_insights_enabled {
+        Ok(())
+    } else {
+        anyhow::bail!(SMART_INSIGHTS_REQUIRED_MESSAGE)
+    }
 }
 
 fn append_transfer_configuration(
@@ -166,7 +172,6 @@ fn append_grouped_transaction_configuration(
     transactions: &[Transaction],
     ignored_keys: &HashSet<String>,
     period: &GenerationPeriod,
-    smart_insights_enabled: bool,
     reserved_codes: &mut BTreeSet<String>,
     budgets: &mut Vec<EditableBudget>,
     rules: &mut Vec<EditableRule>,
@@ -175,7 +180,7 @@ fn append_grouped_transaction_configuration(
     for transaction in transactions {
         if transaction.amount == Decimal::ZERO
             || ignored_keys.contains(&transaction_key(transaction))
-            || (smart_insights_enabled && generated_transfer_hint(transaction))
+            || generated_transfer_hint(transaction)
         {
             continue;
         }
@@ -820,20 +825,12 @@ mod tests {
     }
 
     #[test]
-    fn smart_insights_disabled_skips_detected_transfer_configuration() {
+    fn automatic_configuration_requires_smart_insights() {
         let data = app_data(complete_year_transfer_pairs(2025));
 
-        let generated = generate_automatic_configuration(&data, false).unwrap();
+        let error = generate_automatic_configuration(&data, false).unwrap_err();
 
-        assert!(generated
-            .budgets
-            .iter()
-            .all(|budget| budget.code != TRANSFER_CODE));
-        assert!(generated
-            .rules
-            .iter()
-            .all(|rule| rule.budget_code != TRANSFER_CODE && rule.direction != "transfer"));
-        assert!(generated.ignored_patterns.is_empty());
+        assert!(format!("{error:#}").contains(SMART_INSIGHTS_REQUIRED_MESSAGE));
     }
 
     #[test]
