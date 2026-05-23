@@ -4,19 +4,29 @@
     "exporter": "optimum-cli export onnx",
     "intended_backend": "tract-onnx",
     "license": "mit",
+    "license_source": "huggingface-model-card",
     "model": "prajjwal1/bert-tiny",
+    "model_card_url": "https://huggingface.co/prajjwal1/bert-tiny",
+    "model_type": "bert",
+    "model_type_source": "workflow-env",
+    "revision": "6f75de8b60a9f8a2fdf7b69cbd86d9e64bcb3837",
     "task": "feature-extraction"
   },
-  "description": "Workflow-built candidate assets. The manifest intentionally stays placeholder:true until src/local_ai/mod.rs has model-specific classifier and generator adapters.",
+  "description": "License-verified model assets. The manifest intentionally stays placeholder:true until src/local_ai/mod.rs has model-specific classifier and generator adapters.",
   "format": "bank-files-local-ai-v1",
   "generator": "generator.safetensors",
   "generator_source": {
     "architecture": "t5",
     "intended_backend": "candle",
     "license": "apache-2.0",
-    "model": "google/t5-efficient-tiny"
+    "license_source": "huggingface-model-card",
+    "model": "google/t5-efficient-tiny",
+    "model_card_url": "https://huggingface.co/google/t5-efficient-tiny",
+    "model_type": "t5",
+    "model_type_source": "config.json",
+    "revision": "3441d7e8bf3f89841f366d39452b95200416e4a9"
   },
   "placeholder": true,
-  "runtime_status": "bootstrap-only",
+  "runtime_status": "assets-built-runtime-adapter-pending",
   "tokenizer": "tokenizer.json"
 }
