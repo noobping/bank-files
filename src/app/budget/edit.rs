@@ -87,7 +87,7 @@ struct BudgetSaveUi {
     delete_button: Option<gtk::Button>,
     delete_button_sensitive: bool,
     status: gtk::Label,
-    dialog: adw::Dialog,
+    dialog: adw::Window,
 }
 
 fn save_budget_with_reload(
@@ -275,13 +275,14 @@ pub(in crate::app) fn show_budget_edit_dialog(
     page.append(&status);
     root.append(&ui::scroll(&page));
 
-    let dialog = adw::Dialog::builder()
-        .title(tr("Edit Budget"))
-        .content_width(620)
-        .content_height(620)
-        .default_widget(&save_button)
-        .child(&root)
-        .build();
+    let dialog = ui::popup_window(
+        &ui_handles.window,
+        "Edit Budget",
+        620,
+        Some(620),
+        &save_button,
+        &root,
+    );
 
     let state_for_save = Rc::clone(state);
     let ui_for_save = Rc::clone(ui_handles);
@@ -345,14 +346,14 @@ pub(in crate::app) fn show_budget_edit_dialog(
         ui_handles: Rc::clone(ui_handles),
     });
 
-    dialog.present(Some(&ui_handles.window));
+    dialog.present();
 }
 
 struct BudgetDeleteAction<'a> {
     delete_button: &'a gtk::Button,
     save_button: &'a gtk::Button,
     status: &'a gtk::Label,
-    dialog: &'a adw::Dialog,
+    dialog: &'a adw::Window,
     code: String,
     state: Rc<RefCell<AppData>>,
     ui_handles: Rc<UiHandles>,
@@ -533,13 +534,14 @@ fn show_planned_income_budget_edit_dialog(
     page.append(&status);
     root.append(&ui::scroll(&page));
 
-    let dialog = adw::Dialog::builder()
-        .title(tr("Edit Planned Income"))
-        .content_width(620)
-        .content_height(620)
-        .default_widget(&save_button)
-        .child(&root)
-        .build();
+    let dialog = ui::popup_window(
+        &ui_handles.window,
+        "Edit Planned Income",
+        620,
+        Some(620),
+        &save_button,
+        &root,
+    );
 
     let state_for_save = Rc::clone(state);
     let ui_for_save = Rc::clone(ui_handles);
@@ -584,7 +586,7 @@ fn show_planned_income_budget_edit_dialog(
         ui_handles: Rc::clone(ui_handles),
     });
 
-    dialog.present(Some(&ui_handles.window));
+    dialog.present();
 }
 
 fn editable_budget_for(code: &str, fallback_category: &str) -> (EditableBudget, bool) {

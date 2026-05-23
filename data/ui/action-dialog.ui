@@ -7,7 +7,7 @@
     <property name="spacing">0</property>
     <child>
       <object class="AdwHeaderBar" id="action_header">
-        <property name="show-start-title-buttons">False</property>
+        <property name="show-start-title-buttons">True</property>
         <property name="show-end-title-buttons">True</property>
         <child type="start">
           <object class="GtkStack" id="action_start_stack">

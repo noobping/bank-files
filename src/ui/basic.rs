@@ -95,19 +95,45 @@ pub fn loading_spinner() -> adw::Spinner {
 
 pub fn action_dialog_header() -> adw::HeaderBar {
     let header = adw::HeaderBar::new();
-    header.set_show_start_title_buttons(false);
-    header.set_show_end_title_buttons(false);
+    header.set_show_start_title_buttons(true);
+    header.set_show_end_title_buttons(true);
     header
 }
 
 pub fn cancelable_dialog_header(title: &str, subtitle: &str) -> adw::HeaderBar {
     let header = action_dialog_header();
-    header.set_show_end_title_buttons(true);
     header.set_title_widget(Some(&adw::WindowTitle::new(
         &gettext(title),
         &gettext(subtitle),
     )));
     header
+}
+
+pub fn popup_window(
+    parent: &impl IsA<gtk::Window>,
+    title: &str,
+    default_width: i32,
+    default_height: Option<i32>,
+    default_widget: &impl IsA<gtk::Widget>,
+    child: &impl IsA<gtk::Widget>,
+) -> adw::Window {
+    let mut builder = adw::Window::builder()
+        .title(gettext(title))
+        .default_width(default_width)
+        .default_widget(default_widget)
+        .transient_for(parent)
+        .destroy_with_parent(true)
+        .resizable(true)
+        .content(child);
+
+    if let Some(default_height) = default_height {
+        builder = builder.default_height(default_height);
+    }
+    if let Some(application) = parent.application() {
+        builder = builder.application(&application);
+    }
+
+    builder.build()
 }
 
 pub fn wrapped_label(text: &str) -> gtk::Label {

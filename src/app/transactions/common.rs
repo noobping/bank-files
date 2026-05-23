@@ -498,13 +498,14 @@ fn show_transaction_rule_dialog(
     page.append(&status);
     shell.add_form_page(&ui::action_dialog_scroll(&page));
 
-    let dialog = adw::Dialog::builder()
-        .title(tr("Create Rule"))
-        .content_width(680)
-        .content_height(-1)
-        .default_widget(&save_button)
-        .child(&shell.root)
-        .build();
+    let dialog = ui::popup_window(
+        &ui_handles.window,
+        "Create Rule",
+        680,
+        None,
+        &save_button,
+        &shell.root,
+    );
 
     let ui_for_save = Rc::clone(ui_handles);
     let dialog_for_save = dialog.clone();
@@ -542,7 +543,7 @@ fn show_transaction_rule_dialog(
         dialog_for_save.close();
     });
 
-    dialog.present(Some(&ui_handles.window));
+    dialog.present();
 }
 
 fn apply_transaction_direction_rule(tx: &Transaction, direction: &str, ui_handles: &Rc<UiHandles>) {
@@ -799,13 +800,14 @@ fn show_transaction_budget_code_dialog(
 
     shell.set_list_page();
 
-    let dialog = adw::Dialog::builder()
-        .title(tr(dialog_title))
-        .content_width(680)
-        .content_height(-1)
-        .default_widget(&shell.submit_button)
-        .child(&shell.root)
-        .build();
+    let dialog = ui::popup_window(
+        &ui_handles.window,
+        dialog_title,
+        680,
+        None,
+        &shell.submit_button,
+        &shell.root,
+    );
     ui::connect_search_shortcut(&shell.root, &shell.search_bar, &shell.search_entry);
 
     let shell_for_back = shell.page_handle();
@@ -936,7 +938,7 @@ fn show_transaction_budget_code_dialog(
         });
     });
 
-    dialog.present(Some(&ui_handles.window));
+    dialog.present();
 }
 
 fn transaction_budget_move_dialog_title(match_name: &str, fallback_title: &str) -> String {
