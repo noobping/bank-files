@@ -256,6 +256,8 @@ fn transaction_detail_actions(
 
     let safe_actions = ui::linked_button_group();
     safe_actions.set_halign(gtk::Align::Start);
+    let search_actions = ui::linked_button_group();
+    search_actions.set_halign(gtk::Align::Start);
     let advanced_actions = ui::linked_button_group();
     advanced_actions.set_halign(gtk::Align::Start);
 
@@ -337,7 +339,7 @@ fn transaction_detail_actions(
             "Showing similar transactions.",
         );
     });
-    safe_actions.append(&button);
+    search_actions.append(&button);
 
     if visible_actions.contains(&TransactionDetailAction::FindPattern) {
         let tx_for_pattern = tx.clone();
@@ -355,7 +357,7 @@ fn transaction_detail_actions(
                 &similar_transaction_query(&tx_for_pattern),
             );
         });
-        safe_actions.append(&button);
+        search_actions.append(&button);
     }
 
     if visible_actions.contains(&TransactionDetailAction::CreateRule) {
@@ -398,6 +400,9 @@ fn transaction_detail_actions(
 
     if safe_actions.first_child().is_some() {
         actions.append(&safe_actions);
+    }
+    if search_actions.first_child().is_some() {
+        actions.append(&search_actions);
     }
     if advanced_actions.first_child().is_some() {
         actions.append(&advanced_actions);
