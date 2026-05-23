@@ -123,11 +123,7 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     button.set_focus_on_click(false);
     button.set_child(Some(&button_content));
 
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 10);
-    root.set_margin_top(10);
-    root.set_margin_bottom(10);
-    root.set_margin_start(10);
-    root.set_margin_end(10);
+    let root = ui::compact_popover_root();
 
     let header = gtk::Box::new(gtk::Orientation::Horizontal, 8);
     header.set_hexpand(true);

@@ -221,12 +221,7 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     button.set_focus_on_click(false);
     button.set_child(Some(&button_content));
 
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 10);
-    root.set_margin_top(10);
-    root.set_margin_bottom(10);
-    root.set_margin_start(10);
-    root.set_margin_end(10);
-    root.set_size_request(420, -1);
+    let root = ui::compact_popover_root();
 
     let header = gtk::Box::new(gtk::Orientation::Horizontal, 8);
     header.set_hexpand(true);
@@ -236,10 +231,16 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     title.add_css_class("heading");
     title.set_selectable(false);
     title.set_xalign(0.0);
+    title.set_width_chars(1);
+    title.set_max_width_chars(28);
+    title.set_ellipsize(gtk::pango::EllipsizeMode::End);
     let summary = gtk::Label::new(None);
     summary.add_css_class("dim-label");
     summary.set_selectable(false);
     summary.set_xalign(0.0);
+    summary.set_width_chars(1);
+    summary.set_max_width_chars(34);
+    summary.set_ellipsize(gtk::pango::EllipsizeMode::End);
     title_box.append(&title);
     title_box.append(&summary);
 
@@ -428,6 +429,7 @@ fn operation_row(
         .build();
 
     let content = gtk::Box::new(gtk::Orientation::Horizontal, 10);
+    content.set_hexpand(true);
     content.set_margin_top(8);
     content.set_margin_bottom(8);
     content.set_margin_start(10);
@@ -440,6 +442,8 @@ fn operation_row(
     let title = gtk::Label::new(Some(&operation_title(&operation.kind)));
     title.set_selectable(false);
     title.set_xalign(0.0);
+    title.set_width_chars(1);
+    title.set_max_width_chars(20);
     title.set_ellipsize(gtk::pango::EllipsizeMode::End);
     title.set_hexpand(true);
     header.append(&title);
@@ -453,6 +457,9 @@ fn operation_row(
     status.add_css_class("dim-label");
     status.set_selectable(false);
     status.set_xalign(1.0);
+    status.set_width_chars(1);
+    status.set_max_width_chars(10);
+    status.set_ellipsize(gtk::pango::EllipsizeMode::End);
     header.append(&status);
     labels.append(&header);
 
@@ -460,6 +467,8 @@ fn operation_row(
     subtitle.set_selectable(false);
     subtitle.add_css_class("dim-label");
     subtitle.set_xalign(0.0);
+    subtitle.set_width_chars(1);
+    subtitle.set_max_width_chars(34);
     subtitle.set_ellipsize(gtk::pango::EllipsizeMode::End);
     labels.append(&subtitle);
 
@@ -468,6 +477,8 @@ fn operation_row(
         error.set_selectable(false);
         error.add_css_class("error");
         error.set_xalign(0.0);
+        error.set_width_chars(1);
+        error.set_max_width_chars(34);
         error.set_ellipsize(gtk::pango::EllipsizeMode::End);
         labels.append(&error);
     }

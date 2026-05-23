@@ -498,11 +498,7 @@ fn show_status_history_popover(
         return;
     }
 
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 10);
-    root.set_margin_top(10);
-    root.set_margin_bottom(10);
-    root.set_margin_start(10);
-    root.set_margin_end(10);
+    let root = ui::compact_popover_root();
 
     let header = build_status_history_header();
     root.append(&header.stack);
