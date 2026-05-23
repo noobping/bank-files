@@ -2,31 +2,6 @@ name: Download AI assets
 
 on:
   workflow_dispatch:
-    inputs:
-      branch:
-        description: Branch to update. Defaults to the branch used to run the workflow.
-        required: false
-        type: string
-      classifier_url:
-        description: URL for data/ai/classifier.onnx. Falls back to BANK_FILES_AI_CLASSIFIER_URL.
-        required: false
-        type: string
-      generator_url:
-        description: URL for data/ai/generator.safetensors. Falls back to BANK_FILES_AI_GENERATOR_URL.
-        required: false
-        type: string
-      tokenizer_url:
-        description: URL for data/ai/tokenizer.json. Falls back to BANK_FILES_AI_TOKENIZER_URL.
-        required: false
-        type: string
-      model_json_url:
-        description: URL for data/ai/model.json. Falls back to BANK_FILES_AI_MODEL_JSON_URL.
-        required: false
-        type: string
-      license_url:
-        description: URL for data/ai/LICENSE. Falls back to BANK_FILES_AI_LICENSE_URL.
-        required: false
-        type: string
 
 permissions:
   contents: write
@@ -35,128 +10,207 @@ concurrency:
   group: download-ai-assets-${{ github.ref }}
   cancel-in-progress: false
 
+env:
+  BANK_FILES_AI_CLASSIFIER_MODEL: prajjwal1/bert-tiny
+  BANK_FILES_AI_GENERATOR_MODEL: google/t5-efficient-tiny
+  BANK_FILES_AI_MAX_FILE_MB: "95"
+
 jobs:
   download-ai-assets:
-    name: Download and commit AI assets
+    name: Build and commit AI assets
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch || github.ref_name }}
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
 
-      - name: Download assets
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install asset tools
         shell: bash
-        env:
-          INPUT_CLASSIFIER_URL: ${{ inputs.classifier_url }}
-          INPUT_GENERATOR_URL: ${{ inputs.generator_url }}
-          INPUT_TOKENIZER_URL: ${{ inputs.tokenizer_url }}
-          INPUT_MODEL_JSON_URL: ${{ inputs.model_json_url }}
-          INPUT_LICENSE_URL: ${{ inputs.license_url }}
-          VAR_CLASSIFIER_URL: ${{ vars.BANK_FILES_AI_CLASSIFIER_URL }}
-          VAR_GENERATOR_URL: ${{ vars.BANK_FILES_AI_GENERATOR_URL }}
-          VAR_TOKENIZER_URL: ${{ vars.BANK_FILES_AI_TOKENIZER_URL }}
-          VAR_MODEL_JSON_URL: ${{ vars.BANK_FILES_AI_MODEL_JSON_URL }}
-          VAR_LICENSE_URL: ${{ vars.BANK_FILES_AI_LICENSE_URL }}
-          SECRET_CLASSIFIER_URL: ${{ secrets.BANK_FILES_AI_CLASSIFIER_URL }}
-          SECRET_GENERATOR_URL: ${{ secrets.BANK_FILES_AI_GENERATOR_URL }}
-          SECRET_TOKENIZER_URL: ${{ secrets.BANK_FILES_AI_TOKENIZER_URL }}
-          SECRET_MODEL_JSON_URL: ${{ secrets.BANK_FILES_AI_MODEL_JSON_URL }}
-          SECRET_LICENSE_URL: ${{ secrets.BANK_FILES_AI_LICENSE_URL }}
         run: |
           set -euo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install \
+            "optimum[onnxruntime,exporters]" \
+            "transformers" \
+            "torch" \
+            "sentencepiece" \
+            "huggingface_hub" \
+            "safetensors" \
+            "tokenizers" \
+            "onnx"
 
-          resolve_url() {
-            local input_value="$1"
-            local variable_value="$2"
-            local secret_value="$3"
-            local asset_name="$4"
-
-            if [ -n "$input_value" ]; then
-              printf '%s' "$input_value"
-            elif [ -n "$variable_value" ]; then
-              printf '%s' "$variable_value"
-            elif [ -n "$secret_value" ]; then
-              printf '%s' "$secret_value"
-            else
-              echo "Missing URL for ${asset_name}. Provide a workflow input, repo variable, or secret." >&2
-              exit 1
-            fi
-          }
-
-          classifier_url="$(resolve_url "$INPUT_CLASSIFIER_URL" "$VAR_CLASSIFIER_URL" "$SECRET_CLASSIFIER_URL" classifier.onnx)"
-          generator_url="$(resolve_url "$INPUT_GENERATOR_URL" "$VAR_GENERATOR_URL" "$SECRET_GENERATOR_URL" generator.safetensors)"
-          tokenizer_url="$(resolve_url "$INPUT_TOKENIZER_URL" "$VAR_TOKENIZER_URL" "$SECRET_TOKENIZER_URL" tokenizer.json)"
-          model_json_url="$(resolve_url "$INPUT_MODEL_JSON_URL" "$VAR_MODEL_JSON_URL" "$SECRET_MODEL_JSON_URL" model.json)"
-          license_url="$(resolve_url "$INPUT_LICENSE_URL" "$VAR_LICENSE_URL" "$SECRET_LICENSE_URL" LICENSE)"
+      - name: Build assets from Hugging Face
+        shell: bash
+        run: |
+          set -euo pipefail
 
           tmp_dir="$(mktemp -d)"
           trap 'rm -rf "$tmp_dir"' EXIT
 
-          download_asset() {
-            local url="$1"
-            local output="$2"
-            local name="$3"
+          optimum-cli export onnx \
+            --model "$BANK_FILES_AI_CLASSIFIER_MODEL" \
+            --task feature-extraction \
+            "$tmp_dir/classifier-onnx"
 
-            echo "Downloading ${name}..."
-            local curl_args=(
-              --fail
-              --location
-              --retry 3
-              --retry-delay 5
-              --show-error
-              --silent
-              --output "$output"
-              "$url"
-            )
-            curl "${curl_args[@]}"
-            test -s "$output"
+          onnx_path="$(find "$tmp_dir/classifier-onnx" -type f -name '*.onnx' | sort | head -n 1)"
+          if [ -z "$onnx_path" ]; then
+            echo "Optimum did not produce a classifier ONNX file." >&2
+            exit 1
+          fi
+
+          python - "$tmp_dir" <<'PY'
+          import json
+          import os
+          import shutil
+          import sys
+          from pathlib import Path
+
+          from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+
+          tmp_dir = Path(sys.argv[1])
+          generator_dir = tmp_dir / "generator"
+          generator_dir.mkdir(parents=True, exist_ok=True)
+
+          classifier_model = os.environ["BANK_FILES_AI_CLASSIFIER_MODEL"]
+          generator_model = os.environ["BANK_FILES_AI_GENERATOR_MODEL"]
+          max_shard_size = f"{os.environ.get('BANK_FILES_AI_MAX_FILE_MB', '95')}MB"
+
+          tokenizer = AutoTokenizer.from_pretrained(generator_model, use_fast=True)
+          model = AutoModelForSeq2SeqLM.from_pretrained(generator_model)
+          model.save_pretrained(
+              generator_dir,
+              safe_serialization=True,
+              max_shard_size=max_shard_size,
+          )
+          tokenizer.save_pretrained(generator_dir)
+
+          safetensors_files = sorted(generator_dir.glob("*.safetensors"))
+          if len(safetensors_files) != 1:
+              names = ", ".join(path.name for path in safetensors_files) or "none"
+              raise SystemExit(f"Expected one generator safetensors file, found: {names}")
+          if safetensors_files[0].name != "model.safetensors":
+              shutil.copy2(safetensors_files[0], generator_dir / "model.safetensors")
+
+          if not (generator_dir / "tokenizer.json").is_file():
+              raise SystemExit("Generator tokenizer did not produce tokenizer.json")
+
+          manifest = {
+              "format": "bank-files-local-ai-v1",
+              "placeholder": True,
+              "classifier": "classifier.onnx",
+              "generator": "generator.safetensors",
+              "tokenizer": "tokenizer.json",
+              "classifier_source": {
+                  "model": classifier_model,
+                  "task": "feature-extraction",
+                  "exporter": "optimum-cli export onnx",
+                  "intended_backend": "tract-onnx",
+                  "license": "mit",
+              },
+              "generator_source": {
+                  "model": generator_model,
+                  "architecture": "t5",
+                  "intended_backend": "candle",
+                  "license": "apache-2.0",
+              },
+              "runtime_status": "bootstrap-only",
+              "description": (
+                  "Workflow-built candidate assets. The manifest intentionally "
+                  "stays placeholder:true until src/local_ai/mod.rs has "
+                  "model-specific classifier and generator adapters."
+              ),
           }
+          (tmp_dir / "model.json").write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
 
-          download_asset "$classifier_url" "$tmp_dir/classifier.onnx" classifier.onnx
-          download_asset "$generator_url" "$tmp_dir/generator.safetensors" generator.safetensors
-          download_asset "$tokenizer_url" "$tmp_dir/tokenizer.json" tokenizer.json
-          download_asset "$model_json_url" "$tmp_dir/model.json" model.json
-          download_asset "$license_url" "$tmp_dir/LICENSE" LICENSE
+          license_lines = [
+              "Bank Files local AI bootstrap assets",
+              "",
+              "This bundle was generated by .github/workflows/download-ai-assets.yml.",
+              "It is not a production-ready inference bundle yet; model.json intentionally",
+              "keeps placeholder=true until the Rust local AI adapters implement the matching",
+              "architecture, inputs, outputs, and validation tests.",
+              "",
+              f"Classifier source: {classifier_model}",
+              "Declared license: MIT",
+              f"Source: https://huggingface.co/{classifier_model}",
+              "",
+              f"Generator/tokenizer source: {generator_model}",
+              "Declared license: Apache-2.0",
+              f"Source: https://huggingface.co/{generator_model}",
+              "",
+              "Before shipping these assets as enabled local AI, re-check the upstream model",
+              "cards and license files, define the final model.json schema, and keep generated",
+              "configuration output behind the existing validators.",
+          ]
+          (tmp_dir / "LICENSE").write_text(
+              "\n".join(license_lines) + "\n",
+              encoding="utf-8",
+          )
+          PY
 
           mkdir -p data/ai
-          install -m 0644 "$tmp_dir/classifier.onnx" data/ai/classifier.onnx
-          install -m 0644 "$tmp_dir/generator.safetensors" data/ai/generator.safetensors
-          install -m 0644 "$tmp_dir/tokenizer.json" data/ai/tokenizer.json
+          install -m 0644 "$onnx_path" data/ai/classifier.onnx
+          install -m 0644 "$tmp_dir/generator/model.safetensors" data/ai/generator.safetensors
+          install -m 0644 "$tmp_dir/generator/tokenizer.json" data/ai/tokenizer.json
           install -m 0644 "$tmp_dir/model.json" data/ai/model.json
           install -m 0644 "$tmp_dir/LICENSE" data/ai/LICENSE
 
-      - name: Validate downloaded bundle
+      - name: Validate generated bundle
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
+          python - <<'PY'
           import json
+          import os
           from pathlib import Path
 
-          root = Path('data/ai')
+          import onnx
+          from safetensors import safe_open
+
+          root = Path("data/ai")
           required = [
-              'classifier.onnx',
-              'generator.safetensors',
-              'tokenizer.json',
-              'model.json',
-              'LICENSE',
+              "classifier.onnx",
+              "generator.safetensors",
+              "tokenizer.json",
+              "model.json",
+              "LICENSE",
           ]
+          max_bytes = int(os.environ.get("BANK_FILES_AI_MAX_FILE_MB", "95")) * 1024 * 1024
 
           for name in required:
               path = root / name
               if not path.is_file() or path.stat().st_size == 0:
-                  raise SystemExit(f'{path} is missing or empty')
+                  raise SystemExit(f"{path} is missing or empty")
+              if path.stat().st_size > max_bytes:
+                  raise SystemExit(f"{path} is larger than {max_bytes} bytes")
 
-          model = json.loads((root / 'model.json').read_text(encoding='utf-8'))
-          if model.get('placeholder') is True:
-              raise SystemExit('data/ai/model.json still marks the bundle as a placeholder')
+          onnx.checker.check_model(str(root / "classifier.onnx"))
 
-          tokenizer = json.loads((root / 'tokenizer.json').read_text(encoding='utf-8'))
-          if isinstance(tokenizer, dict) and tokenizer.get('placeholder') is True:
-              raise SystemExit('data/ai/tokenizer.json still marks the bundle as a placeholder')
+          with safe_open(root / "generator.safetensors", framework="pt", device="cpu") as weights:
+              if not list(weights.keys()):
+                  raise SystemExit("generator.safetensors contains no tensors")
+
+          tokenizer = json.loads((root / "tokenizer.json").read_text(encoding="utf-8"))
+          if not isinstance(tokenizer, dict) or tokenizer.get("placeholder") is True:
+              raise SystemExit("tokenizer.json is not a real tokenizer file")
+
+          manifest = json.loads((root / "model.json").read_text(encoding="utf-8"))
+          if manifest.get("placeholder") is not True:
+              raise SystemExit(
+                  "model.json must remain placeholder:true until runtime adapters exist"
+              )
           PY
 
       - name: Commit changes
