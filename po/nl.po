@@ -72,6 +72,12 @@ msgstr "Snel herladen"
 msgid "Reload All"
 msgstr "Alles herladen"
 
+msgid "Only part of the CSV records is loaded"
+msgstr "Slechts een deel van de CSV-records is geladen"
+
+msgid "{loaded} / {total} CSV records are loaded to keep this page fast. Use Reload All for a full forced reload; that can take some time."
+msgstr "{loaded} / {total} CSV-records zijn geladen om deze pagina snel te houden. Gebruik Alles herladen voor een volledige geforceerde herlaadactie; dat kan even duren."
+
 msgid "Force reload all CSV files"
 msgstr "Alle CSV-bestanden geforceerd herladen"
 

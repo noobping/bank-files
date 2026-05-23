@@ -10,6 +10,7 @@ struct CsvPlan {
     headers: Vec<String>,
     field_map: FieldMap,
     available_months: Vec<MonthKey>,
+    records_total: usize,
     sort_order: DateSortOrder,
 }
 
@@ -185,7 +186,7 @@ fn plan_csv(path: &Path, aliases: &FieldAliases) -> Result<CsvPlan> {
         .map(|record| decode_record(&record))
         .collect::<Vec<_>>();
     let field_map = guess_field_map(&headers, &sample, aliases);
-    let (available_months, sort_order) =
+    let (available_months, records_total, sort_order) =
         scan_available_months(path, delimiter, &headers, &field_map)?;
 
     Ok(CsvPlan {
@@ -194,6 +195,7 @@ fn plan_csv(path: &Path, aliases: &FieldAliases) -> Result<CsvPlan> {
         headers,
         field_map,
         available_months,
+        records_total,
         sort_order,
     })
 }
@@ -210,6 +212,7 @@ fn import_planned_csv(
         source: plan.path.clone(),
         delimiter: plan.delimiter,
         headers: plan.headers.clone(),
+        records_total: plan.records_total,
         guessed_fields: plan.field_map.clone(),
         ..Default::default()
     };
@@ -288,11 +291,12 @@ fn scan_available_months(
     delimiter: char,
     headers: &[String],
     field_map: &FieldMap,
-) -> Result<(Vec<MonthKey>, DateSortOrder)> {
+) -> Result<(Vec<MonthKey>, usize, DateSortOrder)> {
     let Some(date_index) = column_index(headers, &field_map.date) else {
-        return Ok((Vec::new(), DateSortOrder::Unknown));
+        return Ok((Vec::new(), 0, DateSortOrder::Unknown));
     };
     let mut months = BTreeSet::new();
+    let mut records_total = 0;
     let mut last_date = None;
     let mut saw_ascending = false;
     let mut saw_descending = false;
@@ -301,6 +305,7 @@ fn scan_available_months(
 
     for result in rdr.byte_records() {
         let record = result?;
+        records_total += 1;
         let Some(date) = date_from_byte_record(&record, date_index) else {
             continue;
         };
@@ -321,7 +326,7 @@ fn scan_available_months(
         (false, false) => DateSortOrder::Unknown,
         (true, true) => DateSortOrder::Unsorted,
     };
-    Ok((months.into_iter().collect(), sort_order))
+    Ok((months.into_iter().collect(), records_total, sort_order))
 }
 
 fn column_index(headers: &[String], column: &Option<String>) -> Option<usize> {

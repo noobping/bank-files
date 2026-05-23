@@ -27,6 +27,7 @@ pub(in crate::app) fn render_transactions_page(
             state,
         ));
     }
+    append_partial_load_notice(&ui_handles.transactions, data);
 
     if data.transactions.is_empty() {
         if selected_year.is_some() {

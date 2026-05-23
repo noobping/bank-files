@@ -44,6 +44,7 @@ pub(in crate::app) fn render_budget_page(
     );
 
     if data.transactions.is_empty() {
+        append_partial_load_notice(&ui_handles.categories, data);
         ui_handles.categories.append(&empty_page(
             "view-list-symbolic",
             "No budget view yet",
@@ -53,6 +54,7 @@ pub(in crate::app) fn render_budget_page(
     }
 
     let Some(selected_month) = selected_month else {
+        append_partial_load_notice(&ui_handles.categories, data);
         ui_handles.categories.append(&empty_page(
             "view-list-symbolic",
             "No period found",
@@ -65,6 +67,7 @@ pub(in crate::app) fn render_budget_page(
     let budget_rows = analytics::budget_usage(&data.transactions, &data.budgets, selected_month);
     let warnings = monthly_budget_attention_warnings(data, selected_month);
     append_attention_warning_card(&ui_handles.categories, &warnings);
+    append_partial_load_notice(&ui_handles.categories, data);
 
     ui_handles
         .categories

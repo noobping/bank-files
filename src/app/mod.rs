@@ -147,7 +147,7 @@ use transactions::{
     append_page_header, current_page_snapshot, current_real_page_snapshot, filtered_transactions,
     render_transactions_page, search_empty_page,
 };
-use warning_cards::append_attention_warning_card;
+use warning_cards::{append_attention_warning_card, append_partial_load_notice};
 use warnings::{
     annual_budget_attention_warnings, attention_warning_messages, monthly_budget_attention_warnings,
 };

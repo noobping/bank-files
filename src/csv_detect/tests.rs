@@ -20,9 +20,11 @@ mod tests {
 
         assert!(outcome.warnings.is_empty(), "{:?}", outcome.warnings);
         assert_eq!(outcome.transactions.len(), 148);
+        assert_eq!(outcome.reports[0].records_total, 148);
         assert_eq!(outcome.reports[0].rows_seen, 148);
         assert_eq!(outcome.reports[0].rows_imported, 148);
         assert_eq!(outcome.reports[0].rows_skipped, 0);
+        assert_eq!(outcome.reports[0].loaded_records(), 148);
         assert_eq!(
             outcome.reports[0].headers,
             [
@@ -70,9 +72,11 @@ mod tests {
 
             assert!(outcome.warnings.is_empty(), "{:?}", outcome.warnings);
             assert_eq!(outcome.transactions.len(), 12);
+            assert_eq!(outcome.reports[0].records_total, 12);
             assert_eq!(outcome.reports[0].rows_seen, 12);
             assert_eq!(outcome.reports[0].rows_imported, 12);
             assert_eq!(outcome.reports[0].rows_skipped, 0);
+            assert_eq!(outcome.reports[0].loaded_records(), 12);
         }
     }
 
@@ -216,7 +220,9 @@ mod tests {
         )
         .unwrap();
 
+        assert_eq!(outcome.reports[0].records_total, 148);
         assert!(outcome.reports[0].rows_seen < 148);
+        assert!(outcome.reports[0].loaded_records() < outcome.reports[0].total_records());
         assert!(outcome
             .transactions
             .iter()
@@ -242,7 +248,9 @@ mod tests {
         .unwrap();
         let _ = fs::remove_file(path);
 
+        assert_eq!(outcome.reports[0].records_total, 4);
         assert_eq!(outcome.reports[0].rows_seen, 4);
+        assert_eq!(outcome.reports[0].loaded_records(), 2);
         assert_eq!(outcome.transactions.len(), 2);
         assert!(outcome.transactions.iter().all(|tx| tx.year() == 2025));
     }

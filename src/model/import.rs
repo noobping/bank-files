@@ -7,11 +7,25 @@ pub struct ImportReport {
     pub source: PathBuf,
     pub delimiter: char,
     pub headers: Vec<String>,
+    #[serde(default)]
+    pub records_total: usize,
     pub rows_seen: usize,
     pub rows_imported: usize,
     pub rows_skipped: usize,
     pub errors: Vec<String>,
     pub guessed_fields: FieldMap,
+}
+
+impl ImportReport {
+    pub fn loaded_records(&self) -> usize {
+        self.rows_imported + self.rows_skipped
+    }
+
+    pub fn total_records(&self) -> usize {
+        self.records_total
+            .max(self.loaded_records())
+            .max(self.rows_seen)
+    }
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]

@@ -72,6 +72,12 @@ msgstr "Schnell neu laden"
 msgid "Reload All"
 msgstr "Alles neu laden"
 
+msgid "Only part of the CSV records is loaded"
+msgstr "Nur ein Teil der CSV-Datensätze ist geladen"
+
+msgid "{loaded} / {total} CSV records are loaded to keep this page fast. Use Reload All for a full forced reload; that can take some time."
+msgstr "{loaded} / {total} CSV-Datensätze sind geladen, damit diese Seite schnell bleibt. Verwende Alles neu laden für ein vollständiges erzwungenes Neuladen; das kann etwas dauern."
+
 msgid "Force reload all CSV files"
 msgstr "Alle CSV-Dateien erzwungen neu laden"
 
