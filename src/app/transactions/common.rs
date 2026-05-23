@@ -254,12 +254,15 @@ fn transaction_detail_actions(
     let actions = gtk::Box::new(gtk::Orientation::Vertical, 6);
     actions.set_hexpand(true);
 
-    let safe_actions = ui::linked_button_group();
-    safe_actions.set_halign(gtk::Align::Start);
-    let search_actions = ui::linked_button_group();
-    search_actions.set_halign(gtk::Align::Start);
-    let advanced_actions = ui::linked_button_group();
-    advanced_actions.set_halign(gtk::Align::Start);
+    let primary_actions = ui::linked_button_group();
+    primary_actions.set_halign(gtk::Align::Start);
+    let menu_items = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    menu_items.set_margin_top(6);
+    menu_items.set_margin_bottom(6);
+    menu_items.set_margin_start(6);
+    menu_items.set_margin_end(6);
+    let menu_popover = gtk::Popover::new();
+    menu_popover.set_child(Some(&menu_items));
 
     let advanced_features = ui_handles.advanced_features.get();
     let smart_patterns_enabled = smart_pattern_detection_enabled(ui_handles.show_predictions.get());
@@ -295,51 +298,28 @@ fn transaction_detail_actions(
         move_button.connect_clicked(move |_| {
             show_transaction_budget_code_dialog(&tx_for_change, &state_for_change, &ui_for_change);
         });
-        safe_actions.append(&move_button);
+        primary_actions.append(&move_button);
     }
 
-    if visible_actions.contains(&TransactionDetailAction::MarkTransfer) {
-        let tx_for_transfer = tx.clone();
-        let ui_for_transfer = Rc::clone(ui_handles);
+    if visible_actions.contains(&TransactionDetailAction::Similar) {
+        let tx_for_similar = tx.clone();
+        let state_for_similar = Rc::clone(state);
+        let ui_for_similar = Rc::clone(ui_handles);
         let button = ui::plain_text_icon_button(
-            "send-to-symbolic",
-            "Mark transfer",
-            "Create a transfer rule from this transaction",
+            "edit-find-symbolic",
+            "Similar",
+            "Show similar transactions",
         );
-        register_config_widget(ui_handles, &button);
         button.connect_clicked(move |_| {
-            apply_transaction_direction_rule(&tx_for_transfer, "transfer", &ui_for_transfer);
+            show_transactions_text_search(
+                &state_for_similar,
+                &ui_for_similar,
+                &similar_transaction_query(&tx_for_similar),
+                "Showing similar transactions.",
+            );
         });
-        safe_actions.append(&button);
+        primary_actions.append(&button);
     }
-
-    let tx_for_fake = tx.clone();
-    let state_for_fake = Rc::clone(state);
-    let ui_for_fake = Rc::clone(ui_handles);
-    let button = ui::plain_text_icon_button(
-        "document-new-symbolic",
-        "Duplicate as Fake",
-        "Duplicate this transaction as a runtime fake transaction",
-    );
-    button.connect_clicked(move |_| {
-        duplicate_transaction_as_fake(&state_for_fake, &ui_for_fake, &tx_for_fake);
-    });
-    safe_actions.append(&button);
-
-    let tx_for_similar = tx.clone();
-    let state_for_similar = Rc::clone(state);
-    let ui_for_similar = Rc::clone(ui_handles);
-    let button =
-        ui::plain_text_icon_button("edit-find-symbolic", "Similar", "Show similar transactions");
-    button.connect_clicked(move |_| {
-        show_transactions_text_search(
-            &state_for_similar,
-            &ui_for_similar,
-            &similar_transaction_query(&tx_for_similar),
-            "Showing similar transactions.",
-        );
-    });
-    search_actions.append(&button);
 
     if visible_actions.contains(&TransactionDetailAction::FindPattern) {
         let tx_for_pattern = tx.clone();
@@ -357,34 +337,78 @@ fn transaction_detail_actions(
                 &similar_transaction_query(&tx_for_pattern),
             );
         });
-        search_actions.append(&button);
+        primary_actions.append(&button);
+    }
+
+    if visible_actions.contains(&TransactionDetailAction::MarkTransfer) {
+        let tx_for_transfer = tx.clone();
+        let ui_for_transfer = Rc::clone(ui_handles);
+        let popover_for_transfer = menu_popover.clone();
+        let button = ui::plain_text_icon_button(
+            "send-to-symbolic",
+            "Mark transfer",
+            "Create a transfer rule from this transaction",
+        );
+        button.add_css_class("flat");
+        register_config_widget(ui_handles, &button);
+        button.connect_clicked(move |_| {
+            popover_for_transfer.popdown();
+            apply_transaction_direction_rule(&tx_for_transfer, "transfer", &ui_for_transfer);
+        });
+        menu_items.append(&button);
+    }
+
+    if visible_actions.contains(&TransactionDetailAction::DuplicateAsFake) {
+        let tx_for_fake = tx.clone();
+        let state_for_fake = Rc::clone(state);
+        let ui_for_fake = Rc::clone(ui_handles);
+        let popover_for_fake = menu_popover.clone();
+        let button = ui::plain_text_icon_button(
+            "document-new-symbolic",
+            "Duplicate as Fake",
+            "Duplicate this transaction as a runtime fake transaction",
+        );
+        button.add_css_class("flat");
+        button.connect_clicked(move |_| {
+            popover_for_fake.popdown();
+            duplicate_transaction_as_fake(&state_for_fake, &ui_for_fake, &tx_for_fake);
+        });
+        menu_items.append(&button);
     }
 
     if visible_actions.contains(&TransactionDetailAction::CreateRule) {
         let tx_for_rule = tx.clone();
         let state_for_rule = Rc::clone(state);
         let ui_for_rule = Rc::clone(ui_handles);
+        let popover_for_rule = menu_popover.clone();
         let button = ui::plain_text_icon_button(
             "document-new-symbolic",
             "Create rule",
             "Create a categorization rule from this transaction",
         );
+        button.add_css_class("flat");
         register_config_widget(ui_handles, &button);
         button.connect_clicked(move |_| {
+            popover_for_rule.popdown();
             show_transaction_rule_dialog(&tx_for_rule, &state_for_rule, &ui_for_rule, None);
         });
-        advanced_actions.append(&button);
+        menu_items.append(&button);
+    }
 
+    if visible_actions.contains(&TransactionDetailAction::EditBudgetCode) {
         let tx_for_budget = tx.clone();
         let state_for_budget = Rc::clone(state);
         let ui_for_budget = Rc::clone(ui_handles);
+        let popover_for_budget = menu_popover.clone();
         let button = ui::plain_text_icon_button(
             "document-edit-symbolic",
             "Budget code",
             "Create or edit the budget code for this transaction",
         );
+        button.add_css_class("flat");
         register_exclusive_config_widget(ui_handles, &button);
         button.connect_clicked(move |_| {
+            popover_for_budget.popdown();
             let code = suggested_budget_code(&tx_for_budget, None);
             let category = suggested_category(&tx_for_budget, None);
             if config_operation_is_active(
@@ -395,17 +419,20 @@ fn transaction_detail_actions(
             }
             show_budget_edit_dialog(&code, &category, &state_for_budget, &ui_for_budget);
         });
-        advanced_actions.append(&button);
+        menu_items.append(&button);
     }
 
-    if safe_actions.first_child().is_some() {
-        actions.append(&safe_actions);
+    if menu_items.first_child().is_some() {
+        let more_button = gtk::MenuButton::builder()
+            .icon_name("view-more-symbolic")
+            .tooltip_text(tr("More"))
+            .build();
+        more_button.set_popover(Some(&menu_popover));
+        primary_actions.append(&more_button);
     }
-    if search_actions.first_child().is_some() {
-        actions.append(&search_actions);
-    }
-    if advanced_actions.first_child().is_some() {
-        actions.append(&advanced_actions);
+
+    if primary_actions.first_child().is_some() {
+        actions.append(&primary_actions);
     }
     actions
 }
