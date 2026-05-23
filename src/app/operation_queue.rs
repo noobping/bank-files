@@ -551,8 +551,7 @@ fn operation_row(
     summary.append(&actions);
     content.append(&summary);
 
-    let details =
-        ui::selectable_wrapped_label(&operation_details(&operation.kind, &operation.status));
+    let details = ui::wrapped_label(&operation_details(&operation.kind, &operation.status));
     details.add_css_class("dim-label");
     details.set_width_chars(1);
     details.set_max_width_chars(44);
