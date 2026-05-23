@@ -459,16 +459,15 @@ fn local_ai_availability(smart_insights_enabled: bool) -> LocalAiAvailability {
         return LocalAiAvailability::Disabled;
     }
 
-    for source in local_ai_model_sources() {
-        match model_dir_availability(source) {
-            Some(LocalAiAvailability::Available { source }) => {
-                return LocalAiAvailability::Available { source }
-            }
-            Some(LocalAiAvailability::RuntimeError(error)) => {
-                return LocalAiAvailability::RuntimeError(error)
-            }
-            _ => {}
+    let source_availability = local_ai_model_sources_availability(local_ai_model_sources());
+    match source_availability {
+        Some(LocalAiAvailability::Available { source }) => {
+            return LocalAiAvailability::Available { source }
         }
+        Some(LocalAiAvailability::RuntimeError(error)) => {
+            return LocalAiAvailability::RuntimeError(error)
+        }
+        _ => {}
     }
 
     #[cfg(feature = "embedded-ai-model")]
@@ -477,10 +476,39 @@ fn local_ai_availability(smart_insights_enabled: bool) -> LocalAiAvailability {
     }
 
     #[cfg(not(feature = "embedded-ai-model"))]
-    LocalAiAvailability::MissingModel(format!(
-        "model files were not found next to the executable or in the installed data directories ({})",
-        MODEL_ROOT
-    ))
+    {
+        let missing_model_reason = match source_availability {
+            Some(LocalAiAvailability::MissingModel(reason)) => Some(reason),
+            _ => None,
+        };
+        LocalAiAvailability::MissingModel(missing_model_reason.unwrap_or_else(|| {
+            format!(
+                "model files were not found next to the executable or in the installed data directories ({})",
+                MODEL_ROOT
+            )
+        }))
+    }
+}
+
+fn local_ai_model_sources_availability(
+    sources: Vec<LocalAiModelSource>,
+) -> Option<LocalAiAvailability> {
+    let mut missing_model_reason = None;
+    for source in sources {
+        match model_dir_availability(source) {
+            Some(LocalAiAvailability::Available { source }) => {
+                return Some(LocalAiAvailability::Available { source })
+            }
+            Some(LocalAiAvailability::RuntimeError(error)) => {
+                return Some(LocalAiAvailability::RuntimeError(error))
+            }
+            Some(LocalAiAvailability::MissingModel(reason)) => {
+                missing_model_reason.get_or_insert(reason);
+            }
+            _ => {}
+        }
+    }
+    missing_model_reason.map(LocalAiAvailability::MissingModel)
 }
 
 fn local_ai_model_sources() -> Vec<LocalAiModelSource> {
@@ -854,6 +882,22 @@ mod tests {
         let availability = model_dir_availability(LocalAiModelSource::Sidecar(dir))
             .expect("complete model dir should produce an availability value");
         assert!(matches!(availability, LocalAiAvailability::MissingModel(_)));
+    }
+
+    #[test]
+    fn source_scan_reports_placeholder_assets_before_generic_missing_message() {
+        let root = unique_test_dir("placeholder-source-scan");
+        let dir = root.join(MODEL_ROOT);
+        write_test_model_dir(&dir, true);
+
+        let availability =
+            local_ai_model_sources_availability(vec![LocalAiModelSource::Sidecar(dir)]);
+
+        assert!(matches!(
+            availability,
+            Some(LocalAiAvailability::MissingModel(reason))
+                if reason.contains("placeholder model assets")
+        ));
     }
 
     #[cfg(target_os = "linux")]
