@@ -13,6 +13,7 @@ concurrency:
 env:
   BANK_FILES_AI_CLASSIFIER_MODEL: prajjwal1/bert-tiny
   BANK_FILES_AI_GENERATOR_MODEL: google/t5-efficient-tiny
+  BANK_FILES_AI_ALLOWED_LICENSES: "apache-2.0 mit"
   BANK_FILES_AI_MAX_FILE_MB: "95"
 
 jobs:
@@ -55,8 +56,144 @@ jobs:
           tmp_dir="$(mktemp -d)"
           trap 'rm -rf "$tmp_dir"' EXIT
 
+          python - "$tmp_dir" <<'PY'
+          import json
+          import os
+          import sys
+          import urllib.request
+          from pathlib import Path
+
+          from huggingface_hub import HfApi, hf_hub_download, snapshot_download
+
+          SPDX_LICENSE_TEXT_URLS = {
+              "apache-2.0": "https://raw.githubusercontent.com/spdx/license-list-data/main/text/Apache-2.0.txt",
+              "mit": "https://raw.githubusercontent.com/spdx/license-list-data/main/text/MIT.txt",
+          }
+          LICENSE_FILE_CANDIDATES = (
+              "LICENSE",
+              "LICENSE.txt",
+              "LICENSE.md",
+              "COPYING",
+              "COPYING.txt",
+              "COPYING.md",
+              "NOTICE",
+              "NOTICE.txt",
+          )
+          LICENSE_ALIASES = {
+              "apache": "apache-2.0",
+              "apache 2": "apache-2.0",
+              "apache 2.0": "apache-2.0",
+              "apache-2": "apache-2.0",
+              "apache2": "apache-2.0",
+          }
+
+          def normalize_license(value):
+              normalized = str(value or "").strip().lower()
+              return LICENSE_ALIASES.get(normalized, normalized)
+
+          tmp_dir = Path(sys.argv[1])
+          classifier_model = os.environ["BANK_FILES_AI_CLASSIFIER_MODEL"]
+          generator_model = os.environ["BANK_FILES_AI_GENERATOR_MODEL"]
+          allowed_licenses = {
+              normalize_license(item)
+              for item in os.environ["BANK_FILES_AI_ALLOWED_LICENSES"].split()
+          }
+
+          def license_from_model_info(info):
+              card_data = getattr(info, "card_data", None)
+              if isinstance(card_data, dict):
+                  license_id = card_data.get("license")
+                  if license_id:
+                      return normalize_license(license_id)
+              elif card_data is not None:
+                  license_id = getattr(card_data, "license", None)
+                  if license_id:
+                      return normalize_license(license_id)
+
+              for tag in getattr(info, "tags", []) or []:
+                  if tag.startswith("license:"):
+                      return normalize_license(tag.split(":", 1)[1])
+
+              return ""
+
+          def read_url(url):
+              with urllib.request.urlopen(url, timeout=30) as response:
+                  return response.read().decode("utf-8")
+
+          def spdx_license_text(license_id):
+              url = SPDX_LICENSE_TEXT_URLS.get(license_id)
+              if not url:
+                  raise SystemExit(f"No SPDX text URL configured for license {license_id!r}")
+              text = read_url(url).strip()
+              if len(text) < 100:
+                  raise SystemExit(f"SPDX text for {license_id!r} looked too short")
+              return {"url": url, "text": text}
+
+          def optional_repo_license_files(model_id, revision):
+              files = []
+              for candidate in LICENSE_FILE_CANDIDATES:
+                  try:
+                      path = hf_hub_download(
+                          repo_id=model_id,
+                          repo_type="model",
+                          revision=revision,
+                          filename=candidate,
+                      )
+                  except Exception:
+                      continue
+                  text = Path(path).read_text(encoding="utf-8", errors="replace").strip()
+                  if text:
+                      files.append({"filename": candidate, "text": text})
+              return files
+
+          def collect_model_license(api, model_id, role):
+              info = api.model_info(model_id, repo_type="model")
+              revision = getattr(info, "sha", None)
+              if not revision:
+                  raise SystemExit(f"Could not resolve exact revision for {model_id}")
+
+              license_id = license_from_model_info(info)
+              if not license_id:
+                  raise SystemExit(f"{model_id} has no license metadata in its model card")
+              if license_id not in allowed_licenses:
+                  allowed = ", ".join(sorted(allowed_licenses))
+                  raise SystemExit(
+                      f"{model_id} declares license {license_id!r}, which is not in: {allowed}"
+                  )
+
+              return {
+                  "role": role,
+                  "model": model_id,
+                  "revision": revision,
+                  "license": license_id,
+                  "license_source": "huggingface-model-card",
+                  "model_card_url": f"https://huggingface.co/{model_id}",
+                  "spdx": spdx_license_text(license_id),
+                  "repo_license_files": optional_repo_license_files(model_id, revision),
+              }
+
+          api = HfApi()
+          models = {
+              "classifier": collect_model_license(api, classifier_model, "classifier"),
+              "generator": collect_model_license(api, generator_model, "generator"),
+          }
+
+          for key, entry in models.items():
+              snapshot_download(
+                  repo_id=entry["model"],
+                  repo_type="model",
+                  revision=entry["revision"],
+                  local_dir=tmp_dir / f"{key}-source",
+              )
+
+          (tmp_dir / "asset-metadata.json").write_text(
+              json.dumps(models, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
           optimum-cli export onnx \
-            --model "$BANK_FILES_AI_CLASSIFIER_MODEL" \
+            --model "$tmp_dir/classifier-source" \
             --task feature-extraction \
             "$tmp_dir/classifier-onnx"
 
@@ -76,15 +213,14 @@ jobs:
           from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
           tmp_dir = Path(sys.argv[1])
+          metadata = json.loads((tmp_dir / "asset-metadata.json").read_text(encoding="utf-8"))
           generator_dir = tmp_dir / "generator"
+          generator_source_dir = tmp_dir / "generator-source"
           generator_dir.mkdir(parents=True, exist_ok=True)
-
-          classifier_model = os.environ["BANK_FILES_AI_CLASSIFIER_MODEL"]
-          generator_model = os.environ["BANK_FILES_AI_GENERATOR_MODEL"]
           max_shard_size = f"{os.environ.get('BANK_FILES_AI_MAX_FILE_MB', '95')}MB"
 
-          tokenizer = AutoTokenizer.from_pretrained(generator_model, use_fast=True)
-          model = AutoModelForSeq2SeqLM.from_pretrained(generator_model)
+          tokenizer = AutoTokenizer.from_pretrained(generator_source_dir, use_fast=True)
+          model = AutoModelForSeq2SeqLM.from_pretrained(generator_source_dir)
           model.save_pretrained(
               generator_dir,
               safe_serialization=True,
@@ -115,21 +251,27 @@ jobs:
               "generator": "generator.safetensors",
               "tokenizer": "tokenizer.json",
               "classifier_source": {
-                  "model": classifier_model,
+                  "model": metadata["classifier"]["model"],
+                  "revision": metadata["classifier"]["revision"],
                   "task": "feature-extraction",
                   "exporter": "optimum-cli export onnx",
                   "intended_backend": "tract-onnx",
-                  "license": "mit",
+                  "license": metadata["classifier"]["license"],
+                  "license_source": metadata["classifier"]["license_source"],
+                  "model_card_url": metadata["classifier"]["model_card_url"],
               },
               "generator_source": {
-                  "model": generator_model,
+                  "model": metadata["generator"]["model"],
+                  "revision": metadata["generator"]["revision"],
                   "architecture": "t5",
                   "intended_backend": "candle",
-                  "license": "apache-2.0",
+                  "license": metadata["generator"]["license"],
+                  "license_source": metadata["generator"]["license_source"],
+                  "model_card_url": metadata["generator"]["model_card_url"],
               },
-              "runtime_status": "bootstrap-only",
+              "runtime_status": "assets-built-runtime-adapter-pending",
               "description": (
-                  "Workflow-built candidate assets. The manifest intentionally "
+                  "License-verified model assets. The manifest intentionally "
                   "stays placeholder:true until src/local_ai/mod.rs has "
                   "model-specific classifier and generator adapters."
               ),
@@ -140,27 +282,57 @@ jobs:
           )
 
           license_lines = [
-              "Bank Files local AI bootstrap assets",
+              "Bank Files local AI model assets",
               "",
-              "This bundle was generated by .github/workflows/download-ai-assets.yml.",
-              "It is not a production-ready inference bundle yet; model.json intentionally",
-              "keeps placeholder=true until the Rust local AI adapters implement the matching",
-              "architecture, inputs, outputs, and validation tests.",
+              "This file is generated by .github/workflows/download-ai-assets.yml.",
+              "Licenses are resolved from Hugging Face model card metadata and",
+              "the full license texts below are fetched from the SPDX license list.",
               "",
-              f"Classifier source: {classifier_model}",
-              "Declared license: MIT",
-              f"Source: https://huggingface.co/{classifier_model}",
-              "",
-              f"Generator/tokenizer source: {generator_model}",
-              "Declared license: Apache-2.0",
-              f"Source: https://huggingface.co/{generator_model}",
-              "",
-              "Before shipping these assets as enabled local AI, re-check the upstream model",
-              "cards and license files, define the final model.json schema, and keep generated",
-              "configuration output behind the existing validators.",
           ]
+          for entry in metadata.values():
+              license_lines.extend([
+                  f"Model role: {entry['role']}",
+                  f"Model: {entry['model']}",
+                  f"Revision: {entry['revision']}",
+                  f"Model card: {entry['model_card_url']}",
+                  f"License metadata source: {entry['license_source']}",
+                  f"SPDX license: {entry['license']}",
+                  f"SPDX text source: {entry['spdx']['url']}",
+              ])
+              if entry["repo_license_files"]:
+                  license_lines.append("Repository license files bundled below:")
+                  for file in entry["repo_license_files"]:
+                      license_lines.append(f"- {file['filename']}")
+              else:
+                  license_lines.append(
+                      "Repository license file: not provided by the model repository."
+                  )
+              license_lines.append("")
+
+          license_lines.append("Bundled SPDX License Texts")
+          license_lines.append("===========================")
+          for license_id in sorted({entry["license"] for entry in metadata.values()}):
+              entry = next(item for item in metadata.values() if item["license"] == license_id)
+              license_lines.extend([
+                  "",
+                  license_id,
+                  "-" * len(license_id),
+                  entry["spdx"]["text"],
+              ])
+
+          repo_files = [
+              (entry, file)
+              for entry in metadata.values()
+              for file in entry["repo_license_files"]
+          ]
+          if repo_files:
+              license_lines.extend(["", "Repository License Files", "========================"])
+              for entry, file in repo_files:
+                  title = f"{entry['model']}:{file['filename']}"
+                  license_lines.extend(["", title, "-" * len(title), file["text"]])
+
           (tmp_dir / "LICENSE").write_text(
-              "\n".join(license_lines) + "\n",
+              "\n".join(license_lines).rstrip() + "\n",
               encoding="utf-8",
           )
           PY
@@ -216,6 +388,19 @@ jobs:
               raise SystemExit(
                   "model.json must remain placeholder:true until runtime adapters exist"
               )
+
+          license_text = (root / "LICENSE").read_text(encoding="utf-8")
+          for key in ("classifier_source", "generator_source"):
+              source = manifest[key]
+              license_id = source.get("license")
+              if not license_id:
+                  raise SystemExit(f"{key} is missing license metadata")
+              if f"SPDX license: {license_id}" not in license_text:
+                  raise SystemExit(f"data/ai/LICENSE does not document {license_id}")
+              if source.get("model_card_url") not in license_text:
+                  raise SystemExit(f"data/ai/LICENSE does not include {key} model card URL")
+              if source.get("revision") not in license_text:
+                  raise SystemExit(f"data/ai/LICENSE does not include {key} revision")
           PY
 
       - name: Commit changes
