@@ -2599,6 +2599,15 @@ msgstr "Details zurücksetzen"
 msgid "Move rule"
 msgstr "Regel verschieben"
 
+msgid "Move item"
+msgstr "Eintrag verschieben"
+
+msgid "Move budget"
+msgstr "Budget verschieben"
+
+msgid "Move category"
+msgstr "Kategorie verschieben"
+
 msgid "Group"
 msgstr "Gruppieren"
 

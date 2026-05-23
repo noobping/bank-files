@@ -27,10 +27,12 @@ fn collapsible_form_card(title: &str, subtitle: &str, delete_tooltip: &str) -> C
     header.set_margin_start(12);
     header.set_margin_end(12);
 
-    let drag_handle = ui::icon_button("list-drag-handle-symbolic", "Move rule");
+    let drag_handle = ui::icon_button("list-drag-handle-symbolic", "Move item");
     drag_handle.add_css_class("flat");
+    drag_handle.add_css_class("drag-handle");
     drag_handle.set_visible(false);
     drag_handle.set_focus_on_click(false);
+    drag_handle.set_focusable(false);
 
     let summary = gtk::Box::new(gtk::Orientation::Vertical, 2);
     summary.set_hexpand(true);
@@ -407,6 +409,7 @@ pub(in crate::app) fn append_rule_form(
         .then(|| BudgetDirection::from_config(&rule.direction))
         .flatten();
     let card = collapsible_form_card("Rule", "", "Delete rule");
+    card.drag_handle.set_tooltip_text(Some(&tr("Move rule")));
     card.drag_handle.set_visible(true);
     connect_rule_form_reorder(container, forms, &card.drag_handle, &card.form_box);
 
@@ -794,6 +797,14 @@ pub(in crate::app) fn append_budget_form(
     let original_direction = persisted
         .then(|| BudgetDirection::parse(&budget.direction, &budget.code, &budget.category));
     let card = collapsible_form_card("Budget", "", "Delete budget");
+    card.drag_handle
+        .set_tooltip_text(Some(&tr(if advanced_features {
+            "Move budget"
+        } else {
+            "Move category"
+        })));
+    card.drag_handle.set_visible(true);
+    connect_budget_form_reorder(container, forms, &card.drag_handle, &card.form_box);
 
     let grid = form_grid();
     let code = ui::text_combo(&budget.code, editable_budget_code_values());

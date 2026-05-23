@@ -63,13 +63,47 @@ pub(in crate::app) fn connect_rule_form_reorder(
     drag_handle: &gtk::Button,
     form_box: &gtk::Box,
 ) {
+    connect_form_reorder(container, forms, drag_handle, form_box);
+}
+
+pub(in crate::app) fn connect_budget_form_reorder(
+    container: &gtk::Box,
+    forms: &Rc<RefCell<Vec<BudgetForm>>>,
+    drag_handle: &gtk::Button,
+    form_box: &gtk::Box,
+) {
+    connect_form_reorder(container, forms, drag_handle, form_box);
+}
+
+trait ReorderableForm {
+    fn form_box(&self) -> &gtk::Box;
+}
+
+impl ReorderableForm for RuleForm {
+    fn form_box(&self) -> &gtk::Box {
+        &self.form_box
+    }
+}
+
+impl ReorderableForm for BudgetForm {
+    fn form_box(&self) -> &gtk::Box {
+        &self.form_box
+    }
+}
+
+fn connect_form_reorder<T: ReorderableForm + 'static>(
+    container: &gtk::Box,
+    forms: &Rc<RefCell<Vec<T>>>,
+    drag_handle: &gtk::Button,
+    form_box: &gtk::Box,
+) {
     let source = gtk::DragSource::builder()
         .actions(gtk::gdk::DragAction::MOVE)
         .build();
     let forms_for_prepare = Rc::clone(forms);
     let form_box_for_prepare = form_box.clone();
     source.connect_prepare(move |_, _, _| {
-        rule_form_index(&forms_for_prepare.borrow(), &form_box_for_prepare)
+        form_index(&forms_for_prepare.borrow(), &form_box_for_prepare)
             .map(|index| gtk::gdk::ContentProvider::for_value(&(index as u32).to_value()))
     });
     drag_handle.add_controller(source);
@@ -82,16 +116,11 @@ pub(in crate::app) fn connect_rule_form_reorder(
         let Ok(source_index) = value.get::<u32>() else {
             return false;
         };
-        let Some(target_index) = rule_form_index(&forms_for_drop.borrow(), &form_box_for_drop)
-        else {
+        let Some(target_index) = form_index(&forms_for_drop.borrow(), &form_box_for_drop) else {
             return false;
         };
-        let target_boundary = if y > f64::from(form_box_for_drop.height()) / 2.0 {
-            target_index + 1
-        } else {
-            target_index
-        };
-        reorder_rule_forms(
+        let target_boundary = drop_boundary(target_index, form_box_for_drop.height(), y);
+        reorder_forms(
             &container_for_drop,
             &forms_for_drop,
             source_index as usize,
@@ -101,13 +130,21 @@ pub(in crate::app) fn connect_rule_form_reorder(
     form_box.add_controller(target);
 }
 
-fn rule_form_index(forms: &[RuleForm], form_box: &gtk::Box) -> Option<usize> {
-    forms.iter().position(|form| form.form_box == *form_box)
+fn form_index<T: ReorderableForm>(forms: &[T], form_box: &gtk::Box) -> Option<usize> {
+    forms.iter().position(|form| form.form_box() == form_box)
 }
 
-fn reorder_rule_forms(
+fn drop_boundary(target_index: usize, widget_height: i32, y: f64) -> usize {
+    if y > f64::from(widget_height) / 2.0 {
+        target_index + 1
+    } else {
+        target_index
+    }
+}
+
+fn reorder_forms<T: ReorderableForm>(
     container: &gtk::Box,
-    forms: &Rc<RefCell<Vec<RuleForm>>>,
+    forms: &Rc<RefCell<Vec<T>>>,
     source_index: usize,
     target_boundary: usize,
 ) -> bool {
@@ -115,15 +152,16 @@ fn reorder_rule_forms(
     if !move_item_to_boundary(&mut forms, source_index, target_boundary) {
         return false;
     }
-    reorder_rule_form_widgets(container, &forms);
+    reorder_form_widgets(container, &forms);
     true
 }
 
-fn reorder_rule_form_widgets(container: &gtk::Box, forms: &[RuleForm]) {
+fn reorder_form_widgets<T: ReorderableForm>(container: &gtk::Box, forms: &[T]) {
     let mut previous: Option<gtk::Widget> = None;
     for form in forms {
-        container.reorder_child_after(&form.form_box, previous.as_ref());
-        previous = Some(form.form_box.clone().upcast::<gtk::Widget>());
+        let form_box = form.form_box();
+        container.reorder_child_after(form_box, previous.as_ref());
+        previous = Some(form_box.clone().upcast::<gtk::Widget>());
     }
 }
 
@@ -396,6 +434,13 @@ mod tests {
         assert!(!move_item_to_boundary(&mut items, 1, 4));
 
         assert_eq!(items, vec!["a", "b", "c"]);
+    }
+
+    #[test]
+    fn drop_boundary_uses_target_half() {
+        assert_eq!(drop_boundary(2, 100, 40.0), 2);
+        assert_eq!(drop_boundary(2, 100, 50.0), 2);
+        assert_eq!(drop_boundary(2, 100, 51.0), 3);
     }
 
     #[test]
