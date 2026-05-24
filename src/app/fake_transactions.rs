@@ -33,7 +33,6 @@ pub(in crate::app) struct FakeTransactionWidgets {
     add_button: gtk::Button,
     save_button: gtk::Button,
     clear_button: gtk::Button,
-    form_actions: gtk::Box,
     search_bar: gtk::SearchBar,
     search_entry: gtk::SearchEntry,
     stack: gtk::Stack,
@@ -140,21 +139,17 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     let start_stack = gtk::Stack::builder()
         .transition_type(gtk::StackTransitionType::Crossfade)
         .build();
-    start_stack.add_named(&search_button, Some("search"));
     start_stack.add_named(&back_button, Some("back"));
-    start_stack.set_visible_child_name("search");
-    header.pack_start(&start_stack);
 
     let add_button = ui::plain_text_icon_button("list-add-symbolic", "New", "New fake transaction");
     add_button.add_css_class("flat");
-    let save_button =
-        ui::primary_text_icon_button("document-save-symbolic", "Save", "Save fake transaction");
-    header.pack_end(&add_button);
+    start_stack.add_named(&add_button, Some("add"));
+    start_stack.set_visible_child_name("add");
+    header.pack_start(&start_stack);
 
-    let form_actions = ui::linked_button_group();
-    form_actions.append(&save_button);
-    form_actions.set_visible(false);
-    header.pack_end(&form_actions);
+    let save_button = ui::primary_text_icon_button("document-save-symbolic", "Save", "Save fake transaction");
+    save_button.set_visible(false);
+    header.pack_end(&save_button);
 
     let search_bar = gtk::SearchBar::builder()
         .show_close_button(true)
@@ -244,7 +239,6 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
         add_button,
         save_button,
         clear_button,
-        form_actions,
         search_bar,
         search_entry,
         stack,
@@ -367,7 +361,7 @@ fn show_fake_transaction_list(widgets: &FakeTransactionWidgets) {
         .set_visible_child_name(FAKE_TRANSACTIONS_LIST_PAGE);
     widgets.start_stack.set_visible_child_name("search");
     widgets.add_button.set_visible(true);
-    widgets.form_actions.set_visible(false);
+    widgets.save_button.set_visible(false);
     widgets.dialog.set_default_widget(Some(&widgets.add_button));
     widgets.form_state.borrow_mut().take();
 }
@@ -379,7 +373,7 @@ fn show_fake_transaction_form_page(widgets: &FakeTransactionWidgets) {
         .set_visible_child_name(FAKE_TRANSACTIONS_FORM_PAGE);
     widgets.start_stack.set_visible_child_name("back");
     widgets.add_button.set_visible(false);
-    widgets.form_actions.set_visible(true);
+    widgets.save_button.set_visible(true);
     widgets
         .dialog
         .set_default_widget(Some(&widgets.save_button));
