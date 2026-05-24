@@ -11,6 +11,7 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 mod basic;
+mod builder;
 mod cards;
 mod chart;
 mod dialogs;
@@ -19,6 +20,7 @@ mod progress;
 mod style;
 
 pub use basic::*;
+pub use builder::*;
 pub use cards::*;
 pub use chart::*;
 pub use dialogs::*;
