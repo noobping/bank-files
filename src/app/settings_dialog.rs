@@ -46,6 +46,7 @@ pub(in crate::app) struct SearchablePreferencesGroup {
     pub(in crate::app) group: adw::PreferencesGroup,
     rows: Vec<SearchablePreferenceRow>,
     keywords: String,
+    visibility_gate: Option<Rc<Cell<bool>>>,
 }
 
 impl SearchablePreferencesGroup {
@@ -58,7 +59,12 @@ impl SearchablePreferencesGroup {
             group: group.clone(),
             rows: Vec::new(),
             keywords: search_keywords(title, description),
+            visibility_gate: None,
         }
+    }
+
+    pub(in crate::app) fn set_visibility_gate(&mut self, gate: Rc<Cell<bool>>) {
+        self.visibility_gate = Some(gate);
     }
 
     pub(in crate::app) fn add_row(
@@ -88,11 +94,17 @@ pub(in crate::app) fn connect_preference_search(
         let show_all = query.is_empty();
 
         for group in &groups {
+            let gate_visible = group
+                .visibility_gate
+                .as_ref()
+                .map(|gate| gate.get())
+                .unwrap_or(true);
             let group_matches = !show_all && group.keywords.contains(&query);
-            let mut group_visible = show_all || group_matches;
+            let mut group_visible = gate_visible && (show_all || group_matches);
 
             for row in &group.rows {
-                let row_visible = show_all || group_matches || row.keywords.contains(&query);
+                let row_visible =
+                    gate_visible && (show_all || group_matches || row.keywords.contains(&query));
                 row.widget.set_visible(row_visible);
                 group_visible |= row_visible;
             }

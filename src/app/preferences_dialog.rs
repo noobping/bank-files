@@ -82,18 +82,38 @@ pub(in crate::app) fn show_preferences_dialog(
         );
     }
 
+    let advanced_preferences_visible = Rc::new(Cell::new(advanced_features));
+    let mut experimental_group = preference_group(
+        "Experimental",
+        "Control Smart Insights, online enrichment, and detected refund hiding.",
+        &experimental_preferences,
+        true,
+        smart_insights_enabled,
+        &ui.preferences,
+    );
+    if let Some((group, search_group)) = &mut experimental_group {
+        group.set_visible(advanced_features);
+        search_group.set_visibility_gate(Rc::clone(&advanced_preferences_visible));
+    }
+
     if let Some((group, search_group)) = remember_preference_group(advanced_features, state, ui) {
         page.add(&group);
         search_groups.push(search_group);
     }
 
+    let mut advanced_features_spec = PreferenceSpec::new(
+        "Advanced Features",
+        "Allow rule editing and budget direction controls.",
+        "app.advanced-features",
+        advanced_features,
+    );
+    if let Some((group, _)) = &experimental_group {
+        advanced_features_spec = advanced_features_spec
+            .toggles_visibility(group, Rc::clone(&advanced_preferences_visible));
+    }
+
     let forms_preferences = vec![
-        PreferenceSpec::new(
-            "Advanced Features",
-            "Allow rule editing and budget direction controls.",
-            "app.advanced-features",
-            advanced_features,
-        ),
+        advanced_features_spec,
         PreferenceSpec::new(
             "Whole Form Autofill",
             "Fill related form fields from the value you choose, such as matching categories, budget codes, and directions.",
@@ -120,18 +140,9 @@ pub(in crate::app) fn show_preferences_dialog(
         search_groups.push(search_group);
     }
 
-    if advanced_features {
-        if let Some((group, search_group)) = preference_group(
-            "Experimental",
-            "Control Smart Insights, online enrichment, and detected refund hiding.",
-            &experimental_preferences,
-            advanced_features,
-            smart_insights_enabled,
-            &ui.preferences,
-        ) {
-            page.add(&group);
-            search_groups.push(search_group);
-        }
+    if let Some((group, search_group)) = experimental_group {
+        page.add(&group);
+        search_groups.push(search_group);
     }
 
     root.append(&ui::scroll(&page));
@@ -314,6 +325,8 @@ struct PreferenceSpec<'a> {
     action_name: &'a str,
     active: bool,
     requires_smart_insights: bool,
+    visibility_target: Option<gtk::Widget>,
+    visibility_gate: Option<Rc<Cell<bool>>>,
 }
 
 impl<'a> PreferenceSpec<'a> {
@@ -324,7 +337,15 @@ impl<'a> PreferenceSpec<'a> {
             action_name,
             active,
             requires_smart_insights: false,
+            visibility_target: None,
+            visibility_gate: None,
         }
+    }
+
+    fn toggles_visibility(mut self, target: &impl IsA<gtk::Widget>, gate: Rc<Cell<bool>>) -> Self {
+        self.visibility_target = Some(target.clone().upcast::<gtk::Widget>());
+        self.visibility_gate = Some(gate);
+        self
     }
 
     #[cfg(feature = "smart-insights")]
@@ -491,6 +512,16 @@ fn preference_row(
     row.set_active(spec.active);
     if spec.enabled(writable, smart_insights_enabled) {
         row.set_action_name(Some(spec.action_name));
+        if let Some(target) = spec.visibility_target.clone() {
+            let visibility_gate = spec.visibility_gate.clone();
+            row.connect_active_notify(move |row| {
+                let visible = row.is_active();
+                if let Some(gate) = &visibility_gate {
+                    gate.set(visible);
+                }
+                target.set_visible(visible);
+            });
+        }
     } else {
         row.set_sensitive(false);
         let message = if !writable {
