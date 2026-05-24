@@ -1,6 +1,9 @@
 use super::*;
 
-const POPOVER_SIZE: i32 = 320;
+const POPOVER_MIN_WIDTH: i32 = 440;
+const POPOVER_MAX_WIDTH: i32 = 520;
+const POPOVER_MIN_HEIGHT: i32 = 280;
+const POPOVER_MAX_HEIGHT: i32 = 520;
 const ACTION_DIALOG_MAX_HEIGHT: i32 = 620;
 
 pub fn month_label(month: MonthKey) -> String {
@@ -166,13 +169,18 @@ pub fn compact_popover_root() -> gtk::Box {
 }
 
 pub fn compact_popover_scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
+    let max_content_width = POPOVER_MAX_WIDTH.max(POPOVER_MIN_WIDTH);
+
     gtk::ScrolledWindow::builder()
         .child(child)
-        .max_content_width(POPOVER_SIZE)
-        .max_content_height(POPOVER_SIZE)
-        .propagate_natural_width(true)
-        .propagate_natural_height(true)
+        .min_content_width(POPOVER_MIN_WIDTH)
+        .min_content_height(POPOVER_MIN_HEIGHT)
+        .max_content_width(max_content_width)
+        .max_content_height(POPOVER_MAX_HEIGHT)
+        .propagate_natural_width(false)
+        .propagate_natural_height(false)
         .hscrollbar_policy(gtk::PolicyType::Never)
+        .vscrollbar_policy(gtk::PolicyType::Automatic)
         .build()
 }
 
