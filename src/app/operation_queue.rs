@@ -285,11 +285,11 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     let search_bar = shell.search_bar;
     let search_entry = shell.search_entry;
 
-    let apply_all_button = ui::icon_button(
+    let apply_all_button = ui::primary_text_icon_button(
         "object-select-symbolic",
+        "Apply all",
         "Apply all pending queued operations",
     );
-    apply_all_button.add_css_class("flat");
     apply_all_button.add_css_class("suggested-action");
     let clear_done_button = ui::icon_button("edit-clear-symbolic", "Clear completed operations");
     clear_done_button.add_css_class("flat");
