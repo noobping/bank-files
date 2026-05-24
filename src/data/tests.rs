@@ -413,32 +413,6 @@ fn copy_gio_files_routes_transactions_and_config_csvs() {
 }
 
 #[test]
-fn legacy_inbox_csvs_move_to_app_data_folder() {
-    let unique = chrono::Local::now().format("%Y%m%d%H%M%S%f");
-    let root = std::env::temp_dir().join(format!("bank-files-layout-migration-{unique}"));
-    let dirs = AppDirs {
-        config: root.join("config"),
-        data: root.join("data"),
-        inbox: root.join("data"),
-    };
-    let legacy_inbox = dirs.data.join("inbox");
-    fs::create_dir_all(&legacy_inbox).expect("create legacy inbox");
-    fs::write(
-        legacy_inbox.join("transactions.csv"),
-        "Date,Description,Amount\n2026-01-01,Coffee,-2.50\n",
-    )
-    .expect("write legacy csv");
-
-    ensure_layout(&dirs).expect("create app dirs");
-    migrate_legacy_app_data_layout(&dirs).expect("migrate layout");
-
-    assert!(dirs.data.join("transactions.csv").exists());
-    assert!(!legacy_inbox.exists());
-
-    let _ = fs::remove_dir_all(root);
-}
-
-#[test]
 fn configuration_archive_replaces_existing_archive() {
     let unique = chrono::Local::now().format("%Y%m%d%H%M%S%f");
     let root = std::env::temp_dir().join(format!("bank-files-config-archive-{unique}"));

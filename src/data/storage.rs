@@ -258,7 +258,6 @@ impl EditableAlias {
 pub fn prepare_app_storage() -> Result<AppDirs> {
     let dirs = app_dirs()?;
     ensure_layout(&dirs)?;
-    migrate_legacy_app_data_layout(&dirs)?;
     ensure_default_files(&dirs)?;
     Ok(dirs)
 }

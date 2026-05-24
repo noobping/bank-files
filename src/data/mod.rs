@@ -46,13 +46,12 @@ pub use storage::{
     EditableBudget, EditableRule, IgnoredTransactionPattern, StorageCapabilities,
 };
 
-use copy::unique_inbox_target;
 use defaults::{default_aliases, default_budgets, default_rules, FALSE_ALIASES};
 use editable::{
     parse_editable_aliases, parse_editable_budgets, parse_editable_rules,
     serialize_editable_aliases, serialize_editable_budgets, serialize_editable_rules,
 };
-use maintenance::{dedupe, ensure_default_files, is_csv, migrate_legacy_app_data_layout};
+use maintenance::{dedupe, ensure_default_files, is_csv};
 use validation::{
     csv_cell, form_search_from_pattern, non_empty, parse_bool_cell, pattern_from_form,
     writer_to_string,

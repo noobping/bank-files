@@ -49,36 +49,3 @@ pub(in crate::data) fn write_if_missing(path: &Path, contents: &str) -> Result<(
     }
     Ok(())
 }
-
-pub(in crate::data) fn migrate_legacy_app_data_layout(dirs: &AppDirs) -> Result<()> {
-    let legacy_inbox = dirs.data.join("inbox");
-    if legacy_inbox.is_dir() {
-        for entry in fs::read_dir(&legacy_inbox)
-            .with_context(|| format!("Could not read legacy inbox: {}", legacy_inbox.display()))?
-        {
-            let entry = entry?;
-            let path = entry.path();
-            if !path.is_file() || !is_csv(&path) {
-                continue;
-            }
-
-            let Some(name) = path.file_name().map(PathBuf::from) else {
-                continue;
-            };
-            let target = unique_inbox_target(&dirs.inbox, &name);
-            fs::rename(&path, &target).with_context(|| {
-                format!(
-                    "Could not move legacy CSV from {} to {}",
-                    path.display(),
-                    target.display()
-                )
-            })?;
-        }
-        let _ = fs::remove_dir(&legacy_inbox);
-    }
-
-    let legacy_exports = dirs.data.join("exports");
-    let _ = fs::remove_dir(&legacy_exports);
-
-    Ok(())
-}

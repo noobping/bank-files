@@ -44,7 +44,6 @@ fn prepare_import_storage() -> Result<AppDirs> {
             dirs.inbox.display()
         )
     })?;
-    migrate_legacy_app_data_layout(&dirs)?;
     Ok(dirs)
 }
 
