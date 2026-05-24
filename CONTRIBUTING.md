@@ -62,6 +62,8 @@ The only exception is when splitting the file would make the code less DRY, less
 
 Group related files in folders with `mod.rs`.
 
+Do not create folders for only one file, such as `pie/test.rs`. A folder must group multiple related files or have a clear reason to exist.
+
 Example:
 
 ```text
@@ -114,13 +116,36 @@ Prefer the Rust standard library, GTK, libadwaita, and existing project code fir
 
 New dependencies must be maintained, license-compatible, and reasonable for Flathub.
 
+## Tests
+
+Add as many useful tests as possible.
+
+Test every nook and cranny:
+
+- Normal behavior.
+- Edge cases.
+- Error cases.
+- Empty input.
+- Invalid input.
+- Boundary values.
+- Data pipeline steps.
+- Services and parsing logic.
+- Dialog/action decision logic where practical.
+- Regression cases for fixed bugs.
+
+Prefer small focused tests over large fragile tests.
+
+Do not skip tests just because code is internal. If behavior matters, test it.
+
 ## Pull request checklist
 
 - [ ] Code is DRY, SRP, KISS, and idiomatic Rust.
 - [ ] GNOME, GTK, libadwaita, and Flathub expectations are followed.
 - [ ] Files stay under 300 lines unless clearly justified.
 - [ ] Related files are grouped with `mod.rs`.
+- [ ] No folder exists only to hold one file unless clearly justified.
 - [ ] Dialogs use the shared dialog builder.
 - [ ] Buttons follow suggested/destructive/header/menu rules.
+- [ ] Useful tests cover normal behavior, edge cases, error cases, and regressions.
 - [ ] Blocking work is off the main thread.
 - [ ] `cargo fmt`, `cargo clippy`, and `cargo test` pass.
