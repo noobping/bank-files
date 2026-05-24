@@ -19,21 +19,6 @@ pub(in crate::app) fn open_files(app: &adw::Application, files: &[gtk::gio::File
     }
 }
 
-pub(in crate::app) fn build_menu(
-    data: &AppData,
-    advanced_features: bool,
-    storage_capabilities: &data::StorageCapabilities,
-    preferences: &Preferences,
-) -> gtk::MenuButton {
-    let menu_button = gtk::MenuButton::builder()
-        .icon_name("open-menu-symbolic")
-        .tooltip_text(tr("Menu"))
-        .build();
-    let menu = build_menu_model(data, advanced_features, storage_capabilities, preferences);
-    menu_button.set_menu_model(Some(&menu));
-    menu_button
-}
-
 pub(in crate::app) fn build_menu_model(
     _data: &AppData,
     advanced_features: bool,

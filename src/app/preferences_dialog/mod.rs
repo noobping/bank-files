@@ -40,7 +40,7 @@ pub(in crate::app) fn show_preferences_dialog(
             ),
             PreferenceSpec::new(
                 "Always Show Full Lists",
-                "Show every item immediately and hide More buttons.",
+                "Show every item immediately and hide More rows.",
                 "app.show-all",
                 ui.show_all.get(),
             ),

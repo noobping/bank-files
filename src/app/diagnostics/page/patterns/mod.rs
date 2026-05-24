@@ -6,7 +6,7 @@ mod rows;
 
 use data::{transaction_patterns_render_data, TransactionPatternsRenderData};
 use rows::{
-    append_transaction_pattern_rows, append_transaction_patterns_more_button,
+    append_transaction_pattern_rows, append_transaction_patterns_more_row,
     transaction_patterns_hidden_button,
 };
 
@@ -235,7 +235,7 @@ fn append_transaction_patterns_result(
     };
 
     if render_data.more_patterns.len() > render_data.preview_patterns.len() {
-        append_transaction_patterns_more_button(
+        append_transaction_patterns_more_row(
             patterns_box,
             &rows_box,
             render_data.more_patterns,

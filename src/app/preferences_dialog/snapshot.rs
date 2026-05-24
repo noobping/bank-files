@@ -19,7 +19,7 @@ pub(super) fn preferences_page_snapshot(
             ),
             (
                 "Always Show Full Lists",
-                "Show every item immediately and hide More buttons.",
+                "Show every item immediately and hide More rows.",
                 "app.show-all",
                 false,
             ),

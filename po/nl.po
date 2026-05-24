@@ -1356,11 +1356,11 @@ msgstr "Transacties gegroepeerd onder OTHER of INC-OTHER."
 msgid "Always Show Full Lists"
 msgstr "Altijd volledige lijsten tonen"
 
-msgid "Full lists enabled. More buttons are hidden."
-msgstr "Volledige lijsten ingeschakeld. Meer-knoppen zijn verborgen."
+msgid "Full lists enabled. More rows are hidden."
+msgstr "Volledige lijsten ingeschakeld. Meer-rijen zijn verborgen."
 
-msgid "Preview mode enabled. Sections show More buttons again."
-msgstr "Voorbeeldmodus ingeschakeld. Secties tonen weer Meer-knoppen."
+msgid "Preview mode enabled. Sections show More rows again."
+msgstr "Voorbeeldmodus ingeschakeld. Secties tonen weer Meer-rijen."
 
 msgid "Edit budget"
 msgstr "Budget bewerken"
@@ -2208,8 +2208,8 @@ msgstr "Bepaal hoeveel informatie zichtbaar is terwijl je bladert."
 msgid "Hide status messages automatically after a short delay."
 msgstr "Verberg statusmeldingen automatisch na een korte tijd."
 
-msgid "Show every item immediately and hide More buttons."
-msgstr "Toon direct alle items en verberg Meer-knoppen."
+msgid "Show every item immediately and hide More rows."
+msgstr "Toon direct alle items en verberg Meer-rijen."
 
 msgid "Insights"
 msgstr "Inzichten"

@@ -59,7 +59,7 @@ pub(in crate::app) fn annual_budgets_section(
     }
     section.append(&budgets_box);
     if hidden_budgets > 0 {
-        append_annual_budgets_more_button(&section, &budgets_box, budgets, year, ui_handles, state);
+        append_annual_budgets_more_row(&section, &budgets_box, budgets, year, ui_handles, state);
     }
     Some(section)
 }
@@ -148,7 +148,7 @@ fn annual_budget_row(
     })
 }
 
-pub(in crate::app) fn append_annual_budgets_more_button(
+pub(in crate::app) fn append_annual_budgets_more_row(
     section: &gtk::Box,
     rows_box: &gtk::FlowBox,
     budgets: Vec<analytics::AnnualBudgetUsage>,
@@ -156,16 +156,17 @@ pub(in crate::app) fn append_annual_budgets_more_button(
     ui_handles: &Rc<UiHandles>,
     state: &Rc<RefCell<AppData>>,
 ) {
-    let more_button = more_budgets_button();
+    let more_row = more_budgets_row();
+    let more_container = more_row.container.clone();
     let rows_box = rows_box.clone();
     let ui_for_more = Rc::clone(ui_handles);
     let state_for_more = Rc::clone(state);
-    more_button.connect_clicked(move |button| {
+    more_row.row.connect_activated(move |_| {
         ui::clear_card_grid(&rows_box);
         append_annual_budget_rows(&rows_box, &budgets, year, &ui_for_more, &state_for_more);
-        button.set_visible(false);
+        more_container.set_visible(false);
     });
-    section.append(&more_button);
+    section.append(&more_row.container);
 }
 
 pub(in crate::app) fn annual_budget_needs_attention(budget: &analytics::AnnualBudgetUsage) -> bool {

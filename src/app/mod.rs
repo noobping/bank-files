@@ -70,9 +70,9 @@ use annual::{
 use budget::{
     bind_percentage_basis_visibility, budget_direction_change, budget_direction_editable,
     budget_edit_button, budget_values_use_percentage, confirm_budget_direction_changes,
-    generate_configuration_from_transactions_with_status, more_budgets_button,
-    more_categories_button, render_budget_page, selected_budget_month, selected_year,
-    show_budget_edit_dialog, totals_for_month, year_selector_row, BudgetDirectionChange,
+    generate_configuration_from_transactions_with_status, more_budgets_row, more_categories_row,
+    render_budget_page, selected_budget_month, selected_year, show_budget_edit_dialog,
+    totals_for_month, year_selector_row, BudgetDirectionChange,
 };
 use config_ops::{
     config_operation_is_active, finish_config_operation, register_config_widget,
@@ -140,11 +140,9 @@ use rule_dialog::{
     show_rule_enqueue_dialog, RuleDialogSpec, PATTERN_RULE_FIELD_OPTIONS,
     TRANSACTION_RULE_FIELD_OPTIONS,
 };
-#[cfg(all(target_os = "linux", feature = "setup", not(feature = "flatpak")))]
-use shell::build_menu_model;
 use shell::{
     add_responsive_page_margins, add_responsive_switcher, add_responsive_switcher_for_dialog,
-    build_menu, open_files, refresh_menu,
+    build_menu_model, open_files, refresh_menu,
 };
 use shortcuts::{build_shortcuts_dialog, install_action_accelerators};
 #[cfg(feature = "smart-insights")]

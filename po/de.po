@@ -1356,11 +1356,11 @@ msgstr "Transaktionen, die unter OTHER oder INC-OTHER gruppiert sind."
 msgid "Always Show Full Lists"
 msgstr "Immer vollständige Listen anzeigen"
 
-msgid "Full lists enabled. More buttons are hidden."
-msgstr "Vollständige Listen sind aktiviert. Mehr-Schaltflächen sind ausgeblendet."
+msgid "Full lists enabled. More rows are hidden."
+msgstr "Vollständige Listen sind aktiviert. Mehr-Zeilen sind ausgeblendet."
 
-msgid "Preview mode enabled. Sections show More buttons again."
-msgstr "Vorschaumodus ist aktiviert. Abschnitte zeigen wieder Mehr-Schaltflächen."
+msgid "Preview mode enabled. Sections show More rows again."
+msgstr "Vorschaumodus ist aktiviert. Abschnitte zeigen wieder Mehr-Zeilen."
 
 msgid "Edit budget"
 msgstr "Budget bearbeiten"
@@ -2208,8 +2208,8 @@ msgstr "Lege fest, wie viele Informationen beim Durchsehen sichtbar sind."
 msgid "Hide status messages automatically after a short delay."
 msgstr "Statusmeldungen nach kurzer Zeit automatisch ausblenden."
 
-msgid "Show every item immediately and hide More buttons."
-msgstr "Alle Eintraege sofort anzeigen und Mehr-Schaltflaechen ausblenden."
+msgid "Show every item immediately and hide More rows."
+msgstr "Alle Eintraege sofort anzeigen und Mehr-Zeilen ausblenden."
 
 msgid "Insights"
 msgstr "Einblicke"

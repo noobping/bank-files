@@ -169,6 +169,28 @@ pub fn text_list_row(text: &str) -> adw::ActionRow {
     row
 }
 
+pub struct MoreListRow {
+    pub container: adw::PreferencesGroup,
+    pub row: adw::ActionRow,
+}
+
+pub fn more_list_row(title: &str, tooltip: &str) -> MoreListRow {
+    let container = adw::PreferencesGroup::new();
+    container.set_margin_top(4);
+    container.set_margin_bottom(4);
+    container.set_margin_start(4);
+    container.set_margin_end(4);
+
+    let row = adw::ActionRow::builder().title(gettext(title)).build();
+    row.set_tooltip_text(Some(&gettext(tooltip)));
+    row.set_activatable(true);
+    row.add_prefix(&gtk::Image::from_icon_name("view-more-symbolic"));
+    row.add_suffix(&gtk::Image::from_icon_name("go-next-symbolic"));
+    container.add(&row);
+
+    MoreListRow { container, row }
+}
+
 pub fn page_box() -> gtk::Box {
     let page = gtk::Box::new(gtk::Orientation::Vertical, 18);
     page.set_margin_top(18);

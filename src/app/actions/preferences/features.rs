@@ -138,9 +138,9 @@ fn register_show_all_action(
             show_status(
                 &ui_for_show_all,
                 if enabled {
-                    "Full lists enabled. More buttons are hidden."
+                    "Full lists enabled. More rows are hidden."
                 } else {
-                    "Preview mode enabled. Sections show More buttons again."
+                    "Preview mode enabled. Sections show More rows again."
                 },
             );
         });

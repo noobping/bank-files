@@ -68,6 +68,14 @@ mod tests {
     }
 
     #[test]
+    fn embedded_main_window_ui_is_available() {
+        register().expect("register embedded resources");
+        let path = format!("{RESOURCE_ID}/ui/main-window.ui");
+        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
+            .expect("embedded main window UI should be available");
+    }
+
+    #[test]
     fn embedded_settings_dialog_ui_is_available() {
         register().expect("register embedded resources");
         let path = format!("{RESOURCE_ID}/ui/settings-dialog.ui");

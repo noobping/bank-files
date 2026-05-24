@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.6"/>
+  <requires lib="Adw" version="1.0"/>
+  <object class="GtkBox" id="main_header_title">
+    <property name="orientation">horizontal</property>
+    <property name="spacing">0</property>
+    <child>
+      <object class="AdwViewSwitcher" id="main_switcher">
+        <property name="policy">wide</property>
+      </object>
+    </child>
+    <child>
+      <object class="AdwWindowTitle" id="main_mobile_header_title">
+        <property name="title" translatable="yes">Overview</property>
+        <property name="visible">False</property>
+      </object>
+    </child>
+  </object>
+  <object class="GtkBox" id="main_root">
+    <property name="orientation">vertical</property>
+    <property name="spacing">0</property>
+    <child>
+      <object class="AdwHeaderBar" id="main_header">
+        <child type="start">
+          <object class="GtkBox" id="main_header_start">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">0</property>
+            <child>
+              <object class="GtkButton" id="main_import_button">
+                <property name="icon-name">document-open-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Open CSV files</property>
+                <style>
+                  <class name="flat"/>
+                  <class name="image-button"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="main_back_button">
+                <property name="icon-name">go-previous-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Back</property>
+                <property name="visible">False</property>
+                <style>
+                  <class name="flat"/>
+                  <class name="image-button"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkMenuButton" id="main_menu_button">
+            <property name="icon-name">open-menu-symbolic</property>
+            <property name="tooltip-text" translatable="yes">Menu</property>
+            <style>
+              <class name="flat"/>
+              <class name="image-button"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSearchBar" id="main_search_bar">
+        <property name="show-close-button">True</property>
+        <property name="search-mode-enabled">False</property>
+        <child>
+          <object class="GtkBox" id="main_search_box">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">0</property>
+            <property name="margin-top">6</property>
+            <property name="margin-bottom">6</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <child>
+              <object class="GtkSearchEntry" id="main_search_entry">
+                <property name="placeholder-text" translatable="yes">Search this page</property>
+                <property name="hexpand">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwViewStack" id="main_stack">
+        <property name="vexpand">True</property>
+        <property name="hexpand">True</property>
+        <child>
+          <object class="AdwViewStackPage">
+            <property name="name">overview</property>
+            <property name="title" translatable="yes">Overview</property>
+            <property name="icon-name">view-grid-symbolic</property>
+            <property name="child">
+              <object class="GtkScrolledWindow" id="main_overview_scroll">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="hscrollbar-policy">never</property>
+                <child>
+                  <object class="AdwClamp" id="main_overview_clamp">
+                    <property name="maximum-size">1080</property>
+                    <property name="tightening-threshold">640</property>
+                    <property name="child">
+                      <object class="GtkBox" id="main_overview">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">18</property>
+                        <property name="margin-top">18</property>
+                        <property name="margin-bottom">18</property>
+                        <property name="margin-start">18</property>
+                        <property name="margin-end">18</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwViewStackPage">
+            <property name="name">categories</property>
+            <property name="title" translatable="yes">Budget</property>
+            <property name="icon-name">view-list-symbolic</property>
+            <property name="child">
+              <object class="GtkScrolledWindow" id="main_categories_scroll">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="hscrollbar-policy">never</property>
+                <child>
+                  <object class="AdwClamp" id="main_categories_clamp">
+                    <property name="maximum-size">1080</property>
+                    <property name="tightening-threshold">640</property>
+                    <property name="child">
+                      <object class="GtkBox" id="main_categories">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">18</property>
+                        <property name="margin-top">18</property>
+                        <property name="margin-bottom">18</property>
+                        <property name="margin-start">18</property>
+                        <property name="margin-end">18</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwViewStackPage">
+            <property name="name">transactions</property>
+            <property name="title" translatable="yes">Transactions</property>
+            <property name="icon-name">view-list-symbolic</property>
+            <property name="child">
+              <object class="GtkScrolledWindow" id="main_transactions_scroll">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="hscrollbar-policy">never</property>
+                <child>
+                  <object class="AdwClamp" id="main_transactions_clamp">
+                    <property name="maximum-size">1080</property>
+                    <property name="tightening-threshold">640</property>
+                    <property name="child">
+                      <object class="GtkBox" id="main_transactions">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">18</property>
+                        <property name="margin-top">18</property>
+                        <property name="margin-bottom">18</property>
+                        <property name="margin-start">18</property>
+                        <property name="margin-end">18</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwViewStackPage">
+            <property name="name">debug</property>
+            <property name="title" translatable="yes">Diagnostics</property>
+            <property name="icon-name">dialog-information-symbolic</property>
+            <property name="child">
+              <object class="GtkScrolledWindow" id="main_debug_scroll">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="hscrollbar-policy">never</property>
+                <child>
+                  <object class="AdwClamp" id="main_debug_clamp">
+                    <property name="maximum-size">1080</property>
+                    <property name="tightening-threshold">640</property>
+                    <property name="child">
+                      <object class="GtkBox" id="main_debug">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">18</property>
+                        <property name="margin-top">18</property>
+                        <property name="margin-bottom">18</property>
+                        <property name="margin-start">18</property>
+                        <property name="margin-end">18</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwViewSwitcherBar" id="main_switcher_bar">
+        <property name="reveal">False</property>
+      </object>
+    </child>
+  </object>
+</interface>

@@ -1,6 +1,6 @@
 use super::super::*;
 use super::rows::{
-    append_budget_rows, append_budgets_more_button, budget_needs_attention,
+    append_budget_rows, append_budgets_more_row, budget_needs_attention,
     monthly_categories_section, monthly_spending_subtitle,
 };
 
@@ -130,7 +130,7 @@ pub(super) fn append_budget_detail_sections_now(
         }
         section.append(&box_);
         if hidden_budgets > 0 {
-            append_budgets_more_button(
+            append_budgets_more_row(
                 &section,
                 &box_,
                 data.budgets.clone(),

@@ -25,7 +25,7 @@ pub(super) fn append_transaction_pattern_rows(
     }
 }
 
-pub(super) fn append_transaction_patterns_more_button(
+pub(super) fn append_transaction_patterns_more_row(
     section: &gtk::Box,
     rows_box: &gtk::Box,
     patterns: Vec<(analytics::TransactionPattern, TransactionPatternInfo)>,
@@ -33,24 +33,21 @@ pub(super) fn append_transaction_patterns_more_button(
     state: &Rc<RefCell<AppData>>,
     ui_handles: &Rc<UiHandles>,
 ) {
-    let more_button = ui::plain_text_icon_button(
-        "view-more-symbolic",
-        "More",
-        "Show all transaction patterns",
-    );
+    let more_row = ui::more_list_row("More", "Show all transaction patterns");
+    let more_container = more_row.container.clone();
     let rows_box = rows_box.clone();
     let state_for_more = Rc::clone(state);
     let ui_for_more = Rc::clone(ui_handles);
     let hidden_button = hidden_button.cloned();
-    more_button.connect_clicked(move |button| {
+    more_row.row.connect_activated(move |_| {
         ui::clear_box(&rows_box);
         append_transaction_pattern_rows(&rows_box, &patterns, &state_for_more, &ui_for_more);
         if let Some(hidden_button) = &hidden_button {
             hidden_button.set_visible(true);
         }
-        button.set_visible(false);
+        more_container.set_visible(false);
     });
-    section.append(&more_button);
+    section.append(&more_row.container);
 }
 
 pub(super) fn transaction_patterns_hidden_button(

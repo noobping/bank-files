@@ -21,7 +21,7 @@ pub(in crate::app) fn annual_spending_section_from_rows(
     let has_more = !show_all && categories.len() > preview.len();
     section.append(&categories_box);
     if has_more {
-        append_annual_categories_more_button(
+        append_annual_categories_more_row(
             &section,
             &categories_box,
             categories,
@@ -33,7 +33,7 @@ pub(in crate::app) fn annual_spending_section_from_rows(
     section
 }
 
-fn append_annual_categories_more_button(
+fn append_annual_categories_more_row(
     section: &gtk::Box,
     rows_box: &gtk::FlowBox,
     categories: Vec<analytics::CategorySummary>,
@@ -41,16 +41,17 @@ fn append_annual_categories_more_button(
     ui_handles: &Rc<UiHandles>,
     state: &Rc<RefCell<AppData>>,
 ) {
-    let more_button = more_categories_button();
+    let more_row = more_categories_row();
+    let more_container = more_row.container.clone();
     let rows_box = rows_box.clone();
     let ui_for_more = Rc::clone(ui_handles);
     let state_for_more = Rc::clone(state);
-    more_button.connect_clicked(move |button| {
+    more_row.row.connect_activated(move |_| {
         ui::clear_card_grid(&rows_box);
         append_annual_category_rows(&rows_box, &categories, year, &ui_for_more, &state_for_more);
-        button.set_visible(false);
+        more_container.set_visible(false);
     });
-    section.append(&more_button);
+    section.append(&more_row.container);
 }
 
 fn append_annual_category_rows(

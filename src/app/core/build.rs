@@ -44,99 +44,50 @@ pub(super) fn build_ui_with_startup_request(
     }
     ui::install_css();
 
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    let builder = ui::builder_from_resource("main-window.ui");
+    let root = ui::builder_object::<gtk::Box>(&builder, "main_root", "main-window.ui");
+    let header = ui::builder_object::<adw::HeaderBar>(&builder, "main_header", "main-window.ui");
+    let header_title =
+        ui::builder_object::<gtk::Box>(&builder, "main_header_title", "main-window.ui");
+    let stack = ui::builder_object::<adw::ViewStack>(&builder, "main_stack", "main-window.ui");
+    let switcher =
+        ui::builder_object::<adw::ViewSwitcher>(&builder, "main_switcher", "main-window.ui");
+    let switcher_bar =
+        ui::builder_object::<adw::ViewSwitcherBar>(&builder, "main_switcher_bar", "main-window.ui");
+    let mobile_header_title = ui::builder_object::<adw::WindowTitle>(
+        &builder,
+        "main_mobile_header_title",
+        "main-window.ui",
+    );
+    let import_button =
+        ui::builder_object::<gtk::Button>(&builder, "main_import_button", "main-window.ui");
+    let back_button =
+        ui::builder_object::<gtk::Button>(&builder, "main_back_button", "main-window.ui");
+    let menu_button =
+        ui::builder_object::<gtk::MenuButton>(&builder, "main_menu_button", "main-window.ui");
+    let search_bar =
+        ui::builder_object::<gtk::SearchBar>(&builder, "main_search_bar", "main-window.ui");
+    let search_entry =
+        ui::builder_object::<gtk::SearchEntry>(&builder, "main_search_entry", "main-window.ui");
+    let overview = ui::builder_object::<gtk::Box>(&builder, "main_overview", "main-window.ui");
+    let categories = ui::builder_object::<gtk::Box>(&builder, "main_categories", "main-window.ui");
+    let transactions =
+        ui::builder_object::<gtk::Box>(&builder, "main_transactions", "main-window.ui");
+    let debug = ui::builder_object::<gtk::Box>(&builder, "main_debug", "main-window.ui");
 
-    let stack = adw::ViewStack::new();
-    stack.set_vexpand(true);
-    stack.set_hexpand(true);
-
-    let overview = ui::page_box();
-    let categories = ui::page_box();
-    let transactions = ui::page_box();
-    let debug = ui::page_box();
-
-    let overview_scroll = ui::scroll(&overview);
-    let categories_scroll = ui::scroll(&categories);
-    let transactions_scroll = ui::scroll(&transactions);
-    let debug_scroll = ui::scroll(&debug);
-
-    stack
-        .add_titled(&overview_scroll, Some("overview"), &tr("Overview"))
-        .set_icon_name(Some("view-grid-symbolic"));
-    stack
-        .add_titled(&categories_scroll, Some("categories"), &tr("Budget"))
-        .set_icon_name(Some("view-list-symbolic"));
-    stack
-        .add_titled(
-            &transactions_scroll,
-            Some("transactions"),
-            &tr("Transactions"),
-        )
-        .set_icon_name(Some("view-list-symbolic"));
-    stack
-        .add_titled(&debug_scroll, Some("debug"), &tr("Diagnostics"))
-        .set_icon_name(Some("dialog-information-symbolic"));
-    stack.set_visible_child_name(&preferences.active_tab());
-
-    let header = adw::HeaderBar::new();
-    let switcher = adw::ViewSwitcher::builder()
-        .stack(&stack)
-        .policy(adw::ViewSwitcherPolicy::Wide)
-        .build();
-    let mobile_header_title = adw::WindowTitle::new(&tr("Overview"), "");
-    mobile_header_title.set_visible(false);
-    let header_title = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    header_title.append(&switcher);
-    header_title.append(&mobile_header_title);
     header.set_title_widget(Some(&header_title));
-
-    let import_button = ui::icon_button("document-open-symbolic", "Open CSV files");
-    import_button.add_css_class("flat");
-    let back_button = ui::icon_button("go-previous-symbolic", "Back");
-    back_button.add_css_class("flat");
+    switcher.set_stack(Some(&stack));
+    switcher_bar.set_stack(Some(&stack));
+    stack.set_visible_child_name(&preferences.active_tab());
     back_button.set_action_name(Some("app.go-back"));
-    back_button.set_visible(false);
-    let header_start = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    header_start.append(&import_button);
-    header_start.append(&back_button);
-    header.pack_start(&header_start);
-
-    let menu_button = build_menu(
+    menu_button.set_menu_model(Some(&build_menu_model(
         &state.borrow(),
         preferences.advanced_features(),
         &initial_storage_capabilities,
         &preferences,
-    );
-    menu_button.add_css_class("flat");
-    header.pack_end(&menu_button);
-    root.append(&header);
-
-    let search_entry = gtk::SearchEntry::builder()
-        .placeholder_text(tr("Search this page"))
-        .hexpand(true)
-        .build();
-    let search_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    search_box.set_margin_top(6);
-    search_box.set_margin_bottom(6);
-    search_box.set_margin_start(12);
-    search_box.set_margin_end(12);
-    search_box.append(&search_entry);
-    let search_bar = gtk::SearchBar::builder()
-        .child(&search_box)
-        .show_close_button(true)
-        .search_mode_enabled(false)
-        .build();
+    )));
     search_bar.connect_entry(&search_entry);
     search_bar.set_key_capture_widget(Some(&window));
-    root.append(&search_bar);
-
-    root.append(&stack);
-
-    let switcher_bar = adw::ViewSwitcherBar::builder()
-        .stack(&stack)
-        .reveal(false)
-        .build();
-    root.append(&switcher_bar);
     add_responsive_switcher(&window, &switcher, &switcher_bar, &mobile_header_title);
     add_responsive_page_margins(
         &window,

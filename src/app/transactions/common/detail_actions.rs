@@ -278,13 +278,13 @@ pub(super) fn transaction_detail_actions(
     }
 
     if has_menu_items {
-        let more_button = gtk::MenuButton::builder()
+        let more_menu_button = gtk::MenuButton::builder()
             .icon_name("view-more-symbolic")
             .tooltip_text(tr("More"))
             .build();
-        more_button.insert_action_group("transaction-detail", Some(&menu_actions));
-        more_button.set_menu_model(Some(&menu));
-        primary_actions.append(&more_button);
+        more_menu_button.insert_action_group("transaction-detail", Some(&menu_actions));
+        more_menu_button.set_menu_model(Some(&menu));
+        primary_actions.append(&more_menu_button);
     }
 
     if primary_actions.first_child().is_some() {

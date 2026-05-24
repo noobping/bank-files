@@ -47,7 +47,7 @@ pub(super) fn append_budget_rows(
     }
 }
 
-pub(super) fn append_budgets_more_button(
+pub(super) fn append_budgets_more_row(
     section: &gtk::Box,
     rows_box: &gtk::FlowBox,
     budgets: Vec<analytics::BudgetUsage>,
@@ -55,16 +55,17 @@ pub(super) fn append_budgets_more_button(
     ui_handles: &Rc<UiHandles>,
     state: &Rc<RefCell<AppData>>,
 ) {
-    let more_button = more_budgets_button();
+    let more_row = more_budgets_row();
+    let more_container = more_row.container.clone();
     let rows_box = rows_box.clone();
     let ui_for_more = Rc::clone(ui_handles);
     let state_for_more = Rc::clone(state);
-    more_button.connect_clicked(move |button| {
+    more_row.row.connect_activated(move |_| {
         ui::clear_card_grid(&rows_box);
         append_budget_rows(&rows_box, &budgets, month, &ui_for_more, &state_for_more);
-        button.set_visible(false);
+        more_container.set_visible(false);
     });
-    section.append(&more_button);
+    section.append(&more_row.container);
 }
 
 pub(super) fn budget_needs_attention(budget: &analytics::BudgetUsage) -> bool {
@@ -112,7 +113,7 @@ pub(super) fn monthly_categories_section(
     let has_more = !show_all && expense_categories.len() > preview.len();
     section.append(&categories_box);
     if has_more {
-        append_month_categories_more_button(
+        append_month_categories_more_row(
             &section,
             &categories_box,
             expense_categories,
@@ -125,7 +126,7 @@ pub(super) fn monthly_categories_section(
     section
 }
 
-pub(super) fn append_month_categories_more_button(
+pub(super) fn append_month_categories_more_row(
     section: &gtk::Box,
     rows_box: &gtk::FlowBox,
     categories: Vec<analytics::CategorySummary>,
@@ -133,16 +134,17 @@ pub(super) fn append_month_categories_more_button(
     ui_handles: &Rc<UiHandles>,
     state: &Rc<RefCell<AppData>>,
 ) {
-    let more_button = more_categories_button();
+    let more_row = more_categories_row();
+    let more_container = more_row.container.clone();
     let rows_box = rows_box.clone();
     let ui_for_more = Rc::clone(ui_handles);
     let state_for_more = Rc::clone(state);
-    more_button.connect_clicked(move |button| {
+    more_row.row.connect_activated(move |_| {
         ui::clear_card_grid(&rows_box);
         append_month_category_rows(&rows_box, &categories, month, &ui_for_more, &state_for_more);
-        button.set_visible(false);
+        more_container.set_visible(false);
     });
-    section.append(&more_button);
+    section.append(&more_row.container);
 }
 
 pub(super) fn append_month_category_rows(
@@ -184,14 +186,10 @@ pub(super) fn append_month_category_rows(
     }
 }
 
-pub(in crate::app) fn more_categories_button() -> gtk::Button {
-    more_button("Show all spending")
+pub(in crate::app) fn more_categories_row() -> ui::MoreListRow {
+    ui::more_list_row("More", "Show all spending")
 }
 
-pub(in crate::app) fn more_budgets_button() -> gtk::Button {
-    more_button("Show all budgets")
-}
-
-fn more_button(tooltip: &str) -> gtk::Button {
-    ui::plain_text_icon_button("view-more-symbolic", "More", tooltip)
+pub(in crate::app) fn more_budgets_row() -> ui::MoreListRow {
+    ui::more_list_row("More", "Show all budgets")
 }

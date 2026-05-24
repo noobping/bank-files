@@ -179,6 +179,17 @@ mod tests {
     use super::*;
 
     #[test]
+    fn main_window_resource_builds_expected_objects() {
+        gtk::init().expect("initialize GTK");
+        crate::resources::register().expect("register embedded resources");
+        let builder = builder_from_resource("main-window.ui");
+
+        let _: gtk::Box = builder_object(&builder, "main_root", "main-window.ui");
+        let _: adw::ViewStack = builder_object(&builder, "main_stack", "main-window.ui");
+        let _: gtk::SearchEntry = builder_object(&builder, "main_search_entry", "main-window.ui");
+    }
+
+    #[test]
     fn translated_menu_keeps_actions_and_translates_labels() {
         let menu = gtk::gio::Menu::new();
         menu.append(Some("Save"), Some("app.save"));

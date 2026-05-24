@@ -77,15 +77,15 @@ pub(super) fn append_orphaned_config_section(
         };
         append_orphaned_rule_rows(&rows_box, visible_rules.iter().take(preview_limit));
         if !show_all && visible_rules.len() > preview_limit {
-            let more_button =
-                ui::plain_text_icon_button("view-more-symbolic", "More", "Show all orphaned rules");
+            let more_row = ui::more_list_row("More", "Show all orphaned rules");
+            let more_container = more_row.container.clone();
             let rows_box_for_more = rows_box.clone();
-            more_button.connect_clicked(move |button| {
+            more_row.row.connect_activated(move |_| {
                 ui::clear_box(&rows_box_for_more);
                 append_orphaned_rule_rows(&rows_box_for_more, visible_rules.iter());
-                button.set_visible(false);
+                more_container.set_visible(false);
             });
-            rows_box.append(&more_button);
+            rows_box.append(&more_row.container);
         }
     }
     ui_handles.debug.append(&rows_box);
