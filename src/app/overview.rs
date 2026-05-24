@@ -456,7 +456,6 @@ fn show_forecast_details(
     state: &Rc<RefCell<AppData>>,
     ui_handles: &Rc<UiHandles>,
 ) {
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let header = ui::cancelable_dialog_header(title, period_label);
 
     let transactions_button = ui::primary_text_icon_button(
@@ -465,7 +464,6 @@ fn show_forecast_details(
         "Open the transactions used for this forecast period",
     );
     header.pack_end(&transactions_button);
-    root.append(&header);
 
     let page = ui::page_box();
     page.append(&ui::section_title(
@@ -493,13 +491,14 @@ fn show_forecast_details(
         signed_money(period.projected_balance),
     );
     page.append(&grid);
-    root.append(&ui::action_dialog_scroll(&page));
+    let content = ui::action_dialog_scroll(&page);
+    let view = ui::dialog_toolbar_view(&header, &content);
 
     let dialog = adw::Dialog::builder()
         .title(tr(title))
         .content_width(620)
         .default_widget(&transactions_button)
-        .child(&root)
+        .child(&view)
         .build();
 
     let state_for_transactions = Rc::clone(state);

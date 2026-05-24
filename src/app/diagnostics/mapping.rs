@@ -53,7 +53,6 @@ fn field_mapping_dialog(
     state: &Rc<RefCell<AppData>>,
     ui_handles: &Rc<UiHandles>,
 ) -> adw::Dialog {
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let header = ui::cancelable_dialog_header("Map CSV Field", label);
 
     let save_button =
@@ -61,7 +60,6 @@ fn field_mapping_dialog(
     save_button.set_sensitive(!headers.is_empty());
     register_config_widget(ui_handles, &save_button);
     header.pack_end(&save_button);
-    root.append(&header);
 
     let page = ui::page_box();
     page.append(&ui::section_title(
@@ -96,13 +94,14 @@ fn field_mapping_dialog(
     let status = ui::wrapped_label(&status_text);
     status.add_css_class("dim-label");
     page.append(&status);
-    root.append(&ui::action_dialog_scroll(&page));
+    let content = ui::action_dialog_scroll(&page);
+    let view = ui::dialog_toolbar_view(&header, &content);
 
     let dialog = adw::Dialog::builder()
         .title(tr("Map CSV Field"))
         .content_width(620)
         .default_widget(&save_button)
-        .child(&root)
+        .child(&view)
         .build();
 
     let canonical = canonical.to_string();

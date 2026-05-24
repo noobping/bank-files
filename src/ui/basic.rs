@@ -42,29 +42,8 @@ pub fn icon_button(icon_name: &str, tooltip: &str) -> gtk::Button {
         .build()
 }
 
-pub fn overlay_icon_button(icon_name: &str, tooltip: &str) -> gtk::Button {
-    let icon = gtk::Image::from_icon_name(icon_name);
-    let overlay = gtk::Overlay::new();
-    overlay.set_child(Some(&icon));
-
-    let button = gtk::Button::builder()
-        .tooltip_text(gettext(tooltip))
-        .build();
-    button.set_child(Some(&overlay));
-    button
-}
-
 pub fn set_button_icon(button: &gtk::Button, icon_name: &str) {
-    if let Some(image) = button
-        .child()
-        .and_then(|child| child.downcast::<gtk::Overlay>().ok())
-        .and_then(|overlay| overlay.child())
-        .and_then(|child| child.downcast::<gtk::Image>().ok())
-    {
-        image.set_icon_name(Some(icon_name));
-    } else {
-        button.set_icon_name(icon_name);
-    }
+    button.set_icon_name(icon_name);
 }
 
 pub fn primary_text_icon_button(icon_name: &str, label: &str, tooltip: &str) -> gtk::Button {
@@ -74,19 +53,15 @@ pub fn primary_text_icon_button(icon_name: &str, label: &str, tooltip: &str) -> 
 }
 
 pub fn plain_text_icon_button(icon_name: &str, label: &str, tooltip: &str) -> gtk::Button {
-    let content = gtk::Box::new(gtk::Orientation::Horizontal, 6);
-    content.append(&gtk::Image::from_icon_name(icon_name));
-    let label = gtk::Label::new(Some(&gettext(label)));
-    label.set_width_chars(1);
-    label.set_max_width_chars(22);
-    label.set_ellipsize(gtk::pango::EllipsizeMode::End);
-    content.append(&label);
+    let content = adw::ButtonContent::builder()
+        .icon_name(icon_name)
+        .label(gettext(label))
+        .build();
 
-    let button = gtk::Button::builder().tooltip_text(tooltip).build();
-    button.add_css_class("text-button");
-    button.set_tooltip_text(Some(&gettext(tooltip)));
-    button.set_child(Some(&content));
-    button
+    gtk::Button::builder()
+        .tooltip_text(gettext(tooltip))
+        .child(&content)
+        .build()
 }
 
 pub fn loading_spinner() -> adw::Spinner {
@@ -107,6 +82,16 @@ pub fn cancelable_dialog_header(title: &str, subtitle: &str) -> adw::HeaderBar {
         &gettext(subtitle),
     )));
     header
+}
+
+pub fn dialog_toolbar_view(
+    header: &impl IsA<gtk::Widget>,
+    content: &impl IsA<gtk::Widget>,
+) -> adw::ToolbarView {
+    let view = adw::ToolbarView::new();
+    view.add_top_bar(header);
+    view.set_content(Some(content));
+    view
 }
 
 pub fn wrapped_label(text: &str) -> gtk::Label {

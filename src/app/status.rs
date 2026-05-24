@@ -1097,7 +1097,7 @@ fn set_copy_feedback_icons(buttons: &Rc<RefCell<Vec<gtk::Button>>>, icon_name: &
 }
 
 fn status_button(icon_name: &str, tooltip: &str) -> gtk::Button {
-    let button = ui::overlay_icon_button(icon_name, tooltip);
+    let button = ui::icon_button(icon_name, tooltip);
     button.add_css_class("flat");
     button
 }

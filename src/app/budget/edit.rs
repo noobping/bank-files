@@ -214,7 +214,6 @@ pub(in crate::app) fn show_budget_edit_dialog(
         return;
     }
 
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let header = ui::cancelable_dialog_header("Edit Budget", code);
 
     let delete_button = ui::icon_button("user-trash-symbolic", "Delete budget");
@@ -225,7 +224,6 @@ pub(in crate::app) fn show_budget_edit_dialog(
     register_exclusive_config_widget(ui_handles, &delete_button);
     header.pack_start(&delete_button);
     header.pack_end(&save_button);
-    root.append(&header);
 
     let page = ui::page_box();
     page.append(&ui::section_title(
@@ -276,13 +274,14 @@ pub(in crate::app) fn show_budget_edit_dialog(
     let status = ui::wrapped_label(&tr("Changes are saved to your budget configuration."));
     status.add_css_class("dim-label");
     page.append(&status);
-    root.append(&ui::action_dialog_scroll(&page));
+    let content = ui::action_dialog_scroll(&page);
+    let view = ui::dialog_toolbar_view(&header, &content);
 
     let dialog = adw::Dialog::builder()
         .title(tr("Edit Budget"))
         .content_width(620)
         .default_widget(&save_button)
-        .child(&root)
+        .child(&view)
         .build();
 
     let state_for_save = Rc::clone(state);
@@ -458,7 +457,6 @@ fn show_planned_income_budget_edit_dialog(
     ui_handles: &Rc<UiHandles>,
 ) {
     let advanced_features = ui_handles.advanced_features.get();
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let header = ui::cancelable_dialog_header(
         "Edit Planned Income",
         if advanced_features {
@@ -480,7 +478,6 @@ fn show_planned_income_budget_edit_dialog(
     register_exclusive_config_widget(ui_handles, &delete_button);
     header.pack_start(&delete_button);
     header.pack_end(&save_button);
-    root.append(&header);
 
     let page = ui::page_box();
     page.append(&ui::section_title(
@@ -536,13 +533,14 @@ fn show_planned_income_budget_edit_dialog(
     let status = ui::wrapped_label(&tr("Changes are saved to your budget configuration."));
     status.add_css_class("dim-label");
     page.append(&status);
-    root.append(&ui::action_dialog_scroll(&page));
+    let content = ui::action_dialog_scroll(&page);
+    let view = ui::dialog_toolbar_view(&header, &content);
 
     let dialog = adw::Dialog::builder()
         .title(tr("Edit Planned Income"))
         .content_width(620)
         .default_widget(&save_button)
-        .child(&root)
+        .child(&view)
         .build();
 
     let state_for_save = Rc::clone(state);
