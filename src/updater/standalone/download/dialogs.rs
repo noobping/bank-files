@@ -38,11 +38,9 @@ pub(in crate::updater::standalone) fn build_download_dialog(
     content.append(&progress);
     content.append(&status);
 
-    let dialog = Dialog::builder()
-        .title(gettext("Update"))
+    let dialog = ui::content_dialog(gettext("Update"), &content)
         .content_width(520)
-        .follows_content_size(true)
-        .child(&content)
+        .follows_content_size()
         .build();
 
     (dialog, progress, status)
@@ -53,15 +51,17 @@ pub(in crate::updater::standalone) fn confirm_install(
     parent: &ApplicationWindow,
     download: DownloadedUpdate,
 ) {
-    let dialog = AlertDialog::builder()
-        .heading(gettext("Close before installing the update?"))
-        .body(gettext("Unsaved changes will be lost."))
-        .build();
-    let cancel = gettext("Cancel");
-    let install = gettext("Install Update");
-    dialog.add_responses(&[("cancel", cancel.as_str()), ("install", install.as_str())]);
-    dialog.set_close_response("cancel");
-    dialog.set_default_response(Some("install"));
+    let dialog = ui::alert_dialog(
+        gettext("Close before installing the update?"),
+        gettext("Unsaved changes will be lost."),
+    )
+    .responses(&[
+        ui::AlertResponse::neutral("cancel", "Cancel"),
+        ui::AlertResponse::suggested("install", "Install Update"),
+    ])
+    .close_response("cancel")
+    .default_response("install")
+    .build();
 
     let app = app.clone();
     let parent_for_response = parent.clone();
@@ -120,14 +120,11 @@ pub(in crate::updater::standalone) fn show_alert(
     heading: &str,
     body: &str,
 ) {
-    let body = gettext(body);
-    let dialog = AlertDialog::builder()
-        .heading(gettext(heading))
-        .body(body)
+    let dialog = ui::alert_dialog(gettext(heading), gettext(body))
+        .responses(&[ui::AlertResponse::neutral("close", "Close")])
+        .close_response("close")
+        .default_response("close")
         .build();
-    dialog.add_response("close", &gettext("Close"));
-    dialog.set_close_response("close");
-    dialog.set_default_response(Some("close"));
     present_alert(&dialog, parent);
 }
 
@@ -135,9 +132,5 @@ pub(in crate::updater::standalone) fn present_alert(
     dialog: &AlertDialog,
     parent: Option<&ApplicationWindow>,
 ) {
-    if let Some(parent) = parent {
-        dialog.present(Some(parent));
-    } else {
-        dialog.present(None::<&ApplicationWindow>);
-    }
+    ui::present_alert_dialog(dialog, parent);
 }

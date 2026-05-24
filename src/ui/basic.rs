@@ -28,10 +28,21 @@ pub fn month_name(month: u32) -> String {
 pub fn builder_from_resource(file_name: &str) -> gtk::Builder {
     let builder = gtk::Builder::new();
     let path = format!("{}/ui/{file_name}", crate::app_info::RESOURCE_ID);
+    if let Err(err) = builder.add_from_resource(&path) {
+        panic!("Failed to load GTK UI resource {path}: {err}");
+    }
     builder
-        .add_from_resource(&path)
-        .unwrap_or_else(|err| panic!("Failed to load GTK UI resource {path}: {err}"));
-    builder
+}
+
+pub fn builder_object<T: IsA<gtk::glib::Object>>(
+    builder: &gtk::Builder,
+    id: &str,
+    resource: &str,
+) -> T {
+    let Some(object) = builder.object::<T>(id) else {
+        panic!("{resource} should define {id}");
+    };
+    object
 }
 
 pub fn icon_button(icon_name: &str, tooltip: &str) -> gtk::Button {

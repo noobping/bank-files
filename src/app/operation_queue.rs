@@ -313,11 +313,9 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     content.append(&list);
     root.append(&ui::action_dialog_scroll_with_min(&content, 360));
 
-    let dialog = adw::Dialog::builder()
-        .title(tr("Processing Queue"))
+    let dialog = ui::content_dialog(tr("Processing Queue"), &root)
         .content_width(620)
         .content_height(560)
-        .child(&root)
         .build();
     ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);
     search_bar.set_key_capture_widget(Some(&dialog));

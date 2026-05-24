@@ -832,11 +832,9 @@ fn show_move_budget_code_dialog(
     page.append(&dialog_status);
     shell.add_form_page(&ui::action_dialog_scroll(&page));
 
-    let dialog = adw::Dialog::builder()
-        .title(tr("Move Budget Code"))
+    let dialog = ui::content_dialog(tr("Move Budget Code"), &shell.root)
         .content_width(MANAGEMENT_FORM_DIALOG_WIDTH)
         .default_widget(&move_button)
-        .child(&shell.root)
         .build();
 
     let dialog_for_move = dialog.clone();

@@ -66,12 +66,14 @@ fn show_update_available_dialog(
         "Version {version} is available from GitHub Releases.",
         &[("version", release.version.to_string())],
     );
-    let dialog = AlertDialog::builder().heading(&heading).body(&body).build();
-    let later = gettext("Later");
-    let install = gettext("Install Update");
-    dialog.add_responses(&[("later", later.as_str()), ("install", install.as_str())]);
-    dialog.set_close_response("later");
-    dialog.set_default_response(Some("install"));
+    let dialog = ui::alert_dialog(heading, body)
+        .responses(&[
+            ui::AlertResponse::neutral("later", "Later"),
+            ui::AlertResponse::suggested("install", "Install Update"),
+        ])
+        .close_response("later")
+        .default_response("install")
+        .build();
 
     let app = app.clone();
     let parent = parent.cloned();

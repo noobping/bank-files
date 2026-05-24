@@ -51,11 +51,9 @@ pub(in crate::app) fn show_configuration_dialog(
     root.append(&ui::scroll(&page));
     root.append(&status_bar.container);
 
-    let dialog = adw::Dialog::builder()
-        .title(tr("Configuration"))
+    let dialog = ui::content_dialog(tr("Configuration"), &root)
         .content_width(720)
         .content_height(620)
-        .child(&root)
         .build();
 
     ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);

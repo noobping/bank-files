@@ -97,11 +97,9 @@ fn field_mapping_dialog(
     let content = ui::action_dialog_scroll(&page);
     let view = ui::dialog_toolbar_view(&header, &content);
 
-    let dialog = adw::Dialog::builder()
-        .title(tr("Map CSV Field"))
+    let dialog = ui::content_dialog(tr("Map CSV Field"), &view)
         .content_width(620)
         .default_widget(&save_button)
-        .child(&view)
         .build();
 
     let canonical = canonical.to_string();

@@ -166,11 +166,9 @@ pub(in crate::app) fn show_preferences_dialog(
         .set_text(&tr("Preference changes are applied immediately."));
     root.append(&status_bar.container);
 
-    let dialog = adw::Dialog::builder()
-        .title(tr("Preferences"))
+    let dialog = ui::content_dialog(tr("Preferences"), &root)
         .content_width(680)
         .content_height(620)
-        .child(&root)
         .build();
 
     ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);

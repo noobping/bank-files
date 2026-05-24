@@ -216,9 +216,12 @@ impl SearchProviderService {
             *self.index.borrow_mut() = Some(SearchProviderIndex::load());
         }
         let index = self.index.borrow();
-        f(index
-            .as_ref()
-            .expect("search provider index should be initialized"))
+        if let Some(index) = index.as_ref() {
+            return f(index);
+        }
+
+        let fallback = SearchProviderIndex::default();
+        f(&fallback)
     }
 }
 

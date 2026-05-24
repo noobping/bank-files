@@ -750,11 +750,9 @@ fn show_transaction_rule_dialog(
     page.append(&status);
     shell.add_form_page(&ui::action_dialog_scroll(&page));
 
-    let dialog = adw::Dialog::builder()
-        .title(tr("Create Rule"))
+    let dialog = ui::content_dialog(tr("Create Rule"), &shell.root)
         .content_width(680)
         .default_widget(&save_button)
-        .child(&shell.root)
         .build();
 
     let ui_for_save = Rc::clone(ui_handles);
@@ -1060,11 +1058,9 @@ fn show_transaction_budget_code_dialog(
 
     shell.set_list_page();
 
-    let dialog = adw::Dialog::builder()
-        .title(tr(dialog_title))
+    let dialog = ui::content_dialog(tr(dialog_title), &shell.root)
         .content_width(680)
         .default_widget(&shell.submit_button)
-        .child(&shell.root)
         .build();
     ui::connect_search_shortcut(&shell.root, &shell.search_bar, &shell.search_entry);
 

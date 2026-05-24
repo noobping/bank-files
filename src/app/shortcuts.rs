@@ -81,11 +81,7 @@ pub(in crate::app) fn build_shortcuts_dialog(
     advanced_features: bool,
     _smart_patterns_enabled: bool,
 ) -> adw::ShortcutsDialog {
-    let dialog = adw::ShortcutsDialog::builder()
-        .title(tr("Keyboard Shortcuts"))
-        .content_width(640)
-        .content_height(-1)
-        .build();
+    let dialog = ui::shortcuts_dialog(tr("Keyboard Shortcuts"), 640, -1);
 
     dialog.add(shortcuts_section(
         "Navigation",

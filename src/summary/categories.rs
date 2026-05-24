@@ -9,12 +9,13 @@ pub fn render_categories(data: &AppData) -> String {
         return out;
     }
 
-    let latest_month = data
-        .transactions
-        .iter()
-        .map(Transaction::month_key)
-        .max()
-        .unwrap();
+    let Some(latest_month) = data.transactions.iter().map(Transaction::month_key).max() else {
+        let mut out = String::new();
+        out.push_str("Categories and budget codes\n");
+        out.push_str("===========================\n\n");
+        out.push_str("No transactions yet.\n");
+        return out;
+    };
     render_categories_for_month(data, latest_month)
 }
 

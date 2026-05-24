@@ -458,11 +458,11 @@ fn show_forecast_details(
 ) {
     let header = ui::cancelable_dialog_header(title, period_label);
 
-    let transactions_button = ui::primary_text_icon_button(
+    let transactions_button = ui::icon_button(
         "view-list-symbolic",
-        "Show transactions",
         "Open the transactions used for this forecast period",
     );
+    transactions_button.add_css_class("flat");
     header.pack_end(&transactions_button);
 
     let page = ui::page_box();
@@ -494,11 +494,9 @@ fn show_forecast_details(
     let content = ui::action_dialog_scroll(&page);
     let view = ui::dialog_toolbar_view(&header, &content);
 
-    let dialog = adw::Dialog::builder()
-        .title(tr(title))
+    let dialog = ui::content_dialog(tr(title), &view)
         .content_width(620)
         .default_widget(&transactions_button)
-        .child(&view)
         .build();
 
     let state_for_transactions = Rc::clone(state);

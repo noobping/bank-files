@@ -746,17 +746,18 @@ pub(in crate::app) fn connect_actions(
     let about_action = gtk::gio::SimpleAction::new("about", None);
     about_action.connect_activate(move |_, _| {
         let app_name = app_info::display_name();
-        let dialog = adw::AboutDialog::builder()
-            .application_name(&app_name)
-            .application_icon(APP_ID)
-            .developer_name("Nick")
-            .version(env!("CARGO_PKG_VERSION"))
-            .comments(app_info::summary())
-            .copyright("Copyright 2026 Nick")
-            .website(env!("CARGO_PKG_HOMEPAGE"))
-            .issue_url("https://github.com/noobping/bank-files/issues")
-            .license_type(gtk::License::MitX11)
-            .build();
+        let summary = app_info::summary();
+        let dialog = ui::about_dialog(ui::AboutDialogDetails {
+            application_name: &app_name,
+            application_icon: APP_ID,
+            developer_name: "Nick",
+            version: env!("CARGO_PKG_VERSION"),
+            comments: &summary,
+            copyright: "Copyright 2026 Nick",
+            website: env!("CARGO_PKG_HOMEPAGE"),
+            issue_url: "https://github.com/noobping/bank-files/issues",
+            license_type: gtk::License::MitX11,
+        });
         dialog.present(Some(&window_for_about));
     });
     app.add_action(&about_action);

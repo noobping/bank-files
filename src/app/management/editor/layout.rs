@@ -255,13 +255,11 @@ pub(in crate::app) fn show_management_dialog(
     } else {
         "Budgets and fields"
     };
-    let management_dialog = adw::Dialog::builder()
-        .title(tr(management_title))
+    let management_dialog = ui::content_dialog(tr(management_title), &root)
         .width_request(MANAGEMENT_DIALOG_MIN_WIDTH)
         .height_request(MANAGEMENT_DIALOG_MIN_HEIGHT)
         .content_width(content_width)
         .content_height(content_height)
-        .child(&root)
         .build();
     let dialog_closed_for_closed = Rc::clone(&dialog_closed);
     let save_running_for_closed = Rc::clone(&save_running);

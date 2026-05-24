@@ -77,10 +77,11 @@ fn show_auto_install_error_dialog(error: &str) {
         gettext("The downloaded Linux update couldn't be installed."),
         error
     );
-    let dialog = AlertDialog::new(Some(&gettext("Couldn't install the update.")), Some(&body));
-    dialog.add_response("close", &gettext("Close"));
-    dialog.set_close_response("close");
-    dialog.set_default_response(Some("close"));
+    let dialog = ui::alert_dialog(gettext("Couldn't install the update."), body)
+        .responses(&[ui::AlertResponse::neutral("close", "Close")])
+        .close_response("close")
+        .default_response("close")
+        .build();
 
     let loop_ = glib::MainLoop::new(None, false);
     let loop_for_response = loop_.clone();
@@ -89,7 +90,7 @@ fn show_auto_install_error_dialog(error: &str) {
         loop_for_response.quit();
     });
 
-    dialog.present(None::<&adw::gtk::Widget>);
+    ui::present_alert_dialog(&dialog, None::<&adw::gtk::Widget>);
     loop_.run();
 }
 

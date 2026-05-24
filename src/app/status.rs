@@ -51,36 +51,29 @@ impl StatusHandle {
 
 pub(in crate::app) fn build_status_bar() -> StatusBar {
     let builder = ui::builder_from_resource("status-bar.ui");
-    let container = builder
-        .object::<gtk::Box>("status_bar")
-        .expect("status-bar.ui should define status_bar");
-    let status_icon = builder
-        .object::<gtk::Image>("status_icon")
-        .expect("status-bar.ui should define status_icon");
-    let spinner = builder
-        .object::<adw::Spinner>("status_spinner")
-        .expect("status-bar.ui should define status_spinner");
-    let label = builder
-        .object::<gtk::Label>("status_label")
-        .expect("status-bar.ui should define status_label");
-    let action_group = builder
-        .object::<gtk::Box>("status_action_group")
-        .expect("status-bar.ui should define status_action_group");
-    let history_button = builder
-        .object::<gtk::Button>("status_history_button")
-        .expect("status-bar.ui should define status_history_button");
+    let container = ui::builder_object::<gtk::Box>(&builder, "status_bar", "status-bar.ui");
+    let status_icon = ui::builder_object::<gtk::Image>(&builder, "status_icon", "status-bar.ui");
+    let spinner = ui::builder_object::<adw::Spinner>(&builder, "status_spinner", "status-bar.ui");
+    let label = ui::builder_object::<gtk::Label>(&builder, "status_label", "status-bar.ui");
+    let action_group =
+        ui::builder_object::<gtk::Box>(&builder, "status_action_group", "status-bar.ui");
+    let history_button =
+        ui::builder_object::<gtk::Button>(&builder, "status_history_button", "status-bar.ui");
     history_button.set_tooltip_text(Some(&tr("Show message history")));
-    let search_preset_button = builder
-        .object::<gtk::MenuButton>("status_search_preset_button")
-        .expect("status-bar.ui should define status_search_preset_button");
+    let search_preset_button = ui::builder_object::<gtk::MenuButton>(
+        &builder,
+        "status_search_preset_button",
+        "status-bar.ui",
+    );
     set_search_preset_menu_model(&search_preset_button);
-    let page_actions_button = builder
-        .object::<gtk::MenuButton>("status_page_actions_button")
-        .expect("status-bar.ui should define status_page_actions_button");
+    let page_actions_button = ui::builder_object::<gtk::MenuButton>(
+        &builder,
+        "status_page_actions_button",
+        "status-bar.ui",
+    );
     set_page_actions_menu_namespace(&page_actions_button, "app");
-    let hide_button = builder
-        .object::<gtk::Button>("status_hide_button")
-        .expect("status-bar.ui should define status_hide_button");
+    let hide_button =
+        ui::builder_object::<gtk::Button>(&builder, "status_hide_button", "status-bar.ui");
     hide_button.set_tooltip_text(Some(&tr("Hide message")));
 
     StatusBar {
@@ -663,11 +656,9 @@ fn show_status_history_dialog(
     connect_status_history_search(&search_entry, rows, empty_label);
 
     root.append(&ui::action_dialog_scroll_with_min(&content, 360));
-    let dialog = adw::Dialog::builder()
-        .title(tr("Message History"))
+    let dialog = ui::content_dialog(tr("Message History"), &root)
         .content_width(620)
         .content_height(560)
-        .child(&root)
         .build();
     ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);
     search_bar.set_key_capture_widget(Some(&dialog));

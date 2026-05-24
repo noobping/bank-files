@@ -216,12 +216,10 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     root.append(&ui::action_dialog_scroll_with_min(&stack, 320));
     let view = ui::dialog_toolbar_view(&header, &root);
 
-    let dialog = adw::Dialog::builder()
-        .title(tr("Fake Transactions"))
+    let dialog = ui::content_dialog(tr("Fake Transactions"), &view)
         .content_width(560)
         .content_height(560)
         .default_widget(&add_button)
-        .child(&view)
         .build();
     let focus_search = {
         let search_bar = search_bar.clone();

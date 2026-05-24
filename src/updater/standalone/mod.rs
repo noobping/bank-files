@@ -3,6 +3,7 @@ use crate::app_info::APP_NAME;
 use crate::i18n::gettext;
 #[cfg(target_os = "linux")]
 use crate::setup;
+use crate::ui;
 use adw::gio::SimpleAction;
 use adw::glib;
 use adw::gtk::{Align, Box as GtkBox, Label, Orientation, ProgressBar};
