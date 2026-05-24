@@ -70,8 +70,9 @@ pub(in crate::app) struct OperationQueueWidgets {
     pub(in crate::app) summary: gtk::Label,
     pub(in crate::app) apply_all_button: gtk::Button,
     pub(in crate::app) clear_done_button: gtk::Button,
+    pub(in crate::app) search_entry: gtk::SearchEntry,
     pub(in crate::app) list: gtk::ListBox,
-    pub(in crate::app) popover: gtk::Popover,
+    pub(in crate::app) dialog: adw::Dialog,
 }
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq)]
@@ -278,57 +279,48 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     button.set_focus_on_click(false);
     button.set_child(Some(&button_content));
 
-    let root = ui::compact_popover_root();
-
-    let header = gtk::Box::new(gtk::Orientation::Horizontal, 8);
-    header.set_hexpand(true);
-    let title_box = gtk::Box::new(gtk::Orientation::Vertical, 2);
-    title_box.set_hexpand(true);
-    let title = gtk::Label::new(Some(&tr("Processing Queue")));
-    title.add_css_class("heading");
-    title.set_selectable(false);
-    title.set_xalign(0.0);
-    title.set_width_chars(1);
-    title.set_max_width_chars(28);
-    title.set_ellipsize(gtk::pango::EllipsizeMode::End);
-    let summary = gtk::Label::new(None);
-    summary.add_css_class("dim-label");
-    summary.set_selectable(false);
-    summary.set_xalign(0.0);
-    summary.set_width_chars(1);
-    summary.set_max_width_chars(34);
-    summary.set_ellipsize(gtk::pango::EllipsizeMode::End);
-    title_box.append(&title);
-    title_box.append(&summary);
+    let shell = build_settings_dialog_shell("Processing Queue", "Search queued operations");
+    let root = shell.root;
+    let header = shell.header;
+    let search_bar = shell.search_bar;
+    let search_entry = shell.search_entry;
 
     let apply_all_button = ui::icon_button(
         "object-select-symbolic",
         "Apply all pending queued operations",
     );
+    apply_all_button.add_css_class("flat");
     apply_all_button.add_css_class("suggested-action");
-    let clear_done_button =
-        ui::icon_button("edit-clear-all-symbolic", "Clear completed operations");
-    let header_actions = ui::linked_button_group();
-    header_actions.append(&apply_all_button);
-    header_actions.append(&clear_done_button);
-    header.append(&title_box);
-    header.append(&header_actions);
-    root.append(&header);
+    let clear_done_button = ui::icon_button("edit-clear-symbolic", "Clear completed operations");
+    clear_done_button.add_css_class("flat");
+    header.pack_end(&clear_done_button);
+    header.pack_end(&apply_all_button);
+
+    let content = ui::page_box();
+    let summary = gtk::Label::new(None);
+    summary.add_css_class("dim-label");
+    summary.set_selectable(false);
+    summary.set_xalign(0.0);
+    summary.set_width_chars(1);
+    summary.set_wrap(true);
+    summary.set_wrap_mode(gtk::pango::WrapMode::WordChar);
+    content.append(&summary);
 
     let list = gtk::ListBox::new();
     list.add_css_class("boxed-list");
     list.set_selection_mode(gtk::SelectionMode::None);
     list.set_hexpand(true);
-    let scroll = ui::compact_popover_scroll(&list);
-    root.append(&scroll);
+    content.append(&list);
+    root.append(&ui::action_dialog_scroll_with_min(&content, 360));
 
-    let popover = gtk::Popover::new();
-    popover.set_child(Some(&root));
-    popover.set_parent(&button);
-    let popover_for_button = popover.clone();
-    button.connect_clicked(move |_| {
-        popover_for_button.popup();
-    });
+    let dialog = adw::Dialog::builder()
+        .title(tr("Processing Queue"))
+        .content_width(620)
+        .content_height(560)
+        .child(&root)
+        .build();
+    ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);
+    search_bar.set_key_capture_widget(Some(&dialog));
 
     OperationQueueWidgets {
         button,
@@ -336,8 +328,9 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
         summary,
         apply_all_button,
         clear_done_button,
+        search_entry,
         list,
-        popover,
+        dialog,
     }
 }
 
@@ -460,6 +453,15 @@ impl OperationQueue {
 }
 
 pub(in crate::app) fn connect_operation_queue(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
+    let state_for_dialog = Rc::clone(state);
+    let ui_for_dialog = Rc::clone(ui);
+    let window_for_dialog = ui.window.clone();
+    let dialog_for_button = ui.operation_queue_widgets.dialog.clone();
+    ui.operation_queue_widgets.button.connect_clicked(move |_| {
+        refresh_operation_queue_ui(&state_for_dialog, &ui_for_dialog);
+        dialog_for_button.present(Some(&window_for_dialog));
+    });
+
     let state_for_apply_all = Rc::clone(state);
     let ui_for_apply_all = Rc::clone(ui);
     ui.operation_queue_widgets
@@ -471,6 +473,14 @@ pub(in crate::app) fn connect_operation_queue(state: &Rc<RefCell<AppData>>, ui: 
     ui.operation_queue_widgets
         .clear_done_button
         .connect_clicked(move |_| clear_done(&state_for_clear_done, &ui_for_clear_done));
+
+    let state_for_search = Rc::clone(state);
+    let ui_for_search = Rc::clone(ui);
+    ui.operation_queue_widgets
+        .search_entry
+        .connect_search_changed(move |_| {
+            refresh_operation_queue_ui(&state_for_search, &ui_for_search)
+        });
 
     refresh_operation_queue_ui(state, ui);
 }
@@ -552,8 +562,19 @@ fn refresh_operation_queue_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) 
         return;
     }
 
+    let query = widgets.search_entry.text().trim().to_lowercase();
+    let mut visible_count = 0;
     for operation in operations {
-        widgets.list.append(&operation_row(state, ui, operation));
+        if operation_matches_query(&operation, &query) {
+            visible_count += 1;
+            widgets.list.append(&operation_row(state, ui, operation));
+        }
+    }
+
+    if visible_count == 0 {
+        widgets
+            .list
+            .append(&queue_text_row(&tr("No queued operations found.")));
     }
 }
 
@@ -573,6 +594,26 @@ fn operation_queue_button_is_suggested(actionable: usize) -> bool {
 
 fn queue_text_row(text: &str) -> adw::ActionRow {
     ui::text_list_row(text)
+}
+
+fn operation_matches_query(operation: &QueuedOperation, query: &str) -> bool {
+    if query.is_empty() {
+        return true;
+    }
+
+    let keywords = operation_keywords(operation);
+    query.split_whitespace().all(|term| keywords.contains(term))
+}
+
+fn operation_keywords(operation: &QueuedOperation) -> String {
+    [
+        operation_title(&operation.kind),
+        operation_status_text(&operation.status),
+        operation_subtitle(&operation.kind),
+        operation_details(&operation.kind, &operation.status),
+    ]
+    .join(" ")
+    .to_lowercase()
 }
 
 fn queue_summary(queue: &OperationQueue) -> String {
@@ -940,7 +981,7 @@ fn clear_done(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
     let removed = ui.operation_queue.clear_applied();
     refresh_operation_queue_ui(state, ui);
     if removed > 0 {
-        ui.operation_queue_widgets.popover.popdown();
+        ui.operation_queue_widgets.dialog.close();
         show_status(ui, "Completed queued operations cleared.");
     }
 }
@@ -1358,6 +1399,29 @@ mod tests {
         assert_eq!(rules[0].search, "(?:alpha|beta)");
         assert!(rules[0].is_regex);
         assert_eq!(rules[1].search, "hosting");
+    }
+
+    #[test]
+    fn operation_search_matches_rule_details() {
+        let operation = QueuedOperation {
+            id: 1,
+            kind: QueuedOperationKind::Rule {
+                rule: EditableRule {
+                    field: "counterparty".to_string(),
+                    search: "Coffee Shop".to_string(),
+                    category: "Food".to_string(),
+                    budget_code: "FOOD".to_string(),
+                    ..EditableRule::new_default()
+                },
+                ensure_budget: true,
+                source: OperationSource::CreateRule,
+            },
+            status: QueuedOperationStatus::Pending,
+        };
+
+        assert!(operation_matches_query(&operation, "coffee food"));
+        assert!(operation_matches_query(&operation, "coffee shop"));
+        assert!(!operation_matches_query(&operation, "transport"));
     }
 
     #[test]

@@ -629,12 +629,10 @@ fn show_status_history_dialog(
     let search_entry = shell.search_entry;
 
     let actions_button = gtk::MenuButton::builder()
-        .icon_name("view-more-symbolic")
-        .tooltip_text(tr("Message history actions"))
+        .icon_name("open-menu-symbolic")
+        .tooltip_text(tr("Menu"))
         .build();
-    actions_button.add_css_class("flat");
-    actions_button.add_css_class("image-button");
-    shell.header.pack_start(&actions_button);
+    shell.header.pack_end(&actions_button);
 
     let content = ui::page_box();
     let list = gtk::ListBox::new();

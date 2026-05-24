@@ -146,8 +146,8 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     start_stack.set_visible_child_name("search");
     header.pack_start(&start_stack);
 
-    let add_button =
-        ui::primary_text_icon_button("list-add-symbolic", "Add", "Add fake transaction");
+    let add_button = ui::plain_text_icon_button("list-add-symbolic", "New", "Add fake transaction");
+    add_button.add_css_class("flat");
     let save_button =
         ui::primary_text_icon_button("document-save-symbolic", "Save", "Save fake transaction");
 
