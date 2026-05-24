@@ -33,7 +33,6 @@ pub(in crate::app) struct FakeTransactionWidgets {
     add_button: gtk::Button,
     save_button: gtk::Button,
     clear_button: gtk::Button,
-    list_actions: gtk::Box,
     form_actions: gtk::Box,
     search_bar: gtk::SearchBar,
     search_entry: gtk::SearchEntry,
@@ -245,7 +244,6 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
         add_button,
         save_button,
         clear_button,
-        list_actions,
         form_actions,
         search_bar,
         search_entry,
@@ -368,7 +366,7 @@ fn show_fake_transaction_list(widgets: &FakeTransactionWidgets) {
         .stack
         .set_visible_child_name(FAKE_TRANSACTIONS_LIST_PAGE);
     widgets.start_stack.set_visible_child_name("search");
-    widgets.list_actions.set_visible(true);
+    widgets.add_button.set_visible(true);
     widgets.form_actions.set_visible(false);
     widgets.dialog.set_default_widget(Some(&widgets.add_button));
     widgets.form_state.borrow_mut().take();
@@ -380,7 +378,7 @@ fn show_fake_transaction_form_page(widgets: &FakeTransactionWidgets) {
         .stack
         .set_visible_child_name(FAKE_TRANSACTIONS_FORM_PAGE);
     widgets.start_stack.set_visible_child_name("back");
-    widgets.list_actions.set_visible(false);
+    widgets.add_button.set_visible(false);
     widgets.form_actions.set_visible(true);
     widgets
         .dialog
