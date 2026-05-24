@@ -119,12 +119,8 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     button_content.append(&badge);
     button_content.append(&icon);
 
-    let button = gtk::Button::builder()
-        .tooltip_text(tr("Fake transactions"))
-        .build();
-    button.add_css_class("flat");
+    let button = ui::flat_custom_button("Fake transactions", &button_content);
     button.set_focus_on_click(false);
-    button.set_child(Some(&button_content));
 
     let header = ui::cancelable_dialog_header("Fake Transactions", "Runtime preview transactions");
 

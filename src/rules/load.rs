@@ -1,5 +1,5 @@
 use super::defaults::{localized_default_budgets, localized_default_rules, parse_bool};
-use super::model::Rule;
+use super::Rule;
 use crate::model::{BudgetAmount, BudgetCode, BudgetDirection, BudgetIncomeBasis};
 use crate::util::parse_decimal;
 

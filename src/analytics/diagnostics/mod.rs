@@ -1,10 +1,12 @@
-use crate::analytics::{RepeatingCadence, TransactionPattern, TransactionPatternKind};
-use crate::model::Transaction;
+use crate::analytics::{
+    transaction_is_transfer, RepeatingCadence, TransactionPattern, TransactionPatternKind,
+};
+use crate::model::{BudgetCode, Transaction};
 
+use rust_decimal::Decimal;
 use std::collections::HashSet;
 
 mod amounts;
-mod counts;
 mod grouping;
 mod labels;
 mod matching;
@@ -12,10 +14,6 @@ mod offsetting;
 mod repeating;
 mod transfers;
 
-pub use counts::{
-    other_category_count, transaction_has_unconfigured_expense_budget,
-    unconfigured_expense_budget_count,
-};
 pub use matching::{transaction_matches_pattern, transactions_without_canceled_patterns};
 
 #[derive(Default)]
@@ -28,6 +26,38 @@ impl TransactionPatternAnalysis {
     pub fn hidden_canceled_transaction_count(&self) -> usize {
         self.hidden_transaction_keys.len()
     }
+}
+
+pub fn unconfigured_expense_budget_count(
+    transactions: &[Transaction],
+    budgets: &[BudgetCode],
+) -> usize {
+    transactions
+        .iter()
+        .filter(|tx| transaction_has_unconfigured_expense_budget(tx, budgets))
+        .count()
+}
+
+pub fn transaction_has_unconfigured_expense_budget(
+    tx: &Transaction,
+    budgets: &[BudgetCode],
+) -> bool {
+    if tx.amount >= Decimal::ZERO || transaction_is_transfer(tx, budgets) {
+        return false;
+    }
+
+    let code = tx.budget_code.trim();
+    code.is_empty()
+        || !budgets.iter().any(|budget| {
+            budget.direction.is_expense() && budget.code.trim().eq_ignore_ascii_case(code)
+        })
+}
+
+pub fn other_category_count(transactions: &[Transaction]) -> usize {
+    transactions
+        .iter()
+        .filter(|tx| matches!(tx.budget_code.trim(), "OTHER" | "INC-OTHER"))
+        .count()
 }
 
 pub fn transaction_pattern_analysis(

@@ -372,16 +372,16 @@ pub(in crate::app) fn detected_fields_toggle(
 ) -> gtk::Box {
     let container = gtk::Box::new(gtk::Orientation::Vertical, 8);
     let reveal_initially = fields_visibility.reveal_initially(ui_handles.show_all.get());
-    let button = gtk::Button::builder()
-        .tooltip_text(tr(if reveal_initially {
+    let button_content = gtk::Box::new(gtk::Orientation::Horizontal, 6);
+    let button = ui::flat_custom_button(
+        if reveal_initially {
             "Hide detected fields"
         } else {
             "Show detected fields"
-        }))
-        .build();
-    button.add_css_class("flat");
+        },
+        &button_content,
+    );
 
-    let button_content = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     let icon = gtk::Image::from_icon_name("format-justify-left-symbolic");
     button_content.append(&icon);
     let label = ui::wrapped_label(&tr("Detected fields"));
@@ -394,7 +394,6 @@ pub(in crate::app) fn detected_fields_toggle(
         "go-down-symbolic"
     });
     button_content.append(&indicator);
-    button.set_child(Some(&button_content));
     container.append(&button);
 
     let revealer = gtk::Revealer::builder()

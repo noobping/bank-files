@@ -3,8 +3,8 @@ use super::defaults::{
     GENERATED_AUTOMATIC_NOTE, GENERATED_PATTERN_NOTE, LOCAL_AI_NOTE,
 };
 use super::fallback::fallback_category;
-use super::model::Rule;
-use super::text::transaction_tag_text;
+use super::transaction_tag_text;
+use super::Rule;
 use crate::model::{BudgetCode, Transaction};
 use crate::util::normalize_key;
 

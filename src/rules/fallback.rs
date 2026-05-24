@@ -1,5 +1,5 @@
 use super::defaults::{fallback_categories, AUTO_DETECTED_CATEGORY_NOTE};
-use super::text::transaction_tag_text;
+use super::transaction_tag_text;
 use crate::model::{BudgetCode, Transaction};
 use crate::util::normalize_key;
 

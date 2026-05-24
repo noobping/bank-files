@@ -272,12 +272,8 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     button_content.append(&badge);
     button_content.append(&icon_shell);
 
-    let button = gtk::Button::builder()
-        .tooltip_text(tr("Processing queue"))
-        .build();
-    button.add_css_class("flat");
+    let button = ui::flat_custom_button("Processing queue", &button_content);
     button.set_focus_on_click(false);
-    button.set_child(Some(&button_content));
 
     let shell = build_settings_dialog_shell("Processing Queue", "Search queued operations");
     let root = shell.root;
@@ -290,7 +286,6 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
         "Apply all",
         "Apply all pending queued operations",
     );
-    apply_all_button.add_css_class("suggested-action");
     let clear_done_button = ui::icon_button("edit-clear-symbolic", "Clear completed operations");
     clear_done_button.add_css_class("flat");
     header.pack_end(&clear_done_button);
