@@ -359,7 +359,7 @@ fn show_fake_transaction_list(widgets: &FakeTransactionWidgets) {
     widgets
         .stack
         .set_visible_child_name(FAKE_TRANSACTIONS_LIST_PAGE);
-    widgets.start_stack.set_visible_child_name("search");
+    widgets.start_stack.set_visible_child_name("add");
     widgets.add_button.set_visible(true);
     widgets.save_button.set_visible(false);
     widgets.dialog.set_default_widget(Some(&widgets.add_button));
