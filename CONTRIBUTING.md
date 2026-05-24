@@ -101,6 +101,9 @@ A shared builder should handle common configuration, defaults, styling, behavior
 - Keep Flathub packaging and sandboxing in mind.
 - Do not create custom widgets, custom styling, or custom behavior when GTK/libadwaita already supports it.
 - Custom UI must be justified in the pull request.
+- Use GTK UI files, Blueprint files, templates, or composite templates when they reduce Rust code and keep the UI clearer.
+- UI files are for structure, layout, widgets, and bindings; Rust is for behavior, state, validation, services, workers, and data flow.
+- Do not hide business logic, IO, threading, or complex behavior in UI files.
 - Keep UI accessible and keyboard-friendly.
 
 ## Buttons
@@ -151,6 +154,7 @@ Do not skip tests just because code is internal. If behavior matters, test it.
 - [ ] Code is DRY, SRP, KISS, and idiomatic Rust.
 - [ ] GNOME, GTK, libadwaita, and Flathub expectations are followed.
 - [ ] Default GTK/libadwaita components are used unless custom UI is absolutely unavoidable.
+- [ ] UI files/templates are used when they reduce Rust code and improve clarity.
 - [ ] Any custom UI is clearly justified.
 - [ ] Files stay under 300 lines unless clearly justified.
 - [ ] Related files are grouped with `mod.rs`.
