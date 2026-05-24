@@ -270,8 +270,8 @@ msgstr "Slimme inzichten aan/uit"
 msgid "Toggle Online Smart Insights"
 msgstr "Online slimme inzichten aan/uit"
 
-msgid "Toggle Smart Autofill"
-msgstr "Smart Autofill aan/uit"
+msgid "Toggle Whole Form Autofill"
+msgstr "Volledig formulier automatisch invullen aan/uit"
 
 msgid "Toggle Hide Refunded Transactions"
 msgstr "Terugbetaalde transacties verbergen aan/uit"
@@ -3046,14 +3046,14 @@ msgstr "Geavanceerde functies"
 msgid "Allow rule editing and budget direction controls."
 msgstr "Sta regelbewerking en instellingen voor budgetrichting toe."
 
-msgid "Control simple mode, smart form filling, cleanup, and refunded transaction visibility."
-msgstr "Beheer eenvoudige modus, slim invullen, opschonen en zichtbaarheid van terugbetalingen."
+msgid "Control simple mode, whole-form autofill, and cleanup."
+msgstr "Beheer eenvoudige modus, automatisch invullen van het hele formulier en opschonen."
 
-msgid "Smart Autofill"
-msgstr "Slim invullen"
+msgid "Whole Form Autofill"
+msgstr "Volledig formulier automatisch invullen"
 
-msgid "Let forms fill related fields from context, such as matching categories and directions."
-msgstr "Laat formulieren verwante velden invullen vanuit de context, zoals passende categorieen en richtingen."
+msgid "Fill related form fields from the value you choose, such as matching categories, budget codes, and directions."
+msgstr "Vul gerelateerde formuliervelden in op basis van de waarde die je kiest, zoals passende categorieën, budgetcodes en richtingen."
 
 msgid "Advanced Features enabled. Rule editing and direction controls are available."
 msgstr "Geavanceerde functies ingeschakeld. Regelbewerking en richtinginstellingen zijn beschikbaar."
@@ -3061,11 +3061,11 @@ msgstr "Geavanceerde functies ingeschakeld. Regelbewerking en richtinginstelling
 msgid "Simple mode enabled. Rule editing and direction controls are hidden."
 msgstr "Eenvoudige modus ingeschakeld. Regelbewerking en richtinginstellingen zijn verborgen."
 
-msgid "Smart Autofill enabled. Forms can fill matching categories and directions."
-msgstr "Slim invullen ingeschakeld. Formulieren kunnen passende categorieen en richtingen invullen."
+msgid "Whole Form Autofill enabled. Forms can fill matching categories, budget codes, and directions."
+msgstr "Volledig formulier automatisch invullen ingeschakeld. Formulieren kunnen passende categorieën, budgetcodes en richtingen invullen."
 
-msgid "Smart Autofill disabled. Forms only use values you select."
-msgstr "Slim invullen uitgeschakeld. Formulieren gebruiken alleen waarden die je zelf kiest."
+msgid "Whole Form Autofill disabled. Forms only use values you select."
+msgstr "Volledig formulier automatisch invullen uitgeschakeld. Formulieren gebruiken alleen waarden die je zelf kiest."
 
 msgid "Toggle Advanced Features"
 msgstr "Geavanceerde functies aan/uit"

@@ -270,8 +270,8 @@ msgstr "Intelligente Einblicke umschalten"
 msgid "Toggle Online Smart Insights"
 msgstr "Online-Intelligente Einblicke umschalten"
 
-msgid "Toggle Smart Autofill"
-msgstr "Intelligentes Ausfüllen umschalten"
+msgid "Toggle Whole Form Autofill"
+msgstr "Ganzes Formular automatisch ausfüllen umschalten"
 
 msgid "Toggle Hide Refunded Transactions"
 msgstr "Erstattete Transaktionen ausblenden umschalten"
@@ -3046,14 +3046,14 @@ msgstr "Erweiterte Funktionen"
 msgid "Allow rule editing and budget direction controls."
 msgstr "Regelbearbeitung und Einstellungen fuer die Budgetrichtung erlauben."
 
-msgid "Control simple mode, smart form filling, cleanup, and refunded transaction visibility."
-msgstr "Einfachen Modus, intelligentes Ausfuellen, Bereinigung und Sichtbarkeit von Erstattungen steuern."
+msgid "Control simple mode, whole-form autofill, and cleanup."
+msgstr "Einfachen Modus, Autofill für das ganze Formular und Bereinigung steuern."
 
-msgid "Smart Autofill"
-msgstr "Intelligentes Ausfuellen"
+msgid "Whole Form Autofill"
+msgstr "Ganzes Formular automatisch ausfüllen"
 
-msgid "Let forms fill related fields from context, such as matching categories and directions."
-msgstr "Formulare koennen passende Felder aus dem Kontext fuellen, zum Beispiel Kategorien und Richtungen."
+msgid "Fill related form fields from the value you choose, such as matching categories, budget codes, and directions."
+msgstr "Zugehörige Formularfelder anhand des gewählten Werts ausfüllen, etwa passende Kategorien, Budgetcodes und Richtungen."
 
 msgid "Advanced Features enabled. Rule editing and direction controls are available."
 msgstr "Erweiterte Funktionen aktiviert. Regelbearbeitung und Richtungseinstellungen sind verfuegbar."
@@ -3061,11 +3061,11 @@ msgstr "Erweiterte Funktionen aktiviert. Regelbearbeitung und Richtungseinstellu
 msgid "Simple mode enabled. Rule editing and direction controls are hidden."
 msgstr "Einfacher Modus aktiviert. Regelbearbeitung und Richtungseinstellungen sind ausgeblendet."
 
-msgid "Smart Autofill enabled. Forms can fill matching categories and directions."
-msgstr "Intelligentes Ausfuellen aktiviert. Formulare koennen passende Kategorien und Richtungen eintragen."
+msgid "Whole Form Autofill enabled. Forms can fill matching categories, budget codes, and directions."
+msgstr "Ganzes Formular automatisch ausfüllen aktiviert. Formulare können passende Kategorien, Budgetcodes und Richtungen eintragen."
 
-msgid "Smart Autofill disabled. Forms only use values you select."
-msgstr "Intelligentes Ausfuellen deaktiviert. Formulare verwenden nur ausgewaehlte Werte."
+msgid "Whole Form Autofill disabled. Forms only use values you select."
+msgstr "Ganzes Formular automatisch ausfüllen deaktiviert. Formulare verwenden nur ausgewählte Werte."
 
 msgid "Toggle Advanced Features"
 msgstr "Erweiterte Funktionen umschalten"
