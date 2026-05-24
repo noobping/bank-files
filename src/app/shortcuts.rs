@@ -79,7 +79,7 @@ pub(in crate::app) fn install_action_accelerators(app: &adw::Application) {
 
 pub(in crate::app) fn build_shortcuts_dialog(
     advanced_features: bool,
-    smart_patterns_enabled: bool,
+    _smart_patterns_enabled: bool,
 ) -> adw::ShortcutsDialog {
     let dialog = adw::ShortcutsDialog::builder()
         .title(tr("Keyboard Shortcuts"))
@@ -132,41 +132,40 @@ pub(in crate::app) fn build_shortcuts_dialog(
         ShortcutSpec::action("Open Configuration", "app.configuration"),
         ShortcutSpec::action("Toggle Advanced Features", "app.advanced-features"),
     ];
-    #[cfg(not(feature = "smart-insights"))]
-    let _ = smart_patterns_enabled;
     #[cfg(feature = "smart-insights")]
-    {
+    if advanced_features {
         settings_shortcuts.push(ShortcutSpec::action(
             "Toggle Smart Insights",
             "app.show-predictions",
         ));
         #[cfg(not(feature = "flatpak"))]
-        if smart_patterns_enabled || advanced_features {
-            settings_shortcuts.push(ShortcutSpec::action(
-                "Toggle Online Smart Insights",
-                "app.online-smart-insights",
-            ));
-        }
+        settings_shortcuts.push(ShortcutSpec::action(
+            "Toggle Online Smart Insights",
+            "app.online-smart-insights",
+        ));
+    }
+    if advanced_features {
+        settings_shortcuts.push(ShortcutSpec::action(
+            "Toggle Smart Autofill",
+            "app.advanced-autofill",
+        ));
     }
     settings_shortcuts.extend([
-        ShortcutSpec::action("Toggle Smart Autofill", "app.advanced-autofill"),
         ShortcutSpec::action("Toggle Duplicate Filtering", "app.dedupe-enabled"),
         ShortcutSpec::action("Toggle Full Lists", "app.show-all"),
         ShortcutSpec::action("Toggle Auto Clean Config", "app.auto-clean-config"),
         ShortcutSpec::action("Toggle Status Autohide", "app.autohide-status"),
     ]);
     #[cfg(feature = "smart-insights")]
-    {
+    if advanced_features {
         settings_shortcuts.push(ShortcutSpec::action(
             "Toggle Spending Comparison",
             "app.compare-categories-previous-period",
         ));
-        if smart_patterns_enabled || advanced_features {
-            settings_shortcuts.push(ShortcutSpec::action(
-                "Toggle Hide Refunded Transactions",
-                "app.hide-canceled-transactions",
-            ));
-        }
+        settings_shortcuts.push(ShortcutSpec::action(
+            "Toggle Hide Refunded Transactions",
+            "app.hide-canceled-transactions",
+        ));
     }
     dialog.add(shortcuts_section("Settings", &settings_shortcuts));
 

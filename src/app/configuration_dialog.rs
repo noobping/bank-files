@@ -42,6 +42,13 @@ pub(in crate::app) fn show_configuration_dialog(
     page.add(&group);
     search_groups.push(search_group);
 
+    if let Some((group, search_group)) =
+        experimental_configuration_group(state, ui_handles, status.clone())
+    {
+        page.add(&group);
+        search_groups.push(search_group);
+    }
+
     root.append(&ui::scroll(&page));
     root.append(&status_bar.container);
 
@@ -90,17 +97,6 @@ fn configuration_snapshot_rows(
         ],
     ];
 
-    if automatic_configuration_generation_visible(advanced_features, smart_insights_enabled) {
-        rows.push(vec![
-            tr("Automatic Configuration"),
-            tr("Generate Configuration from Transactions"),
-            tr(automatic_configuration_generation_subtitle(
-                advanced_features,
-                smart_insights_enabled,
-            )),
-        ]);
-    }
-
     rows.extend([
         vec![
             tr("Automatic Configuration"),
@@ -113,6 +109,17 @@ fn configuration_snapshot_rows(
             tr("Remove all rules and budget codes while keeping CSV field names for imports."),
         ],
     ]);
+
+    if automatic_configuration_generation_visible(advanced_features) {
+        rows.push(vec![
+            tr("Experimental"),
+            tr("Generate Configuration from Transactions"),
+            tr(automatic_configuration_generation_subtitle(
+                smart_insights_enabled,
+            )),
+        ]);
+    }
+
     rows
 }
 
@@ -181,45 +188,12 @@ fn automatic_configuration_group(
     status: StatusHandle,
 ) -> (adw::PreferencesGroup, SearchablePreferencesGroup) {
     let title = "Automatic Configuration";
-    let description =
-        "Generate configuration from imported transactions, use defaults, or start clean.";
+    let description = "Use the built-in defaults or start with an empty configuration.";
     let group = adw::PreferencesGroup::builder()
         .title(tr(title))
         .description(tr(description))
         .build();
     let mut search_group = SearchablePreferencesGroup::new(&group, title, description);
-    let advanced_features = ui_handles.advanced_features.get();
-    let smart_insights_enabled = ui_handles.show_predictions.get();
-
-    if automatic_configuration_generation_visible(advanced_features, smart_insights_enabled) {
-        let generate_title = "Generate Configuration from Transactions";
-        let generate_subtitle =
-            automatic_configuration_generation_subtitle(advanced_features, smart_insights_enabled);
-        let generate_row = action_row("view-refresh-symbolic", generate_title, generate_subtitle);
-        if !automatic_configuration_generation_enabled(smart_insights_enabled) {
-            generate_row.set_sensitive(false);
-            generate_row.set_tooltip_text(Some(&tr(
-                "Enable Smart Insights to generate configuration from transactions.",
-            )));
-        }
-        search_group.add_row(&generate_row, generate_title, generate_subtitle);
-        group.add(&generate_row);
-        register_config_widget(ui_handles, &generate_row);
-
-        let state_for_generate = Rc::clone(state);
-        let ui_for_generate = Rc::clone(ui_handles);
-        let status_for_generate = status.clone();
-        generate_row.connect_activated(move |row| {
-            if !row.is_sensitive() {
-                return;
-            }
-            generate_configuration_from_transactions_with_status(
-                &state_for_generate,
-                &ui_for_generate,
-                Some(status_for_generate.clone()),
-            );
-        });
-    }
 
     let defaults_title = "Use Default Configuration";
     let defaults_subtitle = "Replace rules, budgets, and field names with the built-in defaults.";
@@ -271,27 +245,68 @@ fn automatic_configuration_group(
     (group, search_group)
 }
 
-fn automatic_configuration_generation_visible(
-    advanced_features: bool,
-    smart_insights_enabled: bool,
-) -> bool {
-    cfg!(feature = "smart-insights") && (smart_insights_enabled || advanced_features)
+fn experimental_configuration_group(
+    state: &Rc<RefCell<AppData>>,
+    ui_handles: &Rc<UiHandles>,
+    status: StatusHandle,
+) -> Option<(adw::PreferencesGroup, SearchablePreferencesGroup)> {
+    let advanced_features = ui_handles.advanced_features.get();
+    let smart_insights_enabled = ui_handles.show_predictions.get();
+    if !automatic_configuration_generation_visible(advanced_features) {
+        return None;
+    }
+
+    let title = "Experimental";
+    let description = "Try Smart Insights and local AI assisted configuration actions.";
+    let group = adw::PreferencesGroup::builder()
+        .title(tr(title))
+        .description(tr(description))
+        .build();
+    let mut search_group = SearchablePreferencesGroup::new(&group, title, description);
+
+    let generate_title = "Generate Configuration from Transactions";
+    let generate_subtitle = automatic_configuration_generation_subtitle(smart_insights_enabled);
+    let generate_row = action_row("view-refresh-symbolic", generate_title, generate_subtitle);
+    if !automatic_configuration_generation_enabled(smart_insights_enabled) {
+        generate_row.set_sensitive(false);
+        generate_row.set_tooltip_text(Some(&tr(
+            "Enable Smart Insights to generate configuration from transactions.",
+        )));
+    }
+    search_group.add_row(&generate_row, generate_title, generate_subtitle);
+    group.add(&generate_row);
+    register_config_widget(ui_handles, &generate_row);
+
+    let state_for_generate = Rc::clone(state);
+    let ui_for_generate = Rc::clone(ui_handles);
+    let status_for_generate = status.clone();
+    generate_row.connect_activated(move |row| {
+        if !row.is_sensitive() {
+            return;
+        }
+        generate_configuration_from_transactions_with_status(
+            &state_for_generate,
+            &ui_for_generate,
+            Some(status_for_generate.clone()),
+        );
+    });
+
+    Some((group, search_group))
+}
+
+fn automatic_configuration_generation_visible(advanced_features: bool) -> bool {
+    cfg!(feature = "smart-insights") && advanced_features
 }
 
 fn automatic_configuration_generation_enabled(smart_insights_enabled: bool) -> bool {
     smart_pattern_detection_enabled(smart_insights_enabled)
 }
 
-fn automatic_configuration_generation_subtitle(
-    advanced_features: bool,
-    smart_insights_enabled: bool,
-) -> &'static str {
+fn automatic_configuration_generation_subtitle(smart_insights_enabled: bool) -> &'static str {
     if !smart_insights_enabled {
         "Requires Smart Insights. Enable Smart Insights to generate configuration from transactions."
-    } else if advanced_features {
-        "Create rules, budget codes, field mappings, and hidden refund/split patterns from imported transactions."
     } else {
-        "Create a working setup from imported transactions and hide refund/split patterns."
+        "Create rules, budget codes, field mappings, and hidden refund/split patterns from imported transactions."
     }
 }
 
@@ -527,14 +542,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn automatic_configuration_generation_hides_in_simple_mode_without_smart_insights() {
-        assert!(!automatic_configuration_generation_visible(false, false));
+    fn automatic_configuration_generation_hides_in_simple_mode() {
+        assert!(!automatic_configuration_generation_visible(false));
     }
 
     #[test]
     fn automatic_configuration_generation_shows_disabled_in_advanced_mode_when_feature_exists() {
         assert_eq!(
-            automatic_configuration_generation_visible(true, false),
+            automatic_configuration_generation_visible(true),
             cfg!(feature = "smart-insights")
         );
         assert!(!automatic_configuration_generation_enabled(false));
@@ -552,5 +567,10 @@ mod tests {
 
         assert_eq!(simple_rows.len(), 4);
         assert_eq!(advanced_rows.len(), expected_advanced_rows);
+        assert!(!simple_rows.iter().any(|row| row[0] == tr("Experimental")));
+        assert_eq!(
+            advanced_rows.iter().any(|row| row[0] == tr("Experimental")),
+            cfg!(feature = "smart-insights")
+        );
     }
 }

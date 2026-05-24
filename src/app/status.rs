@@ -173,6 +173,11 @@ impl StaticPageSnapshot {
             rows,
         }
     }
+
+    #[cfg(test)]
+    pub(in crate::app) fn rows(&self) -> &[Vec<String>] {
+        &self.rows
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
