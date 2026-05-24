@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bank Files 0.1.0\n"
-"PO-Revision-Date: 2026-05-22 00:00+0200\n"
+"PO-Revision-Date: 2026-05-25 00:00+0200\n"
 "Last-Translator: Codex\n"
 "Language-Team: none\n"
 "Language: de\n"
@@ -3506,3 +3506,114 @@ msgstr "Temporäre Vorschautransaktionen"
 
 msgid "Search fake transactions"
 msgstr "Scheintransaktionen suchen"
+
+msgid " Sum {sum}; avg {average}; modal {modal}."
+msgstr " Summe {sum}; Durchschn. {average}; Modalwert {modal}."
+
+msgid "Back to fake transactions"
+msgstr "Zurück zu Scheintransaktionen"
+
+msgid "Budget actions"
+msgstr "Budgetaktionen"
+
+msgid "Clear Cache and Reload"
+msgstr "Cache leeren und neu laden"
+
+msgid "Combine Compatible Rules"
+msgstr "Kompatible Regeln zusammenführen"
+
+msgid "Could not clear data and analytics cache: {error}"
+msgstr "Daten- und Analyse-Cache konnte nicht geleert werden: {error}"
+
+msgid "Could not update duplicate filtering: {error}"
+msgstr "Duplikatfilterung konnte nicht aktualisiert werden: {error}"
+
+msgid "Created from rule."
+msgstr "Aus Regel erstellt."
+
+msgid "Data and analytics cache cleared. Current data reloaded."
+msgstr "Daten- und Analyse-Cache geleert. Aktuelle Daten neu geladen."
+
+msgid "Enable Smart Insights to use this preference."
+msgstr "Aktiviere Intelligente Einblicke, um diese Einstellung zu verwenden."
+
+msgid "Experimental"
+msgstr "Experimentell"
+
+msgid "Filtered on {year}."
+msgstr "Nach {year} gefiltert."
+
+msgid "Fixed monthly budgets are annualized; yearly budgets are used as-is; percentage budgets use yearly income."
+msgstr "Feste Monatsbudgets werden auf Jahreswerte hochgerechnet; Jahresbudgets werden unverändert verwendet; Prozentbudgets verwenden Jahreseinkommen."
+
+msgid "Fixed monthly budgets are annualized; yearly budgets are used as-is; percentage budgets use yearly income. Gray values compare with {previous_year}."
+msgstr "Feste Monatsbudgets werden auf Jahreswerte hochgerechnet; Jahresbudgets werden unverändert verwendet; Prozentbudgets verwenden Jahreseinkommen. Graue Werte vergleichen mit {previous_year}."
+
+msgid "Group Compatible Rules"
+msgstr "Kompatible Regeln gruppieren"
+
+msgid "Local AI: {category}"
+msgstr "Lokale KI: {category}"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "New fake transaction"
+msgstr "Neue Scheintransaktion"
+
+msgid "No data and analytics cache was present. Current data reloaded."
+msgstr "Es war kein Daten- und Analyse-Cache vorhanden. Aktuelle Daten neu geladen."
+
+msgid "Other"
+msgstr "Sonstiges"
+
+msgid "Other income"
+msgstr "Sonstige Einnahmen"
+
+msgid "Rows visible on the sample page."
+msgstr "Auf der Beispielseite sichtbare Zeilen."
+
+msgid "Rule actions"
+msgstr "Regelaktionen"
+
+msgid "Sample Page"
+msgstr "Beispielseite"
+
+msgid "Show operation details"
+msgstr "Vorgangsdetails anzeigen"
+
+msgid "Use Monthly Values"
+msgstr "Monatswerte verwenden"
+
+msgid "Use Planned Income"
+msgstr "Geplantes Einkommen verwenden"
+
+msgid "Use Real Income"
+msgstr "Tatsächliches Einkommen verwenden"
+
+msgid "Use Yearly Values"
+msgstr "Jahreswerte verwenden"
+
+msgid "this transaction"
+msgstr "diese Transaktion"
+
+msgid "this transaction -> {new}"
+msgstr "diese Transaktion -> {new}"
+
+msgid "{basis} - {context}"
+msgstr "{basis} - {context}"
+
+msgid "{count} of {total} transactions match “{query}” in {year}.{stats}"
+msgstr "{count} von {total} Transaktionen entsprechen „{query}“ in {year}.{stats}"
+
+msgid "{count} of {total} transactions match “{query}”.{stats}"
+msgstr "{count} von {total} Transaktionen entsprechen „{query}“.{stats}"
+
+msgid "{label}: {value}"
+msgstr "{label}: {value}"
+
+msgid "{old} -> no budget code"
+msgstr "{old} -> kein Budgetcode"
+
+msgid "{old} -> {new}"
+msgstr "{old} -> {new}"

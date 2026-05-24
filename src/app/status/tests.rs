@@ -101,6 +101,6 @@ line two"
         ]
         .join("\n")
     );
-    assert!(snapshot.csv.contains("Name"));
+    assert!(snapshot.csv.contains(&tr("Name")));
     assert!(snapshot.csv.contains("Groceries"));
 }

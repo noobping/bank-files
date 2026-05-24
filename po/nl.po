@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bank Files 0.1.0\n"
-"PO-Revision-Date: 2026-05-22 00:00+0200\n"
+"PO-Revision-Date: 2026-05-25 00:00+0200\n"
 "Last-Translator: Codex\n"
 "Language-Team: none\n"
 "Language: nl\n"
@@ -3506,3 +3506,114 @@ msgstr "Tijdelijke voorbeeldtransacties"
 
 msgid "Search fake transactions"
 msgstr "Neptransacties zoeken"
+
+msgid " Sum {sum}; avg {average}; modal {modal}."
+msgstr " Som {sum}; gem. {average}; modus {modal}."
+
+msgid "Back to fake transactions"
+msgstr "Terug naar neptransacties"
+
+msgid "Budget actions"
+msgstr "Budgetacties"
+
+msgid "Clear Cache and Reload"
+msgstr "Cache wissen en herladen"
+
+msgid "Combine Compatible Rules"
+msgstr "Compatibele regels combineren"
+
+msgid "Could not clear data and analytics cache: {error}"
+msgstr "Kon data- en analysecache niet wissen: {error}"
+
+msgid "Could not update duplicate filtering: {error}"
+msgstr "Kon dubbele-filtering niet bijwerken: {error}"
+
+msgid "Created from rule."
+msgstr "Gemaakt op basis van regel."
+
+msgid "Data and analytics cache cleared. Current data reloaded."
+msgstr "Data- en analysecache gewist. Huidige gegevens herladen."
+
+msgid "Enable Smart Insights to use this preference."
+msgstr "Schakel Slimme inzichten in om deze voorkeur te gebruiken."
+
+msgid "Experimental"
+msgstr "Experimenteel"
+
+msgid "Filtered on {year}."
+msgstr "Gefilterd op {year}."
+
+msgid "Fixed monthly budgets are annualized; yearly budgets are used as-is; percentage budgets use yearly income."
+msgstr "Vaste maandbudgetten worden omgerekend naar jaarbedragen; jaarbudgetten worden ongewijzigd gebruikt; procentuele budgetten gebruiken jaarinkomen."
+
+msgid "Fixed monthly budgets are annualized; yearly budgets are used as-is; percentage budgets use yearly income. Gray values compare with {previous_year}."
+msgstr "Vaste maandbudgetten worden omgerekend naar jaarbedragen; jaarbudgetten worden ongewijzigd gebruikt; procentuele budgetten gebruiken jaarinkomen. Grijze waarden vergelijken met {previous_year}."
+
+msgid "Group Compatible Rules"
+msgstr "Compatibele regels groeperen"
+
+msgid "Local AI: {category}"
+msgstr "Lokale AI: {category}"
+
+msgid "Name"
+msgstr "Naam"
+
+msgid "New fake transaction"
+msgstr "Nieuwe neptransactie"
+
+msgid "No data and analytics cache was present. Current data reloaded."
+msgstr "Er was geen data- en analysecache aanwezig. Huidige gegevens herladen."
+
+msgid "Other"
+msgstr "Overig"
+
+msgid "Other income"
+msgstr "Overige inkomsten"
+
+msgid "Rows visible on the sample page."
+msgstr "Rijen zichtbaar op de voorbeeldpagina."
+
+msgid "Rule actions"
+msgstr "Regelacties"
+
+msgid "Sample Page"
+msgstr "Voorbeeldpagina"
+
+msgid "Show operation details"
+msgstr "Bewerkingsdetails tonen"
+
+msgid "Use Monthly Values"
+msgstr "Maandwaarden gebruiken"
+
+msgid "Use Planned Income"
+msgstr "Gepland inkomen gebruiken"
+
+msgid "Use Real Income"
+msgstr "Werkelijk inkomen gebruiken"
+
+msgid "Use Yearly Values"
+msgstr "Jaarwaarden gebruiken"
+
+msgid "this transaction"
+msgstr "deze transactie"
+
+msgid "this transaction -> {new}"
+msgstr "deze transactie -> {new}"
+
+msgid "{basis} - {context}"
+msgstr "{basis} - {context}"
+
+msgid "{count} of {total} transactions match “{query}” in {year}.{stats}"
+msgstr "{count} van {total} transacties komen overeen met “{query}” in {year}.{stats}"
+
+msgid "{count} of {total} transactions match “{query}”.{stats}"
+msgstr "{count} van {total} transacties komen overeen met “{query}”.{stats}"
+
+msgid "{label}: {value}"
+msgstr "{label}: {value}"
+
+msgid "{old} -> no budget code"
+msgstr "{old} -> geen budgetcode"
+
+msgid "{old} -> {new}"
+msgstr "{old} -> {new}"
