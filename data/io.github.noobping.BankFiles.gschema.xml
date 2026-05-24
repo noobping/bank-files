@@ -33,8 +33,8 @@
     </key>
     <key name="advanced-autofill" type="b">
       <default>true</default>
-      <summary>Smart autofill</summary>
-      <description>Whether forms may infer related values, such as selecting a matching category when transfer direction is selected.</description>
+      <summary>Whole form autofill</summary>
+      <description>Whether forms may fill related fields from the value you choose, such as matching categories, budget codes, and directions.</description>
     </key>
     <key name="advanced-features" type="b">
       <default>false</default>

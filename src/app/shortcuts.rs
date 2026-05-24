@@ -144,12 +144,10 @@ pub(in crate::app) fn build_shortcuts_dialog(
             "app.online-smart-insights",
         ));
     }
-    if advanced_features {
-        settings_shortcuts.push(ShortcutSpec::action(
-            "Toggle Smart Autofill",
-            "app.advanced-autofill",
-        ));
-    }
+    settings_shortcuts.push(ShortcutSpec::action(
+        "Toggle Whole Form Autofill",
+        "app.advanced-autofill",
+    ));
     settings_shortcuts.extend([
         ShortcutSpec::action("Toggle Duplicate Filtering", "app.dedupe-enabled"),
         ShortcutSpec::action("Toggle Full Lists", "app.show-all"),

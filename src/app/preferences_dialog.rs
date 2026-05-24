@@ -44,12 +44,7 @@ pub(in crate::app) fn show_preferences_dialog(
         search_groups.push(search_group);
     }
 
-    let experimental_preferences = vec![PreferenceSpec::new(
-        "Smart Autofill",
-        "Let forms fill related fields from context, such as matching categories and directions.",
-        "app.advanced-autofill",
-        ui.advanced_autofill.get(),
-    )];
+    let experimental_preferences = Vec::new();
     #[cfg(feature = "smart-insights")]
     let mut experimental_preferences = experimental_preferences;
     #[cfg(feature = "smart-insights")]
@@ -100,6 +95,12 @@ pub(in crate::app) fn show_preferences_dialog(
             advanced_features,
         ),
         PreferenceSpec::new(
+            "Whole Form Autofill",
+            "Fill related form fields from the value you choose, such as matching categories, budget codes, and directions.",
+            "app.advanced-autofill",
+            ui.advanced_autofill.get(),
+        ),
+        PreferenceSpec::new(
             "Auto Clean Config",
             "Remove orphaned rules automatically during reload and import.",
             "app.auto-clean-config",
@@ -109,7 +110,7 @@ pub(in crate::app) fn show_preferences_dialog(
 
     if let Some((group, search_group)) = preference_group(
         "Forms and Data",
-        "Control simple mode and cleanup.",
+        "Control simple mode, whole-form autofill, and cleanup.",
         &forms_preferences,
         advanced_features,
         smart_insights_enabled,
@@ -122,7 +123,7 @@ pub(in crate::app) fn show_preferences_dialog(
     if advanced_features {
         if let Some((group, search_group)) = preference_group(
             "Experimental",
-            "Control Smart Autofill, Smart Insights, online enrichment, detected refund hiding, and previous-period comparisons.",
+            "Control Smart Insights, online enrichment, detected refund hiding, and previous-period comparisons.",
             &experimental_preferences,
             advanced_features,
             smart_insights_enabled,
@@ -191,12 +192,7 @@ fn preferences_page_snapshot(
         smart_insights_enabled,
         preferences,
     );
-    let experimental_rows = vec![(
-        "Smart Autofill",
-        "Let forms fill related fields from context, such as matching categories and directions.",
-        "app.advanced-autofill",
-        false,
-    )];
+    let experimental_rows = Vec::new();
     #[cfg(feature = "smart-insights")]
     let mut experimental_rows = experimental_rows;
     #[cfg(feature = "smart-insights")]
@@ -245,6 +241,12 @@ fn preferences_page_snapshot(
             "Advanced Features",
             "Allow rule editing and budget direction controls.",
             "app.advanced-features",
+            false,
+        ),
+        (
+            "Whole Form Autofill",
+            "Fill related form fields from the value you choose, such as matching categories, budget codes, and directions.",
+            "app.advanced-autofill",
             false,
         ),
         (
@@ -530,10 +532,31 @@ mod tests {
             .rows()
             .iter()
             .any(|row| row[0] == tr("Experimental")));
+        #[cfg(feature = "smart-insights")]
         assert!(advanced_snapshot
             .rows()
             .iter()
             .any(|row| row[0] == tr("Experimental")));
+        #[cfg(not(feature = "smart-insights"))]
+        assert!(!advanced_snapshot
+            .rows()
+            .iter()
+            .any(|row| row[0] == tr("Experimental")));
+    }
+
+    #[test]
+    fn whole_form_autofill_is_a_forms_and_data_preference() {
+        let preferences = Preferences::default();
+        let snapshot = preferences_page_snapshot(false, false, &preferences);
+
+        assert!(snapshot
+            .rows()
+            .iter()
+            .any(|row| { row[0] == tr("Forms and Data") && row[1] == tr("Whole Form Autofill") }));
+        assert!(!snapshot
+            .rows()
+            .iter()
+            .any(|row| { row[0] == tr("Experimental") && row[1] == tr("Whole Form Autofill") }));
     }
 
     #[test]
