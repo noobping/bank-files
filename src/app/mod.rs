@@ -90,8 +90,8 @@ use diagnostics::{delimiter_label, empty_page, render_diagnostics_page};
 use export::export_transactions_from_action;
 use fake_transactions::{
     build_fake_transaction_widgets, connect_fake_transactions, data_with_fake_transactions,
-    duplicate_transaction_as_fake, real_transactions, transaction_is_fake, FakeTransactionStore,
-    FakeTransactionWidgets,
+    duplicate_transaction_as_fake, focus_fake_transaction_search, real_transactions,
+    transaction_is_fake, FakeTransactionStore, FakeTransactionWidgets,
 };
 use field_alias::{field_alias_combo, FIELD_ALIAS_SPECS};
 use filters::{

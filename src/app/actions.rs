@@ -137,6 +137,9 @@ pub(in crate::app) fn connect_actions(
     let ui_for_find = Rc::clone(ui);
     let find_action = gtk::gio::SimpleAction::new("find", None);
     find_action.connect_activate(move |_, _| {
+        if focus_fake_transaction_search(&ui_for_find) {
+            return;
+        }
         ui::toggle_search_bar(&ui_for_find.search_bar, &ui_for_find.search_entry);
     });
     app.add_action(&find_action);

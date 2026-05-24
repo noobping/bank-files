@@ -223,8 +223,14 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
         .default_widget(&add_button)
         .child(&view)
         .build();
-    ui::connect_search_shortcut(&view, &search_bar, &search_entry);
-    search_bar.set_key_capture_widget(Some(&view));
+    let focus_search = {
+        let search_bar = search_bar.clone();
+        let search_entry = search_entry.clone();
+        move || focus_fake_transaction_search_bar(&search_bar, &search_entry)
+    };
+    ui::connect_primary_f_shortcut(&dialog, focus_search.clone());
+    ui::connect_primary_f_shortcut(&view, focus_search);
+    search_bar.set_key_capture_widget(Some(&dialog));
 
     FakeTransactionWidgets {
         button,
@@ -352,6 +358,22 @@ pub(in crate::app) fn real_transactions(transactions: &[Transaction]) -> Vec<Tra
         .collect()
 }
 
+pub(in crate::app) fn focus_fake_transaction_search(ui: &UiHandles) -> bool {
+    let widgets = &ui.fake_transaction_widgets;
+    if !widgets.dialog.is_mapped() {
+        return false;
+    }
+
+    focus_fake_transaction_search_bar(&widgets.search_bar, &widgets.search_entry);
+    true
+}
+
+fn focus_fake_transaction_search_bar(search_bar: &gtk::SearchBar, search_entry: &gtk::SearchEntry) {
+    search_bar.set_search_mode(true);
+    search_entry.grab_focus();
+    search_entry.select_region(0, -1);
+}
+
 fn show_fake_transaction_list(widgets: &FakeTransactionWidgets) {
     widgets.search_bar.set_search_mode(false);
     widgets
@@ -361,6 +383,9 @@ fn show_fake_transaction_list(widgets: &FakeTransactionWidgets) {
     widgets.save_button.set_visible(false);
     widgets.dialog.set_default_widget(Some(&widgets.add_button));
     widgets.form_state.borrow_mut().take();
+    if !widgets.search_bar.is_search_mode() && widgets.add_button.is_sensitive() {
+        widgets.add_button.grab_focus();
+    }
 }
 
 fn show_fake_transaction_form_page(widgets: &FakeTransactionWidgets) {
@@ -730,6 +755,11 @@ fn set_fake_transactions_busy(ui: &Rc<UiHandles>, busy: bool, message: &str) {
     widgets.stack.set_sensitive(!busy);
     widgets.form_box.set_sensitive(!busy);
     widgets.list.set_sensitive(!busy);
+    let showing_list =
+        widgets.stack.visible_child_name().as_deref() == Some(FAKE_TRANSACTIONS_LIST_PAGE);
+    if !busy && showing_list && !widgets.search_bar.is_search_mode() {
+        widgets.add_button.grab_focus();
+    }
 }
 
 #[derive(Clone)]
