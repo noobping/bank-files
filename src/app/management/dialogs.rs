@@ -347,31 +347,17 @@ pub(in crate::app) fn new_record_dialog(
     subtitle: &str,
     add_label: &str,
 ) -> (adw::Dialog, gtk::Box, gtk::Button, gtk::Label) {
-    let shell = build_action_dialog_shell(
+    let popup = build_action_form_dialog(
         title,
         subtitle,
         add_label,
         "list-add-symbolic",
         "Add to changes",
         "Search",
+        MANAGEMENT_FORM_DIALOG_WIDTH,
     );
-    shell.set_form_only();
 
-    let page = ui::page_box();
-    shell.add_form_page(&ui::action_dialog_scroll(&page));
-
-    let dialog_status = ui::wrapped_label("");
-    dialog_status.add_css_class("dim-label");
-
-    let add_button = shell.submit_button.clone();
-    let dialog = adw::Dialog::builder()
-        .title(tr(title))
-        .content_width(MANAGEMENT_FORM_DIALOG_WIDTH)
-        .default_widget(&add_button)
-        .child(&shell.root)
-        .build();
-
-    (dialog, page, add_button, dialog_status)
+    (popup.dialog, popup.page, popup.submit_button, popup.status)
 }
 
 pub(in crate::app) fn scroll_to_bottom(scrolled_window: &gtk::ScrolledWindow) {

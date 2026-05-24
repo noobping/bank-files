@@ -24,7 +24,6 @@ use std::cell::{Cell, RefCell};
 use std::path::PathBuf;
 use std::rc::Rc;
 
-mod action_dialog;
 mod actions;
 mod annual;
 mod budget;
@@ -43,11 +42,11 @@ mod money;
 mod operation_queue;
 mod overview;
 mod planned_income;
+mod popup;
 mod preferences;
 mod preferences_dialog;
 mod print;
 mod render;
-mod settings_dialog;
 mod shell;
 mod shortcuts;
 mod smart;
@@ -62,9 +61,6 @@ pub use core::run;
 #[cfg(target_os = "linux")]
 pub(crate) use transactions::transaction_search_text;
 
-use action_dialog::{
-    build_action_dialog_shell, connect_action_search, searchable_action_row, SearchableActionRow,
-};
 use actions::connect_actions;
 use annual::{
     annual_budget_matches, annual_budgets_section, annual_category_matches,
@@ -128,13 +124,15 @@ use operation_queue::{
     OperationQueueWidgets, OperationSource, QueuedOperationKind,
 };
 use overview::render_overview;
+use popup::{
+    build_action_dialog_shell, build_action_form_dialog, build_settings_dialog_shell,
+    connect_action_search, connect_preference_search, searchable_action_row, SearchableActionRow,
+    SearchablePreferencesGroup,
+};
 use preferences::Preferences;
 use preferences_dialog::show_preferences_dialog;
 use print::{current_print_report, print_report, table_print_report};
 use render::{render_loading_placeholder, render_views, request_render_views};
-use settings_dialog::{
-    build_settings_dialog_shell, connect_preference_search, SearchablePreferencesGroup,
-};
 #[cfg(all(target_os = "linux", feature = "setup", not(feature = "flatpak")))]
 use shell::build_menu_model;
 use shell::{

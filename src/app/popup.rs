@@ -1,0 +1,397 @@
+use super::*;
+
+const LIST_PAGE: &str = "list";
+const FORM_PAGE: &str = "form";
+
+struct PopupTemplateIds {
+    resource: &'static str,
+    root: &'static str,
+    header: &'static str,
+    search_button: &'static str,
+    search_bar: &'static str,
+    search_entry: &'static str,
+}
+
+const ACTION_POPUP_TEMPLATE: PopupTemplateIds = PopupTemplateIds {
+    resource: "action-dialog.ui",
+    root: "action_root",
+    header: "action_header",
+    search_button: "action_search_button",
+    search_bar: "action_search_bar",
+    search_entry: "action_search_entry",
+};
+
+const SETTINGS_POPUP_TEMPLATE: PopupTemplateIds = PopupTemplateIds {
+    resource: "settings-dialog.ui",
+    root: "settings_root",
+    header: "settings_header",
+    search_button: "settings_search_button",
+    search_bar: "settings_search_bar",
+    search_entry: "settings_search_entry",
+};
+
+struct PopupTemplate {
+    builder: gtk::Builder,
+    root: gtk::Box,
+    search_bar: gtk::SearchBar,
+    search_entry: gtk::SearchEntry,
+}
+
+pub(in crate::app) struct ActionDialogShell {
+    pub(in crate::app) root: gtk::Box,
+    pub(in crate::app) back_button: gtk::Button,
+    pub(in crate::app) submit_button: gtk::Button,
+    pub(in crate::app) search_bar: gtk::SearchBar,
+    pub(in crate::app) search_entry: gtk::SearchEntry,
+    pub(in crate::app) stack: gtk::Stack,
+    start_stack: gtk::Stack,
+}
+
+impl ActionDialogShell {
+    pub(in crate::app) fn set_list_page(&self) {
+        self.stack.set_visible_child_name(LIST_PAGE);
+        self.start_stack.set_visible_child_name("search");
+    }
+
+    pub(in crate::app) fn set_form_only(&self) {
+        self.search_bar.set_search_mode(false);
+        self.start_stack.set_visible_child_name("empty");
+    }
+
+    pub(in crate::app) fn add_list_page(&self, child: &impl IsA<gtk::Widget>) {
+        self.stack.add_named(child, Some(LIST_PAGE));
+    }
+
+    pub(in crate::app) fn add_form_page(&self, child: &impl IsA<gtk::Widget>) {
+        self.stack.add_named(child, Some(FORM_PAGE));
+    }
+
+    pub(in crate::app) fn page_handle(&self) -> ActionDialogPageHandle {
+        ActionDialogPageHandle {
+            stack: self.stack.clone(),
+            start_stack: self.start_stack.clone(),
+            search_bar: self.search_bar.clone(),
+        }
+    }
+}
+
+#[derive(Clone)]
+pub(in crate::app) struct ActionDialogPageHandle {
+    stack: gtk::Stack,
+    start_stack: gtk::Stack,
+    search_bar: gtk::SearchBar,
+}
+
+impl ActionDialogPageHandle {
+    pub(in crate::app) fn set_list_page(&self) {
+        self.stack.set_visible_child_name(LIST_PAGE);
+        self.start_stack.set_visible_child_name("search");
+    }
+
+    pub(in crate::app) fn set_form_page(&self) {
+        self.search_bar.set_search_mode(false);
+        self.stack.set_visible_child_name(FORM_PAGE);
+        self.start_stack.set_visible_child_name("back");
+    }
+}
+
+pub(in crate::app) struct SettingsDialogShell {
+    pub(in crate::app) root: gtk::Box,
+    pub(in crate::app) search_bar: gtk::SearchBar,
+    pub(in crate::app) search_entry: gtk::SearchEntry,
+}
+
+pub(in crate::app) struct ActionFormDialog {
+    pub(in crate::app) dialog: adw::Dialog,
+    pub(in crate::app) page: gtk::Box,
+    pub(in crate::app) submit_button: gtk::Button,
+    pub(in crate::app) status: gtk::Label,
+}
+
+pub(in crate::app) fn build_action_dialog_shell(
+    title: &str,
+    subtitle: &str,
+    submit_label: &str,
+    submit_icon_name: &str,
+    submit_tooltip: &str,
+    search_placeholder: &str,
+) -> ActionDialogShell {
+    let template =
+        build_popup_template(&ACTION_POPUP_TEMPLATE, title, subtitle, search_placeholder);
+
+    let start_stack = popup_object::<gtk::Stack>(
+        &template.builder,
+        "action_start_stack",
+        ACTION_POPUP_TEMPLATE.resource,
+    );
+    let back_button = popup_object::<gtk::Button>(
+        &template.builder,
+        "action_back_button",
+        ACTION_POPUP_TEMPLATE.resource,
+    );
+    back_button.set_tooltip_text(Some(&tr("Back")));
+
+    let submit_button = popup_object::<gtk::Button>(
+        &template.builder,
+        "action_submit_button",
+        ACTION_POPUP_TEMPLATE.resource,
+    );
+    let submit_content = popup_object::<adw::ButtonContent>(
+        &template.builder,
+        "action_submit_content",
+        ACTION_POPUP_TEMPLATE.resource,
+    );
+    submit_content.set_label(&tr(submit_label));
+    submit_content.set_icon_name(submit_icon_name);
+    submit_button.set_tooltip_text(Some(&tr(submit_tooltip)));
+
+    let stack = popup_object::<gtk::Stack>(
+        &template.builder,
+        "action_stack",
+        ACTION_POPUP_TEMPLATE.resource,
+    );
+
+    ActionDialogShell {
+        root: template.root,
+        back_button,
+        submit_button,
+        search_bar: template.search_bar,
+        search_entry: template.search_entry,
+        stack,
+        start_stack,
+    }
+}
+
+pub(in crate::app) fn build_settings_dialog_shell(
+    title: &str,
+    search_placeholder: &str,
+) -> SettingsDialogShell {
+    let template = build_popup_template(&SETTINGS_POPUP_TEMPLATE, title, "", search_placeholder);
+    SettingsDialogShell {
+        root: template.root,
+        search_bar: template.search_bar,
+        search_entry: template.search_entry,
+    }
+}
+
+pub(in crate::app) fn build_action_form_dialog(
+    title: &str,
+    subtitle: &str,
+    submit_label: &str,
+    submit_icon_name: &str,
+    submit_tooltip: &str,
+    search_placeholder: &str,
+    content_width: i32,
+) -> ActionFormDialog {
+    let shell = build_action_dialog_shell(
+        title,
+        subtitle,
+        submit_label,
+        submit_icon_name,
+        submit_tooltip,
+        search_placeholder,
+    );
+    shell.set_form_only();
+
+    let page = ui::page_box();
+    shell.add_form_page(&ui::action_dialog_scroll(&page));
+
+    let status = ui::wrapped_label("");
+    status.add_css_class("dim-label");
+
+    let submit_button = shell.submit_button.clone();
+    let dialog = adw::Dialog::builder()
+        .title(tr(title))
+        .content_width(content_width)
+        .default_widget(&submit_button)
+        .child(&shell.root)
+        .build();
+
+    ActionFormDialog {
+        dialog,
+        page,
+        submit_button,
+        status,
+    }
+}
+
+fn build_popup_template(
+    ids: &PopupTemplateIds,
+    title: &str,
+    subtitle: &str,
+    search_placeholder: &str,
+) -> PopupTemplate {
+    let builder = ui::builder_from_resource(ids.resource);
+    let root = popup_object::<gtk::Box>(&builder, ids.root, ids.resource);
+    let header = popup_object::<adw::HeaderBar>(&builder, ids.header, ids.resource);
+    header.set_title_widget(Some(&adw::WindowTitle::new(&tr(title), &tr(subtitle))));
+
+    let search_button = popup_object::<gtk::Button>(&builder, ids.search_button, ids.resource);
+    search_button.set_tooltip_text(Some(&tr("Search")));
+
+    let search_bar = popup_object::<gtk::SearchBar>(&builder, ids.search_bar, ids.resource);
+    let search_entry = popup_object::<gtk::SearchEntry>(&builder, ids.search_entry, ids.resource);
+    search_entry.set_placeholder_text(Some(&tr(search_placeholder)));
+    search_bar.connect_entry(&search_entry);
+    ui::connect_search_button(&search_button, &search_bar, &search_entry);
+
+    PopupTemplate {
+        builder,
+        root,
+        search_bar,
+        search_entry,
+    }
+}
+
+fn popup_object<T: IsA<gtk::glib::Object>>(builder: &gtk::Builder, id: &str, resource: &str) -> T {
+    builder
+        .object::<T>(id)
+        .unwrap_or_else(|| panic!("{resource} should define {id}"))
+}
+
+#[derive(Clone)]
+pub(in crate::app) struct SearchableActionRow {
+    pub(in crate::app) widget: gtk::Widget,
+    keywords: String,
+}
+
+pub(in crate::app) fn searchable_action_row(
+    row: &impl IsA<gtk::Widget>,
+    title: &str,
+    subtitle: &str,
+    extra_keywords: &[String],
+) -> SearchableActionRow {
+    SearchableActionRow {
+        widget: row.clone().upcast::<gtk::Widget>(),
+        keywords: action_search_keywords(title, subtitle, extra_keywords),
+    }
+}
+
+pub(in crate::app) fn connect_action_search(
+    search_entry: &gtk::SearchEntry,
+    rows: Vec<SearchableActionRow>,
+    empty_widget: Option<gtk::Widget>,
+) {
+    search_entry.connect_search_changed(move |entry| {
+        let query = entry.text().trim().to_lowercase();
+        let show_all = query.is_empty();
+        let mut visible_count = 0usize;
+
+        for row in &rows {
+            let visible = show_all || row.keywords.contains(&query);
+            row.widget.set_visible(visible);
+            if visible {
+                visible_count += 1;
+            }
+        }
+
+        if let Some(empty_widget) = &empty_widget {
+            empty_widget.set_visible(visible_count == 0);
+        }
+    });
+}
+
+pub(in crate::app) struct SearchablePreferencesGroup {
+    pub(in crate::app) group: adw::PreferencesGroup,
+    rows: Vec<SearchablePreferenceRow>,
+    keywords: String,
+    visibility_gate: Option<Rc<Cell<bool>>>,
+}
+
+impl SearchablePreferencesGroup {
+    pub(in crate::app) fn new(
+        group: &adw::PreferencesGroup,
+        title: &str,
+        description: &str,
+    ) -> Self {
+        Self {
+            group: group.clone(),
+            rows: Vec::new(),
+            keywords: search_keywords(title, description),
+            visibility_gate: None,
+        }
+    }
+
+    pub(in crate::app) fn set_visibility_gate(&mut self, gate: Rc<Cell<bool>>) {
+        self.visibility_gate = Some(gate);
+    }
+
+    pub(in crate::app) fn add_row(
+        &mut self,
+        row: &impl IsA<gtk::Widget>,
+        title: &str,
+        subtitle: &str,
+    ) {
+        self.rows.push(SearchablePreferenceRow {
+            widget: row.clone().upcast::<gtk::Widget>(),
+            keywords: search_keywords(title, subtitle),
+        });
+    }
+}
+
+struct SearchablePreferenceRow {
+    widget: gtk::Widget,
+    keywords: String,
+}
+
+pub(in crate::app) fn connect_preference_search(
+    search_entry: &gtk::SearchEntry,
+    groups: Vec<SearchablePreferencesGroup>,
+) {
+    search_entry.connect_search_changed(move |entry| {
+        let query = entry.text().trim().to_lowercase();
+        let show_all = query.is_empty();
+
+        for group in &groups {
+            let gate_visible = group
+                .visibility_gate
+                .as_ref()
+                .map(|gate| gate.get())
+                .unwrap_or(true);
+            let group_matches = !show_all && group.keywords.contains(&query);
+            let mut group_visible = gate_visible && (show_all || group_matches);
+
+            for row in &group.rows {
+                let row_visible =
+                    gate_visible && (show_all || group_matches || row.keywords.contains(&query));
+                row.widget.set_visible(row_visible);
+                group_visible |= row_visible;
+            }
+
+            group.group.set_visible(group_visible);
+        }
+    });
+}
+
+fn action_search_keywords(title: &str, subtitle: &str, extra_keywords: &[String]) -> String {
+    let mut values = vec![
+        title.to_string(),
+        subtitle.to_string(),
+        tr(title),
+        tr(subtitle),
+    ];
+    values.extend(extra_keywords.iter().cloned());
+    values.join(" ").to_lowercase()
+}
+
+fn search_keywords(title: &str, subtitle: &str) -> String {
+    format!("{title} {subtitle} {} {}", tr(title), tr(subtitle)).to_lowercase()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn action_search_keywords_include_extra_values() {
+        let keywords = action_search_keywords(
+            "Groceries",
+            "Expenses",
+            &["FOOD".to_string(), "Rule match".to_string()],
+        );
+        assert!(keywords.contains("groceries"));
+        assert!(keywords.contains("expenses"));
+        assert!(keywords.contains("food"));
+        assert!(keywords.contains("rule match"));
+    }
+}

@@ -7,7 +7,6 @@ pub(in crate::app) fn show_preferences_dialog(
 ) {
     let shell = build_settings_dialog_shell("Preferences", "Search preferences");
     let root = shell.root;
-    let search_button = shell.search_button;
     let search_bar = shell.search_bar;
     let search_entry = shell.search_entry;
 
@@ -174,7 +173,6 @@ pub(in crate::app) fn show_preferences_dialog(
         .child(&root)
         .build();
 
-    ui::connect_search_button(&search_button, &search_bar, &search_entry);
     ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);
     search_bar.set_key_capture_widget(Some(&dialog));
     connect_preference_search(&search_entry, search_groups);
