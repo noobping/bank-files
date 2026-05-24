@@ -26,9 +26,6 @@ flowboxchild:focus-visible {
     box-shadow: inset 0 0 0 1px alpha(@warning_color, 0.55);
 }
 
-.warning-card .warning-title {
-    color: @warning_color;
-}
 
 .status-bar-actions > button,
 .status-bar-actions > menubutton > button {

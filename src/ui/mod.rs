@@ -4,6 +4,7 @@ use crate::model::MonthKey;
 use adw::glib::prelude::IsA;
 use adw::gtk;
 use adw::gtk::prelude::*;
+use adw::prelude::*;
 use rust_decimal::prelude::ToPrimitive;
 use rust_decimal::Decimal;
 use std::cell::{Cell, RefCell};

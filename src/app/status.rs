@@ -881,33 +881,15 @@ fn append_status_history_rows(
     rows
 }
 
-fn status_history_row(window: &adw::ApplicationWindow, entry: &StatusLogEntry) -> gtk::ListBoxRow {
-    let row = gtk::ListBoxRow::builder()
-        .activatable(false)
-        .selectable(false)
+fn status_history_row(window: &adw::ApplicationWindow, entry: &StatusLogEntry) -> adw::ActionRow {
+    let row = adw::ActionRow::builder()
+        .title(&entry.message)
+        .subtitle(&entry.timestamp)
         .build();
-    let content = gtk::Box::new(gtk::Orientation::Horizontal, 8);
-    content.set_margin_top(8);
-    content.set_margin_bottom(8);
-    content.set_margin_start(10);
-    content.set_margin_end(10);
-
-    let text_box = gtk::Box::new(gtk::Orientation::Vertical, 2);
-    text_box.set_hexpand(true);
-    let message = gtk::Label::new(Some(&entry.message));
-    message.set_selectable(false);
-    message.set_xalign(0.0);
-    message.set_width_chars(1);
-    message.set_max_width_chars(34);
-    message.set_ellipsize(gtk::pango::EllipsizeMode::End);
-    text_box.append(&message);
-
-    let timestamp = gtk::Label::new(Some(&entry.timestamp));
-    timestamp.add_css_class("dim-label");
-    timestamp.set_selectable(false);
-    timestamp.set_xalign(0.0);
-    text_box.append(&timestamp);
-    content.append(&text_box);
+    row.set_activatable(false);
+    row.set_selectable(false);
+    row.set_title_lines(1);
+    row.set_subtitle_lines(1);
 
     let copy_button = status_button(COPY_ICON, "Copy message");
     copy_button.set_valign(gtk::Align::Center);
@@ -919,9 +901,7 @@ fn status_history_row(window: &adw::ApplicationWindow, entry: &StatusLogEntry) -
         window_for_copy.clipboard().set_text(&message_for_copy);
         show_copy_feedback(&copy_button_for_copy, &copy_feedback_generation);
     });
-    content.append(&copy_button);
-
-    row.set_child(Some(&content));
+    row.add_suffix(&copy_button);
     row
 }
 

@@ -182,6 +182,14 @@ pub fn linked_button_group() -> gtk::Box {
     group
 }
 
+pub fn text_list_row(text: &str) -> adw::ActionRow {
+    let row = adw::ActionRow::builder().title(text).build();
+    row.set_activatable(false);
+    row.set_selectable(false);
+    row.set_title_lines(3);
+    row
+}
+
 pub fn page_box() -> gtk::Box {
     let page = gtk::Box::new(gtk::Orientation::Vertical, 18);
     page.set_margin_top(18);

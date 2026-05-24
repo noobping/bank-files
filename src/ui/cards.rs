@@ -299,7 +299,6 @@ pub fn text_card(text: &str) -> gtk::Box {
 
 pub fn warning_card(title: &str, text: &str) -> gtk::Box {
     let card = card_container();
-    card.add_css_class("warning-card");
 
     let content = gtk::Box::new(gtk::Orientation::Horizontal, 12);
     content.set_margin_top(14);
@@ -318,7 +317,7 @@ pub fn warning_card(title: &str, text: &str) -> gtk::Box {
 
     let title = gtk::Label::new(Some(&gettext(title)));
     title.add_css_class("title-4");
-    title.add_css_class("warning-title");
+    title.add_css_class("warning");
     title.set_xalign(0.0);
     title.set_wrap(true);
     title.set_wrap_mode(gtk::pango::WrapMode::WordChar);

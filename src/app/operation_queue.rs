@@ -571,19 +571,8 @@ fn operation_queue_button_is_suggested(actionable: usize) -> bool {
     actionable > 0
 }
 
-fn queue_text_row(text: &str) -> gtk::ListBoxRow {
-    let row = gtk::ListBoxRow::builder()
-        .activatable(false)
-        .selectable(false)
-        .build();
-    let label = ui::wrapped_label(text);
-    label.set_selectable(false);
-    label.set_margin_top(10);
-    label.set_margin_bottom(10);
-    label.set_margin_start(10);
-    label.set_margin_end(10);
-    row.set_child(Some(&label));
-    row
+fn queue_text_row(text: &str) -> adw::ActionRow {
+    ui::text_list_row(text)
 }
 
 fn queue_summary(queue: &OperationQueue) -> String {

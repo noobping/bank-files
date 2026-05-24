@@ -390,56 +390,23 @@ fn fake_transaction_summary(count: usize) -> String {
     }
 }
 
-fn fake_transaction_text_row(text: &str) -> gtk::ListBoxRow {
-    let row = gtk::ListBoxRow::builder()
-        .activatable(false)
-        .selectable(false)
-        .build();
-    let label = ui::wrapped_label(text);
-    label.set_selectable(false);
-    label.set_margin_top(10);
-    label.set_margin_bottom(10);
-    label.set_margin_start(10);
-    label.set_margin_end(10);
-    row.set_child(Some(&label));
-    row
+fn fake_transaction_text_row(text: &str) -> adw::ActionRow {
+    ui::text_list_row(text)
 }
 
 fn fake_transaction_row(
     state: &Rc<RefCell<AppData>>,
     ui: &Rc<UiHandles>,
     fake: FakeTransaction,
-) -> gtk::ListBoxRow {
-    let row = gtk::ListBoxRow::builder()
-        .activatable(false)
-        .selectable(false)
+) -> adw::ActionRow {
+    let row = adw::ActionRow::builder()
+        .title(fake_transaction_title(&fake.transaction))
+        .subtitle(fake_transaction_subtitle(&fake.transaction))
         .build();
-
-    let content = gtk::Box::new(gtk::Orientation::Horizontal, 10);
-    content.set_margin_top(8);
-    content.set_margin_bottom(8);
-    content.set_margin_start(10);
-    content.set_margin_end(10);
-
-    let labels = gtk::Box::new(gtk::Orientation::Vertical, 2);
-    labels.set_hexpand(true);
-    let title = gtk::Label::new(Some(&fake_transaction_title(&fake.transaction)));
-    title.set_selectable(false);
-    title.set_xalign(0.0);
-    title.set_width_chars(1);
-    title.set_max_width_chars(24);
-    title.set_ellipsize(gtk::pango::EllipsizeMode::End);
-    labels.append(&title);
-
-    let subtitle = gtk::Label::new(Some(&fake_transaction_subtitle(&fake.transaction)));
-    subtitle.set_selectable(false);
-    subtitle.add_css_class("dim-label");
-    subtitle.set_xalign(0.0);
-    subtitle.set_width_chars(1);
-    subtitle.set_max_width_chars(30);
-    subtitle.set_ellipsize(gtk::pango::EllipsizeMode::End);
-    labels.append(&subtitle);
-    content.append(&labels);
+    row.set_activatable(false);
+    row.set_selectable(false);
+    row.set_title_lines(1);
+    row.set_subtitle_lines(1);
 
     let amount = gtk::Label::new(Some(&signed_money(fake.transaction.amount)));
     amount.add_css_class(if fake.transaction.amount >= Decimal::ZERO {
@@ -449,7 +416,7 @@ fn fake_transaction_row(
     });
     amount.set_selectable(false);
     amount.set_xalign(1.0);
-    content.append(&amount);
+    row.add_suffix(&amount);
 
     let actions = ui::linked_button_group();
     actions.set_halign(gtk::Align::End);
@@ -482,8 +449,7 @@ fn fake_transaction_row(
 
     actions.append(&edit_button);
     actions.append(&remove_button);
-    content.append(&actions);
-    row.set_child(Some(&content));
+    row.add_suffix(&actions);
     row
 }
 
