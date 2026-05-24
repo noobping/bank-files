@@ -60,6 +60,10 @@ Rust files over 300 lines are too large and must be split.
 
 The only exception is when splitting the file would make the code less DRY, less SRP, less KISS, or less idiomatic Rust.
 
+Do not split code just to create more files. Too many tiny files can also be bad.
+
+Merge files when it reduces boilerplate, removes needless indirection, or makes the code easier to understand, as long as the result still follows DRY, SRP, KISS, idiomatic Rust, and the 300-line limit.
+
 Group related files in folders with `mod.rs`.
 
 Do not create folders for only one file, such as `pie/test.rs`. A folder must group multiple related files or have a clear reason to exist.
@@ -147,6 +151,7 @@ Do not skip tests just because code is internal. If behavior matters, test it.
 - [ ] Files stay under 300 lines unless clearly justified.
 - [ ] Related files are grouped with `mod.rs`.
 - [ ] No folder exists only to hold one file unless clearly justified.
+- [ ] Tiny or over-fragmented files are merged when that makes the code simpler.
 - [ ] Dialogs use the shared dialog builder.
 - [ ] Buttons follow suggested/destructive/header/menu rules.
 - [ ] Useful tests cover normal behavior, edge cases, error cases, and regressions.
