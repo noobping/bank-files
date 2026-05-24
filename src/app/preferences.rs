@@ -48,10 +48,11 @@ impl Preferences {
     ];
 
     #[cfg(not(feature = "smart-insights"))]
-    pub(in crate::app) const WRITABLE_KEYS: [&'static str; 13] = [
+    pub(in crate::app) const WRITABLE_KEYS: [&'static str; 14] = [
         "active-tab",
         "autohide-status-bar",
         "show-all",
+        "compare-categories-previous-period",
         "advanced-autofill",
         "advanced-features",
         "remember-mode",
@@ -128,11 +129,9 @@ impl Preferences {
     }
 
     pub(in crate::app) fn compare_categories_previous_period(&self) -> bool {
-        cfg!(feature = "smart-insights")
-            && self.boolean("compare-categories-previous-period", false)
+        self.boolean("compare-categories-previous-period", false)
     }
 
-    #[cfg(feature = "smart-insights")]
     pub(in crate::app) fn set_compare_categories_previous_period(&self, enabled: bool) {
         self.set_boolean("compare-categories-previous-period", enabled);
     }
@@ -242,7 +241,6 @@ impl Preferences {
             "show-predictions" => Some("show-predictions"),
             #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
             "online-smart-insights" => Some("online-smart-insights"),
-            #[cfg(feature = "smart-insights")]
             "compare-categories-previous-period" => Some("compare-categories-previous-period"),
             "advanced-autofill" => Some("advanced-autofill"),
             "advanced-features" => Some("advanced-features"),
@@ -347,14 +345,18 @@ mod tests {
         );
     }
 
+    #[test]
+    fn spending_comparison_action_maps_to_preference_key() {
+        assert_eq!(
+            Preferences::key_for_action("app.compare-categories-previous-period"),
+            Some("compare-categories-previous-period")
+        );
+    }
+
     #[cfg(not(feature = "smart-insights"))]
     #[test]
     fn smart_insights_actions_are_not_available_without_feature() {
         assert_eq!(Preferences::key_for_action("app.show-predictions"), None);
-        assert_eq!(
-            Preferences::key_for_action("app.compare-categories-previous-period"),
-            None
-        );
         assert_eq!(
             Preferences::key_for_action("app.hide-canceled-transactions"),
             None

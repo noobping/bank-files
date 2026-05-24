@@ -24,6 +24,10 @@ const COMMON_ACTION_ACCELERATORS: &[ActionAccelerators] = &[
     ("app.dedupe-enabled", &["<primary>D"]),
     ("app.advanced-features", &["<primary><alt>A"]),
     ("app.show-all", &["<primary><alt>L"]),
+    (
+        "app.compare-categories-previous-period",
+        &["<primary><alt>P"],
+    ),
     ("app.advanced-autofill", &["<primary><alt>F"]),
     ("app.auto-clean-config", &["<primary><alt>C"]),
     ("app.autohide-status", &["<primary><alt>M"]),
@@ -37,10 +41,6 @@ const CHECK_FOR_UPDATES_ACCELERATORS: ActionAccelerators =
 #[cfg(feature = "smart-insights")]
 const SMART_INSIGHTS_ACCELERATORS: &[ActionAccelerators] = &[
     ("app.show-predictions", &["<primary><alt>S"]),
-    (
-        "app.compare-categories-previous-period",
-        &["<primary><alt>P"],
-    ),
     ("app.hide-canceled-transactions", &["<primary><alt>H"]),
 ];
 #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
@@ -151,15 +151,15 @@ pub(in crate::app) fn build_shortcuts_dialog(
     settings_shortcuts.extend([
         ShortcutSpec::action("Toggle Duplicate Filtering", "app.dedupe-enabled"),
         ShortcutSpec::action("Toggle Full Lists", "app.show-all"),
+        ShortcutSpec::action(
+            "Toggle Spending Comparison",
+            "app.compare-categories-previous-period",
+        ),
         ShortcutSpec::action("Toggle Auto Clean Config", "app.auto-clean-config"),
         ShortcutSpec::action("Toggle Status Autohide", "app.autohide-status"),
     ]);
     #[cfg(feature = "smart-insights")]
     if advanced_features {
-        settings_shortcuts.push(ShortcutSpec::action(
-            "Toggle Spending Comparison",
-            "app.compare-categories-previous-period",
-        ));
         settings_shortcuts.push(ShortcutSpec::action(
             "Toggle Hide Refunded Transactions",
             "app.hide-canceled-transactions",

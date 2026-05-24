@@ -3426,3 +3426,36 @@ msgstr "Kies eerst een andere categorie."
 
 msgid "{code} · {description}"
 msgstr "{code} · {description}"
+
+msgid "Whole form autofill"
+msgstr "Heel formulier automatisch invullen"
+
+msgid "Whether forms may fill related fields from the value you choose, such as matching categories, budget codes, and directions."
+msgstr "Of formulieren gerelateerde velden mogen invullen op basis van de waarde die je kiest, zoals passende categorieën, budgetcodes en richtingen."
+
+msgid "Control Smart Insights, online enrichment, and detected refund hiding."
+msgstr "Beheer Slimme inzichten, online verrijking en het verbergen van gedetecteerde terugbetalingen."
+
+msgid "Mark invalid"
+msgstr "Ongeldig markeren"
+
+msgid "Undo this auto-detected classification"
+msgstr "Maak deze automatisch gedetecteerde classificatie ongedaan"
+
+msgid "Mark auto detection invalid"
+msgstr "Automatische detectie als ongeldig markeren"
+
+msgid "Mark invalid detection"
+msgstr "Ongeldige detectie markeren"
+
+msgid "Marked invalid auto detection from transaction detail."
+msgstr "Ongeldige automatische detectie gemarkeerd vanuit transactiedetails."
+
+msgid "Auto detected"
+msgstr "Automatisch gedetecteerd"
+
+msgid "Classification"
+msgstr "Classificatie"
+
+msgid "Auto detected from built-in category keywords."
+msgstr "Automatisch gedetecteerd op basis van ingebouwde categorietrefwoorden."

@@ -3426,3 +3426,36 @@ msgstr "Waehlen Sie zuerst eine andere Kategorie."
 
 msgid "{code} · {description}"
 msgstr "{code} · {description}"
+
+msgid "Whole form autofill"
+msgstr "Ganzes Formular automatisch ausfüllen"
+
+msgid "Whether forms may fill related fields from the value you choose, such as matching categories, budget codes, and directions."
+msgstr "Ob Formulare zugehörige Felder anhand des gewählten Werts ausfüllen dürfen, etwa passende Kategorien, Budgetcodes und Richtungen."
+
+msgid "Control Smart Insights, online enrichment, and detected refund hiding."
+msgstr "Intelligente Einblicke, Online-Anreicherung und das Ausblenden erkannter Erstattungen steuern."
+
+msgid "Mark invalid"
+msgstr "Als ungültig markieren"
+
+msgid "Undo this auto-detected classification"
+msgstr "Diese automatisch erkannte Klassifizierung rückgängig machen"
+
+msgid "Mark auto detection invalid"
+msgstr "Automatische Erkennung als ungültig markieren"
+
+msgid "Mark invalid detection"
+msgstr "Ungültige Erkennung markieren"
+
+msgid "Marked invalid auto detection from transaction detail."
+msgstr "Ungültige automatische Erkennung aus den Transaktionsdetails markiert."
+
+msgid "Auto detected"
+msgstr "Automatisch erkannt"
+
+msgid "Classification"
+msgstr "Klassifizierung"
+
+msgid "Auto detected from built-in category keywords."
+msgstr "Automatisch anhand integrierter Kategorie-Schlüsselwörter erkannt."

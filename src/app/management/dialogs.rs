@@ -1,5 +1,7 @@
 use super::*;
 
+const MANAGEMENT_FORM_DIALOG_WIDTH: i32 = 620;
+
 pub(in crate::app) fn show_new_rule_dialog(
     parent: &adw::Dialog,
     container: &gtk::Box,
@@ -364,8 +366,7 @@ pub(in crate::app) fn new_record_dialog(
     let add_button = shell.submit_button.clone();
     let dialog = adw::Dialog::builder()
         .title(tr(title))
-        .content_width(680)
-        .content_height(-1)
+        .content_width(MANAGEMENT_FORM_DIALOG_WIDTH)
         .default_widget(&add_button)
         .child(&shell.root)
         .build();

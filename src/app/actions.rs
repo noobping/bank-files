@@ -487,42 +487,39 @@ pub(in crate::app) fn connect_actions(
         ));
     }
 
-    #[cfg(feature = "smart-insights")]
-    {
-        let state_for_compare_categories = Rc::clone(state);
-        let ui_for_compare_categories = Rc::clone(ui);
-        let compare_categories_action = add_bool_toggle_action(
-            app,
-            "compare-categories-previous-period",
-            ui.compare_categories_previous_period.get(),
-            true,
-            move |enabled| {
-                ui_for_compare_categories
-                    .compare_categories_previous_period
-                    .set(enabled);
-                ui_for_compare_categories
-                    .preferences
-                    .set_compare_categories_previous_period(enabled);
-                render_views(
-                    &state_for_compare_categories.borrow(),
-                    &ui_for_compare_categories,
-                    &state_for_compare_categories,
-                );
-                show_status(
-                    &ui_for_compare_categories,
-                    if enabled {
-                        "Spending comparison enabled. Spending is compared with the previous period."
-                    } else {
-                        "Spending comparison disabled. Spending comparisons are hidden."
-                    },
-                );
-            },
-        );
-        compare_categories_action.set_enabled(
-            ui.preferences
-                .action_is_writable("compare-categories-previous-period"),
-        );
-    }
+    let state_for_compare_categories = Rc::clone(state);
+    let ui_for_compare_categories = Rc::clone(ui);
+    let compare_categories_action = add_bool_toggle_action(
+        app,
+        "compare-categories-previous-period",
+        ui.compare_categories_previous_period.get(),
+        true,
+        move |enabled| {
+            ui_for_compare_categories
+                .compare_categories_previous_period
+                .set(enabled);
+            ui_for_compare_categories
+                .preferences
+                .set_compare_categories_previous_period(enabled);
+            render_views(
+                &state_for_compare_categories.borrow(),
+                &ui_for_compare_categories,
+                &state_for_compare_categories,
+            );
+            show_status(
+                &ui_for_compare_categories,
+                if enabled {
+                    "Spending comparison enabled. Spending is compared with the previous period."
+                } else {
+                    "Spending comparison disabled. Spending comparisons are hidden."
+                },
+            );
+        },
+    );
+    compare_categories_action.set_enabled(
+        ui.preferences
+            .action_is_writable("compare-categories-previous-period"),
+    );
 
     let ui_for_advanced_autofill = Rc::clone(ui);
     let advanced_autofill_action = add_bool_toggle_action(

@@ -35,6 +35,12 @@ pub(in crate::app) fn show_preferences_dialog(
                 "app.show-all",
                 ui.show_all.get(),
             ),
+            PreferenceSpec::new(
+                "Compare Spending with Previous Period",
+                "Compare spending cards with the previous month or year.",
+                "app.compare-categories-previous-period",
+                ui.compare_categories_previous_period.get(),
+            ),
         ],
         advanced_features,
         smart_insights_enabled,
@@ -65,12 +71,6 @@ pub(in crate::app) fn show_preferences_dialog(
             )
             .requires_smart_insights(),
         );
-        experimental_preferences.push(PreferenceSpec::new(
-            "Compare Spending with Previous Period",
-            "Compare spending cards with the previous month or year.",
-            "app.compare-categories-previous-period",
-            ui.compare_categories_previous_period.get(),
-        ));
         experimental_preferences.push(
             PreferenceSpec::new(
                 "Hide Refunded Transactions",
@@ -123,7 +123,7 @@ pub(in crate::app) fn show_preferences_dialog(
     if advanced_features {
         if let Some((group, search_group)) = preference_group(
             "Experimental",
-            "Control Smart Insights, online enrichment, detected refund hiding, and previous-period comparisons.",
+            "Control Smart Insights, online enrichment, and detected refund hiding.",
             &experimental_preferences,
             advanced_features,
             smart_insights_enabled,
@@ -187,6 +187,12 @@ fn preferences_page_snapshot(
                 "app.show-all",
                 false,
             ),
+            (
+                "Compare Spending with Previous Period",
+                "Compare spending cards with the previous month or year.",
+                "app.compare-categories-previous-period",
+                false,
+            ),
         ],
         advanced_features,
         smart_insights_enabled,
@@ -209,12 +215,6 @@ fn preferences_page_snapshot(
             "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
             "app.online-smart-insights",
             true,
-        ));
-        experimental_rows.push((
-            "Compare Spending with Previous Period",
-            "Compare spending cards with the previous month or year.",
-            "app.compare-categories-previous-period",
-            false,
         ));
         experimental_rows.push((
             "Hide Refunded Transactions",
@@ -542,6 +542,19 @@ mod tests {
             .rows()
             .iter()
             .any(|row| row[0] == tr("Experimental")));
+    }
+
+    #[test]
+    fn spending_comparison_is_an_interface_preference() {
+        let preferences = Preferences::default();
+        let snapshot = preferences_page_snapshot(false, false, &preferences);
+
+        assert!(snapshot.rows().iter().any(|row| {
+            row[0] == tr("Interface") && row[1] == tr("Compare Spending with Previous Period")
+        }));
+        assert!(!snapshot.rows().iter().any(|row| {
+            row[0] == tr("Experimental") && row[1] == tr("Compare Spending with Previous Period")
+        }));
     }
 
     #[test]

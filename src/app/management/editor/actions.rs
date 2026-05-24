@@ -1,6 +1,8 @@
 use super::*;
 use crate::model::BudgetAmount;
 
+const MANAGEMENT_FORM_DIALOG_WIDTH: i32 = 620;
+
 pub(in crate::app::management::editor) struct ManagementDialogActions<'a> {
     pub(in crate::app::management::editor) management_dialog: &'a adw::Dialog,
     pub(in crate::app::management::editor) add_button: &'a gtk::Button,
@@ -829,8 +831,7 @@ fn show_move_budget_code_dialog(
 
     let dialog = adw::Dialog::builder()
         .title(tr("Move Budget Code"))
-        .content_width(680)
-        .content_height(-1)
+        .content_width(MANAGEMENT_FORM_DIALOG_WIDTH)
         .default_widget(&move_button)
         .child(&shell.root)
         .build();
