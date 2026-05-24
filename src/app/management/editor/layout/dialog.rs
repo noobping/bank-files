@@ -169,10 +169,15 @@ pub(in crate::app) fn show_management_dialog(
     let ui_for_closed = Rc::clone(ui_handles);
     management_dialog.connect_closed(move |_| {
         dialog_closed_for_closed.set(true);
+        ui_for_closed.management_search.borrow_mut().take();
         show_verbose_status(ui_for_closed.as_ref(), "management dialog closed");
         if !save_running_for_closed.get() {
             finish_for_closed();
         }
+    });
+    *ui_handles.management_search.borrow_mut() = Some(SearchToggleHandle {
+        search_bar: filter_search_bar.clone(),
+        search_entry: filter_entry.clone(),
     });
     filter_search_bar.set_key_capture_widget(Some(&management_dialog));
     add_responsive_switcher_for_dialog(&management_dialog, &switcher, &switcher_bar);

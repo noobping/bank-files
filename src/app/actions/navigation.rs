@@ -24,7 +24,7 @@ fn register_find_action(app: &adw::Application, ui: &Rc<UiHandles>) {
     let ui_for_find = Rc::clone(ui);
     let find_action = gtk::gio::SimpleAction::new("find", None);
     find_action.connect_activate(move |_, _| {
-        if focus_fake_transaction_search(&ui_for_find) {
+        if toggle_management_search(&ui_for_find) || focus_fake_transaction_search(&ui_for_find) {
             return;
         }
         ui::toggle_search_bar(&ui_for_find.search_bar, &ui_for_find.search_entry);
@@ -48,4 +48,13 @@ fn register_search_preset_action(
         apply_search_preset(&state_for_search_preset, &ui_for_search_preset, &preset);
     });
     app.add_action(&search_preset_action);
+}
+
+fn toggle_management_search(ui: &UiHandles) -> bool {
+    let Some(search) = ui.management_search.borrow().clone() else {
+        return false;
+    };
+
+    ui::toggle_search_bar(&search.search_bar, &search.search_entry);
+    true
 }

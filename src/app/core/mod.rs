@@ -23,7 +23,7 @@ pub(in crate::app) use navigation::navigate_back;
 pub(in crate::app) use scope::{comparison_mode, current_transaction_load_scope};
 pub(in crate::app) use session::ACTIVE_SESSION;
 pub use startup::run;
-pub(in crate::app) use types::UiHandles;
+pub(in crate::app) use types::{SearchToggleHandle, UiHandles};
 
 pub(in crate::app) const CATEGORY_PREVIEW_LIMIT: usize = 5;
 pub(in crate::app) const SEARCH_CATEGORY_PREVIEW_LIMIT: usize = 6;

@@ -85,7 +85,8 @@ use core::{
     comparison_mode, config_write_availability, current_transaction_load_scope,
     data_write_availability, finish_background_operation, navigate_back, refresh_write_actions,
     register_loading_sensitive_widget, set_storage_capabilities, tr, trf, ActionAvailability,
-    UiHandles, ACTIVE_SESSION, CATEGORY_PREVIEW_LIMIT, SEARCH_CATEGORY_PREVIEW_LIMIT,
+    SearchToggleHandle, UiHandles, ACTIVE_SESSION, CATEGORY_PREVIEW_LIMIT,
+    SEARCH_CATEGORY_PREVIEW_LIMIT,
 };
 use diagnostics::{delimiter_label, empty_page, render_diagnostics_page};
 use export::export_transactions_from_action;

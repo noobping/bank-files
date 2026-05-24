@@ -8,6 +8,12 @@ pub(in crate::app) struct LoadingSensitiveWidget {
 }
 
 #[derive(Clone)]
+pub(in crate::app) struct SearchToggleHandle {
+    pub(in crate::app) search_bar: gtk::SearchBar,
+    pub(in crate::app) search_entry: gtk::SearchEntry,
+}
+
+#[derive(Clone)]
 pub(in crate::app) struct UiHandles {
     pub(in crate::app) window: adw::ApplicationWindow,
     pub(in crate::app) stack: adw::ViewStack,
@@ -49,6 +55,7 @@ pub(in crate::app) struct UiHandles {
     pub(in crate::app) remember_mode: Rc<Cell<RememberMode>>,
     pub(in crate::app) auto_clean_config: Rc<Cell<bool>>,
     pub(in crate::app) management_dialog_active: Rc<Cell<bool>>,
+    pub(in crate::app) management_search: Rc<RefCell<Option<SearchToggleHandle>>>,
     pub(in crate::app) management_actions: Rc<RefCell<Vec<gtk::gio::SimpleAction>>>,
     pub(in crate::app) config_widgets: Rc<RefCell<Vec<ConfigWidget>>>,
     pub(in crate::app) loading_sensitive_widgets: Rc<RefCell<Vec<LoadingSensitiveWidget>>>,

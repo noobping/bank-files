@@ -207,6 +207,7 @@ pub(super) fn build_ui_with_startup_request(
         remember_mode: Rc::new(Cell::new(preferences.remember_mode())),
         auto_clean_config: Rc::new(Cell::new(preferences.auto_clean_config())),
         management_dialog_active: Rc::new(Cell::new(false)),
+        management_search: Rc::new(RefCell::new(None)),
         management_actions: Rc::new(RefCell::new(Vec::new())),
         config_widgets: Rc::new(RefCell::new(Vec::new())),
         loading_sensitive_widgets: Rc::new(RefCell::new(Vec::new())),
