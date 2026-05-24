@@ -1,4 +1,5 @@
 mod availability;
+mod categories;
 mod configuration;
 mod input;
 mod runtime;
@@ -25,10 +26,6 @@ pub enum LocalAiAvailability {
 }
 
 impl LocalAiAvailability {
-    pub fn is_available(&self) -> bool {
-        matches!(self, Self::Available { .. })
-    }
-
     pub fn status_message(&self) -> Option<String> {
         match self {
             Self::Disabled | Self::Available { .. } => None,
@@ -147,20 +144,20 @@ impl LocalAiProvider {
         &self,
         input: &LocalAiInput,
     ) -> std::result::Result<Option<LocalAiDraft>, LocalAiError> {
-        if !self.availability.is_available() {
+        let LocalAiAvailability::Available { source } = &self.availability else {
             return Ok(None);
-        }
-        runtime_generate_configuration_draft(input)
+        };
+        runtime_generate_configuration_draft(input, Some(source))
     }
 
     pub fn pattern_hints(
         &self,
         input: &LocalAiInput,
     ) -> std::result::Result<Vec<LocalAiPatternHint>, LocalAiError> {
-        if !self.availability.is_available() {
+        let LocalAiAvailability::Available { source } = &self.availability else {
             return Ok(Vec::new());
-        }
-        runtime_pattern_hints(input)
+        };
+        runtime_pattern_hints(input, Some(source))
     }
 }
 

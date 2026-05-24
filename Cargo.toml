@@ -9,7 +9,7 @@ homepage = "https://github.com/noobping/bank-files"
 repository = "https://github.com/noobping/bank-files"
 
 [features]
-default = []
+default = ["local-ai"]
 flatpak = []
 smart-insights = []
 local-ai = [
@@ -20,7 +20,7 @@ local-ai = [
     "dep:tokenizers",
 ]
 embedded-ai-model = ["local-ai"]
-setup = ["dep:reqwest", "dep:semver"]
+setup = ["embedded-ai-model", "dep:reqwest", "dep:semver"]
 
 [dependencies]
 anyhow = "1"

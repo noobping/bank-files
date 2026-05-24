@@ -48,21 +48,15 @@ cargo run --release
 
 Use Meson for a normal Linux install. This installs the binary, desktop file, app metadata, GSettings schema, icons, symbolic action icons, GTK resource bundle, GNOME search provider files, compiled translations, source PO/POT files, and non-embedded AI model assets in the selected prefix.
 
+Smart Insights and local AI are enabled in the default Cargo feature set. Use `--no-default-features` for a lightweight Cargo build without Smart Insights or local AI. For a Meson release build, the default feature set is enough:
+
 ```bash
 meson setup build -Dcargo_variant=release
 meson compile -C build
 sudo meson install -C build
 ```
 
-Smart Insights are optional at compile time. Use `-Dcargo_features=smart-insights` for deterministic Smart Insights without local AI. For local AI as sidecar files, use `local-ai`.
-
-```bash
-meson setup build -Dcargo_variant=release -Dcargo_features=local-ai
-meson compile -C build
-sudo meson install -C build
-```
-
-The GTK resource bundle is installed to `share/bank-files/bank-files.gresource` and loaded from there by normal Linux release installs. Plain Cargo development builds, Meson developer/debug builds, Windows builds, and setup/self-contained builds keep GTK resources embedded. The AI bundle is installed to `share/bank-files/models/ai`. Setup builds embed the AI assets instead of installing sidecar files:
+The GTK resource bundle is installed to `share/bank-files/bank-files.gresource` and loaded from there by normal Linux release installs. Plain Cargo development builds, Meson developer/debug builds, Windows builds, and setup/self-contained builds keep GTK resources embedded. The AI bundle is copied beside Cargo-built executables and installed to `share/bank-files/models/ai` by Meson. Setup builds embed the AI assets instead of installing sidecar files:
 
 ```bash
 meson setup build -Dcargo_variant=release -Dsetup=true

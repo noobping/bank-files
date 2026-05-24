@@ -12,7 +12,7 @@
     "revision": "6f75de8b60a9f8a2fdf7b69cbd86d9e64bcb3837",
     "task": "feature-extraction"
   },
-  "description": "License-verified model assets. The manifest intentionally stays placeholder:true until src/local_ai/mod.rs has model-specific classifier and generator adapters.",
+  "description": "License-verified model assets for the bundled local AI adapter.",
   "format": "bank-files-local-ai-v1",
   "generator": "generator.safetensors",
   "generator_source": {
@@ -26,7 +26,7 @@
     "model_type_source": "config.json",
     "revision": "3441d7e8bf3f89841f366d39452b95200416e4a9"
   },
-  "placeholder": true,
-  "runtime_status": "assets-built-runtime-adapter-pending",
+  "placeholder": false,
+  "runtime_status": "bundled-local-adapter-enabled",
   "tokenizer": "tokenizer.json"
 }

@@ -313,7 +313,7 @@ jobs:
 
           manifest = {
               "format": "bank-files-local-ai-v1",
-              "placeholder": True,
+              "placeholder": False,
               "classifier": "classifier.onnx",
               "generator": "generator.safetensors",
               "tokenizer": "tokenizer.json",
@@ -340,12 +340,8 @@ jobs:
                   "model_type": metadata["generator"]["model_type"],
                   "model_type_source": metadata["generator"]["model_type_source"],
               },
-              "runtime_status": "assets-built-runtime-adapter-pending",
-              "description": (
-                  "License-verified model assets. The manifest intentionally "
-                  "stays placeholder:true until src/local_ai/mod.rs has "
-                  "model-specific classifier and generator adapters."
-              ),
+              "runtime_status": "bundled-local-adapter-enabled",
+              "description": "License-verified model assets for the bundled local AI adapter.",
           }
           (tmp_dir / "model.json").write_text(
               json.dumps(manifest, indent=2, sort_keys=True) + "\n",
@@ -455,10 +451,8 @@ jobs:
               raise SystemExit("tokenizer.json is not a real tokenizer file")
 
           manifest = json.loads((root / "model.json").read_text(encoding="utf-8"))
-          if manifest.get("placeholder") is not True:
-              raise SystemExit(
-                  "model.json must remain placeholder:true until runtime adapters exist"
-              )
+          if manifest.get("placeholder") is not False:
+              raise SystemExit("model.json must have placeholder:false for runtime use")
 
           license_text = (root / "LICENSE").read_text(encoding="utf-8")
           for key in ("classifier_source", "generator_source"):
