@@ -6,6 +6,9 @@ const BUDGET_ACTION_NAMESPACE: &str = "management-budgets";
 pub(super) struct ManagementDialogShell {
     pub(super) root: gtk::Box,
     pub(super) add_button: gtk::Button,
+    pub(super) add_rule_button: gtk::Button,
+    pub(super) add_budget_button: gtk::Button,
+    pub(super) add_alias_button: gtk::Button,
     pub(super) group_rules_action: gtk::gio::SimpleAction,
     pub(super) combine_rules_action: gtk::gio::SimpleAction,
     pub(super) rule_bulk_menu_button: gtk::MenuButton,
@@ -51,6 +54,8 @@ pub(super) fn build_management_dialog_shell(
     let filter_entry =
         ui::builder_object::<gtk::SearchEntry>(&builder, "management_filter_entry", RESOURCE);
 
+    let add_rule_button =
+        ui::builder_object::<gtk::Button>(&builder, "management_add_rule_button", RESOURCE);
     let rules_list = ui::builder_object::<gtk::Box>(&builder, "management_rules_list", RESOURCE);
     let rules_scroll =
         ui::builder_object::<gtk::ScrolledWindow>(&builder, "management_rules_scroll", RESOURCE);
@@ -62,6 +67,13 @@ pub(super) fn build_management_dialog_shell(
     let rule_bulk_menu =
         ui::builder_object::<gtk::gio::Menu>(&builder, "management_rule_bulk_menu", RESOURCE);
 
+    let add_budget_button =
+        ui::builder_object::<gtk::Button>(&builder, "management_add_budget_button", RESOURCE);
+    let add_budget_content = ui::builder_object::<adw::ButtonContent>(
+        &builder,
+        "management_add_budget_content",
+        RESOURCE,
+    );
     let budgets_title =
         ui::builder_object::<gtk::Label>(&builder, "management_budgets_title", RESOURCE);
     let budgets_subtitle =
@@ -80,6 +92,8 @@ pub(super) fn build_management_dialog_shell(
     let budget_bulk_menu =
         ui::builder_object::<gtk::gio::Menu>(&builder, "management_budget_bulk_menu", RESOURCE);
 
+    let add_alias_button =
+        ui::builder_object::<gtk::Button>(&builder, "management_add_alias_button", RESOURCE);
     let aliases_list =
         ui::builder_object::<gtk::Box>(&builder, "management_aliases_list", RESOURCE);
     let aliases_scroll =
@@ -125,6 +139,8 @@ pub(super) fn build_management_dialog_shell(
         &budgets_title,
         &budgets_subtitle,
         &budgets_loading_label,
+        &add_budget_content,
+        &add_budget_button,
     );
     rule_bulk_menu_button.set_tooltip_text(Some(&tr("Rule actions")));
     budget_bulk_menu_button.set_tooltip_text(Some(&tr("Budget actions")));
@@ -139,6 +155,9 @@ pub(super) fn build_management_dialog_shell(
     ManagementDialogShell {
         root,
         add_button,
+        add_rule_button,
+        add_budget_button,
+        add_alias_button,
         group_rules_action,
         combine_rules_action,
         rule_bulk_menu_button,
@@ -168,22 +187,30 @@ fn configure_management_page_text(
     budgets_title: &gtk::Label,
     budgets_subtitle: &gtk::Label,
     budgets_loading_label: &gtk::Label,
+    add_budget_content: &adw::ButtonContent,
+    add_budget_button: &gtk::Button,
 ) {
-    let (title, description) = if advanced_features {
+    let (title, description, add_label, add_tooltip) = if advanced_features {
         (
             "Budget Codes",
             "Use fixed amounts or percentages; choose real or planned income for percentages.",
+            "New Budget",
+            "Create a new budget",
         )
     } else {
         (
             "Budgets",
             "Use categories with fixed amounts or percentages.",
+            "New Category",
+            "Create a new category with monthly or yearly amounts",
         )
     };
 
     budgets_title.set_text(&tr(title));
     budgets_subtitle.set_text(&tr(description));
     budgets_loading_label.set_text(&tr("Loading budgets..."));
+    add_budget_content.set_label(&tr(add_label));
+    add_budget_button.set_tooltip_text(Some(&tr(add_tooltip)));
 }
 
 fn connect_header_action_visibility(

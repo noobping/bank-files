@@ -204,6 +204,19 @@
                             </child>
                           </object>
                         </child>
+                        <child>
+                          <object class="GtkButton" id="management_add_rule_button">
+                            <property name="halign">end</property>
+                            <property name="tooltip-text" translatable="yes">Create a new rule</property>
+                            <property name="child">
+                              <object class="AdwButtonContent">
+                                <property name="icon-name">list-add-symbolic</property>
+                                <property name="label" translatable="yes">New Rule</property>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+
                       </object>
                     </property>
                   </object>
@@ -297,6 +310,19 @@
                             </child>
                           </object>
                         </child>
+                        <child>
+                          <object class="GtkButton" id="management_add_budget_button">
+                            <property name="halign">end</property>
+                            <property name="tooltip-text" translatable="yes">Create a new budget</property>
+                            <property name="child">
+                              <object class="AdwButtonContent" id="management_add_budget_content">
+                                <property name="icon-name">list-add-symbolic</property>
+                                <property name="label" translatable="yes">New Budget</property>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+
                       </object>
                     </property>
                   </object>
@@ -393,6 +419,19 @@
                             </child>
                           </object>
                         </child>
+                        <child>
+                          <object class="GtkButton" id="management_add_alias_button">
+                            <property name="halign">end</property>
+                            <property name="tooltip-text" translatable="yes">Create a new field name</property>
+                            <property name="child">
+                              <object class="AdwButtonContent">
+                                <property name="icon-name">list-add-symbolic</property>
+                                <property name="label" translatable="yes">New Field Name</property>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+
                       </object>
                     </property>
                   </object>
