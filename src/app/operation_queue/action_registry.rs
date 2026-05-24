@@ -1,4 +1,5 @@
 use super::super::*;
+use super::messages::operation_already_queued_tooltip;
 use super::model::{
     OperationQueue, OperationQueueActionRegistration, OperationQueueActionTarget,
     QueuedOperationKind,
@@ -85,9 +86,7 @@ fn apply_operation_queue_action_state(
                 widget.set_visible(registration.base_visible);
                 widget.set_sensitive(enabled);
                 if queued {
-                    widget.set_tooltip_text(Some(&tr(
-                        "This operation is already in the processing queue.",
-                    )));
+                    widget.set_tooltip_text(Some(&tr(operation_already_queued_tooltip())));
                 } else {
                     widget.set_tooltip_text(registration.base_tooltip.as_deref());
                 }

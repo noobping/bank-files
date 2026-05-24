@@ -141,17 +141,10 @@ pub(in crate::app::transactions::common) fn connect_transaction_budget_move_save
                 .queued()
             {
                 button.set_sensitive(false);
-                set_action_status(
-                    &status,
-                    if advanced_features {
-                        "Budget code move added to processing queue."
-                    } else {
-                        "Category move added to processing queue."
-                    },
-                );
+                set_action_status(&status, budget_move_queued_status(advanced_features));
                 dialog_for_save.close();
             } else {
-                set_action_status(&status, "Operation is already in the processing queue.");
+                set_action_status(&status, operation_already_queued_status());
             }
         });
     });

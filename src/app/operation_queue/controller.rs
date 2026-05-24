@@ -1,5 +1,6 @@
 use super::super::*;
 use super::apply::{apply_all, clear_done};
+use super::messages::{operation_added_status, operation_already_queued_status};
 use super::model::{EnqueueOperationResult, OperationSource};
 use super::widgets::{refresh_operation_queue_ui, refresh_operation_queue_ui_for_active_session};
 
@@ -45,9 +46,9 @@ pub(in crate::app) fn enqueue_rule_operation(
     let result = ui.operation_queue.enqueue_rule(rule, ensure_budget, source);
     refresh_operation_queue_ui_for_active_session(ui);
     if result.queued() {
-        show_status(ui, "Operation added to queue.");
+        show_status(ui, operation_added_status());
     } else {
-        show_status(ui, "Operation is already in the processing queue.");
+        show_status(ui, operation_already_queued_status());
     }
     result
 }

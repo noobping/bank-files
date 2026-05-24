@@ -33,51 +33,21 @@ pub(in crate::app) fn show_management_dialog(
         ),
     );
 
-    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    let stack = adw::ViewStack::new();
-    stack.set_vexpand(true);
-
-    let header = adw::HeaderBar::new();
-    header.set_show_start_title_buttons(false);
-    header.set_show_end_title_buttons(true);
-    let switcher = adw::ViewSwitcher::builder()
-        .stack(&stack)
-        .policy(adw::ViewSwitcherPolicy::Wide)
-        .build();
-    header.set_title_widget(Some(&switcher));
-    let add_button = ui::plain_text_icon_button("list-add-symbolic", "New", "New item");
-    add_button.add_css_class("flat");
-    let save_button = ui::primary_text_icon_button(
-        "document-save-symbolic",
-        "Save",
-        "Save rules, budgets, and field names",
-    );
-    header.pack_start(&add_button);
-    header.pack_end(&save_button);
-    root.append(&header);
-
     let filter_placeholder = if advanced_features {
         "Filter rules, budgets, and field names"
     } else {
         "Filter budgets and field names"
     };
-    let filter_entry = gtk::SearchEntry::builder()
-        .placeholder_text(tr(filter_placeholder))
-        .hexpand(true)
-        .build();
-    let filter_row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    filter_row.set_margin_top(8);
-    filter_row.set_margin_bottom(8);
-    filter_row.set_margin_start(12);
-    filter_row.set_margin_end(12);
-    filter_row.append(&filter_entry);
-    let filter_search_bar = gtk::SearchBar::builder()
-        .child(&filter_row)
-        .show_close_button(true)
-        .search_mode_enabled(false)
-        .build();
-    filter_search_bar.connect_entry(&filter_entry);
-    root.append(&filter_search_bar);
+    let ManagementDialogShell {
+        root,
+        add_button,
+        save_button,
+        filter_entry,
+        filter_search_bar,
+        stack,
+        switcher,
+        switcher_bar,
+    } = build_management_dialog_shell(filter_placeholder);
 
     let rules_forms: Rc<RefCell<Vec<RuleForm>>> = Rc::new(RefCell::new(Vec::new()));
     let budgets_forms: Rc<RefCell<Vec<BudgetForm>>> = Rc::new(RefCell::new(Vec::new()));
@@ -171,13 +141,6 @@ pub(in crate::app) fn show_management_dialog(
         _ => "budgets",
     };
     stack.set_visible_child_name(initial_tab);
-    root.append(&stack);
-
-    let switcher_bar = adw::ViewSwitcherBar::builder()
-        .stack(&stack)
-        .reveal(false)
-        .build();
-    root.append(&switcher_bar);
 
     let status_bar = build_status_bar();
     connect_embedded_status_bar(window, &status_bar, Rc::clone(&ui_handles.status_autohide));
@@ -253,4 +216,61 @@ pub(in crate::app) fn show_management_dialog(
         status_handle,
     });
     true
+}
+
+struct ManagementDialogShell {
+    root: gtk::Box,
+    add_button: gtk::Button,
+    save_button: gtk::Button,
+    filter_entry: gtk::SearchEntry,
+    filter_search_bar: gtk::SearchBar,
+    stack: adw::ViewStack,
+    switcher: adw::ViewSwitcher,
+    switcher_bar: adw::ViewSwitcherBar,
+}
+
+fn build_management_dialog_shell(filter_placeholder: &str) -> ManagementDialogShell {
+    const RESOURCE: &str = "management-dialog.ui";
+
+    let builder = ui::builder_from_resource(RESOURCE);
+    let root = ui::builder_object::<gtk::Box>(&builder, "management_root", RESOURCE);
+    let header = ui::builder_object::<adw::HeaderBar>(&builder, "management_header", RESOURCE);
+    let switcher =
+        ui::builder_object::<adw::ViewSwitcher>(&builder, "management_switcher", RESOURCE);
+    let switcher_bar =
+        ui::builder_object::<adw::ViewSwitcherBar>(&builder, "management_switcher_bar", RESOURCE);
+    let stack = ui::builder_object::<adw::ViewStack>(&builder, "management_stack", RESOURCE);
+    let add_button = ui::builder_object::<gtk::Button>(&builder, "management_add_button", RESOURCE);
+    let save_button =
+        ui::builder_object::<gtk::Button>(&builder, "management_save_button", RESOURCE);
+    let save_content =
+        ui::builder_object::<adw::ButtonContent>(&builder, "management_save_content", RESOURCE);
+    let filter_search_bar =
+        ui::builder_object::<gtk::SearchBar>(&builder, "management_filter_search_bar", RESOURCE);
+    let filter_entry =
+        ui::builder_object::<gtk::SearchEntry>(&builder, "management_filter_entry", RESOURCE);
+
+    switcher.set_stack(Some(&stack));
+    switcher_bar.set_stack(Some(&stack));
+    header.set_title_widget(Some(&switcher));
+
+    add_button.set_tooltip_text(Some(&tr("New item")));
+
+    save_content.set_label(&tr("Save"));
+    save_content.set_icon_name("document-save-symbolic");
+    save_button.set_tooltip_text(Some(&tr("Save rules, budgets, and field names")));
+
+    filter_entry.set_placeholder_text(Some(&tr(filter_placeholder)));
+    filter_search_bar.connect_entry(&filter_entry);
+
+    ManagementDialogShell {
+        root,
+        add_button,
+        save_button,
+        filter_entry,
+        filter_search_bar,
+        stack,
+        switcher,
+        switcher_bar,
+    }
 }
