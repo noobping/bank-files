@@ -7,7 +7,6 @@ use super::*;
 
 pub(super) fn connect_budget_actions(actions: &ManagementDialogActions<'_>) {
     let management_dialog = actions.management_dialog;
-    let add_budget_button = actions.add_budget_button;
     let move_budget_code_action = actions.move_budget_code_action.clone();
     let use_real_income_action = actions.use_real_income_action.clone();
     let use_planned_income_action = actions.use_planned_income_action.clone();
@@ -15,32 +14,9 @@ pub(super) fn connect_budget_actions(actions: &ManagementDialogActions<'_>) {
     let use_yearly_values_action = actions.use_yearly_values_action.clone();
     let filter_entry = actions.filter_entry;
     let rules_forms = actions.rules_forms;
-    let budgets_list = actions.budgets_list;
     let budgets_forms = actions.budgets_forms;
-    let budgets_scroll = actions.budgets_scroll;
     let status = actions.status;
     let ui_handles = actions.ui_handles;
-
-    let management_dialog_for_budget_add = management_dialog.clone();
-    let budgets_list_for_budget_add = budgets_list.clone();
-    let budgets_forms_for_budget_add = Rc::clone(budgets_forms);
-    let budgets_scroll_for_budget_add = budgets_scroll.clone();
-    let status_for_budget_add = status.clone();
-    let filter_entry_for_budget_add = filter_entry.clone();
-    let advanced_autofill_for_budget_add = Rc::clone(&ui_handles.advanced_autofill);
-    let ui_for_budget_add = Rc::clone(ui_handles);
-    add_budget_button.connect_clicked(move |_| {
-        show_new_budget_dialog(NewBudgetDialogRequest {
-            parent: &management_dialog_for_budget_add,
-            container: &budgets_list_for_budget_add,
-            forms: &budgets_forms_for_budget_add,
-            scrolled_window: &budgets_scroll_for_budget_add,
-            status: &status_for_budget_add,
-            filter_entry: &filter_entry_for_budget_add,
-            advanced_autofill: &advanced_autofill_for_budget_add,
-            advanced_features: ui_for_budget_add.advanced_features.get(),
-        });
-    });
 
     let management_dialog_for_budget_move = management_dialog.clone();
     let rules_forms_for_budget_move = Rc::clone(rules_forms);

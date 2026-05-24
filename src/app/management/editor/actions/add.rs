@@ -3,7 +3,6 @@ use super::*;
 pub(super) fn connect_add_actions(actions: &ManagementDialogActions<'_>) {
     let management_dialog = actions.management_dialog;
     let add_button = actions.add_button;
-    let add_rule_button = actions.add_rule_button;
     let stack = actions.stack;
     let filter_entry = actions.filter_entry;
     let rules_list = actions.rules_list;
@@ -64,23 +63,4 @@ pub(super) fn connect_add_actions(actions: &ManagementDialogActions<'_>) {
             ),
         },
     );
-
-    let management_dialog_for_rule_add = management_dialog.clone();
-    let rules_list_for_rule_add = rules_list.clone();
-    let rules_forms_for_rule_add = Rc::clone(rules_forms);
-    let rules_scroll_for_rule_add = rules_scroll.clone();
-    let status_for_rule_add = status.clone();
-    let filter_entry_for_rule_add = filter_entry.clone();
-    let advanced_autofill_for_rule_add = Rc::clone(&ui_handles.advanced_autofill);
-    add_rule_button.connect_clicked(move |_| {
-        show_new_rule_dialog(
-            &management_dialog_for_rule_add,
-            &rules_list_for_rule_add,
-            &rules_forms_for_rule_add,
-            &rules_scroll_for_rule_add,
-            &status_for_rule_add,
-            &filter_entry_for_rule_add,
-            &advanced_autofill_for_rule_add,
-        );
-    });
 }

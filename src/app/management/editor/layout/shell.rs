@@ -6,18 +6,15 @@ const BUDGET_ACTION_NAMESPACE: &str = "management-budgets";
 pub(super) struct ManagementDialogShell {
     pub(super) root: gtk::Box,
     pub(super) add_button: gtk::Button,
-    pub(super) add_rule_button: gtk::Button,
     pub(super) group_rules_action: gtk::gio::SimpleAction,
     pub(super) combine_rules_action: gtk::gio::SimpleAction,
     pub(super) rule_bulk_menu_button: gtk::MenuButton,
-    pub(super) add_budget_button: gtk::Button,
     pub(super) move_budget_code_action: gtk::gio::SimpleAction,
     pub(super) use_real_income_action: gtk::gio::SimpleAction,
     pub(super) use_planned_income_action: gtk::gio::SimpleAction,
     pub(super) use_monthly_values_action: gtk::gio::SimpleAction,
     pub(super) use_yearly_values_action: gtk::gio::SimpleAction,
     pub(super) budget_bulk_menu_button: gtk::MenuButton,
-    pub(super) add_alias_button: gtk::Button,
     pub(super) save_button: gtk::Button,
     pub(super) filter_entry: gtk::SearchEntry,
     pub(super) filter_search_bar: gtk::SearchBar,
@@ -49,8 +46,6 @@ pub(super) fn build_management_dialog_shell(
     let add_button = ui::builder_object::<gtk::Button>(&builder, "management_add_button", RESOURCE);
     let save_button =
         ui::builder_object::<gtk::Button>(&builder, "management_save_button", RESOURCE);
-    let save_content =
-        ui::builder_object::<adw::ButtonContent>(&builder, "management_save_content", RESOURCE);
     let filter_search_bar =
         ui::builder_object::<gtk::SearchBar>(&builder, "management_filter_search_bar", RESOURCE);
     let filter_entry =
@@ -59,10 +54,6 @@ pub(super) fn build_management_dialog_shell(
     let rules_list = ui::builder_object::<gtk::Box>(&builder, "management_rules_list", RESOURCE);
     let rules_scroll =
         ui::builder_object::<gtk::ScrolledWindow>(&builder, "management_rules_scroll", RESOURCE);
-    let add_rule_button =
-        ui::builder_object::<gtk::Button>(&builder, "management_add_rule_button", RESOURCE);
-    let add_rule_content =
-        ui::builder_object::<adw::ButtonContent>(&builder, "management_add_rule_content", RESOURCE);
     let rule_bulk_menu_button = ui::builder_object::<gtk::MenuButton>(
         &builder,
         "management_rule_bulk_menu_button",
@@ -81,13 +72,6 @@ pub(super) fn build_management_dialog_shell(
         ui::builder_object::<gtk::Box>(&builder, "management_budgets_list", RESOURCE);
     let budgets_scroll =
         ui::builder_object::<gtk::ScrolledWindow>(&builder, "management_budgets_scroll", RESOURCE);
-    let add_budget_button =
-        ui::builder_object::<gtk::Button>(&builder, "management_add_budget_button", RESOURCE);
-    let add_budget_content = ui::builder_object::<adw::ButtonContent>(
-        &builder,
-        "management_add_budget_content",
-        RESOURCE,
-    );
     let budget_bulk_menu_button = ui::builder_object::<gtk::MenuButton>(
         &builder,
         "management_budget_bulk_menu_button",
@@ -100,13 +84,6 @@ pub(super) fn build_management_dialog_shell(
         ui::builder_object::<gtk::Box>(&builder, "management_aliases_list", RESOURCE);
     let aliases_scroll =
         ui::builder_object::<gtk::ScrolledWindow>(&builder, "management_aliases_scroll", RESOURCE);
-    let add_alias_button =
-        ui::builder_object::<gtk::Button>(&builder, "management_add_alias_button", RESOURCE);
-    let add_alias_content = ui::builder_object::<adw::ButtonContent>(
-        &builder,
-        "management_add_alias_content",
-        RESOURCE,
-    );
 
     let group_rules_action = gtk::gio::SimpleAction::new("group-rules", None);
     let combine_rules_action = gtk::gio::SimpleAction::new("combine-rules", None);
@@ -139,9 +116,6 @@ pub(super) fn build_management_dialog_shell(
     switcher_bar.set_stack(Some(&stack));
     header.set_title_widget(Some(&switcher));
 
-    add_button.set_tooltip_text(Some(&tr("New item")));
-    save_content.set_label(&tr("Save"));
-    save_content.set_icon_name("document-save-symbolic");
     save_button.set_tooltip_text(Some(&tr("Save rules, budgets, and field names")));
     filter_entry.set_placeholder_text(Some(&tr(filter_placeholder)));
     filter_search_bar.connect_entry(&filter_entry);
@@ -151,33 +125,29 @@ pub(super) fn build_management_dialog_shell(
         &budgets_title,
         &budgets_subtitle,
         &budgets_loading_label,
-        &add_budget_content,
-        &add_budget_button,
-        &budget_bulk_menu_button,
     );
-    add_rule_content.set_label(&tr("New Rule"));
-    add_rule_content.set_icon_name("list-add-symbolic");
-    add_rule_button.set_tooltip_text(Some(&tr("Create a new rule")));
     rule_bulk_menu_button.set_tooltip_text(Some(&tr("Rule actions")));
-    add_alias_content.set_label(&tr("New Field Name"));
-    add_alias_content.set_icon_name("list-add-symbolic");
-    add_alias_button.set_tooltip_text(Some(&tr("Create a new field name")));
+    budget_bulk_menu_button.set_tooltip_text(Some(&tr("Budget actions")));
+    connect_header_action_visibility(
+        &stack,
+        &add_button,
+        &rule_bulk_menu_button,
+        &budget_bulk_menu_button,
+        advanced_features,
+    );
 
     ManagementDialogShell {
         root,
         add_button,
-        add_rule_button,
         group_rules_action,
         combine_rules_action,
         rule_bulk_menu_button,
-        add_budget_button,
         move_budget_code_action,
         use_real_income_action,
         use_planned_income_action,
         use_monthly_values_action,
         use_yearly_values_action,
         budget_bulk_menu_button,
-        add_alias_button,
         save_button,
         filter_entry,
         filter_search_bar,
@@ -198,34 +168,81 @@ fn configure_management_page_text(
     budgets_title: &gtk::Label,
     budgets_subtitle: &gtk::Label,
     budgets_loading_label: &gtk::Label,
-    add_budget_content: &adw::ButtonContent,
-    add_budget_button: &gtk::Button,
-    budget_bulk_menu_button: &gtk::MenuButton,
 ) {
-    let (title, description, add_label, add_tooltip) = if advanced_features {
+    let (title, description) = if advanced_features {
         (
             "Budget Codes",
             "Use fixed amounts or percentages; choose real or planned income for percentages.",
-            "New Budget",
-            "Create a new budget",
         )
     } else {
         (
             "Budgets",
             "Use categories with fixed amounts or percentages.",
-            "New Category",
-            "Create a new category with monthly or yearly amounts",
         )
     };
 
     budgets_title.set_text(&tr(title));
     budgets_subtitle.set_text(&tr(description));
     budgets_loading_label.set_text(&tr("Loading budgets..."));
-    add_budget_content.set_label(&tr(add_label));
-    add_budget_content.set_icon_name("list-add-symbolic");
-    add_budget_button.set_tooltip_text(Some(&tr(add_tooltip)));
-    budget_bulk_menu_button.set_tooltip_text(Some(&tr("Budget actions")));
-    budget_bulk_menu_button.set_visible(advanced_features);
+}
+
+fn connect_header_action_visibility(
+    stack: &adw::ViewStack,
+    add_button: &gtk::Button,
+    rule_bulk_menu_button: &gtk::MenuButton,
+    budget_bulk_menu_button: &gtk::MenuButton,
+    advanced_features: bool,
+) {
+    update_header_action_visibility(
+        stack,
+        add_button,
+        rule_bulk_menu_button,
+        budget_bulk_menu_button,
+        advanced_features,
+    );
+
+    let add_for_stack = add_button.clone();
+    let rule_menu_for_stack = rule_bulk_menu_button.clone();
+    let budget_menu_for_stack = budget_bulk_menu_button.clone();
+    stack.connect_visible_child_name_notify(move |stack| {
+        update_header_action_visibility(
+            stack,
+            &add_for_stack,
+            &rule_menu_for_stack,
+            &budget_menu_for_stack,
+            advanced_features,
+        );
+    });
+}
+
+fn update_header_action_visibility(
+    stack: &adw::ViewStack,
+    add_button: &gtk::Button,
+    rule_bulk_menu_button: &gtk::MenuButton,
+    budget_bulk_menu_button: &gtk::MenuButton,
+    advanced_features: bool,
+) {
+    match stack.visible_child_name().as_deref() {
+        Some("rules") if advanced_features => {
+            add_button.set_tooltip_text(Some(&tr("Create a new rule")));
+            rule_bulk_menu_button.set_visible(true);
+            budget_bulk_menu_button.set_visible(false);
+        }
+        Some("aliases") => {
+            add_button.set_tooltip_text(Some(&tr("Create a new field name")));
+            rule_bulk_menu_button.set_visible(false);
+            budget_bulk_menu_button.set_visible(false);
+        }
+        _ => {
+            add_button.set_tooltip_text(Some(&tr(if advanced_features {
+                "Create a new budget"
+            } else {
+                "Create a new category with monthly or yearly amounts"
+            })));
+            rule_bulk_menu_button.set_visible(false);
+            budget_bulk_menu_button.set_visible(advanced_features);
+        }
+    }
 }
 
 fn insert_menu_actions(

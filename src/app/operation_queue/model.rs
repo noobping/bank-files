@@ -67,6 +67,7 @@ pub(super) enum OperationQueueActionTarget {
 pub(in crate::app) struct OperationQueueWidgets {
     pub(in crate::app) button: gtk::Button,
     pub(in crate::app) badge: gtk::Label,
+    pub(in crate::app) summary_row: gtk::Box,
     pub(in crate::app) summary: gtk::Label,
     pub(in crate::app) apply_all_button: gtk::Button,
     pub(in crate::app) clear_done_button: gtk::Button,

@@ -6,6 +6,12 @@ use super::model::{
     OperationQueue, OperationSource, QueuedOperation, QueuedOperationKind, QueuedOperationStatus,
 };
 
+pub(super) const APPLY_ALL_TOOLTIP: &str = "Apply all pending queued operations";
+pub(super) const EMPTY_QUEUE_TEXT: &str = "No pending operations.";
+pub(super) const EMPTY_QUEUE_SEARCH_TEXT: &str = "No queued operations found.";
+pub(super) const OPERATION_QUEUE_SEARCH_PLACEHOLDER: &str = "Search queued operations";
+pub(super) const OPERATION_QUEUE_TITLE: &str = "Processing Queue";
+
 pub(super) fn operation_matches_query(operation: &QueuedOperation, query: &str) -> bool {
     if query.is_empty() {
         return true;
@@ -37,7 +43,7 @@ pub(super) fn queue_summary(queue: &OperationQueue) -> String {
         .filter(|operation| matches!(operation.status, QueuedOperationStatus::Failed(_)))
         .count();
     if operations.is_empty() {
-        tr("No pending operations.")
+        tr(EMPTY_QUEUE_TEXT)
     } else if failed > 0 {
         trf(
             "{count} pending, {failed} failed.",

@@ -45,12 +45,39 @@
         <property name="show-start-title-buttons">False</property>
         <property name="show-end-title-buttons">True</property>
         <child type="start">
-          <object class="GtkButton" id="management_add_button">
-            <property name="icon-name">list-add-symbolic</property>
+          <object class="GtkBox" id="management_header_actions">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">0</property>
             <style>
-              <class name="flat"/>
-              <class name="image-button"/>
+              <class name="linked"/>
             </style>
+            <child>
+              <object class="GtkButton" id="management_add_button">
+                <property name="icon-name">list-add-symbolic</property>
+                <style>
+                  <class name="flat"/>
+                  <class name="image-button"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuButton" id="management_rule_bulk_menu_button">
+                <property name="icon-name">view-more-symbolic</property>
+                <style>
+                  <class name="flat"/>
+                  <class name="image-button"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuButton" id="management_budget_bulk_menu_button">
+                <property name="icon-name">view-more-symbolic</property>
+                <style>
+                  <class name="flat"/>
+                  <class name="image-button"/>
+                </style>
+              </object>
+            </child>
           </object>
         </child>
         <child type="end">
@@ -61,7 +88,7 @@
             <property name="child">
               <object class="AdwButtonContent" id="management_save_content">
                 <property name="icon-name">document-save-symbolic</property>
-                <property name="label">Save</property>
+                <property name="label" translatable="yes">Save</property>
               </object>
             </property>
           </object>
@@ -180,30 +207,6 @@
                             </child>
                           </object>
                         </child>
-                        <child>
-                          <object class="GtkBox" id="management_rules_actions">
-                            <property name="orientation">horizontal</property>
-                            <property name="spacing">0</property>
-                            <style>
-                              <class name="linked"/>
-                            </style>
-                            <child>
-                              <object class="GtkButton" id="management_add_rule_button">
-                                <property name="child">
-                                  <object class="AdwButtonContent" id="management_add_rule_content">
-                                    <property name="icon-name">list-add-symbolic</property>
-                                    <property name="label">New Rule</property>
-                                  </object>
-                                </property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuButton" id="management_rule_bulk_menu_button">
-                                <property name="icon-name">view-more-symbolic</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
                       </object>
                     </property>
                   </object>
@@ -293,29 +296,6 @@
                                     <property name="wrap-mode">word-char</property>
                                   </object>
                                 </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox" id="management_budgets_actions">
-                            <property name="orientation">horizontal</property>
-                            <property name="spacing">0</property>
-                            <style>
-                              <class name="linked"/>
-                            </style>
-                            <child>
-                              <object class="GtkButton" id="management_add_budget_button">
-                                <property name="child">
-                                  <object class="AdwButtonContent" id="management_add_budget_content">
-                                    <property name="icon-name">list-add-symbolic</property>
-                                  </object>
-                                </property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkMenuButton" id="management_budget_bulk_menu_button">
-                                <property name="icon-name">view-more-symbolic</property>
                               </object>
                             </child>
                           </object>
@@ -412,25 +392,6 @@
                                     <property name="wrap-mode">word-char</property>
                                   </object>
                                 </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox" id="management_aliases_actions">
-                            <property name="orientation">horizontal</property>
-                            <property name="spacing">0</property>
-                            <style>
-                              <class name="linked"/>
-                            </style>
-                            <child>
-                              <object class="GtkButton" id="management_add_alias_button">
-                                <property name="child">
-                                  <object class="AdwButtonContent" id="management_add_alias_content">
-                                    <property name="icon-name">list-add-symbolic</property>
-                                    <property name="label">New Field Name</property>
-                                  </object>
-                                </property>
                               </object>
                             </child>
                           </object>

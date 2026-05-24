@@ -1,7 +1,9 @@
 use super::super::*;
 use super::model::OperationQueueWidgets;
 use super::presentation::{
-    operation_matches_query, operation_queue_actions_are_idle, queue_summary,
+    operation_matches_query, operation_queue_actions_are_idle, queue_summary, APPLY_ALL_TOOLTIP,
+    EMPTY_QUEUE_SEARCH_TEXT, EMPTY_QUEUE_TEXT, OPERATION_QUEUE_SEARCH_PLACEHOLDER,
+    OPERATION_QUEUE_TITLE,
 };
 use super::rows::operation_row;
 
@@ -23,17 +25,15 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     let button = ui::flat_custom_button("Processing queue", &button_content);
     button.set_focus_on_click(false);
 
-    let shell = build_settings_dialog_shell("Processing Queue", "Search queued operations");
+    let shell =
+        build_settings_dialog_shell(OPERATION_QUEUE_TITLE, OPERATION_QUEUE_SEARCH_PLACEHOLDER);
     let root = shell.root;
     let header = shell.header;
     let search_bar = shell.search_bar;
     let search_entry = shell.search_entry;
 
-    let apply_all_button = ui::primary_text_icon_button(
-        "object-select-symbolic",
-        "Apply all",
-        "Apply all pending queued operations",
-    );
+    let apply_all_button =
+        ui::primary_text_icon_button("object-select-symbolic", "Apply all", APPLY_ALL_TOOLTIP);
     let clear_done_button = ui::icon_button("edit-clear-symbolic", "Clear completed operations");
     clear_done_button.add_css_class("flat");
     header.pack_end(&apply_all_button);
@@ -60,7 +60,7 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     content.append(&list);
     root.append(&ui::action_dialog_scroll_with_min(&content, 360));
 
-    let dialog = ui::content_dialog(tr("Processing Queue"), &root)
+    let dialog = ui::content_dialog(tr(OPERATION_QUEUE_TITLE), &root)
         .content_width(620)
         .content_height(560)
         .build();
@@ -70,6 +70,7 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     OperationQueueWidgets {
         button,
         badge,
+        summary_row,
         summary,
         apply_all_button,
         clear_done_button,
@@ -121,22 +122,24 @@ pub(super) fn refresh_operation_queue_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<U
                 .set_sensitive(actionable > 0 && idle);
             widgets
                 .apply_all_button
-                .set_tooltip_text(Some(&tr("Apply all pending queued operations")));
+                .set_tooltip_text(Some(&tr(APPLY_ALL_TOOLTIP)));
         }
         availability => apply_action_availability(&widgets.apply_all_button, &availability),
     }
     widgets.clear_done_button.set_sensitive(applied > 0 && idle);
     widgets.clear_done_button.set_visible(applied > 0);
-    widgets
-        .summary
-        .set_text(&queue_summary(&ui.operation_queue));
 
     ui::clear_list_box(&widgets.list);
     let operations = ui.operation_queue.operations();
-    if operations.is_empty() {
+    let show_summary = !operations.is_empty();
+    widgets.summary_row.set_visible(show_summary);
+    if show_summary {
         widgets
-            .list
-            .append(&queue_text_row(&tr("No queued operations.")));
+            .summary
+            .set_text(&queue_summary(&ui.operation_queue));
+    }
+    if operations.is_empty() {
+        widgets.list.append(&queue_text_row(&tr(EMPTY_QUEUE_TEXT)));
         return;
     }
 
@@ -152,7 +155,7 @@ pub(super) fn refresh_operation_queue_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<U
     if visible_count == 0 {
         widgets
             .list
-            .append(&queue_text_row(&tr("No queued operations found.")));
+            .append(&queue_text_row(&tr(EMPTY_QUEUE_SEARCH_TEXT)));
     }
 }
 

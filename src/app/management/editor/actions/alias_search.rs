@@ -2,32 +2,12 @@ use super::*;
 
 pub(super) fn connect_alias_and_search_actions(actions: &ManagementDialogActions<'_>) {
     let management_dialog = actions.management_dialog;
-    let add_alias_button = actions.add_alias_button;
     let filter_entry = actions.filter_entry;
     let filter_search_bar = actions.filter_search_bar;
     let rules_forms = actions.rules_forms;
     let budgets_forms = actions.budgets_forms;
-    let aliases_list = actions.aliases_list;
     let aliases_forms = actions.aliases_forms;
-    let aliases_scroll = actions.aliases_scroll;
     let status = actions.status;
-
-    let management_dialog_for_alias_add = management_dialog.clone();
-    let aliases_list_for_alias_add = aliases_list.clone();
-    let aliases_forms_for_alias_add = Rc::clone(aliases_forms);
-    let aliases_scroll_for_alias_add = aliases_scroll.clone();
-    let status_for_alias_add = status.clone();
-    let filter_entry_for_alias_add = filter_entry.clone();
-    add_alias_button.connect_clicked(move |_| {
-        show_new_alias_dialog(
-            &management_dialog_for_alias_add,
-            &aliases_list_for_alias_add,
-            &aliases_forms_for_alias_add,
-            &aliases_scroll_for_alias_add,
-            &status_for_alias_add,
-            &filter_entry_for_alias_add,
-        );
-    });
 
     let rules_forms_for_filter = Rc::clone(rules_forms);
     let budgets_forms_for_filter = Rc::clone(budgets_forms);
