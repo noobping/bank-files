@@ -8,11 +8,11 @@ use super::*;
 pub(super) fn connect_budget_actions(actions: &ManagementDialogActions<'_>) {
     let management_dialog = actions.management_dialog;
     let add_budget_button = actions.add_budget_button;
-    let move_budget_code_button = actions.move_budget_code_button;
-    let use_real_income_button = actions.use_real_income_button;
-    let use_planned_income_button = actions.use_planned_income_button;
-    let use_monthly_values_button = actions.use_monthly_values_button;
-    let use_yearly_values_button = actions.use_yearly_values_button;
+    let move_budget_code_action = actions.move_budget_code_action.clone();
+    let use_real_income_action = actions.use_real_income_action.clone();
+    let use_planned_income_action = actions.use_planned_income_action.clone();
+    let use_monthly_values_action = actions.use_monthly_values_action.clone();
+    let use_yearly_values_action = actions.use_yearly_values_action.clone();
     let filter_entry = actions.filter_entry;
     let rules_forms = actions.rules_forms;
     let budgets_list = actions.budgets_list;
@@ -48,7 +48,7 @@ pub(super) fn connect_budget_actions(actions: &ManagementDialogActions<'_>) {
     let filter_entry_for_budget_move = filter_entry.clone();
     let status_for_budget_move = status.clone();
     let ui_for_budget_move = Rc::clone(ui_handles);
-    move_budget_code_button.connect_clicked(move |_| {
+    move_budget_code_action.connect_activate(move |_, _| {
         show_move_budget_code_dialog(
             &management_dialog_for_budget_move,
             &rules_forms_for_budget_move,
@@ -61,7 +61,7 @@ pub(super) fn connect_budget_actions(actions: &ManagementDialogActions<'_>) {
 
     let budgets_forms_for_real_income = Rc::clone(budgets_forms);
     let status_for_real_income = status.clone();
-    use_real_income_button.connect_clicked(move |_| {
+    use_real_income_action.connect_activate(move |_, _| {
         let changed =
             set_budget_forms_income_basis(&budgets_forms_for_real_income.borrow(), "real");
         set_budget_bulk_status(
@@ -74,7 +74,7 @@ pub(super) fn connect_budget_actions(actions: &ManagementDialogActions<'_>) {
 
     let budgets_forms_for_planned_income = Rc::clone(budgets_forms);
     let status_for_planned_income = status.clone();
-    use_planned_income_button.connect_clicked(move |_| {
+    use_planned_income_action.connect_activate(move |_, _| {
         let changed =
             set_budget_forms_income_basis(&budgets_forms_for_planned_income.borrow(), "planned");
         set_budget_bulk_status(
@@ -87,7 +87,7 @@ pub(super) fn connect_budget_actions(actions: &ManagementDialogActions<'_>) {
 
     let budgets_forms_for_monthly_values = Rc::clone(budgets_forms);
     let status_for_monthly_values = status.clone();
-    use_monthly_values_button.connect_clicked(move |_| {
+    use_monthly_values_action.connect_activate(move |_, _| {
         let result = set_budget_forms_value_period(
             &budgets_forms_for_monthly_values.borrow(),
             BudgetValuePeriod::Monthly,
@@ -102,7 +102,7 @@ pub(super) fn connect_budget_actions(actions: &ManagementDialogActions<'_>) {
 
     let budgets_forms_for_yearly_values = Rc::clone(budgets_forms);
     let status_for_yearly_values = status.clone();
-    use_yearly_values_button.connect_clicked(move |_| {
+    use_yearly_values_action.connect_activate(move |_, _| {
         let result = set_budget_forms_value_period(
             &budgets_forms_for_yearly_values.borrow(),
             BudgetValuePeriod::Yearly,

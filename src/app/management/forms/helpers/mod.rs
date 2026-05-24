@@ -4,6 +4,7 @@ mod codes;
 mod collect;
 mod deletion;
 mod reorder;
+mod text;
 
 pub(in crate::app) use codes::set_text_combo;
 pub(in crate::app) use collect::{
@@ -13,3 +14,7 @@ pub(in crate::app) use collect::{
 };
 pub(in crate::app) use deletion::{set_budget_delete_state, set_budget_form_deleted};
 pub(in crate::app) use reorder::{connect_budget_form_reorder, connect_rule_form_reorder};
+pub(in crate::app) use text::{
+    connect_text_view_summary, rule_search_text, rule_search_text_area, rule_search_text_view,
+    set_rule_search_text,
+};

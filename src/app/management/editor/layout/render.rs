@@ -230,20 +230,30 @@ fn finish_management_forms_render(load: &ManagementFormsLoad) {
         &load.aliases_forms.borrow(),
         &load.status,
     );
-    set_management_form_action_buttons_sensitive(&load.buttons, true);
-    for button in &load.buttons {
-        register_loading_sensitive_widget(&load.ui_handles, button);
+    set_management_form_action_widgets_sensitive(&load.action_widgets, true);
+    set_management_menu_actions_enabled(&load.menu_actions, true);
+    for widget in &load.action_widgets {
+        register_loading_sensitive_widget(&load.ui_handles, widget);
     }
     load.page_actions_button.set_sensitive(true);
     register_loading_sensitive_widget(&load.ui_handles, &load.page_actions_button);
     load.status_handle.set_loading(false);
 }
 
-pub(super) fn set_management_form_action_buttons_sensitive(
-    buttons: &[gtk::Button],
+pub(super) fn set_management_form_action_widgets_sensitive(
+    widgets: &[gtk::Widget],
     sensitive: bool,
 ) {
-    for button in buttons {
-        button.set_sensitive(sensitive);
+    for widget in widgets {
+        widget.set_sensitive(sensitive);
+    }
+}
+
+pub(super) fn set_management_menu_actions_enabled(
+    actions: &[gtk::gio::SimpleAction],
+    enabled: bool,
+) {
+    for action in actions {
+        action.set_enabled(enabled);
     }
 }

@@ -40,7 +40,8 @@ pub(in crate::app) fn append_rule_form(
         ],
         &rule.field,
     );
-    let search = ui::text_combo(&rule.search, editable_rule_search_values());
+    let search = rule_search_text_view(&rule.search);
+    let search_area = rule_search_text_area(&search);
     let is_regex = gtk::Switch::builder()
         .active(rule.is_regex)
         .valign(gtk::Align::Center)
@@ -74,7 +75,7 @@ pub(in crate::app) fn append_rule_form(
     add_labeled(&grid, 0, "Active", &active);
     add_labeled(&grid, 1, "Priority", &priority);
     add_labeled(&grid, 2, "Field", &field);
-    add_labeled(&grid, 3, "Search Text", &search);
+    add_labeled(&grid, 3, "Search Text", &search_area);
     add_labeled(&grid, 4, "Regex", &is_regex);
     add_labeled(&grid, 5, "Category", &category);
     add_labeled(&grid, 6, "Budget code", &budget_code);
@@ -117,7 +118,7 @@ pub(in crate::app) fn append_rule_form(
     connect_switch_summary(&active, &update_summary);
     connect_spin_summary(&priority, &update_summary);
     connect_combo_summary(&field, &update_summary);
-    connect_combo_summary(&search, &update_summary);
+    connect_text_view_summary(&search, &update_summary);
     connect_switch_summary(&is_regex, &update_summary);
     connect_combo_summary(&category, &update_summary);
     connect_combo_summary(&budget_code, &update_summary);
@@ -174,7 +175,7 @@ pub(in crate::app) fn append_rule_form(
     connect_switch_summary(&active, &update_revert_state);
     connect_spin_summary(&priority, &update_revert_state);
     connect_combo_summary(&field, &update_revert_state);
-    connect_combo_summary(&search, &update_revert_state);
+    connect_text_view_summary(&search, &update_revert_state);
     connect_switch_summary(&is_regex, &update_revert_state);
     connect_combo_summary(&category, &update_revert_state);
     connect_combo_summary(&budget_code, &update_revert_state);
@@ -201,7 +202,7 @@ pub(in crate::app) fn append_rule_form(
         active_for_revert.set_active(original_rule.active);
         priority_for_revert.set_value(original_rule.priority as f64);
         set_option_combo(&field_for_revert, &original_rule.field);
-        set_text_combo(&search_for_revert, &original_rule.search);
+        set_rule_search_text(&search_for_revert, &original_rule.search);
         is_regex_for_revert.set_active(original_rule.is_regex);
         set_text_combo(&category_for_revert, &original_rule.category);
         set_text_combo(&budget_code_for_revert, &original_rule.budget_code);

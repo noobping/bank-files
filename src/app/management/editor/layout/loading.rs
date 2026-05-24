@@ -15,7 +15,8 @@ pub(super) struct ManagementFormsLoad {
     pub(super) dialog_closed: Rc<Cell<bool>>,
     pub(super) advanced_autofill: Rc<Cell<bool>>,
     pub(super) ui_handles: Rc<UiHandles>,
-    pub(super) buttons: Vec<gtk::Button>,
+    pub(super) action_widgets: Vec<gtk::Widget>,
+    pub(super) menu_actions: Vec<gtk::gio::SimpleAction>,
     pub(super) page_actions_button: gtk::MenuButton,
     pub(super) status_handle: StatusHandle,
 }

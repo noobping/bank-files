@@ -1,8 +1,8 @@
 use super::*;
 
 pub(super) fn connect_rule_bulk_actions(actions: &ManagementDialogActions<'_>) {
-    let group_rules_button = actions.group_rules_button;
-    let combine_rules_button = actions.combine_rules_button;
+    let group_rules_action = actions.group_rules_action.clone();
+    let combine_rules_action = actions.combine_rules_action.clone();
     let filter_entry = actions.filter_entry;
     let rules_list = actions.rules_list;
     let rules_forms = actions.rules_forms;
@@ -15,12 +15,12 @@ pub(super) fn connect_rule_bulk_actions(actions: &ManagementDialogActions<'_>) {
     let rules_scroll_for_group = rules_scroll.clone();
     let filter_entry_for_group = filter_entry.clone();
     let status_for_group = status.clone();
-    let group_button_for_group = group_rules_button.clone();
-    let combine_button_for_group = combine_rules_button.clone();
+    let group_action_for_group = group_rules_action.clone();
+    let combine_action_for_group = combine_rules_action.clone();
     let advanced_autofill_for_group = Rc::clone(&ui_handles.advanced_autofill);
     let ui_for_group = Rc::clone(ui_handles);
-    group_rules_button.connect_clicked(move |_| {
-    set_rule_bulk_buttons_sensitive(&group_button_for_group, &combine_button_for_group, false);
+    group_rules_action.connect_activate(move |_, _| {
+    set_rule_bulk_actions_enabled(&group_action_for_group, &combine_action_for_group, false);
     status_for_group.set_text(&tr("Grouping compatible rules..."));
     show_verbose_status(
         ui_for_group.as_ref(),
@@ -35,8 +35,8 @@ pub(super) fn connect_rule_bulk_actions(actions: &ManagementDialogActions<'_>) {
     let rules_scroll = rules_scroll_for_group.clone();
     let filter_entry = filter_entry_for_group.clone();
     let status = status_for_group.clone();
-    let group_button = group_button_for_group.clone();
-    let combine_button = combine_button_for_group.clone();
+    let group_action = group_action_for_group.clone();
+    let combine_action = combine_action_for_group.clone();
     let advanced_autofill = Rc::clone(&advanced_autofill_for_group);
     let ui = Rc::clone(&ui_for_group);
     gtk::glib::timeout_add_local_once(std::time::Duration::from_millis(30), move || {
@@ -54,12 +54,12 @@ pub(super) fn connect_rule_bulk_actions(actions: &ManagementDialogActions<'_>) {
         );
         if report.grouped_groups == 0 {
             status.set_text(&tr("No compatible rules to group."));
-            set_rule_bulk_buttons_sensitive(&group_button, &combine_button, true);
+            set_rule_bulk_actions_enabled(&group_action, &combine_action, true);
             return;
         }
         if !report.changed {
             status.set_text(&tr("Compatible rules are already grouped. Use Combine."));
-            set_rule_bulk_buttons_sensitive(&group_button, &combine_button, true);
+            set_rule_bulk_actions_enabled(&group_action, &combine_action, true);
             return;
         }
 
@@ -76,7 +76,7 @@ pub(super) fn connect_rule_bulk_actions(actions: &ManagementDialogActions<'_>) {
             "Grouped compatible rules into {group_count} group(s). Review order, then Combine or Save.",
             &[("group_count", group_count.to_string())],
         ));
-        set_rule_bulk_buttons_sensitive(&group_button, &combine_button, true);
+        set_rule_bulk_actions_enabled(&group_action, &combine_action, true);
     });
 });
 
@@ -85,12 +85,12 @@ pub(super) fn connect_rule_bulk_actions(actions: &ManagementDialogActions<'_>) {
     let rules_scroll_for_combine = rules_scroll.clone();
     let filter_entry_for_combine = filter_entry.clone();
     let status_for_combine = status.clone();
-    let group_button_for_combine = group_rules_button.clone();
-    let combine_button_for_combine = combine_rules_button.clone();
+    let group_action_for_combine = group_rules_action.clone();
+    let combine_action_for_combine = combine_rules_action.clone();
     let advanced_autofill_for_combine = Rc::clone(&ui_handles.advanced_autofill);
     let ui_for_combine = Rc::clone(ui_handles);
-    combine_rules_button.connect_clicked(move |_| {
-    set_rule_bulk_buttons_sensitive(&group_button_for_combine, &combine_button_for_combine, false);
+    combine_rules_action.connect_activate(move |_, _| {
+    set_rule_bulk_actions_enabled(&group_action_for_combine, &combine_action_for_combine, false);
     status_for_combine.set_text(&tr("Combining compatible rules..."));
     show_verbose_status(
         ui_for_combine.as_ref(),
@@ -105,8 +105,8 @@ pub(super) fn connect_rule_bulk_actions(actions: &ManagementDialogActions<'_>) {
     let rules_scroll = rules_scroll_for_combine.clone();
     let filter_entry = filter_entry_for_combine.clone();
     let status = status_for_combine.clone();
-    let group_button = group_button_for_combine.clone();
-    let combine_button = combine_button_for_combine.clone();
+    let group_action = group_action_for_combine.clone();
+    let combine_action = combine_action_for_combine.clone();
     let advanced_autofill = Rc::clone(&advanced_autofill_for_combine);
     let ui = Rc::clone(&ui_for_combine);
     gtk::glib::timeout_add_local_once(std::time::Duration::from_millis(30), move || {
@@ -126,7 +126,7 @@ pub(super) fn connect_rule_bulk_actions(actions: &ManagementDialogActions<'_>) {
             status.set_text(&tr(
                 "No adjacent compatible rules to combine. Use Group first if compatible rules are spread out.",
             ));
-            set_rule_bulk_buttons_sensitive(&group_button, &combine_button, true);
+            set_rule_bulk_actions_enabled(&group_action, &combine_action, true);
             return;
         }
 
@@ -149,18 +149,18 @@ pub(super) fn connect_rule_bulk_actions(actions: &ManagementDialogActions<'_>) {
                 ("group_count", group_count.to_string()),
             ],
         ));
-        set_rule_bulk_buttons_sensitive(&group_button, &combine_button, true);
+        set_rule_bulk_actions_enabled(&group_action, &combine_action, true);
     });
 });
 }
 
-fn set_rule_bulk_buttons_sensitive(
-    group_rules_button: &gtk::Button,
-    combine_rules_button: &gtk::Button,
-    sensitive: bool,
+fn set_rule_bulk_actions_enabled(
+    group_rules_action: &gtk::gio::SimpleAction,
+    combine_rules_action: &gtk::gio::SimpleAction,
+    enabled: bool,
 ) {
-    group_rules_button.set_sensitive(sensitive);
-    combine_rules_button.set_sensitive(sensitive);
+    group_rules_action.set_enabled(enabled);
+    combine_rules_action.set_enabled(enabled);
 }
 
 fn replace_rule_forms(

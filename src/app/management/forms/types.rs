@@ -6,7 +6,7 @@ pub(in crate::app) struct RuleForm {
     pub(in crate::app) active: gtk::Switch,
     pub(in crate::app) priority: gtk::SpinButton,
     pub(in crate::app) field: gtk::ComboBoxText,
-    pub(in crate::app) search: gtk::ComboBoxText,
+    pub(in crate::app) search: gtk::TextView,
     pub(in crate::app) is_regex: gtk::Switch,
     pub(in crate::app) category: gtk::ComboBoxText,
     pub(in crate::app) budget_code: gtk::ComboBoxText,
@@ -135,7 +135,7 @@ pub(in crate::app) fn rule_form_matches(form: &RuleForm, filter: &SearchFilter) 
         },
         form.priority.value_as_int(),
         combo_active_id(&form.field),
-        ui::combo_text(&form.search),
+        rule_search_text(&form.search),
         if form.is_regex.is_active() {
             "regex"
         } else {

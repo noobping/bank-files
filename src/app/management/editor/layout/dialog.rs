@@ -1,6 +1,6 @@
 use super::super::*;
 use super::loading::append_management_loading;
-use super::sections::build_budget_action_section;
+use super::sections::{build_budget_action_section, build_rule_action_section};
 use super::setup::{finish_management_dialog_setup, ManagementDialogSetup};
 use super::sizing::management_dialog_content_size;
 use super::*;
@@ -61,23 +61,12 @@ pub(in crate::app) fn show_management_dialog(
     let rules_list = gtk::Box::new(gtk::Orientation::Vertical, 8);
     rules_box.append(&rules_list);
     append_management_loading(&rules_list, "Loading rules...");
-    let add_rule_button =
-        ui::plain_text_icon_button("list-add-symbolic", "New Rule", "Create a new rule");
-    let group_rules_button = ui::plain_text_icon_button(
-        "view-sort-ascending-symbolic",
-        "Group",
-        "Move compatible rules next to each other before combining",
-    );
-    let combine_rules_button = ui::plain_text_icon_button(
-        "view-refresh-symbolic",
-        "Combine",
-        "Combine adjacent compatible rules",
-    );
-    let rules_actions = ui::linked_button_group();
-    rules_actions.append(&add_rule_button);
-    rules_actions.append(&group_rules_button);
-    rules_actions.append(&combine_rules_button);
-    rules_box.append(&rules_actions);
+    let rule_actions = build_rule_action_section();
+    let add_rule_button = rule_actions.add_rule_button.clone();
+    let group_rules_action = rule_actions.group_rules_action.clone();
+    let combine_rules_action = rule_actions.combine_rules_action.clone();
+    let rule_bulk_menu_button = rule_actions.bulk_menu_button.clone();
+    rules_box.append(&rule_actions.container);
 
     let budgets_box = ui::page_box();
     let budgets_title = if advanced_features {
@@ -95,12 +84,13 @@ pub(in crate::app) fn show_management_dialog(
     budgets_box.append(&budgets_list);
     append_management_loading(&budgets_list, "Loading budgets...");
     let budget_actions = build_budget_action_section(advanced_features);
-    let add_budget_button = budget_actions.add_budget_button;
-    let move_budget_code_button = budget_actions.move_budget_code_button;
-    let use_real_income_button = budget_actions.use_real_income_button;
-    let use_planned_income_button = budget_actions.use_planned_income_button;
-    let use_monthly_values_button = budget_actions.use_monthly_values_button;
-    let use_yearly_values_button = budget_actions.use_yearly_values_button;
+    let add_budget_button = budget_actions.add_budget_button.clone();
+    let move_budget_code_action = budget_actions.move_budget_code_action.clone();
+    let use_real_income_action = budget_actions.use_real_income_action.clone();
+    let use_planned_income_action = budget_actions.use_planned_income_action.clone();
+    let use_monthly_values_action = budget_actions.use_monthly_values_action.clone();
+    let use_yearly_values_action = budget_actions.use_yearly_values_action.clone();
+    let budget_bulk_menu_button = budget_actions.bulk_menu_button.clone();
     budgets_box.append(&budget_actions.container);
 
     let aliases_box = ui::page_box();
@@ -187,15 +177,17 @@ pub(in crate::app) fn show_management_dialog(
         management_dialog: &management_dialog,
         add_button: &add_button,
         add_rule_button: &add_rule_button,
-        group_rules_button: &group_rules_button,
-        combine_rules_button: &combine_rules_button,
+        group_rules_action: &group_rules_action,
+        combine_rules_action: &combine_rules_action,
         add_budget_button: &add_budget_button,
-        move_budget_code_button: &move_budget_code_button,
-        use_real_income_button: &use_real_income_button,
-        use_planned_income_button: &use_planned_income_button,
-        use_monthly_values_button: &use_monthly_values_button,
-        use_yearly_values_button: &use_yearly_values_button,
+        move_budget_code_action: &move_budget_code_action,
+        use_real_income_action: &use_real_income_action,
+        use_planned_income_action: &use_planned_income_action,
+        use_monthly_values_action: &use_monthly_values_action,
+        use_yearly_values_action: &use_yearly_values_action,
         add_alias_button: &add_alias_button,
+        rule_bulk_menu_button: &rule_bulk_menu_button,
+        budget_bulk_menu_button: &budget_bulk_menu_button,
         save_button: &save_button,
         page_actions_button: &status_bar.page_actions_button,
         stack: &stack,

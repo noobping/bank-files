@@ -9,7 +9,7 @@ pub(in crate::app) fn collect_rule_forms(forms: &[RuleForm]) -> Vec<EditableRule
             priority: form.priority.value_as_int(),
             active: form.active.is_active(),
             field: ui::combo_active_id(&form.field),
-            search: ui::combo_text(&form.search),
+            search: rule_search_text(&form.search),
             is_regex: form.is_regex.is_active(),
             category: ui::combo_text(&form.category),
             budget_code: ui::combo_text(&form.budget_code),
@@ -132,7 +132,7 @@ fn rule_direction_change_label(form: &RuleForm) -> String {
     if !budget_code.trim().is_empty() {
         return budget_code;
     }
-    ui::combo_text(&form.search)
+    rule_search_text(&form.search)
 }
 
 pub(in crate::app) fn apply_budget_code_renames_to_rule_forms(

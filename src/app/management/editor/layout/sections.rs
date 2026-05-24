@@ -1,13 +1,56 @@
 use super::super::*;
 
+const BUDGET_ACTION_NAMESPACE: &str = "management-budgets";
+const RULE_ACTION_NAMESPACE: &str = "management-rules";
+
+pub(super) struct RuleActionSection {
+    pub(super) container: gtk::Box,
+    pub(super) add_rule_button: gtk::Button,
+    pub(super) group_rules_action: gtk::gio::SimpleAction,
+    pub(super) combine_rules_action: gtk::gio::SimpleAction,
+    pub(super) bulk_menu_button: gtk::MenuButton,
+}
+
 pub(super) struct BudgetActionSection {
-    pub(super) container: adw::WrapBox,
+    pub(super) container: gtk::Box,
     pub(super) add_budget_button: gtk::Button,
-    pub(super) move_budget_code_button: gtk::Button,
-    pub(super) use_real_income_button: gtk::Button,
-    pub(super) use_planned_income_button: gtk::Button,
-    pub(super) use_monthly_values_button: gtk::Button,
-    pub(super) use_yearly_values_button: gtk::Button,
+    pub(super) move_budget_code_action: gtk::gio::SimpleAction,
+    pub(super) use_real_income_action: gtk::gio::SimpleAction,
+    pub(super) use_planned_income_action: gtk::gio::SimpleAction,
+    pub(super) use_monthly_values_action: gtk::gio::SimpleAction,
+    pub(super) use_yearly_values_action: gtk::gio::SimpleAction,
+    pub(super) bulk_menu_button: gtk::MenuButton,
+}
+
+pub(super) fn build_rule_action_section() -> RuleActionSection {
+    let add_rule_button =
+        ui::plain_text_icon_button("list-add-symbolic", "New Rule", "Create a new rule");
+    let group_rules_action = gtk::gio::SimpleAction::new("group-rules", None);
+    let combine_rules_action = gtk::gio::SimpleAction::new("combine-rules", None);
+    let bulk_menu_button = bulk_menu_button(
+        RULE_ACTION_NAMESPACE,
+        "Rule actions",
+        &[
+            ("group-rules", "Group Compatible Rules", &group_rules_action),
+            (
+                "combine-rules",
+                "Combine Compatible Rules",
+                &combine_rules_action,
+            ),
+        ],
+    );
+
+    let container = ui::linked_button_group();
+    container.append(&add_rule_button);
+    container.append(&bulk_menu_button);
+
+    RuleActionSection {
+        container,
+        add_rule_button,
+        group_rules_action,
+        combine_rules_action,
+        bulk_menu_button,
+    }
 }
 
 pub(super) fn build_budget_action_section(advanced_features: bool) -> BudgetActionSection {
@@ -24,70 +67,80 @@ pub(super) fn build_budget_action_section(advanced_features: bool) -> BudgetActi
             "Create a new category with monthly or yearly amounts"
         },
     );
-    let move_budget_code_button = ui::plain_text_icon_button(
-        "send-to-symbolic",
-        "Move Code",
-        "Move rules from one budget code to another",
+    let move_budget_code_action = gtk::gio::SimpleAction::new("move-budget-code", None);
+    let use_real_income_action = gtk::gio::SimpleAction::new("use-real-income", None);
+    let use_planned_income_action = gtk::gio::SimpleAction::new("use-planned-income", None);
+    let use_monthly_values_action = gtk::gio::SimpleAction::new("use-monthly-values", None);
+    let use_yearly_values_action = gtk::gio::SimpleAction::new("use-yearly-values", None);
+    let bulk_menu_button = bulk_menu_button(
+        BUDGET_ACTION_NAMESPACE,
+        "Budget actions",
+        &[
+            (
+                "move-budget-code",
+                "Move Budget Code",
+                &move_budget_code_action,
+            ),
+            (
+                "use-real-income",
+                "Use Real Income",
+                &use_real_income_action,
+            ),
+            (
+                "use-planned-income",
+                "Use Planned Income",
+                &use_planned_income_action,
+            ),
+            (
+                "use-monthly-values",
+                "Use Monthly Values",
+                &use_monthly_values_action,
+            ),
+            (
+                "use-yearly-values",
+                "Use Yearly Values",
+                &use_yearly_values_action,
+            ),
+        ],
     );
-    let use_real_income_button = ui::plain_text_icon_button(
-        "view-refresh-symbolic",
-        "Real Income",
-        "Set every budget percentage basis to real income",
-    );
-    let use_planned_income_button = ui::plain_text_icon_button(
-        "view-refresh-symbolic",
-        "Planned Income",
-        "Set every budget percentage basis to planned income",
-    );
-    let use_monthly_values_button = ui::plain_text_icon_button(
-        "go-previous-symbolic",
-        "Monthly",
-        "Convert budget values to monthly values",
-    );
-    let use_yearly_values_button = ui::plain_text_icon_button(
-        "go-next-symbolic",
-        "Yearly",
-        "Convert budget values to yearly values",
-    );
+    bulk_menu_button.set_visible(advanced_features);
 
-    let container = adw::WrapBox::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .child_spacing(8)
-        .child_spacing_unit(adw::LengthUnit::Px)
-        .line_spacing(6)
-        .line_spacing_unit(adw::LengthUnit::Px)
-        .natural_line_length(720)
-        .natural_line_length_unit(adw::LengthUnit::Px)
-        .wrap_policy(adw::WrapPolicy::Natural)
-        .hexpand(true)
-        .halign(gtk::Align::Fill)
-        .build();
-
-    let budget_create_actions = ui::linked_button_group();
-    budget_create_actions.append(&add_budget_button);
-    if advanced_features {
-        budget_create_actions.append(&move_budget_code_button);
-    }
-    container.append(&budget_create_actions);
-
-    if advanced_features {
-        let budget_income_actions = ui::linked_button_group();
-        budget_income_actions.append(&use_real_income_button);
-        budget_income_actions.append(&use_planned_income_button);
-        let budget_value_actions = ui::linked_button_group();
-        budget_value_actions.append(&use_monthly_values_button);
-        budget_value_actions.append(&use_yearly_values_button);
-        container.append(&budget_income_actions);
-        container.append(&budget_value_actions);
-    }
+    let container = ui::linked_button_group();
+    container.append(&add_budget_button);
+    container.append(&bulk_menu_button);
 
     BudgetActionSection {
         container,
         add_budget_button,
-        move_budget_code_button,
-        use_real_income_button,
-        use_planned_income_button,
-        use_monthly_values_button,
-        use_yearly_values_button,
+        move_budget_code_action,
+        use_real_income_action,
+        use_planned_income_action,
+        use_monthly_values_action,
+        use_yearly_values_action,
+        bulk_menu_button,
     }
+}
+
+fn bulk_menu_button(
+    action_namespace: &str,
+    tooltip: &str,
+    actions: &[(&str, &str, &gtk::gio::SimpleAction)],
+) -> gtk::MenuButton {
+    let menu = gtk::gio::Menu::new();
+    let action_group = gtk::gio::SimpleActionGroup::new();
+    for (name, label, action) in actions {
+        action_group.add_action(*action);
+        menu.append(
+            Some(&tr(label)),
+            Some(&format!("{action_namespace}.{name}")),
+        );
+    }
+
+    let button = gtk::MenuButton::builder()
+        .icon_name("view-more-symbolic")
+        .tooltip_text(tr(tooltip))
+        .build();
+    button.insert_action_group(action_namespace, Some(&action_group));
+    button.set_menu_model(Some(&menu));
+    button
 }

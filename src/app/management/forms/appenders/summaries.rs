@@ -5,7 +5,7 @@ pub(super) struct RuleSummaryWidgets<'a> {
     pub(super) active: &'a gtk::Switch,
     pub(super) priority: &'a gtk::SpinButton,
     pub(super) field: &'a gtk::ComboBoxText,
-    pub(super) search: &'a gtk::ComboBoxText,
+    pub(super) search: &'a gtk::TextView,
     pub(super) is_regex: &'a gtk::Switch,
     pub(super) category: &'a gtk::ComboBoxText,
     pub(super) budget_code: &'a gtk::ComboBoxText,
@@ -34,7 +34,7 @@ pub(super) fn rule_summary(widgets: RuleSummaryWidgets<'_>) -> (String, String) 
         format!(
             "{}: {}",
             combo_display_text(widgets.field),
-            ui::combo_text(widgets.search)
+            rule_search_text(widgets.search)
         ),
         combo_display_text(widgets.direction),
         format!(
