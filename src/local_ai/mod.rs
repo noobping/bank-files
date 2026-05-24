@@ -1,12 +1,17 @@
 mod availability;
+#[cfg(feature = "local-ai")]
 mod categories;
 mod configuration;
 mod input;
 mod runtime;
+#[cfg(feature = "smart-insights")]
+mod status;
 
 use availability::local_ai_availability;
 use configuration::generated_configuration_from_draft;
 use runtime::{runtime_generate_configuration_draft, runtime_pattern_hints};
+#[cfg(feature = "smart-insights")]
+pub use status::local_ai_status_message;
 
 use crate::data::{
     EditableAlias, EditableBudget, EditableRule, GeneratedConfiguration, IgnoredTransactionPattern,

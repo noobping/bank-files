@@ -50,11 +50,7 @@ fn register_show_predictions_action(
             update_online_action_enabled(&app_for_predictions, enabled, &ui_for_predictions);
             clear_pattern_filter_when_predictions_disabled(enabled, &ui_for_predictions);
 
-            let success_message = tr(if enabled {
-                "Smart Insights enabled. Forecast cards, transaction pattern detection, and smart transfer detection are available."
-            } else {
-                "Smart Insights disabled. Forecast cards, transaction pattern detection, and smart transfer detection are off."
-            });
+            let success_message = smart_insights_status_message(enabled);
             reload_state_with_status(
                 &state_for_predictions,
                 &ui_for_predictions,
@@ -68,6 +64,24 @@ fn register_show_predictions_action(
     show_predictions_action.set_enabled(
         ui.advanced_features.get() && ui.preferences.action_is_writable("show-predictions"),
     );
+}
+
+#[cfg(feature = "smart-insights")]
+fn smart_insights_status_message(enabled: bool) -> String {
+    let message = tr(if enabled {
+        "Smart Insights enabled. Forecast cards, transaction pattern detection, and smart transfer detection are available."
+    } else {
+        "Smart Insights disabled. Forecast cards, transaction pattern detection, and smart transfer detection are off."
+    });
+
+    if enabled {
+        format!(
+            "{message} {}",
+            crate::local_ai::local_ai_status_message(true)
+        )
+    } else {
+        message
+    }
 }
 
 #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
