@@ -7,7 +7,9 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
     ui: &Rc<UiHandles>,
     dialog_status: Option<StatusHandle>,
 ) {
-    if !smart_pattern_detection_enabled(ui.show_predictions.get()) {
+    let smart_insights_enabled =
+        smart_pattern_detection_enabled(ui.advanced_features.get(), ui.show_predictions.get());
+    if !smart_insights_enabled {
         show_config_status(
             ui.as_ref(),
             dialog_status.as_ref(),
@@ -34,7 +36,6 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
     let sources = current_sources_for_reload(&snapshot, remember_mode);
     let auto_clean_config = ui.preferences.auto_clean_config();
     let restore_scope = current_transaction_load_scope(&snapshot, ui.as_ref());
-    let smart_insights_enabled = ui.show_predictions.get();
     show_verbose_status(
         ui.as_ref(),
         format!(
@@ -239,7 +240,9 @@ fn set_config_status_loading(dialog_status: Option<&StatusHandle>, loading: bool
 
 #[cfg(not(feature = "flatpak"))]
 fn show_smart_enrichment_status(ui: &UiHandles, dialog_status: Option<&StatusHandle>) {
-    let message = if !ui.show_predictions.get() {
+    let smart_insights_enabled =
+        smart_pattern_detection_enabled(ui.advanced_features.get(), ui.show_predictions.get());
+    let message = if !smart_insights_enabled {
         "Smart Insights are disabled. Online merchant enrichment, detected transfers, and extra pattern hints are skipped."
     } else if !ui.online_smart_insights.get() {
         "Online Smart Insights are off by default. Automatic Configuration uses only local transactions, and no merchant names or transaction fields are sent."
@@ -253,11 +256,12 @@ fn show_smart_enrichment_status(ui: &UiHandles, dialog_status: Option<&StatusHan
 
 #[cfg(feature = "flatpak")]
 fn show_smart_enrichment_status(ui: &UiHandles, dialog_status: Option<&StatusHandle>) {
-    let message = if ui.show_predictions.get() {
-        "Automatic Configuration uses local transactions only in this build."
-    } else {
-        "Smart Insights are disabled. Detected transfers and extra pattern hints are skipped."
-    };
+    let message =
+        if smart_pattern_detection_enabled(ui.advanced_features.get(), ui.show_predictions.get()) {
+            "Automatic Configuration uses local transactions only in this build."
+        } else {
+            "Smart Insights are disabled. Detected transfers and extra pattern hints are skipped."
+        };
     show_config_status(ui, dialog_status, message);
 }
 

@@ -41,6 +41,7 @@ pub(in crate::app) fn filtered_app_data(data: &AppData, ui: &UiHandles) -> Optio
         data,
         current_page(ui),
         effective_hide_canceled_transactions(
+            ui.advanced_features.get(),
             ui.show_predictions.get(),
             ui.hide_canceled_transactions.get(),
         ),

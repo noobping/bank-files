@@ -147,7 +147,10 @@ pub(in crate::app) fn render_diagnostics_page(
         .unwrap_or(false);
     if transaction_patterns_section_visible(
         search.as_ref(),
-        smart_pattern_detection_enabled(ui_handles.show_predictions.get()),
+        smart_pattern_detection_enabled(
+            ui_handles.advanced_features.get(),
+            ui_handles.show_predictions.get(),
+        ),
     ) {
         has_search_results = true;
         append_transaction_patterns_section_async(
@@ -406,7 +409,10 @@ fn remove_orphaned_config_rules(
     let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
     drop(borrowed);
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
-    let smart_insights_enabled = ui_handles.show_predictions.get();
+    let smart_insights_enabled = smart_pattern_detection_enabled(
+        ui_handles.advanced_features.get(),
+        ui_handles.show_predictions.get(),
+    );
     let state_for_remove = Rc::clone(state);
     let ui_for_remove = Rc::clone(ui_handles);
     button.set_sensitive(false);
@@ -508,8 +514,11 @@ fn append_transaction_patterns_section_async(
     let needs_all_reload = transaction_patterns_need_all_reload(data.loaded_scope);
     let fake_transactions = ui_handles.fake_transactions.list();
     let show_all = ui_handles.show_all.get() || search.is_some();
-    let hide_canceled = ui_handles.hide_canceled_transactions.get();
-    let smart_insights_enabled = ui_handles.show_predictions.get();
+    let smart_insights_enabled = smart_pattern_detection_enabled(
+        ui_handles.advanced_features.get(),
+        ui_handles.show_predictions.get(),
+    );
+    let hide_canceled = smart_insights_enabled && ui_handles.hide_canceled_transactions.get();
     let generation = ui_handles.render_generation.get();
     let state_for_patterns = Rc::clone(state);
     let ui_for_patterns = Rc::clone(ui_handles);

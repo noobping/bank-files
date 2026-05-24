@@ -126,13 +126,14 @@ pub(in crate::app) fn render_overview(
         .overview
         .append(&ui::metric_grid(metric_cards, 3));
 
-    if ui_handles.show_predictions.get()
-        && prediction_scope_allows_forecast(
-            data,
-            selected_year,
-            chrono::Local::now().date_naive().year(),
-        )
-    {
+    if smart_pattern_detection_enabled(
+        ui_handles.advanced_features.get(),
+        ui_handles.show_predictions.get(),
+    ) && prediction_scope_allows_forecast(
+        data,
+        selected_year,
+        chrono::Local::now().date_naive().year(),
+    ) {
         append_survival_forecast(data, ui_handles, state);
     }
 

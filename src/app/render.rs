@@ -125,6 +125,7 @@ fn cancel_current_page_render(ui: &UiHandles) {
 fn prepare_visible_page_data(generation: u64, ui: Rc<UiHandles>, state: Rc<RefCell<AppData>>) {
     let page = current_page(ui.as_ref());
     let hide_canceled = effective_hide_canceled_transactions(
+        ui.advanced_features.get(),
         ui.show_predictions.get(),
         ui.hide_canceled_transactions.get(),
     );

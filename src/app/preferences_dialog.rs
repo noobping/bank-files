@@ -490,7 +490,7 @@ fn preference_group(
     let mut search_group = SearchablePreferencesGroup::new(&group, title, description);
     let mut added = false;
     let mut enabled_controllers: Vec<(Rc<Cell<bool>>, adw::SwitchRow)> = Vec::new();
-    let mut enabled_targets: Vec<(Rc<Cell<bool>>, gtk::Widget)> = Vec::new();
+    let mut enabled_targets: Vec<(Rc<Cell<bool>>, gtk::Widget, bool)> = Vec::new();
 
     for spec in rows {
         let writable = Preferences::key_for_action(spec.action_name)
@@ -506,7 +506,7 @@ fn preference_group(
         }
         if let Some(gate) = &spec.enabled_by_gate {
             row_widget.set_sensitive(writable && gate.get());
-            enabled_targets.push((Rc::clone(gate), row_widget.clone()));
+            enabled_targets.push((Rc::clone(gate), row_widget.clone(), writable));
         }
         search_group.add_row(&row, spec.title, spec.subtitle);
         group.add(&row);
@@ -516,15 +516,15 @@ fn preference_group(
     for (controller_gate, controller) in enabled_controllers {
         let targets = enabled_targets
             .iter()
-            .filter(|(target_gate, _)| Rc::ptr_eq(target_gate, &controller_gate))
-            .map(|(_, target)| target.clone())
+            .filter(|(target_gate, _, _)| Rc::ptr_eq(target_gate, &controller_gate))
+            .map(|(_, target, target_writable)| (target.clone(), *target_writable))
             .collect::<Vec<_>>();
         controller.connect_active_notify(move |row| {
             let active = row.is_active();
             controller_gate.set(active);
             targets
                 .iter()
-                .for_each(|target| target.set_sensitive(active));
+                .for_each(|(target, writable)| target.set_sensitive(active && *writable));
         });
     }
 

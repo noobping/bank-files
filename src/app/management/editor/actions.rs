@@ -497,7 +497,10 @@ pub(in crate::app::management::editor) fn connect_management_dialog_actions(
                 let scope = current_transaction_load_scope(&borrowed, ui_for_save.as_ref());
                 drop(borrowed);
                 let auto_clean_config = ui_for_save.preferences.auto_clean_config();
-                let smart_insights_enabled = ui_for_save.show_predictions.get();
+                let smart_insights_enabled = smart_pattern_detection_enabled(
+    ui_for_save.advanced_features.get(),
+    ui_for_save.show_predictions.get(),
+);
                 let state_for_save = Rc::clone(&state_for_save);
                 let ui_for_save = Rc::clone(&ui_for_save);
                 let status_for_save = status_for_save.clone();

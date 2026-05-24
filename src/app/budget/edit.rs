@@ -120,7 +120,10 @@ fn save_budget_with_reload(
     let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
     drop(borrowed);
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
-    let smart_insights_enabled = ui_handles.show_predictions.get();
+    let smart_insights_enabled = smart_pattern_detection_enabled(
+        ui_handles.advanced_features.get(),
+        ui_handles.show_predictions.get(),
+    );
 
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
@@ -386,7 +389,10 @@ fn connect_budget_delete_action(action: BudgetDeleteAction<'_>) {
         let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
         drop(borrowed);
         let auto_clean_config = ui_handles.preferences.auto_clean_config();
-        let smart_insights_enabled = ui_handles.show_predictions.get();
+        let smart_insights_enabled = smart_pattern_detection_enabled(
+            ui_handles.advanced_features.get(),
+            ui_handles.show_predictions.get(),
+        );
         let state = Rc::clone(&state);
         let ui_handles = Rc::clone(&ui_handles);
         let dialog_for_delete = dialog_for_delete.clone();

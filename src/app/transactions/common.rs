@@ -324,7 +324,10 @@ fn transaction_detail_actions(
     let mut has_menu_items = false;
 
     let advanced_features = ui_handles.advanced_features.get();
-    let smart_patterns_enabled = smart_pattern_detection_enabled(ui_handles.show_predictions.get());
+    let smart_patterns_enabled = smart_pattern_detection_enabled(
+        ui_handles.advanced_features.get(),
+        ui_handles.show_predictions.get(),
+    );
     let auto_detected_classification =
         crate::rules::transaction_classification_is_auto_detected(tx);
     let (markable_as_transfer, budget_move_available, auto_detected_transfer) = {
@@ -1698,7 +1701,10 @@ fn show_diagnostics_text_search(
     ui_handles: &Rc<UiHandles>,
     query: &str,
 ) {
-    if !smart_pattern_detection_enabled(ui_handles.show_predictions.get()) {
+    if !smart_pattern_detection_enabled(
+        ui_handles.advanced_features.get(),
+        ui_handles.show_predictions.get(),
+    ) {
         show_status(
             ui_handles,
             "Smart Insights are disabled. Enable Smart Insights to search detected transaction patterns.",

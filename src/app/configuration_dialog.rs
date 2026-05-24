@@ -267,7 +267,7 @@ fn experimental_configuration_group(
     let generate_title = "Generate Configuration from Transactions";
     let generate_subtitle = automatic_configuration_generation_subtitle(smart_insights_enabled);
     let generate_row = action_row("view-refresh-symbolic", generate_title, generate_subtitle);
-    if !automatic_configuration_generation_enabled(smart_insights_enabled) {
+    if !automatic_configuration_generation_enabled(advanced_features, smart_insights_enabled) {
         generate_row.set_sensitive(false);
         generate_row.set_tooltip_text(Some(&tr(
             "Enable Smart Insights to generate configuration from transactions.",
@@ -298,8 +298,11 @@ fn automatic_configuration_generation_visible(advanced_features: bool) -> bool {
     cfg!(feature = "smart-insights") && advanced_features
 }
 
-fn automatic_configuration_generation_enabled(smart_insights_enabled: bool) -> bool {
-    smart_pattern_detection_enabled(smart_insights_enabled)
+fn automatic_configuration_generation_enabled(
+    advanced_features: bool,
+    smart_insights_enabled: bool,
+) -> bool {
+    smart_pattern_detection_enabled(advanced_features, smart_insights_enabled)
 }
 
 fn automatic_configuration_generation_subtitle(smart_insights_enabled: bool) -> &'static str {
@@ -452,7 +455,10 @@ fn run_configuration_reload_task<F>(
     let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
     drop(borrowed);
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
-    let smart_insights_enabled = ui_handles.show_predictions.get();
+    let smart_insights_enabled = smart_pattern_detection_enabled(
+        ui_handles.advanced_features.get(),
+        ui_handles.show_predictions.get(),
+    );
     if !begin_configuration_task(
         &ui_handles,
         &status,
@@ -552,7 +558,8 @@ mod tests {
             automatic_configuration_generation_visible(true),
             cfg!(feature = "smart-insights")
         );
-        assert!(!automatic_configuration_generation_enabled(false));
+        assert!(!automatic_configuration_generation_enabled(true, false));
+        assert!(!automatic_configuration_generation_enabled(false, true));
     }
 
     #[test]

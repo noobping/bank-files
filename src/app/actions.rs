@@ -339,6 +339,8 @@ pub(in crate::app) fn connect_actions(
 
     let state_for_advanced_features = Rc::clone(state);
     let ui_for_advanced_features = Rc::clone(ui);
+    #[cfg(feature = "smart-insights")]
+    let app_for_advanced_features = app.clone();
     let advanced_features_action = add_bool_toggle_action(
         app,
         "advanced-features",
@@ -354,19 +356,75 @@ pub(in crate::app) fn connect_actions(
                 &ui_for_advanced_features,
                 &state_for_advanced_features.borrow(),
             );
-            render_views(
-                &state_for_advanced_features.borrow(),
-                &ui_for_advanced_features,
-                &state_for_advanced_features,
-            );
-            show_status(
-                &ui_for_advanced_features,
-                if enabled {
-                    "Advanced Features enabled. Rule editing and direction controls are available."
-                } else {
-                    "Simple mode enabled. Rule editing and direction controls are hidden."
-                },
-            );
+            #[cfg(feature = "smart-insights")]
+            {
+                set_simple_action_enabled(
+                    &app_for_advanced_features,
+                    "show-predictions",
+                    enabled
+                        && ui_for_advanced_features
+                            .preferences
+                            .action_is_writable("show-predictions"),
+                );
+                set_simple_action_enabled(
+                    &app_for_advanced_features,
+                    "hide-canceled-transactions",
+                    smart_dependent_action_enabled(
+                        enabled,
+                        ui_for_advanced_features.show_predictions.get(),
+                        ui_for_advanced_features
+                            .preferences
+                            .action_is_writable("hide-canceled-transactions"),
+                    ),
+                );
+                #[cfg(not(feature = "flatpak"))]
+                set_simple_action_enabled(
+                    &app_for_advanced_features,
+                    "online-smart-insights",
+                    smart_dependent_action_enabled(
+                        enabled,
+                        ui_for_advanced_features.show_predictions.get(),
+                        ui_for_advanced_features
+                            .preferences
+                            .action_is_writable("online-smart-insights"),
+                    ),
+                );
+                if !enabled
+                    && matches!(
+                        ui_for_advanced_features
+                            .active_transaction_filter
+                            .borrow()
+                            .as_ref(),
+                        Some(TransactionFilter::Pattern(_))
+                    )
+                {
+                    *ui_for_advanced_features
+                        .active_transaction_filter
+                        .borrow_mut() = None;
+                }
+            }
+            let success_message = tr(if enabled {
+                "Advanced Features enabled. Rule editing and direction controls are available."
+            } else {
+                "Simple mode enabled. Rule editing and direction controls are hidden."
+            });
+            if ui_for_advanced_features.show_predictions.get() {
+                reload_state_with_status(
+                    &state_for_advanced_features,
+                    &ui_for_advanced_features,
+                    "Updating Advanced Features...",
+                    success_message,
+                    "Could not update Advanced Features: {error}",
+                    Vec::new(),
+                );
+            } else {
+                render_views(
+                    &state_for_advanced_features.borrow(),
+                    &ui_for_advanced_features,
+                    &state_for_advanced_features,
+                );
+                show_status(&ui_for_advanced_features, &success_message);
+            }
         },
     );
     advanced_features_action.set_enabled(ui.preferences.action_is_writable("advanced-features"));
@@ -410,6 +468,7 @@ pub(in crate::app) fn connect_actions(
                     &app_for_predictions,
                     "hide-canceled-transactions",
                     smart_dependent_action_enabled(
+                        ui_for_predictions.advanced_features.get(),
                         enabled,
                         ui_for_predictions
                             .preferences
@@ -421,6 +480,7 @@ pub(in crate::app) fn connect_actions(
                     &app_for_predictions,
                     "online-smart-insights",
                     smart_dependent_action_enabled(
+                        ui_for_predictions.advanced_features.get(),
                         enabled,
                         ui_for_predictions
                             .preferences
@@ -453,7 +513,9 @@ pub(in crate::app) fn connect_actions(
                 );
             },
         );
-        show_predictions_action.set_enabled(ui.preferences.action_is_writable("show-predictions"));
+        show_predictions_action.set_enabled(
+            ui.advanced_features.get() && ui.preferences.action_is_writable("show-predictions"),
+        );
     }
 
     #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
@@ -482,6 +544,7 @@ pub(in crate::app) fn connect_actions(
             },
         );
         online_smart_insights_action.set_enabled(smart_dependent_action_enabled(
+            ui.advanced_features.get(),
             ui.show_predictions.get(),
             ui.preferences.action_is_writable("online-smart-insights"),
         ));
@@ -577,7 +640,10 @@ pub(in crate::app) fn connect_actions(
             ui.hide_canceled_transactions.get(),
             false,
             move |enabled| {
-                if !smart_pattern_detection_enabled(ui_for_hide_canceled.show_predictions.get()) {
+                if !smart_pattern_detection_enabled(
+                    ui_for_hide_canceled.advanced_features.get(),
+                    ui_for_hide_canceled.show_predictions.get(),
+                ) {
                     show_status(
                         &ui_for_hide_canceled,
                         "Hide Refunded Transactions needs Smart Insights. Enable Smart Insights to use refunded transaction hiding.",
@@ -604,6 +670,7 @@ pub(in crate::app) fn connect_actions(
             },
         );
         hide_canceled_action.set_enabled(smart_dependent_action_enabled(
+            ui.advanced_features.get(),
             ui.show_predictions.get(),
             ui.preferences
                 .action_is_writable("hide-canceled-transactions"),
@@ -663,7 +730,10 @@ pub(in crate::app) fn connect_actions(
     shortcuts_action.connect_activate(move |_, _| {
         let shortcuts = build_shortcuts_dialog(
             ui_for_shortcuts.advanced_features.get(),
-            smart_pattern_detection_enabled(ui_for_shortcuts.show_predictions.get()),
+            smart_pattern_detection_enabled(
+                ui_for_shortcuts.advanced_features.get(),
+                ui_for_shortcuts.show_predictions.get(),
+            ),
         );
         shortcuts.present(Some(&window_for_shortcuts));
     });
