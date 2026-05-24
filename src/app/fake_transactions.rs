@@ -223,8 +223,8 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
         .default_widget(&add_button)
         .child(&view)
         .build();
-    ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);
-    search_bar.set_key_capture_widget(Some(&dialog));
+    ui::connect_search_shortcut(&view, &search_bar, &search_entry);
+    search_bar.set_key_capture_widget(Some(&view));
 
     FakeTransactionWidgets {
         button,
