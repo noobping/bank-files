@@ -534,8 +534,8 @@ fn show_fake_transaction_form(
     widgets.form_box.append(&status);
 
     ui::clear_box(&widgets.form_actions);
-    let save_button =
-        ui::primary_text_icon_button("document-save-symbolic", "Save", "Save fake transaction");
+    let save_button = ui::icon_button("document-save-symbolic", "Save fake transaction");
+    save_button.add_css_class("suggested-action");
     widgets.form_actions.append(&save_button);
 
     let state_for_save = Rc::clone(state);

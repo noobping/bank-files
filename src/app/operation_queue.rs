@@ -301,11 +301,11 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     title_box.append(&title);
     title_box.append(&summary);
 
-    let apply_all_button = ui::primary_text_icon_button(
+    let apply_all_button = ui::icon_button(
         "object-select-symbolic",
-        "Apply All",
         "Apply all pending queued operations",
     );
+    apply_all_button.add_css_class("suggested-action");
     let clear_done_button =
         ui::icon_button("edit-clear-all-symbolic", "Clear completed operations");
     let header_actions = ui::linked_button_group();
