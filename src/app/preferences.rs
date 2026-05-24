@@ -1,70 +1,13 @@
 use super::*;
 
+mod keys;
+
 #[derive(Clone, Default)]
 pub(in crate::app) struct Preferences {
     settings: Option<gtk::gio::Settings>,
 }
 
 impl Preferences {
-    #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
-    pub(in crate::app) const WRITABLE_KEYS: [&'static str; 17] = [
-        "active-tab",
-        "autohide-status-bar",
-        "show-all",
-        "show-predictions",
-        "online-smart-insights",
-        "compare-categories-previous-period",
-        "advanced-autofill",
-        "advanced-features",
-        "remember-mode",
-        "auto-clean-config",
-        "dedupe-enabled",
-        "hide-canceled-transactions",
-        "selected-year",
-        "selected-budget-month",
-        "window-width",
-        "window-height",
-        "window-maximized",
-    ];
-
-    #[cfg(all(feature = "smart-insights", feature = "flatpak"))]
-    pub(in crate::app) const WRITABLE_KEYS: [&'static str; 16] = [
-        "active-tab",
-        "autohide-status-bar",
-        "show-all",
-        "show-predictions",
-        "compare-categories-previous-period",
-        "advanced-autofill",
-        "advanced-features",
-        "remember-mode",
-        "auto-clean-config",
-        "dedupe-enabled",
-        "hide-canceled-transactions",
-        "selected-year",
-        "selected-budget-month",
-        "window-width",
-        "window-height",
-        "window-maximized",
-    ];
-
-    #[cfg(not(feature = "smart-insights"))]
-    pub(in crate::app) const WRITABLE_KEYS: [&'static str; 14] = [
-        "active-tab",
-        "autohide-status-bar",
-        "show-all",
-        "compare-categories-previous-period",
-        "advanced-autofill",
-        "advanced-features",
-        "remember-mode",
-        "auto-clean-config",
-        "dedupe-enabled",
-        "selected-year",
-        "selected-budget-month",
-        "window-width",
-        "window-height",
-        "window-maximized",
-    ];
-
     pub(in crate::app) fn new() -> Self {
         let settings = gtk::gio::SettingsSchemaSource::default()
             .and_then(|source| source.lookup(APP_ID, true))
@@ -233,26 +176,6 @@ impl Preferences {
         Self::WRITABLE_KEYS.iter().any(|key| self.is_writable(key))
     }
 
-    pub(in crate::app) fn key_for_action(action_name: &str) -> Option<&'static str> {
-        match action_name.strip_prefix("app.").unwrap_or(action_name) {
-            "autohide-status" => Some("autohide-status-bar"),
-            "show-all" => Some("show-all"),
-            #[cfg(feature = "smart-insights")]
-            "show-predictions" => Some("show-predictions"),
-            #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
-            "online-smart-insights" => Some("online-smart-insights"),
-            "compare-categories-previous-period" => Some("compare-categories-previous-period"),
-            "advanced-autofill" => Some("advanced-autofill"),
-            "advanced-features" => Some("advanced-features"),
-            "remember-mode" => Some("remember-mode"),
-            "auto-clean-config" => Some("auto-clean-config"),
-            "dedupe-enabled" => Some("dedupe-enabled"),
-            #[cfg(feature = "smart-insights")]
-            "hide-canceled-transactions" => Some("hide-canceled-transactions"),
-            _ => None,
-        }
-    }
-
     pub(in crate::app) fn action_is_writable(&self, action_name: &str) -> bool {
         Self::key_for_action(action_name)
             .map(|key| self.is_writable(key))
@@ -315,51 +238,4 @@ fn parse_month_key(input: &str) -> Option<MonthKey> {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn remember_mode_uses_data_and_analytics_by_default() {
-        assert_eq!(
-            RememberMode::from_settings(""),
-            RememberMode::DataAndAnalytics
-        );
-        assert_eq!(RememberMode::default().as_settings(), "data-and-analytics");
-    }
-
-    #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
-    #[test]
-    fn online_smart_insights_action_maps_to_preference_key() {
-        assert_eq!(
-            Preferences::key_for_action("app.online-smart-insights"),
-            Some("online-smart-insights")
-        );
-    }
-
-    #[cfg(any(not(feature = "smart-insights"), feature = "flatpak"))]
-    #[test]
-    fn online_smart_insights_action_is_not_available_without_hosted_smart_insights() {
-        assert_eq!(
-            Preferences::key_for_action("app.online-smart-insights"),
-            None
-        );
-    }
-
-    #[test]
-    fn spending_comparison_action_maps_to_preference_key() {
-        assert_eq!(
-            Preferences::key_for_action("app.compare-categories-previous-period"),
-            Some("compare-categories-previous-period")
-        );
-    }
-
-    #[cfg(not(feature = "smart-insights"))]
-    #[test]
-    fn smart_insights_actions_are_not_available_without_feature() {
-        assert_eq!(Preferences::key_for_action("app.show-predictions"), None);
-        assert_eq!(
-            Preferences::key_for_action("app.hide-canceled-transactions"),
-            None
-        );
-    }
-}
+mod tests;
