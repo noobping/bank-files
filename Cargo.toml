@@ -9,7 +9,7 @@ homepage = "https://github.com/noobping/bank-files"
 repository = "https://github.com/noobping/bank-files"
 
 [features]
-default = ["local-ai"]
+default = []
 flatpak = []
 smart-insights = []
 local-ai = [
