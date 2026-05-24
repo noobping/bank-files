@@ -88,10 +88,11 @@ The shared builder should handle titles, body text, buttons, suggested actions, 
 
 ## GTK/libadwaita UI
 
-- Use default GTK/libadwaita components unless there is a strong reason not to.
+- Use default GTK/libadwaita components unless it is absolutely impossible to meet the requirement otherwise.
 - Follow GNOME Human Interface Guidelines.
 - Keep Flathub packaging and sandboxing in mind.
-- Avoid unnecessary custom widgets or styling.
+- Do not create custom widgets, custom styling, or custom behavior when GTK/libadwaita already supports it.
+- Custom UI must be justified in the pull request.
 - Keep UI accessible and keyboard-friendly.
 
 ## Buttons
@@ -141,6 +142,8 @@ Do not skip tests just because code is internal. If behavior matters, test it.
 
 - [ ] Code is DRY, SRP, KISS, and idiomatic Rust.
 - [ ] GNOME, GTK, libadwaita, and Flathub expectations are followed.
+- [ ] Default GTK/libadwaita components are used unless custom UI is absolutely unavoidable.
+- [ ] Any custom UI is clearly justified.
 - [ ] Files stay under 300 lines unless clearly justified.
 - [ ] Related files are grouped with `mod.rs`.
 - [ ] No folder exists only to hold one file unless clearly justified.
