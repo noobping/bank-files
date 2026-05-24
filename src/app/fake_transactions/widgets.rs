@@ -1,11 +1,13 @@
 use super::super::*;
 use super::form::FakeTransactionFormState;
+use super::presentation::FAKE_TRANSACTIONS_TITLE;
 use super::{FAKE_TRANSACTIONS_FORM_PAGE, FAKE_TRANSACTIONS_LIST_PAGE};
 
 #[derive(Clone)]
 pub(in crate::app) struct FakeTransactionWidgets {
     pub(in crate::app) button: gtk::Button,
     pub(super) badge: gtk::Label,
+    pub(super) summary_row: gtk::Box,
     pub(super) summary: gtk::Label,
     pub(super) busy_box: gtk::Box,
     pub(super) busy_label: gtk::Label,
@@ -40,7 +42,8 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
 
     let builder = ui::builder_from_resource("fake-transactions-dialog.ui");
     let root = fake_transactions_object::<gtk::Box>(&builder, "fake_transactions_root");
-    let title = fake_transactions_object::<adw::WindowTitle>(&builder, "fake_transactions_title");
+    let summary_row =
+        fake_transactions_object::<gtk::Box>(&builder, "fake_transactions_summary_row");
     let summary = fake_transactions_object::<gtk::Label>(&builder, "fake_transactions_summary");
     let busy_box = fake_transactions_object::<gtk::Box>(&builder, "fake_transactions_busy_box");
     let busy_label =
@@ -53,8 +56,6 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
         fake_transactions_object::<gtk::Button>(&builder, "fake_transactions_add_button");
     let save_button =
         fake_transactions_object::<gtk::Button>(&builder, "fake_transactions_save_button");
-    let save_content =
-        fake_transactions_object::<adw::ButtonContent>(&builder, "fake_transactions_save_content");
     let clear_button =
         fake_transactions_object::<gtk::Button>(&builder, "fake_transactions_clear_button");
     let search_bar =
@@ -65,18 +66,9 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     let list = fake_transactions_object::<gtk::ListBox>(&builder, "fake_transactions_list");
     let form_box = fake_transactions_object::<gtk::Box>(&builder, "fake_transactions_form_box");
 
-    title.set_title(&tr("Fake Transactions"));
-    title.set_subtitle(&tr("Runtime preview transactions"));
-    back_button.set_tooltip_text(Some(&tr("Back to fake transactions")));
-    add_button.set_tooltip_text(Some(&tr("New fake transaction")));
-    save_content.set_label(&tr("Save"));
-    save_content.set_icon_name("document-save-symbolic");
-    save_button.set_tooltip_text(Some(&tr("Save fake transaction")));
-    clear_button.set_tooltip_text(Some(&tr("Clear fake transactions")));
-    search_entry.set_placeholder_text(Some(&tr("Search fake transactions")));
     search_bar.connect_entry(&search_entry);
 
-    let dialog = ui::content_dialog(tr("Fake Transactions"), &root)
+    let dialog = ui::content_dialog(tr(FAKE_TRANSACTIONS_TITLE), &root)
         .content_width(560)
         .content_height(560)
         .default_widget(&add_button)
@@ -87,6 +79,7 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     FakeTransactionWidgets {
         button,
         badge,
+        summary_row,
         summary,
         busy_box,
         busy_label,

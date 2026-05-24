@@ -3,7 +3,8 @@ use super::form::{queue_fake_transaction_update, show_fake_transaction_form};
 use super::model::{FakeTransaction, FakeTransactionUpdateOutcome};
 use super::presentation::{
     fake_transaction_matches_search, fake_transaction_search_terms, fake_transaction_subtitle,
-    fake_transaction_title,
+    fake_transaction_summary, fake_transaction_title, EMPTY_FAKE_TRANSACTIONS_SEARCH_TEXT,
+    EMPTY_FAKE_TRANSACTIONS_TEXT,
 };
 
 pub(super) fn refresh_fake_transactions_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
@@ -21,17 +22,20 @@ pub(super) fn refresh_fake_transactions_ui(state: &Rc<RefCell<AppData>>, ui: &Rc
     widgets.save_button.set_sensitive(!busy);
     widgets.clear_button.set_visible(count > 0);
     widgets.clear_button.set_sensitive(count > 0 && !busy);
+    widgets.summary_row.set_visible(count > 0);
     widgets.stack.set_sensitive(!busy);
     widgets.form_box.set_sensitive(!busy);
     widgets.list.set_sensitive(!busy);
-    widgets.summary.set_text(&fake_transaction_summary(count));
+    if count > 0 {
+        widgets.summary.set_text(&fake_transaction_summary(count));
+    }
 
     ui::clear_list_box(&widgets.list);
     let fake_transactions = ui.fake_transactions.list();
     if fake_transactions.is_empty() {
-        widgets
-            .list
-            .append(&fake_transaction_text_row(&tr("No fake transactions.")));
+        widgets.list.append(&fake_transaction_text_row(&tr(
+            EMPTY_FAKE_TRANSACTIONS_TEXT,
+        )));
         return;
     }
 
@@ -46,19 +50,8 @@ pub(super) fn refresh_fake_transactions_ui(state: &Rc<RefCell<AppData>>, ui: &Rc
 
     if visible_count == 0 {
         widgets.list.append(&fake_transaction_text_row(&tr(
-            "No matching fake transactions.",
+            EMPTY_FAKE_TRANSACTIONS_SEARCH_TEXT,
         )));
-    }
-}
-
-fn fake_transaction_summary(count: usize) -> String {
-    if count == 0 {
-        tr("No runtime preview transactions.")
-    } else {
-        trf(
-            "{count} fake transaction(s) affect this session.",
-            &[("count", count.to_string())],
-        )
     }
 }
 

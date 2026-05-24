@@ -48,9 +48,6 @@
           <object class="GtkBox" id="management_header_actions">
             <property name="orientation">horizontal</property>
             <property name="spacing">0</property>
-            <style>
-              <class name="linked"/>
-            </style>
             <child>
               <object class="GtkButton" id="management_add_button">
                 <property name="icon-name">list-add-symbolic</property>

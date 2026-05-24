@@ -11,8 +11,8 @@
         <property name="show-end-title-buttons">True</property>
         <property name="title-widget">
           <object class="AdwWindowTitle" id="fake_transactions_title">
-            <property name="title">Fake Transactions</property>
-            <property name="subtitle">Runtime preview transactions</property>
+            <property name="title" translatable="yes">Fake Transactions</property>
+            <property name="subtitle" translatable="yes">Runtime preview transactions</property>
           </object>
         </property>
         <child type="start">
@@ -24,6 +24,7 @@
                 <property name="child">
                   <object class="GtkButton" id="fake_transactions_add_button">
                     <property name="icon-name">list-add-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">New fake transaction</property>
                     <style>
                       <class name="flat"/>
                       <class name="image-button"/>
@@ -38,6 +39,7 @@
                 <property name="child">
                   <object class="GtkButton" id="fake_transactions_back_button">
                     <property name="icon-name">go-previous-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Back to fake transactions</property>
                     <style>
                       <class name="flat"/>
                       <class name="image-button"/>
@@ -51,13 +53,14 @@
         <child type="end">
           <object class="GtkButton" id="fake_transactions_save_button">
             <property name="visible">False</property>
+            <property name="tooltip-text" translatable="yes">Save fake transaction</property>
             <style>
               <class name="suggested-action"/>
             </style>
             <property name="child">
               <object class="AdwButtonContent" id="fake_transactions_save_content">
                 <property name="icon-name">document-save-symbolic</property>
-                <property name="label">Save</property>
+                <property name="label" translatable="yes">Save</property>
               </object>
             </property>
           </object>
@@ -79,6 +82,7 @@
             <child>
               <object class="GtkSearchEntry" id="fake_transactions_search_entry">
                 <property name="hexpand">True</property>
+                <property name="placeholder-text" translatable="yes">Search fake transactions</property>
               </object>
             </child>
           </object>
@@ -119,6 +123,7 @@
                             <property name="orientation">horizontal</property>
                             <property name="spacing">12</property>
                             <property name="hexpand">True</property>
+                            <property name="visible">False</property>
                             <child>
                               <object class="GtkLabel" id="fake_transactions_summary">
                                 <property name="hexpand">True</property>
@@ -132,6 +137,7 @@
                             <child>
                               <object class="GtkButton" id="fake_transactions_clear_button">
                                 <property name="icon-name">edit-clear-symbolic</property>
+                                <property name="tooltip-text" translatable="yes">Clear fake transactions</property>
                                 <style>
                                   <class name="flat"/>
                                   <class name="image-button"/>
