@@ -3482,3 +3482,27 @@ msgstr "Online-Intelligente Einblicke sind standardmaessig ausgeschaltet. Die Ko
 
 msgid "Online Smart Insights are not available in this build. Configuration generation uses only local transactions."
 msgstr "Online Smart Insights sind in diesem Build nicht verfuegbar. Die Konfigurationserzeugung verwendet nur lokale Transaktionen."
+
+msgid "Message history actions"
+msgstr "Aktionen für Nachrichtenverlauf"
+
+msgid "Print"
+msgstr "Drucken"
+
+msgid "Copy"
+msgstr "Kopieren"
+
+msgid "Time"
+msgstr "Zeit"
+
+msgid "Log files"
+msgstr "Protokolldateien"
+
+msgid "Save Message History"
+msgstr "Nachrichtenverlauf speichern"
+
+msgid "Runtime preview transactions"
+msgstr "Temporäre Vorschautransaktionen"
+
+msgid "Search fake transactions"
+msgstr "Scheintransaktionen suchen"

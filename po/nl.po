@@ -3482,3 +3482,27 @@ msgstr "Online slimme inzichten staan standaard uit. Configuratiegeneratie gebru
 
 msgid "Online Smart Insights are not available in this build. Configuration generation uses only local transactions."
 msgstr "Online Smart Insights zijn niet beschikbaar in deze build. Configuratiegeneratie gebruikt alleen lokale transacties."
+
+msgid "Message history actions"
+msgstr "Acties voor meldingengeschiedenis"
+
+msgid "Print"
+msgstr "Afdrukken"
+
+msgid "Copy"
+msgstr "Kopiëren"
+
+msgid "Time"
+msgstr "Tijd"
+
+msgid "Log files"
+msgstr "Logbestanden"
+
+msgid "Save Message History"
+msgstr "Meldingengeschiedenis opslaan"
+
+msgid "Runtime preview transactions"
+msgstr "Tijdelijke voorbeeldtransacties"
+
+msgid "Search fake transactions"
+msgstr "Neptransacties zoeken"

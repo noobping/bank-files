@@ -33,6 +33,7 @@ const SETTINGS_POPUP_TEMPLATE: PopupTemplateIds = PopupTemplateIds {
 struct PopupTemplate {
     builder: gtk::Builder,
     root: gtk::Box,
+    header: adw::HeaderBar,
     search_bar: gtk::SearchBar,
     search_entry: gtk::SearchEntry,
 }
@@ -97,6 +98,7 @@ impl ActionDialogPageHandle {
 
 pub(in crate::app) struct SettingsDialogShell {
     pub(in crate::app) root: gtk::Box,
+    pub(in crate::app) header: adw::HeaderBar,
     pub(in crate::app) search_bar: gtk::SearchBar,
     pub(in crate::app) search_entry: gtk::SearchEntry,
 }
@@ -169,6 +171,7 @@ pub(in crate::app) fn build_settings_dialog_shell(
     let template = build_popup_template(&SETTINGS_POPUP_TEMPLATE, title, "", search_placeholder);
     SettingsDialogShell {
         root: template.root,
+        header: template.header,
         search_bar: template.search_bar,
         search_entry: template.search_entry,
     }
@@ -228,6 +231,7 @@ fn build_popup_template(
 
     let search_button = popup_object::<gtk::Button>(&builder, ids.search_button, ids.resource);
     search_button.set_tooltip_text(Some(&tr("Search")));
+    search_button.add_css_class("flat");
 
     let search_bar = popup_object::<gtk::SearchBar>(&builder, ids.search_bar, ids.resource);
     let search_entry = popup_object::<gtk::SearchEntry>(&builder, ids.search_entry, ids.resource);
@@ -238,6 +242,7 @@ fn build_popup_template(
     PopupTemplate {
         builder,
         root,
+        header,
         search_bar,
         search_entry,
     }

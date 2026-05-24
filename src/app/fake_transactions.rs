@@ -24,19 +24,24 @@ pub(in crate::app) struct FakeTransactionStore {
 #[derive(Clone)]
 pub(in crate::app) struct FakeTransactionWidgets {
     pub(in crate::app) button: gtk::Button,
-    pub(in crate::app) badge: gtk::Label,
-    pub(in crate::app) summary: gtk::Label,
-    pub(in crate::app) busy_box: gtk::Box,
-    pub(in crate::app) busy_label: gtk::Label,
-    pub(in crate::app) back_button: gtk::Button,
-    pub(in crate::app) add_button: gtk::Button,
-    pub(in crate::app) clear_button: gtk::Button,
-    pub(in crate::app) list_actions: gtk::Box,
-    pub(in crate::app) form_actions: gtk::Box,
-    pub(in crate::app) stack: gtk::Stack,
-    pub(in crate::app) list: gtk::ListBox,
-    pub(in crate::app) form_box: gtk::Box,
-    pub(in crate::app) popover: gtk::Popover,
+    badge: gtk::Label,
+    summary: gtk::Label,
+    busy_box: gtk::Box,
+    busy_label: gtk::Label,
+    start_stack: gtk::Stack,
+    back_button: gtk::Button,
+    add_button: gtk::Button,
+    save_button: gtk::Button,
+    clear_button: gtk::Button,
+    list_actions: gtk::Box,
+    form_actions: gtk::Box,
+    search_bar: gtk::SearchBar,
+    search_entry: gtk::SearchEntry,
+    stack: gtk::Stack,
+    list: gtk::ListBox,
+    form_box: gtk::Box,
+    dialog: adw::Dialog,
+    form_state: Rc<RefCell<Option<FakeTransactionFormState>>>,
 }
 
 enum FakeTransactionUpdateOutcome {
@@ -123,43 +128,60 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     button.set_focus_on_click(false);
     button.set_child(Some(&button_content));
 
-    let root = ui::compact_popover_root();
+    let header = ui::cancelable_dialog_header("Fake Transactions", "Runtime preview transactions");
 
-    let header = gtk::Box::new(gtk::Orientation::Horizontal, 8);
-    header.set_hexpand(true);
-    let title_box = gtk::Box::new(gtk::Orientation::Vertical, 2);
-    title_box.set_hexpand(true);
-    let title = gtk::Label::new(Some(&tr("Fake Transactions")));
-    title.add_css_class("heading");
-    title.set_selectable(false);
-    title.set_xalign(0.0);
-    title.set_width_chars(1);
-    title.set_max_width_chars(28);
-    title.set_ellipsize(gtk::pango::EllipsizeMode::End);
+    let search_button = ui::icon_button("edit-find-symbolic", "Search fake transactions");
+    search_button.add_css_class("flat");
+    let clear_button = ui::icon_button("edit-clear-symbolic", "Clear fake transactions");
+    clear_button.add_css_class("flat");
+    clear_button.set_valign(gtk::Align::Start);
+
+    let back_button = ui::icon_button("go-previous-symbolic", "Back to fake transactions");
+    back_button.add_css_class("flat");
+    let start_stack = gtk::Stack::builder()
+        .transition_type(gtk::StackTransitionType::Crossfade)
+        .build();
+    start_stack.add_named(&search_button, Some("search"));
+    start_stack.add_named(&back_button, Some("back"));
+    start_stack.set_visible_child_name("search");
+    header.pack_start(&start_stack);
+
+    let add_button =
+        ui::primary_text_icon_button("list-add-symbolic", "Add", "Add fake transaction");
+    let save_button =
+        ui::primary_text_icon_button("document-save-symbolic", "Save", "Save fake transaction");
+
+    let list_actions = ui::linked_button_group();
+    list_actions.append(&add_button);
+    header.pack_end(&list_actions);
+
+    let form_actions = ui::linked_button_group();
+    form_actions.append(&save_button);
+    form_actions.set_visible(false);
+    header.pack_end(&form_actions);
+
+    let search_bar = gtk::SearchBar::builder()
+        .show_close_button(true)
+        .search_mode_enabled(false)
+        .build();
+    let search_entry = gtk::SearchEntry::builder()
+        .placeholder_text(tr("Search fake transactions"))
+        .hexpand(true)
+        .build();
+    let search_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    search_box.set_margin_top(8);
+    search_box.set_margin_bottom(8);
+    search_box.set_margin_start(12);
+    search_box.set_margin_end(12);
+    search_box.append(&search_entry);
+    search_bar.set_child(Some(&search_box));
+    search_bar.connect_entry(&search_entry);
+    ui::connect_search_button(&search_button, &search_bar, &search_entry);
+
     let summary = gtk::Label::new(None);
     summary.add_css_class("dim-label");
     summary.set_selectable(false);
     summary.set_xalign(0.0);
-    summary.set_width_chars(1);
-    summary.set_max_width_chars(34);
-    summary.set_ellipsize(gtk::pango::EllipsizeMode::End);
-    title_box.append(&title);
-    title_box.append(&summary);
-
-    let back_button = ui::icon_button("go-previous-symbolic", "Back to fake transactions");
-    back_button.set_visible(false);
-    let add_button = ui::icon_button("list-add-symbolic", "Add fake transaction");
-    let clear_button = ui::icon_button("edit-clear-all-symbolic", "Clear fake transactions");
-    let list_actions = ui::linked_button_group();
-    list_actions.append(&add_button);
-    list_actions.append(&clear_button);
-    let form_actions = ui::linked_button_group();
-    form_actions.set_visible(false);
-    header.append(&back_button);
-    header.append(&title_box);
-    header.append(&list_actions);
-    header.append(&form_actions);
-    root.append(&header);
 
     let busy_box = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     busy_box.add_css_class("dim-label");
@@ -172,40 +194,48 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     busy_label.set_hexpand(true);
     busy_box.append(&busy_spinner);
     busy_box.append(&busy_label);
-    root.append(&busy_box);
 
-    let stack = gtk::Stack::builder()
-        .hhomogeneous(false)
-        .vhomogeneous(false)
-        .transition_type(gtk::StackTransitionType::SlideLeftRight)
-        .build();
-    stack.set_hexpand(true);
+    let summary_row = gtk::Box::new(gtk::Orientation::Horizontal, 12);
+    summary_row.set_hexpand(true);
+    summary.set_hexpand(true);
+    summary_row.append(&summary);
+    summary_row.append(&clear_button);
+
+    let list_page = ui::page_box();
+    list_page.append(&summary_row);
+    list_page.append(&busy_box);
 
     let list = gtk::ListBox::new();
     list.add_css_class("boxed-list");
     list.set_selection_mode(gtk::SelectionMode::None);
     list.set_hexpand(true);
-    stack.add_named(&list, Some(FAKE_TRANSACTIONS_LIST_PAGE));
+    list_page.append(&list);
 
-    let form_box = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    form_box.set_hexpand(true);
+    let form_box = ui::page_box();
+    let stack = gtk::Stack::builder()
+        .hhomogeneous(false)
+        .vhomogeneous(false)
+        .transition_type(gtk::StackTransitionType::SlideLeftRight)
+        .hexpand(true)
+        .build();
+    stack.add_named(&list_page, Some(FAKE_TRANSACTIONS_LIST_PAGE));
     stack.add_named(&form_box, Some(FAKE_TRANSACTIONS_FORM_PAGE));
     stack.set_visible_child_name(FAKE_TRANSACTIONS_LIST_PAGE);
 
-    let scroll = ui::compact_popover_scroll(&stack);
-    root.append(&scroll);
+    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    root.append(&search_bar);
+    root.append(&ui::action_dialog_scroll_with_min(&stack, 320));
+    let view = ui::dialog_toolbar_view(&header, &root);
 
-    let popover = gtk::Popover::builder().autohide(true).build();
-    popover.set_child(Some(&root));
-    popover.set_parent(&button);
-    let popover_for_button = popover.clone();
-    button.connect_clicked(move |_| {
-        if popover_for_button.is_visible() {
-            popover_for_button.popdown();
-        } else {
-            popover_for_button.popup();
-        }
-    });
+    let dialog = adw::Dialog::builder()
+        .title(tr("Fake Transactions"))
+        .content_width(560)
+        .content_height(560)
+        .default_widget(&add_button)
+        .child(&view)
+        .build();
+    ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);
+    search_bar.set_key_capture_widget(Some(&dialog));
 
     FakeTransactionWidgets {
         button,
@@ -213,19 +243,37 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
         summary,
         busy_box,
         busy_label,
+        start_stack,
         back_button,
         add_button,
+        save_button,
         clear_button,
         list_actions,
         form_actions,
+        search_bar,
+        search_entry,
         stack,
         list,
         form_box,
-        popover,
+        dialog,
+        form_state: Rc::new(RefCell::new(None)),
     }
 }
 
 pub(in crate::app) fn connect_fake_transactions(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
+    let state_for_open = Rc::clone(state);
+    let ui_for_open = Rc::clone(ui);
+    ui.fake_transaction_widgets
+        .button
+        .connect_clicked(move |_| {
+            refresh_fake_transactions_ui(&state_for_open, &ui_for_open);
+            show_fake_transaction_list(&ui_for_open.fake_transaction_widgets);
+            ui_for_open
+                .fake_transaction_widgets
+                .dialog
+                .present(Some(&ui_for_open.window));
+        });
+
     let ui_for_back = Rc::clone(ui);
     ui.fake_transaction_widgets
         .back_button
@@ -239,6 +287,20 @@ pub(in crate::app) fn connect_fake_transactions(state: &Rc<RefCell<AppData>>, ui
         .add_button
         .connect_clicked(move |_| show_fake_transaction_form(&state_for_add, &ui_for_add, None));
 
+    let state_for_save = Rc::clone(state);
+    let ui_for_save = Rc::clone(ui);
+    ui.fake_transaction_widgets
+        .save_button
+        .connect_clicked(move |_| save_fake_transaction_form(&state_for_save, &ui_for_save));
+
+    let state_for_search = Rc::clone(state);
+    let ui_for_search = Rc::clone(ui);
+    ui.fake_transaction_widgets
+        .search_entry
+        .connect_search_changed(move |_| {
+            refresh_fake_transactions_ui(&state_for_search, &ui_for_search)
+        });
+
     let state_for_clear = Rc::clone(state);
     let ui_for_clear = Rc::clone(ui);
     ui.fake_transaction_widgets
@@ -250,8 +312,7 @@ pub(in crate::app) fn connect_fake_transactions(state: &Rc<RefCell<AppData>>, ui
                 "Clearing fake transactions...",
                 |_, ui| {
                     if ui.fake_transactions.clear() > 0 {
-                        show_fake_transaction_list(&ui.fake_transaction_widgets);
-                        ui.fake_transaction_widgets.popover.popdown();
+                        ui.fake_transaction_widgets.dialog.close();
                         FakeTransactionUpdateOutcome::Render("Fake transactions cleared.")
                     } else {
                         FakeTransactionUpdateOutcome::Skip
@@ -260,31 +321,7 @@ pub(in crate::app) fn connect_fake_transactions(state: &Rc<RefCell<AppData>>, ui
             );
         });
 
-    connect_fake_transaction_popover_autoclose(ui);
     refresh_fake_transactions_ui(state, ui);
-}
-
-fn connect_fake_transaction_popover_autoclose(ui: &Rc<UiHandles>) {
-    let click = gtk::GestureClick::new();
-    click.set_propagation_phase(gtk::PropagationPhase::Capture);
-    let popover = ui.fake_transaction_widgets.popover.clone();
-    let button: gtk::Widget = ui.fake_transaction_widgets.button.clone().upcast();
-    click.connect_pressed(move |gesture, _, x, y| {
-        if !popover.is_visible() {
-            return;
-        }
-        let Some(widget) = gesture.widget() else {
-            popover.popdown();
-            return;
-        };
-        let clicked_button = widget
-            .pick(x, y, gtk::PickFlags::DEFAULT)
-            .is_some_and(|target| target == button || target.is_ancestor(&button));
-        if !clicked_button {
-            popover.popdown();
-        }
-    });
-    ui.window.add_controller(click);
 }
 
 pub(in crate::app) fn duplicate_transaction_as_fake(
@@ -329,21 +366,28 @@ pub(in crate::app) fn real_transactions(transactions: &[Transaction]) -> Vec<Tra
 }
 
 fn show_fake_transaction_list(widgets: &FakeTransactionWidgets) {
+    widgets.search_bar.set_search_mode(false);
     widgets
         .stack
         .set_visible_child_name(FAKE_TRANSACTIONS_LIST_PAGE);
-    widgets.back_button.set_visible(false);
+    widgets.start_stack.set_visible_child_name("search");
     widgets.list_actions.set_visible(true);
     widgets.form_actions.set_visible(false);
+    widgets.dialog.set_default_widget(Some(&widgets.add_button));
+    widgets.form_state.borrow_mut().take();
 }
 
 fn show_fake_transaction_form_page(widgets: &FakeTransactionWidgets) {
+    widgets.search_bar.set_search_mode(false);
     widgets
         .stack
         .set_visible_child_name(FAKE_TRANSACTIONS_FORM_PAGE);
-    widgets.back_button.set_visible(true);
+    widgets.start_stack.set_visible_child_name("back");
     widgets.list_actions.set_visible(false);
     widgets.form_actions.set_visible(true);
+    widgets
+        .dialog
+        .set_default_widget(Some(&widgets.save_button));
 }
 
 fn refresh_fake_transactions_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
@@ -358,7 +402,8 @@ fn refresh_fake_transactions_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>
     )));
     widgets.back_button.set_sensitive(!busy);
     widgets.add_button.set_sensitive(!busy);
-    widgets.form_actions.set_sensitive(!busy);
+    widgets.save_button.set_sensitive(!busy);
+    widgets.clear_button.set_visible(count > 0);
     widgets.clear_button.set_sensitive(count > 0 && !busy);
     widgets.stack.set_sensitive(!busy);
     widgets.form_box.set_sensitive(!busy);
@@ -374,8 +419,19 @@ fn refresh_fake_transactions_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>
         return;
     }
 
+    let search_terms = fake_transaction_search_terms(&widgets.search_entry.text());
+    let mut visible_count = 0usize;
     for fake in fake_transactions {
-        widgets.list.append(&fake_transaction_row(state, ui, fake));
+        if fake_transaction_matches_search(&fake, &search_terms) {
+            widgets.list.append(&fake_transaction_row(state, ui, fake));
+            visible_count += 1;
+        }
+    }
+
+    if visible_count == 0 {
+        widgets.list.append(&fake_transaction_text_row(&tr(
+            "No matching fake transactions.",
+        )));
     }
 }
 
@@ -388,6 +444,34 @@ fn fake_transaction_summary(count: usize) -> String {
             &[("count", count.to_string())],
         )
     }
+}
+
+fn fake_transaction_search_terms(query: &str) -> Vec<String> {
+    query
+        .split_whitespace()
+        .map(str::trim)
+        .filter(|term| !term.is_empty())
+        .map(str::to_lowercase)
+        .collect()
+}
+
+fn fake_transaction_matches_search(fake: &FakeTransaction, terms: &[String]) -> bool {
+    if terms.is_empty() {
+        return true;
+    }
+
+    let transaction = &fake.transaction;
+    let haystack = format!(
+        "{} {} {} {} {} {}",
+        fake_transaction_title(transaction),
+        fake_transaction_subtitle(transaction),
+        signed_money(transaction.amount),
+        transaction.account,
+        transaction.tags,
+        transaction.notes
+    )
+    .to_lowercase();
+    terms.iter().all(|term| haystack.contains(term))
 }
 
 fn fake_transaction_text_row(text: &str) -> adw::ActionRow {
@@ -461,8 +545,9 @@ fn show_fake_transaction_form(
     let initial = edit_id
         .and_then(|id| ui.fake_transactions.get(id).map(|fake| fake.transaction))
         .unwrap_or_else(|| default_fake_transaction(&state.borrow(), ui.as_ref()));
-
+    let advanced_values = FakeTransactionAdvancedValues::from_transaction(&initial);
     let widgets = &ui.fake_transaction_widgets;
+    let advanced_features = ui.advanced_features.get();
     ui::clear_box(&widgets.form_box);
     show_fake_transaction_form_page(widgets);
 
@@ -483,110 +568,129 @@ fn show_fake_transaction_form(
     let amount = ui::entry(&initial.amount.normalize().to_string(), "0.00");
     let counterparty = ui::entry(&initial.counterparty, "Counterparty");
     let description = ui::entry(&initial.description, "Description");
-    let tags = ui::entry(&initial.tags, "Tags");
     let category = ui::text_combo(&initial.category, app_category_values(&state.borrow()));
-    let budget_code = ui::text_combo(
-        &initial.budget_code,
-        app_budget_code_values(&state.borrow()),
-    );
-    let account = ui::entry(&initial.account, DEFAULT_FAKE_ACCOUNT);
-    let currency = ui::entry(&initial.currency, DEFAULT_FAKE_CURRENCY);
-    let notes = ui::entry(&initial.notes, "Notes");
-    let direction = ui::combo_from_options(
-        &[
-            ("expense", "Expenses"),
-            ("income", "Income"),
-            ("transfer", "Transfers"),
-        ],
-        direction_for_amount(initial.amount),
-    );
-    direction.set_visible(false);
+    let budget_code = advanced_features.then(|| {
+        ui::text_combo(
+            &initial.budget_code,
+            app_budget_code_values(&state.borrow()),
+        )
+    });
+    let tags = advanced_features.then(|| ui::entry(&initial.tags, "Tags"));
+    let account = advanced_features.then(|| ui::entry(&initial.account, DEFAULT_FAKE_ACCOUNT));
+    let currency = advanced_features.then(|| ui::entry(&initial.currency, DEFAULT_FAKE_CURRENCY));
+    let notes = advanced_features.then(|| ui::entry(&initial.notes, "Notes"));
+    let direction = advanced_features.then(|| {
+        let direction = ui::combo_from_options(
+            &[
+                ("expense", "Expenses"),
+                ("income", "Income"),
+                ("transfer", "Transfers"),
+            ],
+            direction_for_amount(initial.amount),
+        );
+        direction.set_visible(false);
+        direction
+    });
 
-    connect_budget_fields_autofill(
-        &category,
-        &budget_code,
-        &direction,
-        app_budget_autofill_entries(&state.borrow()),
-        &ui.advanced_autofill,
-    );
-    connect_amount_direction(&amount, &direction);
+    if let (Some(budget_code), Some(direction)) = (&budget_code, &direction) {
+        connect_budget_fields_autofill(
+            &category,
+            budget_code,
+            direction,
+            app_budget_autofill_entries(&state.borrow()),
+            &ui.advanced_autofill,
+        );
+        connect_amount_direction(&amount, direction);
+    }
 
     ui::add_labeled(&main_grid, 0, "Date", &date);
     ui::add_labeled(&main_grid, 1, "Amount", &amount);
     ui::add_labeled(&main_grid, 2, "Counterparty", &counterparty);
     ui::add_labeled(&main_grid, 3, "Description", &description);
     ui::add_labeled(&main_grid, 4, "Category", &category);
-    if ui.advanced_features.get() {
-        ui::add_labeled(&main_grid, 5, "Budget code", &budget_code);
-    } else {
-        budget_code.set_visible(false);
+    if let (Some(budget_code), Some(tags), Some(account), Some(currency), Some(notes)) =
+        (&budget_code, &tags, &account, &currency, &notes)
+    {
+        ui::add_labeled(&main_grid, 5, "Budget code", budget_code);
+        ui::add_labeled(&details_grid, 0, "Tags", tags);
+        ui::add_labeled(&details_grid, 1, "Account", account);
+        ui::add_labeled(&details_grid, 2, "Currency", currency);
+        ui::add_labeled(&details_grid, 3, "Notes", notes);
     }
-    ui::add_labeled(&details_grid, 0, "Tags", &tags);
-    ui::add_labeled(&details_grid, 1, "Account", &account);
-    ui::add_labeled(&details_grid, 2, "Currency", &currency);
-    ui::add_labeled(&details_grid, 3, "Notes", &notes);
     widgets.form_box.append(&main_grid);
-    widgets.form_box.append(&details_grid);
+    if advanced_features {
+        widgets.form_box.append(&details_grid);
+    }
 
     let status = ui::wrapped_label("");
     status.add_css_class("dim-label");
     status.set_selectable(false);
     widgets.form_box.append(&status);
 
-    ui::clear_box(&widgets.form_actions);
-    let save_button = ui::icon_button("document-save-symbolic", "Save fake transaction");
-    save_button.add_css_class("suggested-action");
-    widgets.form_actions.append(&save_button);
+    widgets.form_state.replace(Some(FakeTransactionFormState {
+        edit_id,
+        date,
+        amount,
+        counterparty,
+        description,
+        tags,
+        category,
+        budget_code,
+        account,
+        currency,
+        notes,
+        status,
+        advanced_features,
+        advanced_values,
+    }));
 
-    let state_for_save = Rc::clone(state);
-    let ui_for_save = Rc::clone(ui);
-    save_button.connect_clicked(move |_| {
-        let Some(transaction) = ({
-            let data = state_for_save.borrow();
-            transaction_from_form(FakeTransactionFormFields {
-                date: &date,
-                amount: &amount,
-                counterparty: &counterparty,
-                description: &description,
-                tags: &tags,
-                category: &category,
-                budget_code: &budget_code,
-                account: &account,
-                currency: &currency,
-                notes: &notes,
-                status: &status,
-                budgets: &data.budgets,
-                advanced_features: ui_for_save.advanced_features.get(),
-            })
-        }) else {
-            return;
+    widgets.dialog.present(Some(&ui.window));
+}
+
+fn save_fake_transaction_form(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
+    let Some(form) = ui.fake_transaction_widgets.form_state.borrow().clone() else {
+        return;
+    };
+    let Some(transaction) = ({
+        let data = state.borrow();
+        transaction_from_form(FakeTransactionFormFields {
+            date: &form.date,
+            amount: &form.amount,
+            counterparty: &form.counterparty,
+            description: &form.description,
+            tags: form.tags.as_ref(),
+            category: &form.category,
+            budget_code: form.budget_code.as_ref(),
+            account: form.account.as_ref(),
+            currency: form.currency.as_ref(),
+            notes: form.notes.as_ref(),
+            status: &form.status,
+            budgets: &data.budgets,
+            advanced_features: form.advanced_features,
+            advanced_values: &form.advanced_values,
+        })
+    }) else {
+        return;
+    };
+
+    let edit_id = form.edit_id;
+    let status_for_save = form.status.clone();
+    queue_fake_transaction_update(state, ui, "Saving fake transaction...", move |_, ui| {
+        let message = if let Some(id) = edit_id {
+            if ui.fake_transactions.update(id, transaction) {
+                "Fake transaction updated."
+            } else {
+                status_for_save.set_text(&tr("Fake transaction no longer exists."));
+                return FakeTransactionUpdateOutcome::Skip;
+            }
+        } else {
+            ui.fake_transactions.add(transaction);
+            "Fake transaction added."
         };
 
-        let status_for_save = status.clone();
-        queue_fake_transaction_update(
-            &state_for_save,
-            &ui_for_save,
-            "Saving fake transaction...",
-            move |_, ui| {
-                let message = if let Some(id) = edit_id {
-                    if ui.fake_transactions.update(id, transaction) {
-                        "Fake transaction updated."
-                    } else {
-                        status_for_save.set_text(&tr("Fake transaction no longer exists."));
-                        return FakeTransactionUpdateOutcome::Skip;
-                    }
-                } else {
-                    ui.fake_transactions.add(transaction);
-                    "Fake transaction added."
-                };
-
-                show_fake_transaction_list(&ui.fake_transaction_widgets);
-                FakeTransactionUpdateOutcome::Render(message)
-            },
-        );
+        show_fake_transaction_list(&ui.fake_transaction_widgets);
+        FakeTransactionUpdateOutcome::Render(message)
     });
-
-    widgets.popover.popup();
 }
 
 fn queue_fake_transaction_update<F>(
@@ -634,7 +738,7 @@ fn set_fake_transactions_busy(ui: &Rc<UiHandles>, busy: bool, message: &str) {
     }
     widgets.back_button.set_sensitive(!busy);
     widgets.add_button.set_sensitive(!busy);
-    widgets.form_actions.set_sensitive(!busy);
+    widgets.save_button.set_sensitive(!busy);
     widgets
         .clear_button
         .set_sensitive(!busy && ui.fake_transactions.count() > 0);
@@ -643,20 +747,60 @@ fn set_fake_transactions_busy(ui: &Rc<UiHandles>, busy: bool, message: &str) {
     widgets.list.set_sensitive(!busy);
 }
 
+#[derive(Clone)]
+struct FakeTransactionFormState {
+    edit_id: Option<u64>,
+    date: gtk::Entry,
+    amount: gtk::Entry,
+    counterparty: gtk::Entry,
+    description: gtk::Entry,
+    tags: Option<gtk::Entry>,
+    category: gtk::ComboBoxText,
+    budget_code: Option<gtk::ComboBoxText>,
+    account: Option<gtk::Entry>,
+    currency: Option<gtk::Entry>,
+    notes: Option<gtk::Entry>,
+    status: gtk::Label,
+    advanced_features: bool,
+    advanced_values: FakeTransactionAdvancedValues,
+}
+
+#[derive(Clone)]
+struct FakeTransactionAdvancedValues {
+    budget_code: String,
+    tags: String,
+    account: String,
+    currency: String,
+    notes: String,
+}
+
+impl FakeTransactionAdvancedValues {
+    fn from_transaction(transaction: &Transaction) -> Self {
+        Self {
+            budget_code: transaction.budget_code.clone(),
+            tags: transaction.tags.clone(),
+            account: transaction.account.clone(),
+            currency: transaction.currency.clone(),
+            notes: transaction.notes.clone(),
+        }
+    }
+}
+
 struct FakeTransactionFormFields<'a> {
     date: &'a gtk::Entry,
     amount: &'a gtk::Entry,
     counterparty: &'a gtk::Entry,
     description: &'a gtk::Entry,
-    tags: &'a gtk::Entry,
+    tags: Option<&'a gtk::Entry>,
     category: &'a gtk::ComboBoxText,
-    budget_code: &'a gtk::ComboBoxText,
-    account: &'a gtk::Entry,
-    currency: &'a gtk::Entry,
-    notes: &'a gtk::Entry,
+    budget_code: Option<&'a gtk::ComboBoxText>,
+    account: Option<&'a gtk::Entry>,
+    currency: Option<&'a gtk::Entry>,
+    notes: Option<&'a gtk::Entry>,
     status: &'a gtk::Label,
     budgets: &'a [crate::model::BudgetCode],
     advanced_features: bool,
+    advanced_values: &'a FakeTransactionAdvancedValues,
 }
 
 fn transaction_from_form(fields: FakeTransactionFormFields<'_>) -> Option<Transaction> {
@@ -678,8 +822,12 @@ fn transaction_from_form(fields: FakeTransactionFormFields<'_>) -> Option<Transa
     let counterparty = fields.counterparty.text().trim().to_string();
     let description = fields.description.text().trim().to_string();
     let category = non_empty_or(&ui::combo_text(fields.category), "Uncategorized");
+    let entered_code = fields
+        .budget_code
+        .map(ui::combo_text)
+        .unwrap_or_else(|| fields.advanced_values.budget_code.clone());
     let budget_code = fake_transaction_budget_code_for_save(
-        &ui::combo_text(fields.budget_code),
+        &entered_code,
         &category,
         fields.budgets,
         fields.advanced_features,
@@ -695,18 +843,30 @@ fn transaction_from_form(fields: FakeTransactionFormFields<'_>) -> Option<Transa
             description
         },
         counterparty,
-        tags: fields.tags.text().trim().to_string(),
-        account: non_empty_or(&fields.account.text(), DEFAULT_FAKE_ACCOUNT),
+        tags: optional_entry_text(fields.tags, &fields.advanced_values.tags),
+        account: non_empty_or(
+            &optional_entry_text(fields.account, &fields.advanced_values.account),
+            DEFAULT_FAKE_ACCOUNT,
+        ),
         transaction_id: String::new(),
-        currency: non_empty_or(&fields.currency.text(), DEFAULT_FAKE_CURRENCY),
+        currency: non_empty_or(
+            &optional_entry_text(fields.currency, &fields.advanced_values.currency),
+            DEFAULT_FAKE_CURRENCY,
+        ),
         source_file: FAKE_TRANSACTION_SOURCE.to_string(),
         source_row: 0,
         category,
         budget_code,
-        notes: fields.notes.text().trim().to_string(),
+        notes: optional_entry_text(fields.notes, &fields.advanced_values.notes),
         strict_key: String::new(),
         loose_key: String::new(),
     })
+}
+
+fn optional_entry_text(entry: Option<&gtk::Entry>, fallback: &str) -> String {
+    entry
+        .map(|entry| entry.text().trim().to_string())
+        .unwrap_or_else(|| fallback.trim().to_string())
 }
 
 fn fake_transaction_budget_code_for_save(
@@ -720,9 +880,26 @@ fn fake_transaction_budget_code_for_save(
     }
 
     fake_transaction_budget_for_category(category, budgets)
+        .or_else(|| preferred_fake_transaction_transfer_budget(category, budgets))
         .map(|budget| budget.code.trim().to_string())
         .filter(|code| !code.is_empty())
         .unwrap_or_else(|| entered_code.trim().to_string())
+}
+
+fn preferred_fake_transaction_transfer_budget<'a>(
+    category: &str,
+    budgets: &'a [crate::model::BudgetCode],
+) -> Option<&'a crate::model::BudgetCode> {
+    if !BudgetDirection::parse("", "", category).is_transfer() {
+        return None;
+    }
+
+    budgets
+        .iter()
+        .find(|budget| {
+            budget.direction.is_transfer() && budget.code.trim().eq_ignore_ascii_case("TRANSFER")
+        })
+        .or_else(|| budgets.iter().find(|budget| budget.direction.is_transfer()))
 }
 
 fn fake_transaction_amount_for_budget(
@@ -1006,6 +1183,42 @@ mod tests {
             fake_transaction_budget_code_for_save("OTHER", "Salary", &budgets, true),
             "OTHER"
         );
+    }
+
+    #[test]
+    fn simple_fake_transaction_budget_code_uses_transfer_autofill_data() {
+        let budgets = vec![
+            budget("OTHER", "Other", BudgetDirection::Expense),
+            budget("BANK-MOVE", "Internal", BudgetDirection::Transfer),
+            budget("TRANSFER", "Transfer", BudgetDirection::Transfer),
+        ];
+
+        assert_eq!(
+            fake_transaction_budget_code_for_save("OTHER", "Transfers", &budgets, false),
+            "TRANSFER"
+        );
+    }
+
+    #[test]
+    fn fake_transaction_search_matches_all_visible_terms() {
+        let mut transaction = tx("2025-04-01", -42, "Coffee beans");
+        transaction.counterparty = "Market Lane".to_string();
+        transaction.tags = "groceries weekend".to_string();
+        transaction.notes = "shared breakfast".to_string();
+        let fake = FakeTransaction { id: 1, transaction };
+
+        assert!(fake_transaction_matches_search(
+            &fake,
+            &fake_transaction_search_terms("market coffee groceries")
+        ));
+        assert!(fake_transaction_matches_search(
+            &fake,
+            &fake_transaction_search_terms("42 breakfast")
+        ));
+        assert!(!fake_transaction_matches_search(
+            &fake,
+            &fake_transaction_search_terms("rent")
+        ));
     }
 
     #[test]

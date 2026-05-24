@@ -4,10 +4,6 @@ const STATUS_AUTOHIDE_SECONDS: u32 = 6;
 const COPY_FEEDBACK_SECONDS: u32 = 3;
 const COPY_ICON: &str = "edit-copy-symbolic";
 const COPIED_ICON: &str = "object-select-symbolic";
-const SAVE_ICON: &str = "document-save-symbolic";
-const SAVE_ERROR_ICON: &str = "dialog-error-symbolic";
-const STATUS_HISTORY_TITLE_PAGE: &str = "title";
-const STATUS_HISTORY_SEARCH_PAGE: &str = "search";
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(in crate::app) struct StatusLogEntry {
@@ -459,17 +455,17 @@ pub(in crate::app) fn connect_embedded_status_bar(
 ) {
     let generation = Rc::new(Cell::new(0u64));
     let history = Rc::new(RefCell::new(Vec::<StatusLogEntry>::new()));
-    let history_popover = Rc::new(RefCell::new(None::<gtk::Popover>));
+    let history_dialog = Rc::new(RefCell::new(None::<adw::Dialog>));
 
     let window_for_history = window.clone();
     let history_for_button = Rc::clone(&history);
-    let history_popover_for_button = Rc::clone(&history_popover);
-    status_bar.history_button.connect_clicked(move |button| {
-        show_status_history_popover(
+    let history_dialog_for_button = Rc::clone(&history_dialog);
+    status_bar.history_button.connect_clicked(move |_| {
+        show_status_history_dialog(
             &window_for_history,
             &history_for_button,
-            button,
-            &history_popover_for_button,
+            &history_dialog_for_button,
+            None,
         );
     });
 
@@ -514,13 +510,14 @@ pub(in crate::app) fn connect_status_actions(
 ) {
     let window_for_history = ui.window.clone();
     let history_for_history = Rc::clone(&ui.status_history);
-    let history_popover = Rc::new(RefCell::new(None::<gtk::Popover>));
-    history_button.connect_clicked(move |button| {
-        show_status_history_popover(
+    let history_dialog = Rc::new(RefCell::new(None::<adw::Dialog>));
+    let ui_for_history = Rc::clone(ui);
+    history_button.connect_clicked(move |_| {
+        show_status_history_dialog(
             &window_for_history,
             &history_for_history,
-            button,
-            &history_popover,
+            &history_dialog,
+            Some(Rc::clone(&ui_for_history)),
         );
     });
 
@@ -610,33 +607,42 @@ fn push_status_history_entry(history: &Rc<RefCell<Vec<StatusLogEntry>>>, message
     });
 }
 
-fn show_status_history_popover(
+fn show_status_history_dialog(
     window: &adw::ApplicationWindow,
     history: &Rc<RefCell<Vec<StatusLogEntry>>>,
-    button: &gtk::Button,
-    active_popover: &Rc<RefCell<Option<gtk::Popover>>>,
+    active_dialog: &Rc<RefCell<Option<adw::Dialog>>>,
+    print_ui: Option<Rc<UiHandles>>,
 ) {
-    let visible_popover = active_popover
+    let visible_dialog = active_dialog
         .borrow()
         .as_ref()
-        .filter(|popover| popover.is_visible())
+        .filter(|dialog| dialog.is_visible())
         .cloned();
-    if let Some(popover) = visible_popover {
-        popover.popdown();
+    if let Some(dialog) = visible_dialog {
+        dialog.close();
         return;
     }
 
-    let root = ui::compact_popover_root();
+    let shell = build_settings_dialog_shell("Message History", "Search messages");
+    let root = shell.root;
+    let search_bar = shell.search_bar;
+    let search_entry = shell.search_entry;
 
-    let header = build_status_history_header();
-    root.append(&header.stack);
+    let actions_button = gtk::MenuButton::builder()
+        .icon_name("view-more-symbolic")
+        .tooltip_text(tr("Message history actions"))
+        .build();
+    actions_button.add_css_class("flat");
+    actions_button.add_css_class("image-button");
+    shell.header.pack_start(&actions_button);
 
-    let content = gtk::Box::new(gtk::Orientation::Vertical, 8);
+    let content = ui::page_box();
     let list = gtk::ListBox::new();
     list.add_css_class("boxed-list");
     list.set_selection_mode(gtk::SelectionMode::None);
     list.set_hexpand(true);
     content.append(&list);
+
     let empty_label = ui::wrapped_label(&tr("No messages found."));
     empty_label.add_css_class("dim-label");
     empty_label.set_visible(false);
@@ -648,144 +654,93 @@ fn show_status_history_popover(
 
     let entries = history.borrow().clone();
     let has_entries = !entries.is_empty();
-    header.copy_button.set_sensitive(has_entries);
-    header.save_button.set_sensitive(has_entries);
+    actions_button.set_sensitive(has_entries);
     let rows = append_status_history_rows(window, &list, &entries);
     if rows.is_empty() {
         empty_label.set_text(&tr("No messages yet."));
         empty_label.set_visible(true);
     }
-    root.append(&ui::compact_popover_scroll(&content));
 
-    let popover = gtk::Popover::builder().autohide(true).build();
-    popover.set_child(Some(&root));
-    popover.set_parent(button);
+    connect_status_history_actions(&actions_button, window, entries, print_ui);
+    connect_status_history_search(&search_entry, rows, empty_label);
 
-    let stack_for_search = header.stack.clone();
-    let search_entry_for_button = header.search_entry.clone();
-    header.search_button.connect_clicked(move |_| {
-        show_status_history_search(&stack_for_search, &search_entry_for_button);
+    root.append(&ui::action_dialog_scroll_with_min(&content, 360));
+    let dialog = adw::Dialog::builder()
+        .title(tr("Message History"))
+        .content_width(620)
+        .content_height(560)
+        .child(&root)
+        .build();
+    ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);
+    search_bar.set_key_capture_widget(Some(&dialog));
+
+    let active_dialog_for_closed = Rc::clone(active_dialog);
+    dialog.connect_closed(move |_| {
+        active_dialog_for_closed.borrow_mut().take();
     });
+
+    *active_dialog.borrow_mut() = Some(dialog.clone());
+    dialog.present(Some(window));
+}
+
+fn connect_status_history_actions(
+    actions_button: &gtk::MenuButton,
+    window: &adw::ApplicationWindow,
+    entries: Vec<StatusLogEntry>,
+    print_ui: Option<Rc<UiHandles>>,
+) {
+    let menu = gtk::gio::Menu::new();
+    menu.append(Some(&tr("Print")), Some("status-history.print"));
+    menu.append(Some(&tr("Copy")), Some("status-history.copy"));
+    menu.append(Some(&tr("Save")), Some("status-history.save"));
+    actions_button.set_menu_model(Some(&menu));
+
+    let action_group = gtk::gio::SimpleActionGroup::new();
+    let has_entries = !entries.is_empty();
+
+    let entries_for_print = entries.clone();
+    let print_action = gtk::gio::SimpleAction::new("print", None);
+    print_action.set_enabled(has_entries && print_ui.is_some());
+    print_action.connect_activate(move |action, _| {
+        if !action.is_enabled() {
+            return;
+        }
+        let Some(ui) = print_ui.as_ref() else {
+            return;
+        };
+        let report = table_print_report(
+            "Message History",
+            "Recent status messages",
+            &status_log_columns(),
+            &status_log_rows(&entries_for_print),
+        );
+        print_report(ui, report);
+    });
+    action_group.add_action(&print_action);
 
     let window_for_copy = window.clone();
     let entries_for_copy = entries.clone();
-    let copy_button_for_copy = header.copy_button.clone();
-    let copy_feedback_generation = Rc::new(Cell::new(0u64));
-    header.copy_button.connect_clicked(move |_| {
+    let copy_action = gtk::gio::SimpleAction::new("copy", None);
+    copy_action.set_enabled(has_entries);
+    copy_action.connect_activate(move |action, _| {
+        if !action.is_enabled() {
+            return;
+        }
         window_for_copy
             .clipboard()
             .set_text(&status_log_text(&entries_for_copy));
-        show_copy_feedback(&copy_button_for_copy, &copy_feedback_generation);
     });
-    connect_status_history_save(&header.save_button, entries);
-    let stack_for_back = header.stack.clone();
-    let search_entry_for_back = header.search_entry.clone();
-    header.back_button.connect_clicked(move |_| {
-        hide_status_history_search(&stack_for_back, &search_entry_for_back);
+    action_group.add_action(&copy_action);
+
+    let entries_for_save = entries;
+    let save_action = gtk::gio::SimpleAction::new("save", None);
+    save_action.set_enabled(has_entries);
+    save_action.connect_activate(move |action, _| {
+        save_status_history_entries(action, entries_for_save.clone());
     });
-    let stack_for_stop = header.stack.clone();
-    let search_entry_for_stop = header.search_entry.clone();
-    header.search_entry.connect_stop_search(move |_| {
-        hide_status_history_search(&stack_for_stop, &search_entry_for_stop);
-    });
-    let stack_for_shortcut = header.stack.clone();
-    let search_entry_for_shortcut = header.search_entry.clone();
-    ui::connect_primary_f_shortcut(&root, move || {
-        toggle_status_history_search(&stack_for_shortcut, &search_entry_for_shortcut);
-    });
-    connect_status_history_search(&header.search_entry, rows, empty_label);
+    action_group.add_action(&save_action);
 
-    let active_popover_for_closed = Rc::clone(active_popover);
-    popover.connect_closed(move |_| {
-        active_popover_for_closed.borrow_mut().take();
-    });
-
-    *active_popover.borrow_mut() = Some(popover.clone());
-    popover.popup();
-}
-
-struct StatusHistoryHeader {
-    stack: gtk::Stack,
-    search_button: gtk::Button,
-    copy_button: gtk::Button,
-    save_button: gtk::Button,
-    back_button: gtk::Button,
-    search_entry: gtk::SearchEntry,
-}
-
-fn build_status_history_header() -> StatusHistoryHeader {
-    let builder = ui::builder_from_resource("status-history-popover.ui");
-    let stack = gtk::Stack::builder()
-        .hhomogeneous(false)
-        .vhomogeneous(false)
-        .hexpand(true)
-        .build();
-    let title_header = builder
-        .object::<gtk::Box>("status_history_title_header")
-        .expect("status-history-popover.ui should define status_history_title_header");
-    let search_header = builder
-        .object::<gtk::Box>("status_history_search_header")
-        .expect("status-history-popover.ui should define status_history_search_header");
-    let title = builder
-        .object::<gtk::Label>("status_history_title")
-        .expect("status-history-popover.ui should define status_history_title");
-    title.set_text(&tr("Message History"));
-    let subtitle = builder
-        .object::<gtk::Label>("status_history_subtitle")
-        .expect("status-history-popover.ui should define status_history_subtitle");
-    subtitle.set_text(&tr("Recent status messages"));
-
-    let search_button = builder
-        .object::<gtk::Button>("status_history_search_button")
-        .expect("status-history-popover.ui should define status_history_search_button");
-    search_button.set_tooltip_text(Some(&tr("Search messages")));
-    let copy_button = builder
-        .object::<gtk::Button>("status_history_copy_button")
-        .expect("status-history-popover.ui should define status_history_copy_button");
-    copy_button.set_tooltip_text(Some(&tr("Copy message history")));
-    let save_button = builder
-        .object::<gtk::Button>("status_history_save_button")
-        .expect("status-history-popover.ui should define status_history_save_button");
-    save_button.set_tooltip_text(Some(&tr("Save message history")));
-    let back_button = builder
-        .object::<gtk::Button>("status_history_back_button")
-        .expect("status-history-popover.ui should define status_history_back_button");
-    back_button.set_tooltip_text(Some(&tr("Back")));
-    let search_entry = builder
-        .object::<gtk::SearchEntry>("status_history_search_entry")
-        .expect("status-history-popover.ui should define status_history_search_entry");
-    search_entry.set_placeholder_text(Some(&tr("Search messages")));
-    stack.add_named(&title_header, Some(STATUS_HISTORY_TITLE_PAGE));
-    stack.add_named(&search_header, Some(STATUS_HISTORY_SEARCH_PAGE));
-    stack.set_visible_child_name(STATUS_HISTORY_TITLE_PAGE);
-
-    StatusHistoryHeader {
-        stack,
-        search_button,
-        copy_button,
-        save_button,
-        back_button,
-        search_entry,
-    }
-}
-
-fn show_status_history_search(stack: &gtk::Stack, search_entry: &gtk::SearchEntry) {
-    stack.set_visible_child_name(STATUS_HISTORY_SEARCH_PAGE);
-    search_entry.grab_focus();
-    search_entry.select_region(0, -1);
-}
-
-fn hide_status_history_search(stack: &gtk::Stack, search_entry: &gtk::SearchEntry) {
-    search_entry.set_text("");
-    stack.set_visible_child_name(STATUS_HISTORY_TITLE_PAGE);
-}
-
-fn toggle_status_history_search(stack: &gtk::Stack, search_entry: &gtk::SearchEntry) {
-    if stack.visible_child_name().as_deref() == Some(STATUS_HISTORY_SEARCH_PAGE) {
-        hide_status_history_search(stack, search_entry);
-    } else {
-        show_status_history_search(stack, search_entry);
-    }
+    actions_button.insert_action_group("status-history", Some(&action_group));
 }
 
 fn status_log_text(entries: &[StatusLogEntry]) -> String {
@@ -802,6 +757,17 @@ fn status_log_text(entries: &[StatusLogEntry]) -> String {
         .join("\n")
 }
 
+fn status_log_columns() -> Vec<String> {
+    vec![tr("Time"), tr("Message")]
+}
+
+fn status_log_rows(entries: &[StatusLogEntry]) -> Vec<Vec<String>> {
+    entries
+        .iter()
+        .map(|entry| vec![entry.timestamp.clone(), compact_status_cell(&entry.message)])
+        .collect()
+}
+
 fn status_log_file_name() -> String {
     format!(
         "bank_files_messages_{}.log",
@@ -809,52 +775,35 @@ fn status_log_file_name() -> String {
     )
 }
 
-fn connect_status_history_save(save_button: &gtk::Button, entries: Vec<StatusLogEntry>) {
-    let save_button_for_save = save_button.clone();
-    let save_feedback_generation = Rc::new(Cell::new(0u64));
-    save_button.connect_clicked(move |_| {
-        if entries.is_empty() || !save_button_for_save.is_sensitive() {
+fn save_status_history_entries(action: &gtk::gio::SimpleAction, entries: Vec<StatusLogEntry>) {
+    if entries.is_empty() || !action.is_enabled() {
+        return;
+    }
+
+    action.set_enabled(false);
+
+    let action = action.clone();
+    gtk::glib::MainContext::default().spawn_local(async move {
+        let handle = rfd::AsyncFileDialog::new()
+            .set_title(tr("Save Message History"))
+            .add_filter(tr("Log files"), &["log", "txt"])
+            .set_file_name(status_log_file_name())
+            .save_file()
+            .await;
+
+        let Some(handle) = handle else {
+            action.set_enabled(true);
             return;
-        }
+        };
 
-        save_button_for_save.set_sensitive(false);
-        let entries = entries.clone();
-        let save_button = save_button_for_save.clone();
-        let feedback_generation = Rc::clone(&save_feedback_generation);
-        gtk::glib::MainContext::default().spawn_local(async move {
-            let handle = rfd::AsyncFileDialog::new()
-                .set_title(tr("Save Message History"))
-                .add_filter(tr("Log files"), &["log", "txt"])
-                .set_file_name(status_log_file_name())
-                .save_file()
-                .await;
-
-            let Some(handle) = handle else {
-                save_button.set_sensitive(true);
-                return;
-            };
-
-            let path = handle.path().to_path_buf();
-            let contents = status_log_text(&entries);
-            let task = gtk::gio::spawn_blocking(move || {
-                std::fs::write(&path, contents)?;
-                anyhow::Ok(())
-            });
-            match task.await {
-                Ok(Ok(())) => {
-                    show_icon_feedback(&save_button, &feedback_generation, COPIED_ICON, SAVE_ICON);
-                }
-                Ok(Err(_)) | Err(_) => {
-                    show_icon_feedback(
-                        &save_button,
-                        &feedback_generation,
-                        SAVE_ERROR_ICON,
-                        SAVE_ICON,
-                    );
-                }
-            }
-            save_button.set_sensitive(true);
+        let path = handle.path().to_path_buf();
+        let contents = status_log_text(&entries);
+        let task = gtk::gio::spawn_blocking(move || {
+            std::fs::write(&path, contents)?;
+            anyhow::Ok(())
         });
+        let _ = task.await;
+        action.set_enabled(true);
     });
 }
 
@@ -881,15 +830,32 @@ fn append_status_history_rows(
     rows
 }
 
-fn status_history_row(window: &adw::ApplicationWindow, entry: &StatusLogEntry) -> adw::ActionRow {
-    let row = adw::ActionRow::builder()
-        .title(&entry.message)
-        .subtitle(&entry.timestamp)
-        .build();
+fn status_history_row(window: &adw::ApplicationWindow, entry: &StatusLogEntry) -> gtk::ListBoxRow {
+    let row = gtk::ListBoxRow::new();
     row.set_activatable(false);
     row.set_selectable(false);
-    row.set_title_lines(1);
-    row.set_subtitle_lines(1);
+
+    let container = gtk::Box::new(gtk::Orientation::Horizontal, 8);
+    container.set_margin_top(8);
+    container.set_margin_bottom(8);
+    container.set_margin_start(10);
+    container.set_margin_end(10);
+
+    let text_box = gtk::Box::new(gtk::Orientation::Vertical, 3);
+    text_box.set_hexpand(true);
+
+    let message = ui::selectable_wrapped_label(&entry.message);
+    message.set_width_chars(1);
+    message.set_hexpand(true);
+
+    let timestamp = gtk::Label::new(Some(&entry.timestamp));
+    timestamp.add_css_class("caption");
+    timestamp.add_css_class("dim-label");
+    timestamp.set_xalign(0.0);
+
+    text_box.append(&message);
+    text_box.append(&timestamp);
+    container.append(&text_box);
 
     let copy_button = status_button(COPY_ICON, "Copy message");
     copy_button.set_valign(gtk::Align::Center);
@@ -901,7 +867,9 @@ fn status_history_row(window: &adw::ApplicationWindow, entry: &StatusLogEntry) -
         window_for_copy.clipboard().set_text(&message_for_copy);
         show_copy_feedback(&copy_button_for_copy, &copy_feedback_generation);
     });
-    row.add_suffix(&copy_button);
+    container.append(&copy_button);
+
+    row.set_child(Some(&container));
     row
 }
 
@@ -1139,6 +1107,22 @@ mod tests {
         assert_eq!(
             status_log_text(&entries),
             "12:34:56\tCSV import finished\n12:35:00\tLine one line two"
+        );
+    }
+
+    #[test]
+    fn status_log_rows_include_printable_timestamp_and_message() {
+        let entries = vec![StatusLogEntry {
+            timestamp: "12:35:00".to_string(),
+            message: "Line one\nline two".to_string(),
+        }];
+
+        assert_eq!(
+            status_log_rows(&entries),
+            vec![vec![
+                "12:35:00".to_string(),
+                "Line one line two".to_string(),
+            ]]
         );
     }
 
