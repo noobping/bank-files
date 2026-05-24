@@ -1,0 +1,256 @@
+use super::super::*;
+use super::loading::append_management_loading;
+use super::sections::build_budget_action_section;
+use super::setup::{finish_management_dialog_setup, ManagementDialogSetup};
+use super::sizing::management_dialog_content_size;
+use super::*;
+
+pub(in crate::app) fn show_management_dialog(
+    window: &adw::ApplicationWindow,
+    state: &Rc<RefCell<AppData>>,
+    ui_handles: &Rc<UiHandles>,
+    initial_tab: &str,
+) -> bool {
+    if !try_begin_config_operation(ui_handles, "Rules, budgets, and fields is already open.") {
+        return false;
+    }
+
+    let finish_called = Rc::new(Cell::new(false));
+    let ui_for_finish = Rc::clone(ui_handles);
+    let finish_management_dialog: Rc<dyn Fn()> = Rc::new(move || {
+        if finish_called.replace(true) {
+            return;
+        }
+        finish_config_operation(&ui_for_finish);
+    });
+    let dialog_closed = Rc::new(Cell::new(false));
+    let save_running = Rc::new(Cell::new(false));
+    let advanced_features = ui_handles.advanced_features.get();
+    show_verbose_status(
+        ui_handles.as_ref(),
+        format!(
+            "management dialog opening; tab={initial_tab}; advanced_features={advanced_features}"
+        ),
+    );
+
+    let root = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    let stack = adw::ViewStack::new();
+    stack.set_vexpand(true);
+
+    let header = adw::HeaderBar::new();
+    header.set_show_start_title_buttons(false);
+    header.set_show_end_title_buttons(true);
+    let switcher = adw::ViewSwitcher::builder()
+        .stack(&stack)
+        .policy(adw::ViewSwitcherPolicy::Wide)
+        .build();
+    header.set_title_widget(Some(&switcher));
+    let add_button = ui::plain_text_icon_button("list-add-symbolic", "New", "New item");
+    add_button.add_css_class("flat");
+    let save_button = ui::primary_text_icon_button(
+        "document-save-symbolic",
+        "Save",
+        "Save rules, budgets, and field names",
+    );
+    header.pack_start(&add_button);
+    header.pack_end(&save_button);
+    root.append(&header);
+
+    let filter_placeholder = if advanced_features {
+        "Filter rules, budgets, and field names"
+    } else {
+        "Filter budgets and field names"
+    };
+    let filter_entry = gtk::SearchEntry::builder()
+        .placeholder_text(tr(filter_placeholder))
+        .hexpand(true)
+        .build();
+    let filter_row = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    filter_row.set_margin_top(8);
+    filter_row.set_margin_bottom(8);
+    filter_row.set_margin_start(12);
+    filter_row.set_margin_end(12);
+    filter_row.append(&filter_entry);
+    let filter_search_bar = gtk::SearchBar::builder()
+        .child(&filter_row)
+        .show_close_button(true)
+        .search_mode_enabled(false)
+        .build();
+    filter_search_bar.connect_entry(&filter_entry);
+    root.append(&filter_search_bar);
+
+    let rules_forms: Rc<RefCell<Vec<RuleForm>>> = Rc::new(RefCell::new(Vec::new()));
+    let budgets_forms: Rc<RefCell<Vec<BudgetForm>>> = Rc::new(RefCell::new(Vec::new()));
+    let aliases_forms: Rc<RefCell<Vec<AliasForm>>> = Rc::new(RefCell::new(Vec::new()));
+
+    let rules_box = ui::page_box();
+    rules_box.append(&ui::section_title(
+        "Categorization Rules",
+        "Create rules with plain search text, or turn on Regex for patterns.",
+    ));
+    let rules_list = gtk::Box::new(gtk::Orientation::Vertical, 8);
+    rules_box.append(&rules_list);
+    append_management_loading(&rules_list, "Loading rules...");
+    let add_rule_button =
+        ui::plain_text_icon_button("list-add-symbolic", "New Rule", "Create a new rule");
+    let group_rules_button = ui::plain_text_icon_button(
+        "view-sort-ascending-symbolic",
+        "Group",
+        "Move compatible rules next to each other before combining",
+    );
+    let combine_rules_button = ui::plain_text_icon_button(
+        "view-refresh-symbolic",
+        "Combine",
+        "Combine adjacent compatible rules",
+    );
+    let rules_actions = ui::linked_button_group();
+    rules_actions.append(&add_rule_button);
+    rules_actions.append(&group_rules_button);
+    rules_actions.append(&combine_rules_button);
+    rules_box.append(&rules_actions);
+
+    let budgets_box = ui::page_box();
+    let budgets_title = if advanced_features {
+        "Budget Codes"
+    } else {
+        "Budgets"
+    };
+    let budgets_description = if advanced_features {
+        "Use fixed amounts or percentages; choose real or planned income for percentages."
+    } else {
+        "Use categories with fixed amounts or percentages."
+    };
+    budgets_box.append(&ui::section_title(budgets_title, budgets_description));
+    let budgets_list = gtk::Box::new(gtk::Orientation::Vertical, 8);
+    budgets_box.append(&budgets_list);
+    append_management_loading(&budgets_list, "Loading budgets...");
+    let budget_actions = build_budget_action_section(advanced_features);
+    let add_budget_button = budget_actions.add_budget_button;
+    let move_budget_code_button = budget_actions.move_budget_code_button;
+    let use_real_income_button = budget_actions.use_real_income_button;
+    let use_planned_income_button = budget_actions.use_planned_income_button;
+    let use_monthly_values_button = budget_actions.use_monthly_values_button;
+    let use_yearly_values_button = budget_actions.use_yearly_values_button;
+    budgets_box.append(&budget_actions.container);
+
+    let aliases_box = ui::page_box();
+    aliases_box.append(&ui::section_title(
+        "Normalize CSV Fields",
+        "Map bank columns to fixed fields such as date, amount, and description.",
+    ));
+    let aliases_list = gtk::Box::new(gtk::Orientation::Vertical, 8);
+    aliases_box.append(&aliases_list);
+    append_management_loading(&aliases_list, "Loading field names...");
+    let add_alias_button = ui::plain_text_icon_button(
+        "list-add-symbolic",
+        "New Field Name",
+        "Create a new field name",
+    );
+    let aliases_actions = ui::linked_button_group();
+    aliases_actions.append(&add_alias_button);
+    aliases_box.append(&aliases_actions);
+
+    let rules_scroll = ui::scroll(&rules_box);
+    let budgets_scroll = ui::scroll(&budgets_box);
+    let aliases_scroll = ui::scroll(&aliases_box);
+    if advanced_features {
+        stack
+            .add_titled(&rules_scroll, Some("rules"), &tr("Rules"))
+            .set_icon_name(Some("document-edit-symbolic"));
+    }
+    stack
+        .add_titled(&budgets_scroll, Some("budgets"), &tr("Budgets"))
+        .set_icon_name(Some("view-list-symbolic"));
+    stack
+        .add_titled(&aliases_scroll, Some("aliases"), &tr("Normalize"))
+        .set_icon_name(Some("format-justify-left-symbolic"));
+    let initial_filter = (advanced_features && initial_tab == "active-rules").then_some("active");
+    let initial_tab = match initial_tab {
+        "active-rules" | "rules" if advanced_features => "rules",
+        "budgets" | "aliases" => initial_tab,
+        _ => "budgets",
+    };
+    stack.set_visible_child_name(initial_tab);
+    root.append(&stack);
+
+    let switcher_bar = adw::ViewSwitcherBar::builder()
+        .stack(&stack)
+        .reveal(false)
+        .build();
+    root.append(&switcher_bar);
+
+    let status_bar = build_status_bar();
+    connect_embedded_status_bar(window, &status_bar, Rc::clone(&ui_handles.status_autohide));
+    status_bar.page_actions_button.set_sensitive(false);
+    let status_handle = StatusHandle::from_status_bar(&status_bar);
+    status_handle.set_text(&tr("Loading management data..."));
+    status_handle.set_loading(true);
+    root.append(&status_bar.container);
+    let status = status_bar.label.clone();
+
+    let (content_width, content_height) = management_dialog_content_size(window);
+    let management_title = if advanced_features {
+        "Rules, budgets, and fields"
+    } else {
+        "Budgets and fields"
+    };
+    let management_dialog = ui::content_dialog(tr(management_title), &root)
+        .width_request(MANAGEMENT_DIALOG_MIN_WIDTH)
+        .height_request(MANAGEMENT_DIALOG_MIN_HEIGHT)
+        .content_width(content_width)
+        .content_height(content_height)
+        .build();
+    let dialog_closed_for_closed = Rc::clone(&dialog_closed);
+    let save_running_for_closed = Rc::clone(&save_running);
+    let finish_for_closed = Rc::clone(&finish_management_dialog);
+    let ui_for_closed = Rc::clone(ui_handles);
+    management_dialog.connect_closed(move |_| {
+        dialog_closed_for_closed.set(true);
+        show_verbose_status(ui_for_closed.as_ref(), "management dialog closed");
+        if !save_running_for_closed.get() {
+            finish_for_closed();
+        }
+    });
+    filter_search_bar.set_key_capture_widget(Some(&management_dialog));
+    add_responsive_switcher_for_dialog(&management_dialog, &switcher, &switcher_bar);
+
+    finish_management_dialog_setup(ManagementDialogSetup {
+        window,
+        management_dialog: &management_dialog,
+        add_button: &add_button,
+        add_rule_button: &add_rule_button,
+        group_rules_button: &group_rules_button,
+        combine_rules_button: &combine_rules_button,
+        add_budget_button: &add_budget_button,
+        move_budget_code_button: &move_budget_code_button,
+        use_real_income_button: &use_real_income_button,
+        use_planned_income_button: &use_planned_income_button,
+        use_monthly_values_button: &use_monthly_values_button,
+        use_yearly_values_button: &use_yearly_values_button,
+        add_alias_button: &add_alias_button,
+        save_button: &save_button,
+        page_actions_button: &status_bar.page_actions_button,
+        stack: &stack,
+        filter_entry: &filter_entry,
+        filter_search_bar: &filter_search_bar,
+        rules_list,
+        rules_forms,
+        rules_scroll: &rules_scroll,
+        budgets_list,
+        budgets_forms,
+        budgets_scroll: &budgets_scroll,
+        aliases_list,
+        aliases_forms,
+        aliases_scroll: &aliases_scroll,
+        status,
+        dialog_closed,
+        save_running,
+        finish_management_dialog,
+        initial_filter,
+        advanced_features,
+        state,
+        ui_handles,
+        status_handle,
+    });
+    true
+}

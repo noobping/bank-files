@@ -1,7 +1,7 @@
 use crate::analytics;
 use crate::app_info::{self, APP_ID};
 use crate::data::{self, EditableAlias, EditableBudget, EditableRule};
-use crate::i18n::{self, gettext};
+use crate::i18n::gettext;
 use crate::model::{
     AppData, BudgetDirection, ComparisonMode, DataCacheStatus, DedupeMode, FieldMap, ImportReport,
     MonthKey, RememberMode, Transaction, TransactionLoadScope, TransactionSource,
