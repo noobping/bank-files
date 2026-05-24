@@ -236,4 +236,5 @@ fn apply_registered_widget_state(ui_handles: &UiHandles, item: &ConfigWidget, se
 }
 
 #[cfg(test)]
+#[path = "config_ops_tests.rs"]
 mod tests;

@@ -290,4 +290,5 @@ fn pie_tooltip(slice: &PieSlice, value: Decimal, fraction: f64) -> String {
 }
 
 #[cfg(test)]
+#[path = "pie_tests.rs"]
 mod tests;

@@ -254,4 +254,5 @@ pub(in crate::app) fn push_print_element(
 }
 
 #[cfg(test)]
+#[path = "operation_tests.rs"]
 mod tests;

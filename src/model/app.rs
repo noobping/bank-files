@@ -243,4 +243,5 @@ pub struct AppData {
 }
 
 #[cfg(test)]
+#[path = "app_tests.rs"]
 mod tests;
