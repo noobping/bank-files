@@ -55,12 +55,16 @@ pub(in crate::app) fn show_preferences_dialog(
     let mut experimental_preferences = experimental_preferences;
     #[cfg(feature = "smart-insights")]
     {
-        experimental_preferences.push(PreferenceSpec::new(
-            "Smart Insights",
-            "Show forecast cards and detect transaction patterns, including possible transfers, from imported transactions.",
-            "app.show-predictions",
-            ui.show_predictions.get(),
-        ));
+        let smart_dependent_preferences_enabled = Rc::new(Cell::new(smart_insights_enabled));
+        experimental_preferences.push(
+            PreferenceSpec::new(
+                "Smart Insights",
+                "Show forecast cards and detect transaction patterns, including possible transfers, from imported transactions.",
+                "app.show-predictions",
+                ui.show_predictions.get(),
+            )
+            .toggles_enabled(Rc::clone(&smart_dependent_preferences_enabled)),
+        );
         #[cfg(not(feature = "flatpak"))]
         experimental_preferences.push(
             PreferenceSpec::new(
@@ -69,7 +73,8 @@ pub(in crate::app) fn show_preferences_dialog(
                 "app.online-smart-insights",
                 ui.online_smart_insights.get(),
             )
-            .requires_smart_insights(),
+            .requires_smart_insights()
+            .enabled_by(Rc::clone(&smart_dependent_preferences_enabled)),
         );
         experimental_preferences.push(
             PreferenceSpec::new(
@@ -78,7 +83,8 @@ pub(in crate::app) fn show_preferences_dialog(
                 "app.hide-canceled-transactions",
                 ui.hide_canceled_transactions.get(),
             )
-            .requires_smart_insights(),
+            .requires_smart_insights()
+            .enabled_by(Rc::clone(&smart_dependent_preferences_enabled)),
         );
     }
 
@@ -327,6 +333,8 @@ struct PreferenceSpec<'a> {
     requires_smart_insights: bool,
     visibility_target: Option<gtk::Widget>,
     visibility_gate: Option<Rc<Cell<bool>>>,
+    enabled_controller_gate: Option<Rc<Cell<bool>>>,
+    enabled_by_gate: Option<Rc<Cell<bool>>>,
 }
 
 impl<'a> PreferenceSpec<'a> {
@@ -339,7 +347,21 @@ impl<'a> PreferenceSpec<'a> {
             requires_smart_insights: false,
             visibility_target: None,
             visibility_gate: None,
+            enabled_controller_gate: None,
+            enabled_by_gate: None,
         }
+    }
+
+    #[cfg(feature = "smart-insights")]
+    fn enabled_by(mut self, gate: Rc<Cell<bool>>) -> Self {
+        self.enabled_by_gate = Some(gate);
+        self
+    }
+
+    #[cfg(feature = "smart-insights")]
+    fn toggles_enabled(mut self, gate: Rc<Cell<bool>>) -> Self {
+        self.enabled_controller_gate = Some(gate);
+        self
     }
 
     fn toggles_visibility(mut self, target: &impl IsA<gtk::Widget>, gate: Rc<Cell<bool>>) -> Self {
@@ -368,7 +390,7 @@ impl<'a> PreferenceSpec<'a> {
         )
     }
 
-    fn enabled(&self, writable: bool, smart_insights_enabled: bool) -> bool {
+    fn sensitive(&self, writable: bool, smart_insights_enabled: bool) -> bool {
         preference_row_enabled(
             writable,
             smart_insights_enabled,
@@ -467,6 +489,9 @@ fn preference_group(
         .build();
     let mut search_group = SearchablePreferencesGroup::new(&group, title, description);
     let mut added = false;
+    let mut enabled_controllers: Vec<(Rc<Cell<bool>>, adw::SwitchRow)> = Vec::new();
+    let mut enabled_targets: Vec<(Rc<Cell<bool>>, gtk::Widget)> = Vec::new();
+
     for spec in rows {
         let writable = Preferences::key_for_action(spec.action_name)
             .map(|key| preferences.is_writable(key))
@@ -475,10 +500,34 @@ fn preference_group(
             continue;
         }
         let row = preference_row(spec, writable, smart_insights_enabled);
+        let row_widget = row.clone().upcast::<gtk::Widget>();
+        if let Some(gate) = &spec.enabled_controller_gate {
+            enabled_controllers.push((Rc::clone(gate), row.clone()));
+        }
+        if let Some(gate) = &spec.enabled_by_gate {
+            row_widget.set_sensitive(writable && gate.get());
+            enabled_targets.push((Rc::clone(gate), row_widget.clone()));
+        }
         search_group.add_row(&row, spec.title, spec.subtitle);
         group.add(&row);
         added = true;
     }
+
+    for (controller_gate, controller) in enabled_controllers {
+        let targets = enabled_targets
+            .iter()
+            .filter(|(target_gate, _)| Rc::ptr_eq(target_gate, &controller_gate))
+            .map(|(_, target)| target.clone())
+            .collect::<Vec<_>>();
+        controller.connect_active_notify(move |row| {
+            let active = row.is_active();
+            controller_gate.set(active);
+            targets
+                .iter()
+                .for_each(|target| target.set_sensitive(active));
+        });
+    }
+
     added.then_some((group, search_group))
 }
 
@@ -499,7 +548,6 @@ fn preference_row_enabled(
 ) -> bool {
     writable && (!requires_smart_insights || smart_insights_enabled)
 }
-
 fn preference_row(
     spec: &PreferenceSpec<'_>,
     writable: bool,
@@ -510,8 +558,9 @@ fn preference_row(
         .subtitle(tr(spec.subtitle))
         .build();
     row.set_active(spec.active);
-    if spec.enabled(writable, smart_insights_enabled) {
+    if writable {
         row.set_action_name(Some(spec.action_name));
+        row.set_sensitive(spec.sensitive(writable, smart_insights_enabled));
         if let Some(target) = spec.visibility_target.clone() {
             let visibility_gate = spec.visibility_gate.clone();
             row.connect_active_notify(move |row| {
@@ -524,12 +573,10 @@ fn preference_row(
         }
     } else {
         row.set_sensitive(false);
-        let message = if !writable {
-            "This preference is managed by the system."
-        } else {
-            "Enable Smart Insights to use this preference."
-        };
-        row.set_tooltip_text(Some(&tr(message)));
+        row.set_tooltip_text(Some(&tr("This preference is managed by the system.")));
+    }
+    if writable && spec.requires_smart_insights && !smart_insights_enabled {
+        row.set_tooltip_text(Some(&tr("Enable Smart Insights to use this preference.")));
     }
     row
 }
