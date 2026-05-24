@@ -2770,6 +2770,12 @@ msgstr "Alle wachtende bewerkingen toepassen"
 msgid "Operation added to queue."
 msgstr "Bewerking aan wachtrij toegevoegd."
 
+msgid "Operation is already in the processing queue."
+msgstr "Deze bewerking staat al in de verwerkingswachtrij."
+
+msgid "This operation is already in the processing queue."
+msgstr "Deze bewerking staat al in de verwerkingswachtrij."
+
 msgid "Processing queue: {count} pending"
 msgstr "Verwerkingswachtrij: {count} in wachtrij"
 

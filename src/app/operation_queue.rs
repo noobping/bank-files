@@ -16,6 +16,12 @@ pub(in crate::app) enum QueuedOperationStatus {
     Failed(String),
 }
 
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+pub(in crate::app) enum EnqueueOperationResult {
+    Queued(u64),
+    AlreadyQueued(u64),
+}
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub(in crate::app) enum QueuedOperationKind {
     Rule {
@@ -37,6 +43,24 @@ pub(in crate::app) struct OperationQueue {
     next_id: Rc<Cell<u64>>,
     operations: Rc<RefCell<Vec<QueuedOperation>>>,
     processing: Rc<Cell<bool>>,
+    action_registrations: Rc<RefCell<Vec<OperationQueueActionRegistration>>>,
+}
+
+#[derive(Clone)]
+struct OperationQueueActionRegistration {
+    owner: gtk::Widget,
+    target: OperationQueueActionTarget,
+    kind: QueuedOperationKind,
+    base_enabled: bool,
+    base_visible: bool,
+    base_tooltip: Option<String>,
+    was_rooted: Rc<Cell<bool>>,
+}
+
+#[derive(Clone)]
+enum OperationQueueActionTarget {
+    Widget(gtk::Widget),
+    MenuAction(gtk::gio::SimpleAction),
 }
 
 #[derive(Clone)]
@@ -68,6 +92,7 @@ impl OperationQueue {
             next_id: Rc::new(Cell::new(1)),
             operations: Rc::new(RefCell::new(Vec::new())),
             processing: Rc::new(Cell::new(false)),
+            action_registrations: Rc::new(RefCell::new(Vec::new())),
         }
     }
 
@@ -76,19 +101,36 @@ impl OperationQueue {
         rule: EditableRule,
         ensure_budget: bool,
         source: OperationSource,
-    ) -> u64 {
+    ) -> EnqueueOperationResult {
+        let kind = QueuedOperationKind::Rule {
+            rule,
+            ensure_budget,
+            source,
+        };
+        if let Some(id) = self.existing_operation_id(&kind) {
+            return EnqueueOperationResult::AlreadyQueued(id);
+        }
+
         let id = self.next_id.get();
         self.next_id.set(id.saturating_add(1));
         self.operations.borrow_mut().push(QueuedOperation {
             id,
-            kind: QueuedOperationKind::Rule {
-                rule,
-                ensure_budget,
-                source,
-            },
+            kind,
             status: QueuedOperationStatus::Pending,
         });
-        id
+        EnqueueOperationResult::Queued(id)
+    }
+
+    fn existing_operation_id(&self, kind: &QueuedOperationKind) -> Option<u64> {
+        self.operations
+            .borrow()
+            .iter()
+            .find(|operation| operation.kind == *kind)
+            .map(|operation| operation.id)
+    }
+
+    fn contains_kind(&self, kind: &QueuedOperationKind) -> bool {
+        self.existing_operation_id(kind).is_some()
     }
 
     pub(in crate::app) fn operations(&self) -> Vec<QueuedOperation> {
@@ -191,6 +233,19 @@ impl OperationQueue {
     }
 }
 
+impl EnqueueOperationResult {
+    pub(in crate::app) fn queued(self) -> bool {
+        matches!(self, Self::Queued(_))
+    }
+
+    #[cfg(test)]
+    fn id(self) -> u64 {
+        match self {
+            Self::Queued(id) | Self::AlreadyQueued(id) => id,
+        }
+    }
+}
+
 impl QueuedOperationStatus {
     fn is_actionable(&self) -> bool {
         matches!(self, Self::Pending | Self::Failed(_))
@@ -286,6 +341,124 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     }
 }
 
+pub(in crate::app) fn update_operation_queue_action_widgets(ui: &UiHandles) {
+    ui.operation_queue.update_registered_actions(ui);
+}
+
+pub(in crate::app) fn register_operation_queue_widget<W: IsA<gtk::Widget>>(
+    ui: &Rc<UiHandles>,
+    widget: &W,
+    kind: QueuedOperationKind,
+) {
+    let widget = widget.clone().upcast::<gtk::Widget>();
+    let registration = OperationQueueActionRegistration {
+        owner: widget.clone(),
+        target: OperationQueueActionTarget::Widget(widget.clone()),
+        kind,
+        base_enabled: widget.is_sensitive(),
+        base_visible: widget.is_visible(),
+        base_tooltip: widget.tooltip_text().map(|text| text.to_string()),
+        was_rooted: Rc::new(Cell::new(widget.root().is_some())),
+    };
+    apply_operation_queue_action_state(ui.as_ref(), &registration);
+    ui.operation_queue
+        .action_registrations
+        .borrow_mut()
+        .push(registration);
+}
+
+pub(in crate::app) fn register_operation_queue_menu_action<W: IsA<gtk::Widget>>(
+    ui: &Rc<UiHandles>,
+    owner: &W,
+    action: &gtk::gio::SimpleAction,
+    kind: QueuedOperationKind,
+) {
+    let owner = owner.clone().upcast::<gtk::Widget>();
+    let registration = OperationQueueActionRegistration {
+        owner: owner.clone(),
+        target: OperationQueueActionTarget::MenuAction(action.clone()),
+        kind,
+        base_enabled: action.is_enabled(),
+        base_visible: true,
+        base_tooltip: None,
+        was_rooted: Rc::new(Cell::new(owner.root().is_some())),
+    };
+    apply_operation_queue_action_state(ui.as_ref(), &registration);
+    ui.operation_queue
+        .action_registrations
+        .borrow_mut()
+        .push(registration);
+}
+
+fn operation_queue_action_registration_is_live(
+    registration: &OperationQueueActionRegistration,
+) -> bool {
+    let rooted = registration.owner.root().is_some();
+    if rooted {
+        registration.was_rooted.set(true);
+    }
+    rooted || !registration.was_rooted.get()
+}
+
+fn operation_queue_action_enabled(base_enabled: bool, queued: bool, config_enabled: bool) -> bool {
+    base_enabled && config_enabled && !queued
+}
+
+fn apply_operation_queue_action_state(
+    ui: &UiHandles,
+    registration: &OperationQueueActionRegistration,
+) {
+    let queued = ui.operation_queue.contains_kind(&registration.kind);
+    let config_idle = !ui.management_dialog_active.get() && ui.loading_count.get() == 0;
+    match &registration.target {
+        OperationQueueActionTarget::Widget(widget) => match config_write_availability(ui) {
+            ActionAvailability::Available => {
+                let enabled =
+                    operation_queue_action_enabled(registration.base_enabled, queued, config_idle);
+                widget.set_visible(registration.base_visible);
+                widget.set_sensitive(enabled);
+                if queued {
+                    widget.set_tooltip_text(Some(&tr(
+                        "This operation is already in the processing queue.",
+                    )));
+                } else {
+                    widget.set_tooltip_text(registration.base_tooltip.as_deref());
+                }
+            }
+            ActionAvailability::Hidden => {
+                widget.set_visible(false);
+                widget.set_sensitive(false);
+                widget.set_tooltip_text(None);
+            }
+            ActionAvailability::Disabled(reason) => {
+                widget.set_visible(registration.base_visible);
+                widget.set_sensitive(false);
+                widget.set_tooltip_text(Some(&tr(&reason)));
+            }
+        },
+        OperationQueueActionTarget::MenuAction(action) => {
+            let config_enabled =
+                matches!(config_write_availability(ui), ActionAvailability::Available)
+                    && config_idle;
+            action.set_enabled(operation_queue_action_enabled(
+                registration.base_enabled,
+                queued,
+                config_enabled,
+            ));
+        }
+    }
+}
+
+impl OperationQueue {
+    fn update_registered_actions(&self, ui: &UiHandles) {
+        let mut registrations = self.action_registrations.borrow_mut();
+        registrations.retain(operation_queue_action_registration_is_live);
+        for registration in registrations.iter() {
+            apply_operation_queue_action_state(ui, registration);
+        }
+    }
+}
+
 pub(in crate::app) fn connect_operation_queue(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
     let state_for_apply_all = Rc::clone(state);
     let ui_for_apply_all = Rc::clone(ui);
@@ -307,11 +480,15 @@ pub(in crate::app) fn enqueue_rule_operation(
     rule: EditableRule,
     ensure_budget: bool,
     source: OperationSource,
-) -> u64 {
-    let id = ui.operation_queue.enqueue_rule(rule, ensure_budget, source);
+) -> EnqueueOperationResult {
+    let result = ui.operation_queue.enqueue_rule(rule, ensure_budget, source);
     refresh_operation_queue_ui_for_active_session(ui);
-    show_status(ui, "Operation added to queue.");
-    id
+    if result.queued() {
+        show_status(ui, "Operation added to queue.");
+    } else {
+        show_status(ui, "Operation is already in the processing queue.");
+    }
+    result
 }
 
 fn refresh_operation_queue_ui_for_active_session(ui: &Rc<UiHandles>) {
@@ -333,6 +510,7 @@ pub(in crate::app) fn refresh_active_operation_queue_ui() {
 }
 
 fn refresh_operation_queue_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
+    update_operation_queue_action_widgets(ui.as_ref());
     let widgets = &ui.operation_queue_widgets;
     let actionable = ui.operation_queue.actionable_count();
     let applied = ui.operation_queue.applied_count();
@@ -1058,15 +1236,39 @@ mod tests {
         let first = queue.enqueue_rule(rule("alpha"), true, OperationSource::CreateRule);
         let second = queue.enqueue_rule(rule("beta"), true, OperationSource::ChangeBudgetCode);
 
-        assert_eq!(first, 1);
-        assert_eq!(second, 2);
+        assert_eq!(first, EnqueueOperationResult::Queued(1));
+        assert_eq!(second, EnqueueOperationResult::Queued(2));
         assert_eq!(queue.actionable_count(), 2);
+    }
+
+    #[test]
+    fn duplicate_rule_operations_are_not_enqueued_twice() {
+        let queue = OperationQueue::new();
+        let first = queue.enqueue_rule(rule("alpha"), true, OperationSource::CreateRule);
+        let duplicate = queue.enqueue_rule(rule("alpha"), true, OperationSource::CreateRule);
+        let other_source =
+            queue.enqueue_rule(rule("alpha"), true, OperationSource::ChangeBudgetCode);
+
+        assert_eq!(first, EnqueueOperationResult::Queued(1));
+        assert_eq!(duplicate, EnqueueOperationResult::AlreadyQueued(1));
+        assert_eq!(other_source, EnqueueOperationResult::Queued(2));
+        assert_eq!(queue.operations().len(), 2);
+    }
+
+    #[test]
+    fn queued_action_sensitivity_follows_duplicate_state() {
+        assert!(operation_queue_action_enabled(true, false, true));
+        assert!(!operation_queue_action_enabled(true, true, true));
+        assert!(!operation_queue_action_enabled(false, false, true));
+        assert!(!operation_queue_action_enabled(true, false, false));
     }
 
     #[test]
     fn pending_remove_deletes_item() {
         let queue = OperationQueue::new();
-        let id = queue.enqueue_rule(rule("alpha"), true, OperationSource::CreateRule);
+        let id = queue
+            .enqueue_rule(rule("alpha"), true, OperationSource::CreateRule)
+            .id();
 
         assert!(queue.remove(id));
         assert!(queue.operations().is_empty());
@@ -1075,7 +1277,9 @@ mod tests {
     #[test]
     fn applying_item_cannot_be_removed() {
         let queue = OperationQueue::new();
-        let id = queue.enqueue_rule(rule("alpha"), true, OperationSource::CreateRule);
+        let id = queue
+            .enqueue_rule(rule("alpha"), true, OperationSource::CreateRule)
+            .id();
 
         assert!(queue.mark_applying(id));
         assert!(!queue.remove(id));
@@ -1109,8 +1313,12 @@ mod tests {
     #[test]
     fn applied_and_failed_items_can_be_removed() {
         let queue = OperationQueue::new();
-        let applied = queue.enqueue_rule(rule("alpha"), true, OperationSource::CreateRule);
-        let failed = queue.enqueue_rule(rule("beta"), true, OperationSource::CreateRule);
+        let applied = queue
+            .enqueue_rule(rule("alpha"), true, OperationSource::CreateRule)
+            .id();
+        let failed = queue
+            .enqueue_rule(rule("beta"), true, OperationSource::CreateRule)
+            .id();
 
         queue.mark_applied(applied);
         queue.mark_failed(failed, "nope".to_string());
@@ -1172,9 +1380,15 @@ mod tests {
     #[test]
     fn clear_applied_removes_only_successful_items() {
         let queue = OperationQueue::new();
-        let applied = queue.enqueue_rule(rule("alpha"), true, OperationSource::CreateRule);
-        let failed = queue.enqueue_rule(rule("beta"), true, OperationSource::CreateRule);
-        let pending = queue.enqueue_rule(rule("gamma"), true, OperationSource::CreateRule);
+        let applied = queue
+            .enqueue_rule(rule("alpha"), true, OperationSource::CreateRule)
+            .id();
+        let failed = queue
+            .enqueue_rule(rule("beta"), true, OperationSource::CreateRule)
+            .id();
+        let pending = queue
+            .enqueue_rule(rule("gamma"), true, OperationSource::CreateRule)
+            .id();
 
         queue.mark_applied(applied);
         queue.mark_failed(failed, "nope".to_string());
@@ -1247,7 +1461,9 @@ mod tests {
     #[test]
     fn failed_item_can_be_retried() {
         let queue = OperationQueue::new();
-        let id = queue.enqueue_rule(rule("alpha"), true, OperationSource::CreateRule);
+        let id = queue
+            .enqueue_rule(rule("alpha"), true, OperationSource::CreateRule)
+            .id();
         queue.mark_failed(id, "nope".to_string());
 
         assert_eq!(queue.actionable_ids(), vec![id]);

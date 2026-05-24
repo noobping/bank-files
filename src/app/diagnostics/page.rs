@@ -1106,10 +1106,13 @@ fn show_transaction_pattern_rule_dialog(
             notes: notes.text().trim().to_string(),
         };
 
-        enqueue_rule_operation(&ui_for_save, rule, true, OperationSource::CreateRule);
-        button.set_sensitive(false);
-        status.set_text(&tr("Rule added to processing queue."));
-        dialog_for_save.close();
+        if enqueue_rule_operation(&ui_for_save, rule, true, OperationSource::CreateRule).queued() {
+            button.set_sensitive(false);
+            status.set_text(&tr("Rule added to processing queue."));
+            dialog_for_save.close();
+        } else {
+            status.set_text(&tr("Operation is already in the processing queue."));
+        }
     });
 
     dialog.present(Some(&ui_handles.window));

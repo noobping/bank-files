@@ -311,6 +311,7 @@ pub(in crate::app) fn refresh_write_actions(ui: &UiHandles) {
         ui.preferences.action_is_writable("remember-mode") && not_loading,
     );
     update_config_action_widgets(ui);
+    update_operation_queue_action_widgets(ui);
     update_loading_sensitive_widgets(ui);
 }
 

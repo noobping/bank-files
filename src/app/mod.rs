@@ -123,7 +123,9 @@ use money::{
 };
 use operation_queue::{
     build_operation_queue_widgets, connect_operation_queue, enqueue_rule_operation,
-    refresh_active_operation_queue_ui, OperationQueue, OperationQueueWidgets, OperationSource,
+    refresh_active_operation_queue_ui, register_operation_queue_menu_action,
+    register_operation_queue_widget, update_operation_queue_action_widgets, OperationQueue,
+    OperationQueueWidgets, OperationSource, QueuedOperationKind,
 };
 use overview::render_overview;
 use preferences::Preferences;

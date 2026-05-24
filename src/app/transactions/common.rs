@@ -316,6 +316,14 @@ fn transaction_detail_move_action_text(advanced_features: bool) -> (&'static str
     }
 }
 
+fn queued_rule_operation_kind(rule: EditableRule, source: OperationSource) -> QueuedOperationKind {
+    QueuedOperationKind::Rule {
+        rule,
+        ensure_budget: true,
+        source,
+    }
+}
+
 fn append_transaction_detail_menu_action<F>(
     menu: &gtk::gio::Menu,
     action_group: &gtk::gio::SimpleActionGroup,
@@ -323,7 +331,8 @@ fn append_transaction_detail_menu_action<F>(
     label: &str,
     enabled: bool,
     on_activate: F,
-) where
+) -> gtk::gio::SimpleAction
+where
     F: Fn() + 'static,
 {
     let action = gtk::gio::SimpleAction::new(action_name, None);
@@ -334,6 +343,7 @@ fn append_transaction_detail_menu_action<F>(
     let label = tr(label);
     let detailed_action = format!("transaction-detail.{action_name}");
     menu.append(Some(&label), Some(&detailed_action));
+    action
 }
 
 fn transaction_detail_actions(
@@ -429,6 +439,10 @@ fn transaction_detail_actions(
         if let Some(enabled) = config_menu_action_enabled {
             let tx_for_invalid = tx.clone();
             let ui_for_invalid = Rc::clone(ui_handles);
+            let invalid_operation = queued_rule_operation_kind(
+                invalid_auto_detection_rule_for_transaction(tx),
+                OperationSource::MarkInvalid,
+            );
             let invalid_button = ui::primary_text_icon_button(
                 "edit-undo-symbolic",
                 "Mark invalid",
@@ -436,6 +450,7 @@ fn transaction_detail_actions(
             );
             invalid_button.set_sensitive(enabled);
             register_config_widget(ui_handles, &invalid_button);
+            register_operation_queue_widget(ui_handles, &invalid_button, invalid_operation);
             invalid_button.connect_clicked(move |_| {
                 if transaction_detail_config_action_blocked(
                     &ui_for_invalid,
@@ -473,7 +488,11 @@ fn transaction_detail_actions(
         if let Some(enabled) = config_menu_action_enabled {
             let tx_for_invalid = tx.clone();
             let ui_for_invalid = Rc::clone(ui_handles);
-            append_transaction_detail_menu_action(
+            let invalid_operation = queued_rule_operation_kind(
+                invalid_auto_detection_rule_for_transaction(tx),
+                OperationSource::MarkInvalid,
+            );
+            let action = append_transaction_detail_menu_action(
                 &menu,
                 &menu_actions,
                 "mark-invalid",
@@ -488,6 +507,12 @@ fn transaction_detail_actions(
                     }
                     apply_invalid_auto_detection_rule(&tx_for_invalid, &ui_for_invalid);
                 },
+            );
+            register_operation_queue_menu_action(
+                ui_handles,
+                &primary_actions,
+                &action,
+                invalid_operation,
             );
             has_menu_items = true;
         }
@@ -518,7 +543,11 @@ fn transaction_detail_actions(
         if let Some(enabled) = config_menu_action_enabled {
             let tx_for_transfer = tx.clone();
             let ui_for_transfer = Rc::clone(ui_handles);
-            append_transaction_detail_menu_action(
+            let transfer_operation = queued_rule_operation_kind(
+                editable_rule_for_transaction(tx, Some("transfer")),
+                OperationSource::MarkTransfer,
+            );
+            let action = append_transaction_detail_menu_action(
                 &menu,
                 &menu_actions,
                 "mark-transfer",
@@ -537,6 +566,12 @@ fn transaction_detail_actions(
                         &ui_for_transfer,
                     );
                 },
+            );
+            register_operation_queue_menu_action(
+                ui_handles,
+                &primary_actions,
+                &action,
+                transfer_operation,
             );
             has_menu_items = true;
         }
@@ -752,10 +787,13 @@ fn show_transaction_rule_dialog(
             notes: notes.text().trim().to_string(),
         };
 
-        enqueue_rule_operation(&ui_for_save, rule, true, OperationSource::CreateRule);
-        button.set_sensitive(false);
-        status.set_text(&tr("Rule added to processing queue."));
-        dialog_for_save.close();
+        if enqueue_rule_operation(&ui_for_save, rule, true, OperationSource::CreateRule).queued() {
+            button.set_sensitive(false);
+            status.set_text(&tr("Rule added to processing queue."));
+            dialog_for_save.close();
+        } else {
+            status.set_text(&tr("Operation is already in the processing queue."));
+        }
     });
 
     dialog.present(Some(&ui_handles.window));
@@ -1144,17 +1182,22 @@ fn show_transaction_budget_code_dialog(
         let dialog_for_confirm = dialog_for_save.clone();
         let dialog_for_save = dialog_for_save.clone();
         confirm_budget_direction_changes(&dialog_for_confirm, direction_changes, move || {
-            enqueue_rule_operation(&ui_for_save, rule, true, OperationSource::ChangeBudgetCode);
-            button.set_sensitive(false);
-            set_action_status(
-                &status,
-                if advanced_features {
-                    "Budget code move added to processing queue."
-                } else {
-                    "Category move added to processing queue."
-                },
-            );
-            dialog_for_save.close();
+            if enqueue_rule_operation(&ui_for_save, rule, true, OperationSource::ChangeBudgetCode)
+                .queued()
+            {
+                button.set_sensitive(false);
+                set_action_status(
+                    &status,
+                    if advanced_features {
+                        "Budget code move added to processing queue."
+                    } else {
+                        "Category move added to processing queue."
+                    },
+                );
+                dialog_for_save.close();
+            } else {
+                set_action_status(&status, "Operation is already in the processing queue.");
+            }
         });
     });
 

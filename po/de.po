@@ -2770,6 +2770,12 @@ msgstr "Alle ausstehenden Vorgänge anwenden"
 msgid "Operation added to queue."
 msgstr "Vorgang zur Warteschlange hinzugefügt."
 
+msgid "Operation is already in the processing queue."
+msgstr "Dieser Vorgang befindet sich bereits in der Verarbeitungswarteschlange."
+
+msgid "This operation is already in the processing queue."
+msgstr "Dieser Vorgang befindet sich bereits in der Verarbeitungswarteschlange."
+
 msgid "Processing queue: {count} pending"
 msgstr "Verarbeitungswarteschlange: {count} ausstehend"
 
