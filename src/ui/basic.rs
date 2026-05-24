@@ -177,7 +177,7 @@ pub struct MoreListRow {
 pub fn more_list_row(title: &str, tooltip: &str) -> MoreListRow {
     let container = adw::PreferencesGroup::new();
     container.set_margin_top(4);
-    container.set_margin_bottom(4);
+    container.set_margin_bottom(18);
     container.set_margin_start(4);
     container.set_margin_end(4);
 
