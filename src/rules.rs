@@ -20,11 +20,6 @@ const DEFAULT_BUDGETS_NL: &str = include_str!("../data/defaults/budgetcodes.nl.c
 const DEFAULT_BUDGETS_DE: &str = include_str!("../data/defaults/budgetcodes.de.csv");
 const AUTO_DETECTED_CATEGORY_NOTE: &str = "Auto detected from built-in category keywords.";
 const GENERATED_AUTOMATIC_NOTE: &str = "Generated from configuration generation.";
-const LEGACY_GENERATED_AUTOMATIC_NOTES: &[&str] = &[
-    "Generated from automatic configuration.",
-    "Gegenereerd door automatische configuratie.",
-    "Aus automatischer Konfiguration erzeugt.",
-];
 const GENERATED_PATTERN_NOTE: &str = "Generated from detected transaction pattern.";
 const LOCAL_AI_NOTE: &str = "Generated with local AI smart insights.";
 
@@ -171,7 +166,6 @@ fn note_is_auto_detection(note: &str) -> bool {
         LOCAL_AI_NOTE,
     ]
     .into_iter()
-    .chain(LEGACY_GENERATED_AUTOMATIC_NOTES.iter().copied())
     .any(|expected| note_matches(note, expected))
 }
 
@@ -587,10 +581,6 @@ mod tests {
         manual.notes = "Manual override".to_string();
 
         assert!(transaction_classification_is_auto_detected(&auto));
-        for note in LEGACY_GENERATED_AUTOMATIC_NOTES {
-            auto.notes = note.to_string();
-            assert!(transaction_classification_is_auto_detected(&auto));
-        }
         assert!(!transaction_classification_is_auto_detected(&manual));
     }
 
