@@ -289,6 +289,33 @@ fn transaction_detail_config_action_blocked(
     }
 }
 
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+enum TransactionDetailActionPlacement {
+    Primary,
+    Menu,
+}
+
+fn transaction_detail_move_budget_code_placement(
+    auto_detected_transfer: bool,
+) -> TransactionDetailActionPlacement {
+    if auto_detected_transfer {
+        TransactionDetailActionPlacement::Menu
+    } else {
+        TransactionDetailActionPlacement::Primary
+    }
+}
+
+fn transaction_detail_move_action_text(advanced_features: bool) -> (&'static str, &'static str) {
+    if advanced_features {
+        (
+            "Move Budget Code",
+            "Move this transaction to another budget code",
+        )
+    } else {
+        ("Move Category", "Move this transaction to another category")
+    }
+}
+
 fn append_transaction_detail_menu_action<F>(
     menu: &gtk::gio::Menu,
     action_group: &gtk::gio::SimpleActionGroup,
@@ -347,19 +374,16 @@ fn transaction_detail_actions(
         auto_detected_classification,
     );
     let config_menu_action_enabled = transaction_detail_config_action_enabled(ui_handles.as_ref());
+    let move_budget_code_placement =
+        transaction_detail_move_budget_code_placement(auto_detected_transfer);
 
-    if visible_actions.contains(&TransactionDetailAction::MoveBudgetCode) {
+    if visible_actions.contains(&TransactionDetailAction::MoveBudgetCode)
+        && move_budget_code_placement == TransactionDetailActionPlacement::Primary
+    {
         let tx_for_change = tx.clone();
         let state_for_change = Rc::clone(state);
         let ui_for_change = Rc::clone(ui_handles);
-        let (move_label, move_tooltip) = if advanced_features {
-            (
-                "Move Budget Code",
-                "Move this transaction to another budget code",
-            )
-        } else {
-            ("Move Category", "Move this transaction to another category")
-        };
+        let (move_label, move_tooltip) = transaction_detail_move_action_text(advanced_features);
         let move_button =
             ui::primary_text_icon_button("send-to-symbolic", move_label, move_tooltip);
         register_config_widget(ui_handles, &move_button);
@@ -367,6 +391,38 @@ fn transaction_detail_actions(
             show_transaction_budget_code_dialog(&tx_for_change, &state_for_change, &ui_for_change);
         });
         primary_actions.append(&move_button);
+    }
+
+    if visible_actions.contains(&TransactionDetailAction::MoveBudgetCode)
+        && move_budget_code_placement == TransactionDetailActionPlacement::Menu
+    {
+        if let Some(enabled) = config_menu_action_enabled {
+            let tx_for_change = tx.clone();
+            let state_for_change = Rc::clone(state);
+            let ui_for_change = Rc::clone(ui_handles);
+            let (move_label, _) = transaction_detail_move_action_text(advanced_features);
+            append_transaction_detail_menu_action(
+                &menu,
+                &menu_actions,
+                "move-budget-code",
+                move_label,
+                enabled,
+                move || {
+                    if transaction_detail_config_action_blocked(
+                        &ui_for_change,
+                        "Another edit or save is already running.",
+                    ) {
+                        return;
+                    }
+                    show_transaction_budget_code_dialog(
+                        &tx_for_change,
+                        &state_for_change,
+                        &ui_for_change,
+                    );
+                },
+            );
+            has_menu_items = true;
+        }
     }
 
     if visible_actions.contains(&TransactionDetailAction::MarkInvalid) && auto_detected_transfer {
@@ -1935,6 +1991,18 @@ mod tests {
         assert!(
             visible_transaction_detail_actions(true, true, false, true, true)
                 .contains(&TransactionDetailAction::MarkInvalid)
+        );
+    }
+
+    #[test]
+    fn auto_detected_transfers_move_budget_code_action_to_menu() {
+        assert_eq!(
+            transaction_detail_move_budget_code_placement(false),
+            TransactionDetailActionPlacement::Primary
+        );
+        assert_eq!(
+            transaction_detail_move_budget_code_placement(true),
+            TransactionDetailActionPlacement::Menu
         );
     }
 
