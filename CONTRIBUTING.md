@@ -105,6 +105,11 @@ A shared builder should handle common configuration, defaults, styling, behavior
 - UI files are for structure, layout, widgets, and bindings; Rust is for behavior, state, validation, services, workers, and data flow.
 - Do not hide business logic, IO, threading, or complex behavior in UI files.
 - Keep UI accessible and keyboard-friendly.
+- The same action must behave the same everywhere in the app.
+- Keyboard shortcuts must be consistent across screens.
+- If `Ctrl+F` toggles search visibility in one place, it must toggle search visibility everywhere search is available.
+- Do not make the same shortcut show-only in one screen and show/hide in another.
+- Shared actions such as search, refresh, save, cancel, delete, edit, and navigation should use shared action handlers where practical.
 
 ## Buttons
 
@@ -162,6 +167,7 @@ Do not skip tests just because code is internal. If behavior matters, test it.
 - [ ] Tiny or over-fragmented files are merged when that makes the code simpler.
 - [ ] Repeated setup code uses shared builders, helpers, or clear patterns.
 - [ ] Buttons follow suggested/destructive/header/menu rules.
+- [ ] Shared actions and shortcuts behave consistently across screens.
 - [ ] Useful tests cover normal behavior, edge cases, error cases, and regressions.
 - [ ] Blocking work is off the main thread.
 - [ ] `cargo fmt`, `cargo clippy`, and `cargo test` pass.
