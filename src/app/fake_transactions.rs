@@ -128,26 +128,25 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
 
     let header = ui::cancelable_dialog_header("Fake Transactions", "Runtime preview transactions");
 
-    let search_button = ui::icon_button("edit-find-symbolic", "Search fake transactions");
-    search_button.add_css_class("flat");
     let clear_button = ui::icon_button("edit-clear-symbolic", "Clear fake transactions");
     clear_button.add_css_class("flat");
     clear_button.set_valign(gtk::Align::Start);
 
     let back_button = ui::icon_button("go-previous-symbolic", "Back to fake transactions");
     back_button.add_css_class("flat");
+    let add_button = ui::icon_button("list-add-symbolic", "New fake transaction");
+    add_button.add_css_class("flat");
+
     let start_stack = gtk::Stack::builder()
         .transition_type(gtk::StackTransitionType::Crossfade)
         .build();
-    start_stack.add_named(&back_button, Some("back"));
-
-    let add_button = ui::plain_text_icon_button("list-add-symbolic", "New", "New fake transaction");
-    add_button.add_css_class("flat");
-    start_stack.add_named(&add_button, Some("add"));
-    start_stack.set_visible_child_name("add");
+    start_stack.add_named(&add_button, Some("list"));
+    start_stack.add_named(&back_button, Some("form"));
+    start_stack.set_visible_child_name("list");
     header.pack_start(&start_stack);
 
-    let save_button = ui::primary_text_icon_button("document-save-symbolic", "Save", "Save fake transaction");
+    let save_button =
+        ui::primary_text_icon_button("document-save-symbolic", "Save", "Save fake transaction");
     save_button.set_visible(false);
     header.pack_end(&save_button);
 
@@ -167,7 +166,6 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     search_box.append(&search_entry);
     search_bar.set_child(Some(&search_box));
     search_bar.connect_entry(&search_entry);
-    ui::connect_search_button(&search_button, &search_bar, &search_entry);
 
     let summary = gtk::Label::new(None);
     summary.add_css_class("dim-label");
@@ -359,8 +357,7 @@ fn show_fake_transaction_list(widgets: &FakeTransactionWidgets) {
     widgets
         .stack
         .set_visible_child_name(FAKE_TRANSACTIONS_LIST_PAGE);
-    widgets.start_stack.set_visible_child_name("add");
-    widgets.add_button.set_visible(true);
+    widgets.start_stack.set_visible_child_name("list");
     widgets.save_button.set_visible(false);
     widgets.dialog.set_default_widget(Some(&widgets.add_button));
     widgets.form_state.borrow_mut().take();
@@ -371,8 +368,7 @@ fn show_fake_transaction_form_page(widgets: &FakeTransactionWidgets) {
     widgets
         .stack
         .set_visible_child_name(FAKE_TRANSACTIONS_FORM_PAGE);
-    widgets.start_stack.set_visible_child_name("back");
-    widgets.add_button.set_visible(false);
+    widgets.start_stack.set_visible_child_name("form");
     widgets.save_button.set_visible(true);
     widgets
         .dialog
