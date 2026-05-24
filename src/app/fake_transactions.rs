@@ -146,14 +146,11 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     start_stack.set_visible_child_name("search");
     header.pack_start(&start_stack);
 
-    let add_button = ui::plain_text_icon_button("list-add-symbolic", "New", "Add fake transaction");
+    let add_button = ui::plain_text_icon_button("list-add-symbolic", "New", "New fake transaction");
     add_button.add_css_class("flat");
     let save_button =
         ui::primary_text_icon_button("document-save-symbolic", "Save", "Save fake transaction");
-
-    let list_actions = ui::linked_button_group();
-    list_actions.append(&add_button);
-    header.pack_end(&list_actions);
+    header.pack_end(&add_button);
 
     let form_actions = ui::linked_button_group();
     form_actions.append(&save_button);
