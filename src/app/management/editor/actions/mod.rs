@@ -20,9 +20,9 @@ pub(in crate::app::management::editor) use connect::connect_management_dialog_ac
 pub(in crate::app::management::editor) struct ManagementDialogActions<'a> {
     pub(in crate::app::management::editor) management_dialog: &'a adw::Dialog,
     pub(in crate::app::management::editor) add_button: &'a gtk::Button,
-    pub(in crate::app::management::editor) add_rule_button: &'a gtk::Button,
-    pub(in crate::app::management::editor) add_budget_button: &'a gtk::Button,
-    pub(in crate::app::management::editor) add_alias_button: &'a gtk::Button,
+    pub(in crate::app::management::editor) add_rule_row: &'a adw::ActionRow,
+    pub(in crate::app::management::editor) add_budget_row: &'a adw::ActionRow,
+    pub(in crate::app::management::editor) add_alias_row: &'a adw::ActionRow,
     pub(in crate::app::management::editor) group_rules_action: &'a gtk::gio::SimpleAction,
     pub(in crate::app::management::editor) combine_rules_action: &'a gtk::gio::SimpleAction,
     pub(in crate::app::management::editor) move_budget_code_action: &'a gtk::gio::SimpleAction,

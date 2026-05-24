@@ -66,7 +66,7 @@ fn connect_rule_add_action(actions: &ManagementDialogActions<'_>) {
     let filter_entry = actions.filter_entry.clone();
     let advanced_autofill = Rc::clone(&actions.ui_handles.advanced_autofill);
 
-    actions.add_rule_button.connect_clicked(move |_| {
+    actions.add_rule_row.connect_activated(move |_| {
         show_new_rule_dialog(
             &management_dialog,
             &rules_list,
@@ -89,7 +89,7 @@ fn connect_budget_add_action(actions: &ManagementDialogActions<'_>) {
     let advanced_autofill = Rc::clone(&actions.ui_handles.advanced_autofill);
     let ui_handles = Rc::clone(actions.ui_handles);
 
-    actions.add_budget_button.connect_clicked(move |_| {
+    actions.add_budget_row.connect_activated(move |_| {
         show_new_budget_dialog(NewBudgetDialogRequest {
             parent: &management_dialog,
             container: &budgets_list,
@@ -111,7 +111,7 @@ fn connect_alias_add_action(actions: &ManagementDialogActions<'_>) {
     let status = actions.status.clone();
     let filter_entry = actions.filter_entry.clone();
 
-    actions.add_alias_button.connect_clicked(move |_| {
+    actions.add_alias_row.connect_activated(move |_| {
         show_new_alias_dialog(
             &management_dialog,
             &aliases_list,

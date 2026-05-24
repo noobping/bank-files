@@ -205,15 +205,28 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="management_add_rule_button">
-                            <property name="halign">end</property>
-                            <property name="tooltip-text" translatable="yes">Create a new rule</property>
-                            <property name="child">
-                              <object class="AdwButtonContent">
-                                <property name="icon-name">list-add-symbolic</property>
-                                <property name="label" translatable="yes">New Rule</property>
+                          <object class="AdwPreferencesGroup">
+                            <property name="margin-top">4</property>
+                            <property name="margin-bottom">4</property>
+                            <property name="margin-start">4</property>
+                            <property name="margin-end">4</property>
+                            <child>
+                              <object class="AdwActionRow" id="management_add_rule_row">
+                                <property name="title" translatable="yes">New Rule</property>
+                                <property name="tooltip-text" translatable="yes">Create a new rule</property>
+                                <property name="activatable">True</property>
+                                <child type="prefix">
+                                  <object class="GtkImage">
+                                    <property name="icon-name">list-add-symbolic</property>
+                                  </object>
+                                </child>
+                                <child type="suffix">
+                                  <object class="GtkImage">
+                                    <property name="icon-name">go-next-symbolic</property>
+                                  </object>
+                                </child>
                               </object>
-                            </property>
+                            </child>
                           </object>
                         </child>
 
@@ -311,15 +324,28 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="management_add_budget_button">
-                            <property name="halign">end</property>
-                            <property name="tooltip-text" translatable="yes">Create a new budget</property>
-                            <property name="child">
-                              <object class="AdwButtonContent" id="management_add_budget_content">
-                                <property name="icon-name">list-add-symbolic</property>
-                                <property name="label" translatable="yes">New Budget</property>
+                          <object class="AdwPreferencesGroup">
+                            <property name="margin-top">4</property>
+                            <property name="margin-bottom">4</property>
+                            <property name="margin-start">4</property>
+                            <property name="margin-end">4</property>
+                            <child>
+                              <object class="AdwActionRow" id="management_add_budget_row">
+                                <property name="title" translatable="yes">New Budget</property>
+                                <property name="tooltip-text" translatable="yes">Create a new budget</property>
+                                <property name="activatable">True</property>
+                                <child type="prefix">
+                                  <object class="GtkImage">
+                                    <property name="icon-name">list-add-symbolic</property>
+                                  </object>
+                                </child>
+                                <child type="suffix">
+                                  <object class="GtkImage">
+                                    <property name="icon-name">go-next-symbolic</property>
+                                  </object>
+                                </child>
                               </object>
-                            </property>
+                            </child>
                           </object>
                         </child>
 
@@ -420,15 +446,28 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton" id="management_add_alias_button">
-                            <property name="halign">end</property>
-                            <property name="tooltip-text" translatable="yes">Create a new field name</property>
-                            <property name="child">
-                              <object class="AdwButtonContent">
-                                <property name="icon-name">list-add-symbolic</property>
-                                <property name="label" translatable="yes">New Field Name</property>
+                          <object class="AdwPreferencesGroup">
+                            <property name="margin-top">4</property>
+                            <property name="margin-bottom">4</property>
+                            <property name="margin-start">4</property>
+                            <property name="margin-end">4</property>
+                            <child>
+                              <object class="AdwActionRow" id="management_add_alias_row">
+                                <property name="title" translatable="yes">New Field Name</property>
+                                <property name="tooltip-text" translatable="yes">Create a new field name</property>
+                                <property name="activatable">True</property>
+                                <child type="prefix">
+                                  <object class="GtkImage">
+                                    <property name="icon-name">list-add-symbolic</property>
+                                  </object>
+                                </child>
+                                <child type="suffix">
+                                  <object class="GtkImage">
+                                    <property name="icon-name">go-next-symbolic</property>
+                                  </object>
+                                </child>
                               </object>
-                            </property>
+                            </child>
                           </object>
                         </child>
 
