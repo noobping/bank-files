@@ -82,13 +82,17 @@ src/
     messages.rs
 ```
 
-## Dialogs
+## Shared builders and repeated UI
 
-All dialogs must use one shared dialog builder.
+Dialogs are an example of a broader rule: repeated setup code must be centralized.
 
-Do not duplicate dialog setup code.
+Use shared builders, helpers, or patterns for repeated UI and object construction.
 
-The shared builder should handle titles, body text, buttons, suggested actions, destructive actions, cancellation, parent windows, defaults, keyboard behavior, and accessibility labels.
+This applies to dialogs, rows, pages, forms, toolbars, actions, menus, workers, services, and other repeated structures.
+
+Do not duplicate setup code across the project.
+
+A shared builder should handle common configuration, defaults, styling, behavior, keyboard behavior, and accessibility labels where relevant.
 
 ## GTK/libadwaita UI
 
@@ -152,7 +156,7 @@ Do not skip tests just because code is internal. If behavior matters, test it.
 - [ ] Related files are grouped with `mod.rs`.
 - [ ] No folder exists only to hold one file unless clearly justified.
 - [ ] Tiny or over-fragmented files are merged when that makes the code simpler.
-- [ ] Dialogs use the shared dialog builder.
+- [ ] Repeated setup code uses shared builders, helpers, or clear patterns.
 - [ ] Buttons follow suggested/destructive/header/menu rules.
 - [ ] Useful tests cover normal behavior, edge cases, error cases, and regressions.
 - [ ] Blocking work is off the main thread.
