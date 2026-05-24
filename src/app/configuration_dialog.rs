@@ -99,12 +99,12 @@ fn configuration_snapshot_rows(
 
     rows.extend([
         vec![
-            tr("Automatic Configuration"),
+            tr("Configuration Templates"),
             tr("Use Default Configuration"),
             tr("Replace rules, budgets, and field names with the built-in defaults."),
         ],
         vec![
-            tr("Automatic Configuration"),
+            tr("Configuration Templates"),
             tr("Use Empty Configuration"),
             tr("Remove all rules and budget codes while keeping CSV field names for imports."),
         ],
@@ -187,7 +187,7 @@ fn automatic_configuration_group(
     ui_handles: &Rc<UiHandles>,
     status: StatusHandle,
 ) -> (adw::PreferencesGroup, SearchablePreferencesGroup) {
-    let title = "Automatic Configuration";
+    let title = "Configuration Templates";
     let description = "Use the built-in defaults or start with an empty configuration.";
     let group = adw::PreferencesGroup::builder()
         .title(tr(title))

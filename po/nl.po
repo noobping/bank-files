@@ -1479,9 +1479,6 @@ msgstr "Kon budgetten niet genereren: {error}"
 msgid "Generated from imported transactions over {count} imported months on {date}."
 msgstr "Gegenereerd uit geimporteerde transacties over {count} geimporteerde maanden op {date}."
 
-msgid "Generated from automatic configuration."
-msgstr "Gegenereerd door automatische configuratie."
-
 msgid "Generated from detected transfers."
 msgstr "Gegenereerd uit gedetecteerde overboekingen."
 
@@ -2358,7 +2355,6 @@ msgstr "Kies een ander jaar of importeer CSV-bestanden voor deze periode."
 msgid "Repeating payments, possible transfers, refunds, and offsetting groups detected in {year}."
 msgstr "Herhalende betalingen, mogelijke overboekingen, terugbetalingen en compenserende groepen gevonden in {year}."
 
-
 msgid "Configuration"
 msgstr "Configuratie"
 
@@ -2394,9 +2390,6 @@ msgstr "Configuratieback-up herstellen"
 
 msgid "Restore rules, budgets, and field names from the backup."
 msgstr "Herstel regels, budgetten en veldnamen uit de back-up."
-
-msgid "Automatic Configuration"
-msgstr "Automatische configuratie"
 
 msgid "Generate configuration from imported transactions, use defaults, or start clean."
 msgstr "Genereer configuratie uit geimporteerde transacties, gebruik standaarden of begin leeg."
@@ -2461,9 +2454,6 @@ msgstr "De laatste voorkeurmelding."
 msgid "Generating configuration from transactions..."
 msgstr "Configuratie uit transacties genereren..."
 
-msgid "Automatic Configuration uses complete imported calendar years for budget amounts and ignores incomplete years."
-msgstr "Automatische configuratie gebruikt volledige geimporteerde kalenderjaren voor budgetbedragen en negeert onvolledige jaren."
-
 msgid "Analysing loaded transactions, yearly comparisons, recurring patterns, transfers, and field mappings..."
 msgstr "Geladen transacties, jaarvergelijkingen, terugkerende patronen, overboekingen en veldkoppelingen analyseren..."
 
@@ -2490,12 +2480,6 @@ msgstr "Slimme inzichten zijn uitgeschakeld. Online bedrijfsverrijking en extra 
 
 msgid "Smart Insights are disabled. Extra pattern hints are skipped."
 msgstr "Slimme inzichten zijn uitgeschakeld. Extra patroonhints worden overgeslagen."
-
-msgid "Automatic Configuration uses local transactions only in this build."
-msgstr "Automatische configuratie gebruikt in deze build alleen lokale transacties."
-
-msgid "Online Smart Insights are off by default. Automatic Configuration uses only local transactions, and no merchant names or transaction fields are sent."
-msgstr "Online slimme inzichten staan standaard uit. Automatische configuratie gebruikt alleen lokale transacties; er worden geen bedrijfsnamen of transactievelden verzonden."
 
 msgid "Online Smart Insights are enabled, but no network connection is available. External merchant lookups are skipped, and no transaction data is sent."
 msgstr "Online slimme inzichten zijn ingeschakeld, maar er is geen netwerkverbinding beschikbaar. Externe bedrijfsopzoekingen worden overgeslagen en er worden geen transactiegegevens verzonden."
@@ -3352,9 +3336,6 @@ msgstr "{count} geopende CSV-bestand(en): {files}"
 msgid "These are remembered app copies or live CSV files for this session. Removing a live CSV only forgets it for this session."
 msgstr "Dit zijn onthouden appkopieën of live CSV-bestanden voor deze sessie. Een live CSV verwijderen vergeet die alleen voor deze sessie."
 
-msgid "Online Smart Insights are not available in this build. Automatic Configuration uses only local transactions."
-msgstr "Online Smart Insights zijn niet beschikbaar in deze build. Automatische configuratie gebruikt alleen lokale transacties."
-
 msgid "Search filters"
 msgstr "Zoekfilters"
 
@@ -3459,3 +3440,39 @@ msgstr "Classificatie"
 
 msgid "Auto detected from built-in category keywords."
 msgstr "Automatisch gedetecteerd op basis van ingebouwde categorietrefwoorden."
+
+msgid "Generated from configuration generation."
+msgstr "Gegenereerd door configuratiegeneratie."
+
+msgid "Configuration Templates"
+msgstr "Configuratiesjablonen"
+
+msgid "Use the built-in defaults or start with an empty configuration."
+msgstr "Gebruik de ingebouwde standaardwaarden of begin met een lege configuratie."
+
+msgid "Try Smart Insights and local AI assisted configuration actions."
+msgstr "Probeer configuratieacties met Slimme inzichten en lokale AI."
+
+msgid "Enable Smart Insights to generate configuration from transactions."
+msgstr "Schakel Slimme inzichten in om configuratie uit transacties te genereren."
+
+msgid "Requires Smart Insights. Enable Smart Insights to generate configuration from transactions."
+msgstr "Vereist Slimme inzichten. Schakel Slimme inzichten in om configuratie uit transacties te genereren."
+
+msgid "Configuration generation needs Smart Insights. Enable Smart Insights to generate configuration from transactions."
+msgstr "Configuratiegeneratie vereist Slimme inzichten. Schakel Slimme inzichten in om configuratie uit transacties te genereren."
+
+msgid "Configuration generation requires Smart Insights."
+msgstr "Configuratiegeneratie vereist Slimme inzichten."
+
+msgid "Configuration generation uses complete imported calendar years for budget amounts and ignores incomplete years."
+msgstr "Configuratiegeneratie gebruikt volledige geimporteerde kalenderjaren voor budgetbedragen en negeert onvolledige jaren."
+
+msgid "Configuration generation uses local transactions only in this build."
+msgstr "Configuratiegeneratie gebruikt in deze build alleen lokale transacties."
+
+msgid "Online Smart Insights are off by default. Configuration generation uses only local transactions, and no merchant names or transaction fields are sent."
+msgstr "Online slimme inzichten staan standaard uit. Configuratiegeneratie gebruikt alleen lokale transacties; er worden geen bedrijfsnamen of transactievelden verzonden."
+
+msgid "Online Smart Insights are not available in this build. Configuration generation uses only local transactions."
+msgstr "Online Smart Insights zijn niet beschikbaar in deze build. Configuratiegeneratie gebruikt alleen lokale transacties."

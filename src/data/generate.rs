@@ -10,8 +10,8 @@ const TRANSFER_CODE: &str = "TRANSFER";
 const PLANNED_INCOME_CODE: &str = "INC";
 const GENERATED_NOTE: &str =
     "Generated from {count} complete imported year(s), covering {months} month(s), on {date}.";
-const GENERATED_RULE_NOTE: &str = "Generated from automatic configuration.";
-const SMART_INSIGHTS_REQUIRED_MESSAGE: &str = "Automatic Configuration requires Smart Insights.";
+const GENERATED_RULE_NOTE: &str = "Generated from configuration generation.";
+const SMART_INSIGHTS_REQUIRED_MESSAGE: &str = "Configuration generation requires Smart Insights.";
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct GeneratedConfigurationSummary {

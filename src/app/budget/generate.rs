@@ -13,11 +13,11 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
         show_config_status(
             ui.as_ref(),
             dialog_status.as_ref(),
-            "Automatic Configuration needs Smart Insights. Enable Smart Insights to generate configuration from transactions.",
+            "Configuration generation needs Smart Insights. Enable Smart Insights to generate configuration from transactions.",
         );
         show_verbose_status(
             ui.as_ref(),
-            "automatic configuration skipped; smart insights disabled",
+            "configuration generation skipped; smart insights disabled",
         );
         return;
     }
@@ -39,7 +39,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
     show_verbose_status(
         ui.as_ref(),
         format!(
-            "automatic configuration requested; loaded_scope={:?}; transactions={}; smart_insights={smart_insights_enabled}",
+            "configuration generation requested; loaded_scope={:?}; transactions={}; smart_insights={smart_insights_enabled}",
             snapshot.loaded_scope,
             snapshot.transactions.len(),
         ),
@@ -54,7 +54,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
     show_config_status(
         ui.as_ref(),
         dialog_status.as_ref(),
-        "Automatic Configuration uses complete imported calendar years for budget amounts and ignores incomplete years.",
+        "Configuration generation uses complete imported calendar years for budget amounts and ignores incomplete years.",
     );
     show_smart_enrichment_status(ui.as_ref(), dialog_status.as_ref());
     let analysis_message = match (
@@ -130,7 +130,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 show_verbose_status(
                     ui_for_generate.as_ref(),
                     format!(
-                        "automatic configuration generated; years={}; months={}; budgets={}; rules={}; fields={}; hidden={}",
+                        "configuration generation finished; years={}; months={}; budgets={}; rules={}; fields={}; hidden={}",
                         summary.complete_years,
                         summary.budget_months,
                         summary.budgets,
@@ -161,7 +161,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 show_config_status_text(ui_for_generate.as_ref(), dialog_status.as_ref(), &message);
             }
             Ok(Ok(GeneratedConfigurationOutcome::None { ai_status })) => {
-                show_verbose_status(ui_for_generate.as_ref(), "automatic configuration generated no changes");
+                show_verbose_status(ui_for_generate.as_ref(), "configuration generation finished with no changes");
                 if let Some(status) = ai_status {
                     show_config_status_text(ui_for_generate.as_ref(), dialog_status.as_ref(), &status);
                 }
@@ -174,7 +174,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
             Ok(Err(error)) => {
                 show_verbose_status(
                     ui_for_generate.as_ref(),
-                    format!("automatic configuration failed; error={error:#}"),
+                    format!("configuration generation failed; error={error:#}"),
                 );
                 let message = trf(
                     "Could not generate configuration: {error}",
@@ -183,7 +183,7 @@ pub(in crate::app) fn generate_configuration_from_transactions_with_status(
                 show_config_status_text(ui_for_generate.as_ref(), dialog_status.as_ref(), &message);
             }
             Err(_) => {
-                show_verbose_status(ui_for_generate.as_ref(), "automatic configuration task canceled");
+                show_verbose_status(ui_for_generate.as_ref(), "configuration generation task canceled");
                 show_config_status(
                     ui_for_generate.as_ref(),
                 dialog_status.as_ref(),
@@ -245,7 +245,7 @@ fn show_smart_enrichment_status(ui: &UiHandles, dialog_status: Option<&StatusHan
     let message = if !smart_insights_enabled {
         "Smart Insights are disabled. Online merchant enrichment, detected transfers, and extra pattern hints are skipped."
     } else if !ui.online_smart_insights.get() {
-        "Online Smart Insights are off by default. Automatic Configuration uses only local transactions, and no merchant names or transaction fields are sent."
+        "Online Smart Insights are off by default. Configuration generation uses only local transactions, and no merchant names or transaction fields are sent."
     } else if !online_smart_insights_network_available() {
         "Online Smart Insights are enabled, but no network connection is available. External merchant lookups are skipped, and no transaction data is sent."
     } else {
@@ -258,7 +258,7 @@ fn show_smart_enrichment_status(ui: &UiHandles, dialog_status: Option<&StatusHan
 fn show_smart_enrichment_status(ui: &UiHandles, dialog_status: Option<&StatusHandle>) {
     let message =
         if smart_pattern_detection_enabled(ui.advanced_features.get(), ui.show_predictions.get()) {
-            "Automatic Configuration uses local transactions only in this build."
+            "Configuration generation uses local transactions only in this build."
         } else {
             "Smart Insights are disabled. Detected transfers and extra pattern hints are skipped."
         };

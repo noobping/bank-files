@@ -1479,9 +1479,6 @@ msgstr "Budgets konnten nicht generiert werden: {error}"
 msgid "Generated from imported transactions over {count} imported months on {date}."
 msgstr "Aus importierten Transaktionen uber {count} importierte Monate am {date} erzeugt."
 
-msgid "Generated from automatic configuration."
-msgstr "Aus automatischer Konfiguration erzeugt."
-
 msgid "Generated from detected transfers."
 msgstr "Aus erkannten Ueberweisungen erzeugt."
 
@@ -2358,7 +2355,6 @@ msgstr "Wähle ein anderes Jahr oder importiere CSV-Dateien für diesen Zeitraum
 msgid "Repeating payments, possible transfers, refunds, and offsetting groups detected in {year}."
 msgstr "Wiederkehrende Zahlungen, mögliche Umbuchungen, Erstattungen und ausgleichende Gruppen in {year} erkannt."
 
-
 msgid "Configuration"
 msgstr "Konfiguration"
 
@@ -2394,9 +2390,6 @@ msgstr "Konfigurationssicherung wiederherstellen"
 
 msgid "Restore rules, budgets, and field names from the backup."
 msgstr "Regeln, Budgets und Feldnamen aus der Sicherung wiederherstellen."
-
-msgid "Automatic Configuration"
-msgstr "Automatische Konfiguration"
 
 msgid "Generate configuration from imported transactions, use defaults, or start clean."
 msgstr "Konfiguration aus importierten Transaktionen erzeugen, Standards verwenden oder leer beginnen."
@@ -2461,9 +2454,6 @@ msgstr "Die neueste Einstellungsmeldung."
 msgid "Generating configuration from transactions..."
 msgstr "Konfiguration aus Transaktionen wird erzeugt..."
 
-msgid "Automatic Configuration uses complete imported calendar years for budget amounts and ignores incomplete years."
-msgstr "Die automatische Konfiguration verwendet vollstaendige importierte Kalenderjahre fuer Budgetbetraege und ignoriert unvollstaendige Jahre."
-
 msgid "Analysing loaded transactions, yearly comparisons, recurring patterns, transfers, and field mappings..."
 msgstr "Geladene Transaktionen, Jahresvergleiche, wiederkehrende Muster, Umbuchungen und Feldzuordnungen werden analysiert..."
 
@@ -2490,12 +2480,6 @@ msgstr "Intelligente Einblicke sind deaktiviert. Online-Unternehmensanreicherung
 
 msgid "Smart Insights are disabled. Extra pattern hints are skipped."
 msgstr "Intelligente Einblicke sind deaktiviert. Zusaetzliche Musterhinweise werden uebersprungen."
-
-msgid "Automatic Configuration uses local transactions only in this build."
-msgstr "Die automatische Konfiguration verwendet in diesem Build nur lokale Transaktionen."
-
-msgid "Online Smart Insights are off by default. Automatic Configuration uses only local transactions, and no merchant names or transaction fields are sent."
-msgstr "Online-Intelligente Einblicke sind standardmaessig ausgeschaltet. Die automatische Konfiguration verwendet nur lokale Transaktionen; Unternehmensnamen oder Transaktionsfelder werden nicht gesendet."
 
 msgid "Online Smart Insights are enabled, but no network connection is available. External merchant lookups are skipped, and no transaction data is sent."
 msgstr "Online-Intelligente Einblicke sind aktiviert, aber es ist keine Netzwerkverbindung verfuegbar. Externe Unternehmensabfragen werden uebersprungen und es werden keine Transaktionsdaten gesendet."
@@ -3352,9 +3336,6 @@ msgstr "{count} geöffnete CSV-Datei(en): {files}"
 msgid "These are remembered app copies or live CSV files for this session. Removing a live CSV only forgets it for this session."
 msgstr "Dies sind gemerkte App-Kopien oder Live-CSV-Dateien für diese Sitzung. Das Entfernen einer Live-CSV vergisst sie nur für diese Sitzung."
 
-msgid "Online Smart Insights are not available in this build. Automatic Configuration uses only local transactions."
-msgstr "Online Smart Insights sind in diesem Build nicht verfügbar. Die automatische Konfiguration verwendet nur lokale Transaktionen."
-
 msgid "Search filters"
 msgstr "Suchfilter"
 
@@ -3459,3 +3440,39 @@ msgstr "Klassifizierung"
 
 msgid "Auto detected from built-in category keywords."
 msgstr "Automatisch anhand integrierter Kategorie-Schlüsselwörter erkannt."
+
+msgid "Generated from configuration generation."
+msgstr "Aus der Konfigurationserzeugung erzeugt."
+
+msgid "Configuration Templates"
+msgstr "Konfigurationsvorlagen"
+
+msgid "Use the built-in defaults or start with an empty configuration."
+msgstr "Die eingebauten Standards verwenden oder mit einer leeren Konfiguration beginnen."
+
+msgid "Try Smart Insights and local AI assisted configuration actions."
+msgstr "Konfigurationsaktionen mit Intelligenten Einblicken und lokaler KI ausprobieren."
+
+msgid "Enable Smart Insights to generate configuration from transactions."
+msgstr "Aktiviere Intelligente Einblicke, um Konfiguration aus Transaktionen zu erzeugen."
+
+msgid "Requires Smart Insights. Enable Smart Insights to generate configuration from transactions."
+msgstr "Erfordert Intelligente Einblicke. Aktiviere Intelligente Einblicke, um Konfiguration aus Transaktionen zu erzeugen."
+
+msgid "Configuration generation needs Smart Insights. Enable Smart Insights to generate configuration from transactions."
+msgstr "Konfigurationserzeugung erfordert Intelligente Einblicke. Aktiviere Intelligente Einblicke, um Konfiguration aus Transaktionen zu erzeugen."
+
+msgid "Configuration generation requires Smart Insights."
+msgstr "Konfigurationserzeugung erfordert Intelligente Einblicke."
+
+msgid "Configuration generation uses complete imported calendar years for budget amounts and ignores incomplete years."
+msgstr "Die Konfigurationserzeugung verwendet vollstaendige importierte Kalenderjahre fuer Budgetbetraege und ignoriert unvollstaendige Jahre."
+
+msgid "Configuration generation uses local transactions only in this build."
+msgstr "Die Konfigurationserzeugung verwendet in diesem Build nur lokale Transaktionen."
+
+msgid "Online Smart Insights are off by default. Configuration generation uses only local transactions, and no merchant names or transaction fields are sent."
+msgstr "Online-Intelligente Einblicke sind standardmaessig ausgeschaltet. Die Konfigurationserzeugung verwendet nur lokale Transaktionen; Unternehmensnamen oder Transaktionsfelder werden nicht gesendet."
+
+msgid "Online Smart Insights are not available in this build. Configuration generation uses only local transactions."
+msgstr "Online Smart Insights sind in diesem Build nicht verfuegbar. Die Konfigurationserzeugung verwendet nur lokale Transaktionen."
