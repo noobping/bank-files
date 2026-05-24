@@ -82,4 +82,12 @@ mod tests {
         adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
             .expect("embedded action dialog UI should be available");
     }
+
+    #[test]
+    fn embedded_fake_transactions_dialog_ui_is_available() {
+        register().expect("register embedded resources");
+        let path = format!("{RESOURCE_ID}/ui/fake-transactions-dialog.ui");
+        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
+            .expect("embedded fake transactions dialog UI should be available");
+    }
 }

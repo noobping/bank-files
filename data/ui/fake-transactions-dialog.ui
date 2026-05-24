@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.6"/>
+  <requires lib="Adw" version="1.0"/>
+  <object class="GtkBox" id="fake_transactions_root">
+    <property name="orientation">vertical</property>
+    <property name="spacing">0</property>
+    <child>
+      <object class="AdwHeaderBar" id="fake_transactions_header">
+        <property name="show-start-title-buttons">False</property>
+        <property name="show-end-title-buttons">True</property>
+        <property name="title-widget">
+          <object class="AdwWindowTitle" id="fake_transactions_title">
+            <property name="title">Fake Transactions</property>
+            <property name="subtitle">Runtime preview transactions</property>
+          </object>
+        </property>
+        <child type="start">
+          <object class="GtkStack" id="fake_transactions_start_stack">
+            <property name="transition-type">crossfade</property>
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">list</property>
+                <property name="child">
+                  <object class="GtkButton" id="fake_transactions_add_button">
+                    <property name="icon-name">list-add-symbolic</property>
+                    <style>
+                      <class name="flat"/>
+                      <class name="image-button"/>
+                    </style>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">form</property>
+                <property name="child">
+                  <object class="GtkButton" id="fake_transactions_back_button">
+                    <property name="icon-name">go-previous-symbolic</property>
+                    <style>
+                      <class name="flat"/>
+                      <class name="image-button"/>
+                    </style>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkButton" id="fake_transactions_save_button">
+            <property name="visible">False</property>
+            <style>
+              <class name="suggested-action"/>
+            </style>
+            <property name="child">
+              <object class="AdwButtonContent" id="fake_transactions_save_content">
+                <property name="icon-name">document-save-symbolic</property>
+                <property name="label">Save</property>
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSearchBar" id="fake_transactions_search_bar">
+        <property name="show-close-button">True</property>
+        <property name="search-mode-enabled">False</property>
+        <child>
+          <object class="GtkBox" id="fake_transactions_search_box">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">0</property>
+            <property name="margin-top">8</property>
+            <property name="margin-bottom">8</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <child>
+              <object class="GtkSearchEntry" id="fake_transactions_search_entry">
+                <property name="hexpand">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow" id="fake_transactions_scroll">
+        <property name="hexpand">True</property>
+        <property name="vexpand">False</property>
+        <property name="min-content-height">320</property>
+        <property name="max-content-height">620</property>
+        <property name="propagate-natural-height">True</property>
+        <property name="hscrollbar-policy">never</property>
+        <child>
+          <object class="AdwClamp" id="fake_transactions_clamp">
+            <property name="maximum-size">1080</property>
+            <property name="tightening-threshold">640</property>
+            <property name="child">
+              <object class="GtkStack" id="fake_transactions_stack">
+                <property name="hhomogeneous">False</property>
+                <property name="vhomogeneous">False</property>
+                <property name="transition-type">slide-left-right</property>
+                <property name="hexpand">True</property>
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="name">list</property>
+                    <property name="child">
+                      <object class="GtkBox" id="fake_transactions_list_page">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">18</property>
+                        <property name="margin-top">18</property>
+                        <property name="margin-bottom">18</property>
+                        <property name="margin-start">18</property>
+                        <property name="margin-end">18</property>
+                        <child>
+                          <object class="GtkBox" id="fake_transactions_summary_row">
+                            <property name="orientation">horizontal</property>
+                            <property name="spacing">12</property>
+                            <property name="hexpand">True</property>
+                            <child>
+                              <object class="GtkLabel" id="fake_transactions_summary">
+                                <property name="hexpand">True</property>
+                                <property name="selectable">False</property>
+                                <property name="xalign">0</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="fake_transactions_clear_button">
+                                <property name="icon-name">edit-clear-symbolic</property>
+                                <style>
+                                  <class name="flat"/>
+                                  <class name="image-button"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="fake_transactions_busy_box">
+                            <property name="orientation">horizontal</property>
+                            <property name="spacing">6</property>
+                            <property name="visible">False</property>
+                            <style>
+                              <class name="dim-label"/>
+                            </style>
+                            <child>
+                              <object class="AdwSpinner" id="fake_transactions_busy_spinner">
+                                <property name="width-request">16</property>
+                                <property name="height-request">16</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="fake_transactions_busy_label">
+                                <property name="hexpand">True</property>
+                                <property name="selectable">False</property>
+                                <property name="xalign">0</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkListBox" id="fake_transactions_list">
+                            <property name="selection-mode">none</property>
+                            <property name="hexpand">True</property>
+                            <style>
+                              <class name="boxed-list"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="name">form</property>
+                    <property name="child">
+                      <object class="GtkBox" id="fake_transactions_form_box">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">18</property>
+                        <property name="margin-top">18</property>
+                        <property name="margin-bottom">18</property>
+                        <property name="margin-start">18</property>
+                        <property name="margin-end">18</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

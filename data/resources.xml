@@ -5,6 +5,7 @@
     <file>symbolic/actions/document-save-symbolic.svg</file>
     <file>css/style.css</file>
     <file>ui/action-dialog.ui</file>
+    <file>ui/fake-transactions-dialog.ui</file>
     <file>ui/management-dialog.ui</file>
     <file>ui/settings-dialog.ui</file>
     <file>ui/status-bar.ui</file>

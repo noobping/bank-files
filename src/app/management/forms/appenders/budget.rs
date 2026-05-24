@@ -84,8 +84,7 @@ pub(in crate::app) fn append_budget_form(
     attach_details_grid(&card, &grid);
 
     let update_summary: Rc<dyn Fn()> = {
-        let title = card.title.clone();
-        let subtitle = card.subtitle.clone();
+        let row = card.row.clone();
         let code = code.clone();
         let category = category.clone();
         let monthly_budget = monthly_budget.clone();
@@ -94,8 +93,7 @@ pub(in crate::app) fn append_budget_form(
         let income_basis = income_basis.clone();
         Rc::new(move || {
             set_summary(
-                &title,
-                &subtitle,
+                &row,
                 budget_summary(
                     &code,
                     &category,

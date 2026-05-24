@@ -22,11 +22,10 @@ pub(in crate::app) fn append_alias_form(
     attach_details_grid(&card, &grid);
 
     let update_summary: Rc<dyn Fn()> = {
-        let title = card.title.clone();
-        let subtitle = card.subtitle.clone();
+        let row = card.row.clone();
         let canonical = canonical.clone();
         let alias_entry = alias_entry.clone();
-        Rc::new(move || set_summary(&title, &subtitle, alias_summary(&canonical, &alias_entry)))
+        Rc::new(move || set_summary(&row, alias_summary(&canonical, &alias_entry)))
     };
     connect_combo_summary(&canonical, &update_summary);
     connect_entry_summary(&alias_entry, &update_summary);

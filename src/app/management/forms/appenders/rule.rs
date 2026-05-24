@@ -85,8 +85,7 @@ pub(in crate::app) fn append_rule_form(
     attach_details_grid(&card, &grid);
 
     let update_summary: Rc<dyn Fn()> = {
-        let title = card.title.clone();
-        let subtitle = card.subtitle.clone();
+        let row = card.row.clone();
         let active = active.clone();
         let priority = priority.clone();
         let field = field.clone();
@@ -99,8 +98,7 @@ pub(in crate::app) fn append_rule_form(
         let amount_max = amount_max.clone();
         Rc::new(move || {
             set_summary(
-                &title,
-                &subtitle,
+                &row,
                 rule_summary(RuleSummaryWidgets {
                     active: &active,
                     priority: &priority,

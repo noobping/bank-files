@@ -75,9 +75,9 @@ pub(super) fn connect_spin_summary(spin: &gtk::SpinButton, update: &Rc<dyn Fn()>
     spin.connect_value_changed(move |_| update_for_spin());
 }
 
-pub(super) fn set_summary(title: &gtk::Label, subtitle: &gtk::Label, values: (String, String)) {
-    title.set_text(&values.0);
-    subtitle.set_text(&values.1);
+pub(super) fn set_summary(row: &adw::ExpanderRow, values: (String, String)) {
+    row.set_title(&values.0);
+    row.set_subtitle(&values.1);
 }
 
 pub(super) fn combo_display_text(combo: &gtk::ComboBoxText) -> String {

@@ -36,7 +36,6 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     );
     let clear_done_button = ui::icon_button("edit-clear-symbolic", "Clear completed operations");
     clear_done_button.add_css_class("flat");
-    header.pack_end(&clear_done_button);
     header.pack_end(&apply_all_button);
 
     let content = ui::page_box();
@@ -47,7 +46,12 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
     summary.set_width_chars(1);
     summary.set_wrap(true);
     summary.set_wrap_mode(gtk::pango::WrapMode::WordChar);
-    content.append(&summary);
+    let summary_row = gtk::Box::new(gtk::Orientation::Horizontal, 12);
+    summary_row.set_hexpand(true);
+    summary.set_hexpand(true);
+    summary_row.append(&summary);
+    summary_row.append(&clear_done_button);
+    content.append(&summary_row);
 
     let list = gtk::ListBox::new();
     list.add_css_class("boxed-list");
