@@ -5,6 +5,7 @@ pub(in crate::app) enum OperationSource {
     CreateRule,
     ChangeBudgetCode,
     MarkTransfer,
+    MarkInvalid,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -598,6 +599,7 @@ fn operation_title(kind: &QueuedOperationKind) -> String {
             OperationSource::CreateRule => "Create rule",
             OperationSource::ChangeBudgetCode => "Change budget code",
             OperationSource::MarkTransfer => "Mark transfer",
+            OperationSource::MarkInvalid => "Mark invalid detection",
         }),
     }
 }

@@ -207,6 +207,7 @@ enum TransactionDetailAction {
     MoveBudgetCode,
     DuplicateAsFake,
     MarkTransfer,
+    MarkInvalid,
     Similar,
     FindPattern,
 }
@@ -216,6 +217,7 @@ fn visible_transaction_detail_actions(
     smart_patterns_enabled: bool,
     markable_as_transfer: bool,
     budget_move_available: bool,
+    auto_detected_classification: bool,
 ) -> Vec<TransactionDetailAction> {
     [
         TransactionDetailAction::CreateRule,
@@ -223,6 +225,7 @@ fn visible_transaction_detail_actions(
         TransactionDetailAction::MoveBudgetCode,
         TransactionDetailAction::DuplicateAsFake,
         TransactionDetailAction::MarkTransfer,
+        TransactionDetailAction::MarkInvalid,
         TransactionDetailAction::Similar,
         TransactionDetailAction::FindPattern,
     ]
@@ -234,6 +237,7 @@ fn visible_transaction_detail_actions(
             smart_patterns_enabled,
             markable_as_transfer,
             budget_move_available,
+            auto_detected_classification,
         )
     })
     .collect()
@@ -245,6 +249,7 @@ fn transaction_detail_action_visible(
     smart_patterns_enabled: bool,
     markable_as_transfer: bool,
     budget_move_available: bool,
+    auto_detected_classification: bool,
 ) -> bool {
     let visible = match action {
         TransactionDetailAction::CreateRule | TransactionDetailAction::EditBudgetCode => {
@@ -254,6 +259,7 @@ fn transaction_detail_action_visible(
         TransactionDetailAction::DuplicateAsFake
         | TransactionDetailAction::MarkTransfer
         | TransactionDetailAction::Similar => true,
+        TransactionDetailAction::MarkInvalid => auto_detected_classification,
         TransactionDetailAction::FindPattern => smart_patterns_enabled,
     };
     visible && (action != TransactionDetailAction::MarkTransfer || markable_as_transfer)
@@ -319,11 +325,15 @@ fn transaction_detail_actions(
 
     let advanced_features = ui_handles.advanced_features.get();
     let smart_patterns_enabled = smart_pattern_detection_enabled(ui_handles.show_predictions.get());
-    let (markable_as_transfer, budget_move_available) = {
+    let auto_detected_classification =
+        crate::rules::transaction_classification_is_auto_detected(tx);
+    let (markable_as_transfer, budget_move_available, auto_detected_transfer) = {
         let data = state.borrow();
+        let markable_as_transfer = transaction_is_markable_as_transfer(tx, &data.budgets);
         (
-            transaction_is_markable_as_transfer(tx, &data.budgets),
+            markable_as_transfer,
             transaction_budget_move_available(tx, &data.budgets, advanced_features),
+            auto_detected_classification && !markable_as_transfer,
         )
     };
     let visible_actions = visible_transaction_detail_actions(
@@ -331,6 +341,7 @@ fn transaction_detail_actions(
         smart_patterns_enabled,
         markable_as_transfer,
         budget_move_available,
+        auto_detected_classification,
     );
     let config_menu_action_enabled = transaction_detail_config_action_enabled(ui_handles.as_ref());
 
@@ -355,6 +366,30 @@ fn transaction_detail_actions(
         primary_actions.append(&move_button);
     }
 
+    if visible_actions.contains(&TransactionDetailAction::MarkInvalid) && auto_detected_transfer {
+        if let Some(enabled) = config_menu_action_enabled {
+            let tx_for_invalid = tx.clone();
+            let ui_for_invalid = Rc::clone(ui_handles);
+            let invalid_button = ui::primary_text_icon_button(
+                "edit-undo-symbolic",
+                "Mark invalid",
+                "Undo this auto-detected classification",
+            );
+            invalid_button.set_sensitive(enabled);
+            register_config_widget(ui_handles, &invalid_button);
+            invalid_button.connect_clicked(move |_| {
+                if transaction_detail_config_action_blocked(
+                    &ui_for_invalid,
+                    "Another edit or save is already running.",
+                ) {
+                    return;
+                }
+                apply_invalid_auto_detection_rule(&tx_for_invalid, &ui_for_invalid);
+            });
+            primary_actions.append(&invalid_button);
+        }
+    }
+
     if visible_actions.contains(&TransactionDetailAction::Similar) {
         let tx_for_similar = tx.clone();
         let state_for_similar = Rc::clone(state);
@@ -373,6 +408,30 @@ fn transaction_detail_actions(
             );
         });
         primary_actions.append(&button);
+    }
+
+    if visible_actions.contains(&TransactionDetailAction::MarkInvalid) && !auto_detected_transfer {
+        if let Some(enabled) = config_menu_action_enabled {
+            let tx_for_invalid = tx.clone();
+            let ui_for_invalid = Rc::clone(ui_handles);
+            append_transaction_detail_menu_action(
+                &menu,
+                &menu_actions,
+                "mark-invalid",
+                "Mark auto detection invalid",
+                enabled,
+                move || {
+                    if transaction_detail_config_action_blocked(
+                        &ui_for_invalid,
+                        "Another edit or save is already running.",
+                    ) {
+                        return;
+                    }
+                    apply_invalid_auto_detection_rule(&tx_for_invalid, &ui_for_invalid);
+                },
+            );
+            has_menu_items = true;
+        }
     }
 
     if visible_actions.contains(&TransactionDetailAction::FindPattern) {
@@ -646,6 +705,11 @@ fn show_transaction_rule_dialog(
 fn apply_transaction_direction_rule(tx: &Transaction, direction: &str, ui_handles: &Rc<UiHandles>) {
     let rule = editable_rule_for_transaction(tx, Some(direction));
     enqueue_rule_operation(ui_handles, rule, true, OperationSource::MarkTransfer);
+}
+
+fn apply_invalid_auto_detection_rule(tx: &Transaction, ui_handles: &Rc<UiHandles>) {
+    let rule = invalid_auto_detection_rule_for_transaction(tx);
+    enqueue_rule_operation(ui_handles, rule, true, OperationSource::MarkInvalid);
 }
 
 fn show_transaction_budget_code_dialog(
@@ -1479,6 +1543,29 @@ fn rule_field_label(field: &str) -> &'static str {
     }
 }
 
+fn invalid_auto_detection_rule_for_transaction(tx: &Transaction) -> EditableRule {
+    let (field, search) = transaction_rule_match(tx);
+    let (category, budget_code, direction) = if tx.amount > Decimal::ZERO {
+        (tr("Other income"), "INC-OTHER".to_string(), "income")
+    } else {
+        (tr("Other"), "OTHER".to_string(), "expense")
+    };
+
+    EditableRule {
+        priority: 150,
+        active: true,
+        field,
+        search,
+        is_regex: false,
+        category,
+        budget_code,
+        direction: direction.to_string(),
+        amount_min: String::new(),
+        amount_max: String::new(),
+        notes: tr("Marked invalid auto detection from transaction detail."),
+    }
+}
+
 fn editable_rule_for_transaction(
     tx: &Transaction,
     direction_override: Option<&str>,
@@ -1804,7 +1891,7 @@ mod tests {
 
     #[test]
     fn simple_mode_hides_rule_and_budget_editing_transaction_actions() {
-        let simple_actions = visible_transaction_detail_actions(false, true, true, true);
+        let simple_actions = visible_transaction_detail_actions(false, true, true, true, false);
         assert!(!simple_actions.contains(&TransactionDetailAction::CreateRule));
         assert!(!simple_actions.contains(&TransactionDetailAction::EditBudgetCode));
         assert!(simple_actions.contains(&TransactionDetailAction::MarkTransfer));
@@ -1813,20 +1900,66 @@ mod tests {
         assert!(simple_actions.contains(&TransactionDetailAction::Similar));
         assert!(simple_actions.contains(&TransactionDetailAction::FindPattern));
 
-        let advanced_actions = visible_transaction_detail_actions(true, true, true, true);
+        let advanced_actions = visible_transaction_detail_actions(true, true, true, true, false);
         assert!(advanced_actions.contains(&TransactionDetailAction::CreateRule));
         assert!(advanced_actions.contains(&TransactionDetailAction::EditBudgetCode));
         assert!(advanced_actions.contains(&TransactionDetailAction::MarkTransfer));
         assert!(
-            !visible_transaction_detail_actions(false, true, false, true)
+            !visible_transaction_detail_actions(false, true, false, true, false)
                 .contains(&TransactionDetailAction::MarkTransfer)
         );
-        assert!(!visible_transaction_detail_actions(true, true, false, true)
-            .contains(&TransactionDetailAction::MarkTransfer));
         assert!(
-            !visible_transaction_detail_actions(false, false, true, true)
+            !visible_transaction_detail_actions(true, true, false, true, false)
+                .contains(&TransactionDetailAction::MarkTransfer)
+        );
+        assert!(
+            !visible_transaction_detail_actions(false, false, true, true, false)
                 .contains(&TransactionDetailAction::FindPattern)
         );
+    }
+
+    #[test]
+    fn auto_detected_transactions_show_mark_invalid_action() {
+        let regular_actions = visible_transaction_detail_actions(false, true, true, true, false);
+        assert!(!regular_actions.contains(&TransactionDetailAction::MarkInvalid));
+
+        let auto_detected_actions =
+            visible_transaction_detail_actions(false, true, true, true, true);
+        assert!(auto_detected_actions.contains(&TransactionDetailAction::MarkInvalid));
+        assert!(
+            visible_transaction_detail_actions(true, true, false, true, true)
+                .contains(&TransactionDetailAction::MarkInvalid)
+        );
+    }
+
+    #[test]
+    fn invalid_auto_detection_rule_resets_expenses_to_other() {
+        let mut transaction = tx(-20, "TRANSFER", "Transfers");
+        transaction.counterparty = "Corner shop".to_string();
+
+        let rule = invalid_auto_detection_rule_for_transaction(&transaction);
+
+        assert_eq!(rule.priority, 150);
+        assert!(rule.active);
+        assert_eq!(rule.field, "counterparty");
+        assert_eq!(rule.search, "Corner shop");
+        assert_eq!(rule.category, tr("Other"));
+        assert_eq!(rule.budget_code, "OTHER");
+        assert_eq!(rule.direction, "expense");
+    }
+
+    #[test]
+    fn invalid_auto_detection_rule_resets_income_to_other_income() {
+        let mut transaction = tx(20, "TRANSFER", "Transfers");
+        transaction.description = "Refund".to_string();
+
+        let rule = invalid_auto_detection_rule_for_transaction(&transaction);
+
+        assert_eq!(rule.field, "description");
+        assert_eq!(rule.search, "Refund");
+        assert_eq!(rule.category, tr("Other income"));
+        assert_eq!(rule.budget_code, "INC-OTHER");
+        assert_eq!(rule.direction, "income");
     }
 
     #[test]
@@ -1886,7 +2019,7 @@ mod tests {
             &transfer, &budgets, false
         ));
         assert!(
-            !visible_transaction_detail_actions(true, true, false, false)
+            !visible_transaction_detail_actions(true, true, false, false, false)
                 .contains(&TransactionDetailAction::MoveBudgetCode)
         );
     }
@@ -1904,8 +2037,10 @@ mod tests {
             &budgets,
             false
         ));
-        assert!(visible_transaction_detail_actions(false, true, true, true)
-            .contains(&TransactionDetailAction::MoveBudgetCode));
+        assert!(
+            visible_transaction_detail_actions(false, true, true, true, false)
+                .contains(&TransactionDetailAction::MoveBudgetCode)
+        );
     }
 
     #[test]

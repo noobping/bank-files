@@ -472,7 +472,7 @@ fn local_ai_availability(smart_insights_enabled: bool) -> LocalAiAvailability {
 
     #[cfg(feature = "embedded-ai-model")]
     {
-        return embedded_model_availability();
+        embedded_model_availability()
     }
 
     #[cfg(not(feature = "embedded-ai-model"))]
