@@ -41,22 +41,6 @@ pub(super) enum ManagementFormsRenderStage {
     Done,
 }
 
-pub(super) fn append_management_loading(container: &gtk::Box, message: &str) {
-    let row = gtk::Box::new(gtk::Orientation::Horizontal, 10);
-    row.add_css_class("dim-label");
-    row.set_margin_top(8);
-    row.set_margin_bottom(8);
-    row.set_margin_start(4);
-    row.set_margin_end(4);
-    row.set_valign(gtk::Align::Center);
-
-    let spinner = ui::loading_spinner();
-    spinner.set_size_request(18, 18);
-    row.append(&spinner);
-    row.append(&ui::wrapped_label(&tr(message)));
-    container.append(&row);
-}
-
 pub(super) fn schedule_management_forms_load(load: ManagementFormsLoad) {
     show_verbose_status(load.ui_handles.as_ref(), "management forms load started");
     gtk::glib::MainContext::default().spawn_local(async move {

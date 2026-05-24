@@ -1,8 +1,8 @@
 mod dialog;
 mod loading;
 mod render;
-mod sections;
 mod setup;
+mod shell;
 mod sizing;
 
 pub(in crate::app) use dialog::show_management_dialog;
