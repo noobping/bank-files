@@ -190,12 +190,17 @@ pub fn clear_list_box(container: &gtk::ListBox) {
     }
 }
 
+pub fn focus_search_bar(search_bar: &gtk::SearchBar, search_entry: &gtk::SearchEntry) {
+    search_bar.set_search_mode(true);
+    search_entry.grab_focus();
+    search_entry.select_region(0, -1);
+}
+
 pub fn toggle_search_bar(search_bar: &gtk::SearchBar, search_entry: &gtk::SearchEntry) {
     let enabled = !search_bar.is_search_mode();
     search_bar.set_search_mode(enabled);
     if enabled {
-        search_entry.grab_focus();
-        search_entry.select_region(0, -1);
+        focus_search_bar(search_bar, search_entry);
     }
 }
 
@@ -236,6 +241,6 @@ pub fn connect_search_shortcut(
     let search_bar_for_shortcut = search_bar.clone();
     let search_entry_for_shortcut = search_entry.clone();
     connect_primary_f_shortcut(widget, move || {
-        toggle_search_bar(&search_bar_for_shortcut, &search_entry_for_shortcut);
+        focus_search_bar(&search_bar_for_shortcut, &search_entry_for_shortcut);
     });
 }
