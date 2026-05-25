@@ -5,6 +5,7 @@ use rust_decimal::Decimal;
 mod actions;
 mod budget_direction;
 mod budget_targets;
+mod text;
 
 pub(super) fn tx(amount: i64, budget_code: &str, category: &str) -> Transaction {
     Transaction {
