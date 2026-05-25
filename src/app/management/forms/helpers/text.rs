@@ -1,7 +1,6 @@
 use super::*;
 
-const RULE_SEARCH_MIN_HEIGHT: i32 = 44;
-const RULE_SEARCH_MAX_HEIGHT: i32 = 150;
+const RULE_SEARCH_MIN_HEIGHT: i32 = 96;
 
 pub(in crate::app) fn rule_search_text_view(text: &str) -> gtk::TextView {
     let buffer = gtk::TextBuffer::new(None);
@@ -23,9 +22,8 @@ pub(in crate::app) fn rule_search_text_view(text: &str) -> gtk::TextView {
 pub(in crate::app) fn rule_search_text_area(text_view: &gtk::TextView) -> gtk::ScrolledWindow {
     gtk::ScrolledWindow::builder()
         .hscrollbar_policy(gtk::PolicyType::Never)
-        .vscrollbar_policy(gtk::PolicyType::Automatic)
+        .vscrollbar_policy(gtk::PolicyType::Never)
         .min_content_height(RULE_SEARCH_MIN_HEIGHT)
-        .max_content_height(RULE_SEARCH_MAX_HEIGHT)
         .propagate_natural_height(true)
         .child(text_view)
         .build()
