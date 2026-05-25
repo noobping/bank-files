@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.6"/>
+  <requires lib="Adw" version="1.0"/>
+  <object class="GtkBox" id="status_history_content">
+    <property name="orientation">vertical</property>
+    <property name="spacing">18</property>
+    <property name="margin-top">18</property>
+    <property name="margin-bottom">18</property>
+    <property name="margin-start">18</property>
+    <property name="margin-end">18</property>
+    <child>
+      <object class="GtkListBox" id="status_history_list">
+        <property name="selection-mode">none</property>
+        <property name="hexpand">True</property>
+        <style>
+          <class name="boxed-list"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel" id="status_history_empty_label">
+        <property name="visible">False</property>
+        <property name="margin-top">10</property>
+        <property name="margin-bottom">10</property>
+        <property name="margin-start">10</property>
+        <property name="margin-end">10</property>
+        <property name="selectable">False</property>
+        <property name="xalign">0</property>
+        <property name="wrap">True</property>
+        <property name="wrap-mode">word-char</property>
+        <style>
+          <class name="dim-label"/>
+        </style>
+      </object>
+    </child>
+  </object>
+</interface>

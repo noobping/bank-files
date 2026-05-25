@@ -152,41 +152,12 @@ pub(in crate::app) fn render_loading_placeholder(ui: &UiHandles) {
     let container = current_page_container(ui);
     ui::clear_box(container);
 
-    let placeholder = gtk::Box::new(gtk::Orientation::Vertical, 12);
-    placeholder.set_halign(gtk::Align::Center);
-    placeholder.set_valign(gtk::Align::Center);
-    placeholder.set_hexpand(true);
-    placeholder.set_vexpand(true);
-    placeholder.set_margin_top(72);
-    placeholder.set_margin_bottom(72);
-    placeholder.set_margin_start(24);
-    placeholder.set_margin_end(24);
-
-    let spinner = ui::loading_spinner();
-    spinner.set_size_request(42, 42);
-    spinner.set_halign(gtk::Align::Center);
-    placeholder.append(&spinner);
-
-    let title = gtk::Label::new(Some(&tr("Loading")));
-    title.add_css_class("title-3");
-    title.set_xalign(0.5);
-    placeholder.append(&title);
-
-    let subtitle = gtk::Label::new(Some(&tr(
-        "Preparing this page. Large CSV files may take a moment.",
-    )));
-    subtitle.add_css_class("dim-label");
-    subtitle.set_xalign(0.5);
-    subtitle.set_wrap(true);
-    subtitle.set_wrap_mode(gtk::pango::WrapMode::WordChar);
-    placeholder.append(&subtitle);
-
-    let detail = gtk::Label::new(Some(&tr("Loading data...")));
-    detail.add_css_class("caption");
-    detail.add_css_class("dim-label");
-    detail.set_xalign(0.5);
-    placeholder.append(&detail);
-
+    let builder = ui::builder_from_resource("loading-placeholder.ui");
+    let placeholder = ui::builder_object::<adw::StatusPage>(
+        &builder,
+        "loading_placeholder",
+        "loading-placeholder.ui",
+    );
     container.append(&placeholder);
 }
 

@@ -26,19 +26,9 @@ pub(in crate::app) struct FakeTransactionWidgets {
 }
 
 pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets {
-    let badge = gtk::Label::new(None);
-    badge.add_css_class("caption");
-    badge.set_visible(false);
-    badge.set_halign(gtk::Align::Center);
-    badge.set_valign(gtk::Align::Center);
-
-    let icon = gtk::Image::from_icon_name("document-new-symbolic");
-    let button_content = gtk::Box::new(gtk::Orientation::Horizontal, 4);
-    button_content.append(&badge);
-    button_content.append(&icon);
-
-    let button = ui::flat_custom_button("Fake transactions", &button_content);
-    button.set_focus_on_click(false);
+    let status_button = ui::flat_badge_icon_button("document-new-symbolic", "Fake transactions");
+    let button = status_button.button;
+    let badge = status_button.badge;
 
     let builder = ui::builder_from_resource("fake-transactions-dialog.ui");
     let root = fake_transactions_object::<gtk::Box>(&builder, "fake_transactions_root");

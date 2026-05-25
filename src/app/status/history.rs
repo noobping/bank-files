@@ -36,21 +36,11 @@ pub(super) fn show_status_history_dialog(
     actions_button.set_focus_on_click(false);
     shell.header.pack_end(&actions_button);
 
-    let content = ui::page_box();
-    let list = gtk::ListBox::new();
-    list.add_css_class("boxed-list");
-    list.set_selection_mode(gtk::SelectionMode::None);
-    list.set_hexpand(true);
-    content.append(&list);
-
-    let empty_label = ui::wrapped_label(&tr("No messages found."));
-    empty_label.add_css_class("dim-label");
-    empty_label.set_visible(false);
-    empty_label.set_margin_top(10);
-    empty_label.set_margin_bottom(10);
-    empty_label.set_margin_start(10);
-    empty_label.set_margin_end(10);
-    content.append(&empty_label);
+    let builder = ui::builder_from_resource("status-history-dialog.ui");
+    let content = status_history_object::<gtk::Box>(&builder, "status_history_content");
+    let list = status_history_object::<gtk::ListBox>(&builder, "status_history_list");
+    let empty_label = status_history_object::<gtk::Label>(&builder, "status_history_empty_label");
+    empty_label.set_text(&tr("No messages found."));
 
     let entries = history.borrow().clone();
     let has_entries = !entries.is_empty();
@@ -78,6 +68,10 @@ pub(super) fn show_status_history_dialog(
 
     *active_dialog.borrow_mut() = Some(dialog.clone());
     dialog.present(Some(window));
+}
+
+fn status_history_object<T: IsA<gtk::glib::Object>>(builder: &gtk::Builder, id: &str) -> T {
+    ui::builder_object(builder, id, "status-history-dialog.ui")
 }
 
 fn connect_status_history_actions(

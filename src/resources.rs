@@ -27,83 +27,110 @@ mod tests {
     use super::*;
     use crate::app_info::APP_ID;
 
+    fn assert_embedded_resource(relative_path: &str, message: &str) {
+        register().expect("register embedded resources");
+        let path = format!("{RESOURCE_ID}/{relative_path}");
+        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE).expect(message);
+    }
+
     #[test]
     fn embedded_app_icon_is_available() {
-        register().expect("register embedded resources");
-        let path = format!("{RESOURCE_ID}/scalable/apps/{APP_ID}.svg");
-        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
-            .expect("embedded app icon should be available");
+        assert_embedded_resource(
+            &format!("scalable/apps/{APP_ID}.svg"),
+            "embedded app icon should be available",
+        );
     }
 
     #[test]
     fn embedded_symbolic_action_icon_is_available() {
-        register().expect("register embedded resources");
-        let path = format!("{RESOURCE_ID}/symbolic/actions/document-save-symbolic.svg");
-        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
-            .expect("embedded action icon should be available");
+        assert_embedded_resource(
+            "symbolic/actions/document-save-symbolic.svg",
+            "embedded action icon should be available",
+        );
     }
 
     #[test]
     fn embedded_status_bar_ui_is_available() {
-        register().expect("register embedded resources");
-        let path = format!("{RESOURCE_ID}/ui/status-bar.ui");
-        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
-            .expect("embedded status bar UI should be available");
+        assert_embedded_resource(
+            "ui/status-bar.ui",
+            "embedded status bar UI should be available",
+        );
+    }
+
+    #[test]
+    fn embedded_status_history_dialog_ui_is_available() {
+        assert_embedded_resource(
+            "ui/status-history-dialog.ui",
+            "embedded status history dialog UI should be available",
+        );
     }
 
     #[test]
     fn embedded_style_css_is_available() {
-        register().expect("register embedded resources");
-        let path = format!("{RESOURCE_ID}/css/style.css");
-        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
-            .expect("embedded style CSS should be available");
+        assert_embedded_resource("css/style.css", "embedded style CSS should be available");
+    }
+
+    #[test]
+    fn embedded_loading_placeholder_ui_is_available() {
+        assert_embedded_resource(
+            "ui/loading-placeholder.ui",
+            "embedded loading placeholder UI should be available",
+        );
     }
 
     #[test]
     fn embedded_management_dialog_ui_is_available() {
-        register().expect("register embedded resources");
-        let path = format!("{RESOURCE_ID}/ui/management-dialog.ui");
-        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
-            .expect("embedded management dialog UI should be available");
+        assert_embedded_resource(
+            "ui/management-dialog.ui",
+            "embedded management dialog UI should be available",
+        );
     }
 
     #[test]
     fn embedded_main_window_ui_is_available() {
-        register().expect("register embedded resources");
-        let path = format!("{RESOURCE_ID}/ui/main-window.ui");
-        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
-            .expect("embedded main window UI should be available");
+        assert_embedded_resource(
+            "ui/main-window.ui",
+            "embedded main window UI should be available",
+        );
     }
 
     #[test]
     fn embedded_settings_dialog_ui_is_available() {
-        register().expect("register embedded resources");
-        let path = format!("{RESOURCE_ID}/ui/settings-dialog.ui");
-        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
-            .expect("embedded settings dialog UI should be available");
+        assert_embedded_resource(
+            "ui/settings-dialog.ui",
+            "embedded settings dialog UI should be available",
+        );
     }
 
     #[test]
     fn embedded_shortcuts_dialog_ui_is_available() {
-        register().expect("register embedded resources");
-        let path = format!("{RESOURCE_ID}/ui/shortcuts-dialog.ui");
-        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
-            .expect("embedded shortcuts dialog UI should be available");
+        assert_embedded_resource(
+            "ui/shortcuts-dialog.ui",
+            "embedded shortcuts dialog UI should be available",
+        );
     }
 
     #[test]
     fn embedded_action_dialog_ui_is_available() {
-        register().expect("register embedded resources");
-        let path = format!("{RESOURCE_ID}/ui/action-dialog.ui");
-        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
-            .expect("embedded action dialog UI should be available");
+        assert_embedded_resource(
+            "ui/action-dialog.ui",
+            "embedded action dialog UI should be available",
+        );
     }
 
     #[test]
     fn embedded_fake_transactions_dialog_ui_is_available() {
-        register().expect("register embedded resources");
-        let path = format!("{RESOURCE_ID}/ui/fake-transactions-dialog.ui");
-        adw::gio::resources_lookup_data(&path, adw::gio::ResourceLookupFlags::NONE)
-            .expect("embedded fake transactions dialog UI should be available");
+        assert_embedded_resource(
+            "ui/fake-transactions-dialog.ui",
+            "embedded fake transactions dialog UI should be available",
+        );
+    }
+
+    #[test]
+    fn embedded_operation_queue_dialog_ui_is_available() {
+        assert_embedded_resource(
+            "ui/operation-queue-dialog.ui",
+            "embedded operation queue dialog UI should be available",
+        );
     }
 }

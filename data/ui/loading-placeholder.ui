@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.6"/>
+  <requires lib="Adw" version="1.0"/>
+  <object class="AdwStatusPage" id="loading_placeholder">
+    <property name="icon-name">view-refresh-symbolic</property>
+    <property name="title" translatable="yes">Loading</property>
+    <property name="description" translatable="yes">Preparing this page. Large CSV files may take a moment.</property>
+    <property name="hexpand">True</property>
+    <property name="vexpand">True</property>
+    <property name="margin-top">72</property>
+    <property name="margin-bottom">72</property>
+    <property name="margin-start">24</property>
+    <property name="margin-end">24</property>
+  </object>
+</interface>

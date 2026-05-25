@@ -8,22 +8,9 @@ use super::presentation::{
 use super::rows::operation_row;
 
 pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
-    let badge = gtk::Label::new(None);
-    badge.add_css_class("caption");
-    badge.set_visible(false);
-
-    let icon = gtk::Image::from_icon_name("view-list-symbolic");
-    let icon_shell = gtk::Overlay::new();
-    icon_shell.set_child(Some(&icon));
-
-    let button_content = gtk::Box::new(gtk::Orientation::Horizontal, 4);
-    badge.set_halign(gtk::Align::Center);
-    badge.set_valign(gtk::Align::Center);
-    button_content.append(&badge);
-    button_content.append(&icon_shell);
-
-    let button = ui::flat_custom_button("Processing queue", &button_content);
-    button.set_focus_on_click(false);
+    let status_button = ui::flat_badge_icon_button("view-list-symbolic", "Processing queue");
+    let button = status_button.button;
+    let badge = status_button.badge;
 
     let shell =
         build_settings_dialog_shell(OPERATION_QUEUE_TITLE, OPERATION_QUEUE_SEARCH_PLACEHOLDER);
@@ -34,30 +21,15 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
 
     let apply_all_button =
         ui::primary_text_icon_button("object-select-symbolic", "Apply all", APPLY_ALL_TOOLTIP);
-    let clear_done_button = ui::icon_button("edit-clear-symbolic", "Clear completed operations");
-    clear_done_button.add_css_class("flat");
     header.pack_end(&apply_all_button);
 
-    let content = ui::page_box();
-    let summary = gtk::Label::new(None);
-    summary.add_css_class("dim-label");
-    summary.set_selectable(false);
-    summary.set_xalign(0.0);
-    summary.set_width_chars(1);
-    summary.set_wrap(true);
-    summary.set_wrap_mode(gtk::pango::WrapMode::WordChar);
-    let summary_row = gtk::Box::new(gtk::Orientation::Horizontal, 12);
-    summary_row.set_hexpand(true);
-    summary.set_hexpand(true);
-    summary_row.append(&summary);
-    summary_row.append(&clear_done_button);
-    content.append(&summary_row);
-
-    let list = gtk::ListBox::new();
-    list.add_css_class("boxed-list");
-    list.set_selection_mode(gtk::SelectionMode::None);
-    list.set_hexpand(true);
-    content.append(&list);
+    let builder = ui::builder_from_resource("operation-queue-dialog.ui");
+    let content = operation_queue_object::<gtk::Box>(&builder, "operation_queue_content");
+    let summary_row = operation_queue_object::<gtk::Box>(&builder, "operation_queue_summary_row");
+    let summary = operation_queue_object::<gtk::Label>(&builder, "operation_queue_summary");
+    let clear_done_button =
+        operation_queue_object::<gtk::Button>(&builder, "operation_queue_clear_done_button");
+    let list = operation_queue_object::<gtk::ListBox>(&builder, "operation_queue_list");
     root.append(&ui::action_dialog_scroll_with_min(&content, 360));
 
     let dialog = ui::content_dialog(tr(OPERATION_QUEUE_TITLE), &root)
@@ -77,6 +49,10 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
         list,
         dialog,
     }
+}
+
+fn operation_queue_object<T: IsA<gtk::glib::Object>>(builder: &gtk::Builder, id: &str) -> T {
+    ui::builder_object(builder, id, "operation-queue-dialog.ui")
 }
 
 pub(super) fn refresh_operation_queue_ui_for_active_session(ui: &Rc<UiHandles>) {

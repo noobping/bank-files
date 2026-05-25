@@ -12,6 +12,7 @@ use std::rc::Rc;
 
 mod basic;
 mod builder;
+mod buttons;
 mod cards;
 mod chart;
 mod dialogs;
@@ -22,6 +23,7 @@ mod style;
 
 pub use basic::*;
 pub use builder::*;
+pub use buttons::*;
 pub use cards::*;
 pub use chart::*;
 pub use dialogs::*;
