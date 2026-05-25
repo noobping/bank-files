@@ -65,7 +65,7 @@ pub(in crate::app) fn show_preferences_dialog(
     let forms_preferences = vec![
         PreferenceSpec::new(
             "Advanced Features",
-            "Allow budget direction controls and advanced analysis options.",
+            "Show budget codes, direction controls, and detailed move options.",
             "app.advanced-features",
             advanced_features,
         ),
@@ -85,7 +85,7 @@ pub(in crate::app) fn show_preferences_dialog(
 
     if let Some((group, search_group)) = preference_group(
         "Forms and Data",
-        "Control simple mode, whole-form autofill, and cleanup.",
+        "Control budget detail, whole-form autofill, and cleanup.",
         &forms_preferences,
         advanced_features,
         &ui.preferences,

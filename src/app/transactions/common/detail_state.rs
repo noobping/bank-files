@@ -108,10 +108,13 @@ pub(super) fn transaction_detail_move_action_text(
     if advanced_features {
         (
             "Move Budget Code",
-            "Move this transaction to another budget code",
+            "Move this transaction to another category, budget code, or direction",
         )
     } else {
-        ("Move Category", "Move this transaction to another category")
+        (
+            "Move Category",
+            "Move this transaction to another category with the same direction",
+        )
     }
 }
 

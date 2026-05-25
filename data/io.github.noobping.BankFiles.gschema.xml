@@ -29,7 +29,7 @@
     <key name="advanced-features" type="b">
       <default>false</default>
       <summary>Advanced features</summary>
-      <description>Whether rule editing and budget direction controls are available.</description>
+      <description>Whether budget codes, direction controls, and detailed move options are shown.</description>
     </key>
     <key name="remember-mode" type="s">
       <default>'data-and-analytics'</default>

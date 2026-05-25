@@ -105,7 +105,7 @@ pub(in crate::app::transactions::common) fn connect_transaction_budget_move_save
             ) {
                 set_action_status(
                     &active_status,
-                    "This move changes direction. Enable Advanced Features to continue.",
+                    "Choose a category with the same direction, or enable Advanced Features to change direction.",
                 );
                 return;
             }

@@ -80,7 +80,7 @@ pub(super) fn show_move_budget_code_dialog(
         }
         if !advanced_features && budget_move_changes_direction(&options, &from, &to) {
             dialog_status.set_text(&tr(
-                "This move changes direction. Enable Advanced Features to continue.",
+                "Choose a budget code with the same direction, or enable Advanced Features to change direction.",
             ));
             return;
         }

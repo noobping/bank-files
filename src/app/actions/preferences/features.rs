@@ -35,9 +35,9 @@ fn register_advanced_features_action(
                 &state_for_advanced_features.borrow(),
             );
             let success_message = tr(if enabled {
-                "Advanced Features enabled. Budget direction controls and advanced analysis options are available."
+                "Advanced Features enabled. Budget codes, direction controls, and detailed move options are available."
             } else {
-                "Simple mode enabled. Budget direction controls and advanced analysis options are hidden."
+                "Simple mode enabled. Budget moves stay focused on matching categories."
             });
             render_views(
                 &state_for_advanced_features.borrow(),

@@ -21,9 +21,9 @@ pub(in crate::app::transactions::common) fn show_transaction_budget_code_dialog(
         "Move Category"
     };
     let dialog_subtitle = if advanced_features {
-        "Move this transaction to another category or budget code."
+        "Move this transaction to a category, budget code, or direction."
     } else {
-        "Move this transaction to another category."
+        "Move this transaction to a category with the same direction."
     };
     let match_name = truncate(&initial.search, 60);
     let header_title = transaction_budget_move_dialog_title(&match_name, dialog_title);

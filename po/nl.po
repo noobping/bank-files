@@ -2970,11 +2970,11 @@ msgstr "Dupliceer deze transactie als tijdelijke neptransactie"
 msgid "Advanced Features"
 msgstr "Geavanceerde functies"
 
-msgid "Allow budget direction controls and advanced analysis options."
-msgstr "Sta budgetrichtinginstellingen en geavanceerde analyseopties toe."
+msgid "Show budget codes, direction controls, and detailed move options."
+msgstr "Toon budgetcodes, richtinginstellingen en gedetailleerde verplaatsingsopties."
 
-msgid "Control simple mode, whole-form autofill, and cleanup."
-msgstr "Beheer eenvoudige modus, automatisch invullen van het hele formulier en opschonen."
+msgid "Control budget detail, whole-form autofill, and cleanup."
+msgstr "Beheer budgetdetails, automatisch invullen van het hele formulier en opschonen."
 
 msgid "Whole Form Autofill"
 msgstr "Volledig formulier automatisch invullen"
@@ -2982,11 +2982,11 @@ msgstr "Volledig formulier automatisch invullen"
 msgid "Fill related form fields from the value you choose, such as matching categories, budget codes, and directions."
 msgstr "Vul gerelateerde formuliervelden in op basis van de waarde die je kiest, zoals passende categorieën, budgetcodes en richtingen."
 
-msgid "Advanced Features enabled. Budget direction controls and advanced analysis options are available."
-msgstr "Geavanceerde functies ingeschakeld. Budgetrichtinginstellingen en geavanceerde analyseopties zijn beschikbaar."
+msgid "Advanced Features enabled. Budget codes, direction controls, and detailed move options are available."
+msgstr "Geavanceerde functies ingeschakeld. Budgetcodes, richtinginstellingen en gedetailleerde verplaatsingsopties zijn beschikbaar."
 
-msgid "Simple mode enabled. Budget direction controls and advanced analysis options are hidden."
-msgstr "Eenvoudige modus ingeschakeld. Budgetrichtinginstellingen en geavanceerde analyseopties zijn verborgen."
+msgid "Simple mode enabled. Budget moves stay focused on matching categories."
+msgstr "Eenvoudige modus ingeschakeld. Budgetverplaatsingen blijven gericht op passende categorieen."
 
 msgid "Whole Form Autofill enabled. Forms can fill matching categories, budget codes, and directions."
 msgstr "Volledig formulier automatisch invullen ingeschakeld. Formulieren kunnen passende categorieën, budgetcodes en richtingen invullen."
@@ -2997,8 +2997,8 @@ msgstr "Volledig formulier automatisch invullen uitgeschakeld. Formulieren gebru
 msgid "Toggle Advanced Features"
 msgstr "Geavanceerde functies aan/uit"
 
-msgid "Move this transaction to another budget code"
-msgstr "Verplaats deze transactie naar een andere budgetcode"
+msgid "Move this transaction to another category, budget code, or direction"
+msgstr "Verplaats deze transactie naar een andere categorie, budgetcode of richting"
 
 msgid "Save Move"
 msgstr "Verplaatsing opslaan"
@@ -3006,8 +3006,8 @@ msgstr "Verplaatsing opslaan"
 msgid "Save budget code move"
 msgstr "Budgetcodeverplaatsing opslaan"
 
-msgid "Move this transaction to another category or budget code."
-msgstr "Verplaats deze transactie naar een andere categorie of budgetcode."
+msgid "Move this transaction to a category, budget code, or direction."
+msgstr "Verplaats deze transactie naar een categorie, budgetcode of richting."
 
 msgid "Save moves matching transactions to this budget code. The original bank CSV is not changed."
 msgstr "Opslaan verplaatst overeenkomende transacties naar deze budgetcode. De oorspronkelijke bank-CSV wordt niet gewijzigd."
@@ -3015,11 +3015,11 @@ msgstr "Opslaan verplaatst overeenkomende transacties naar deze budgetcode. De o
 msgid "Choose a budget code first."
 msgstr "Kies eerst een budgetcode."
 
-msgid "This budget code is not available in simple mode. Enable Advanced Features to change direction."
-msgstr "Deze budgetcode is niet beschikbaar in eenvoudige modus. Schakel Geavanceerde functies in om de richting te wijzigen."
+msgid "Choose a budget code with the same direction, or enable Advanced Features to change direction."
+msgstr "Kies een budgetcode met dezelfde richting, of schakel Geavanceerde functies in om de richting te wijzigen."
 
-msgid "This move changes direction. Enable Advanced Features to continue."
-msgstr "Deze verplaatsing wijzigt de richting. Schakel Geavanceerde functies in om door te gaan."
+msgid "Choose a category with the same direction, or enable Advanced Features to change direction."
+msgstr "Kies een categorie met dezelfde richting, of schakel Geavanceerde functies in om de richting te wijzigen."
 
 msgid "Budget code move added to processing queue."
 msgstr "Budgetcodeverplaatsing toegevoegd aan de verwerkingswachtrij."
@@ -3048,23 +3048,20 @@ msgstr "Wijzigingen worden opgeslagen in je budgetconfiguratie."
 msgid "Move Category"
 msgstr "Categorie verplaatsen"
 
-msgid "Move this transaction to another category"
-msgstr "Verplaats deze transactie naar een andere categorie"
+msgid "Move this transaction to another category with the same direction"
+msgstr "Verplaats deze transactie naar een andere categorie met dezelfde richting"
 
 msgid "Save category move"
 msgstr "Categorieverplaatsing opslaan"
 
-msgid "Move this transaction to another category."
-msgstr "Verplaats deze transactie naar een andere categorie."
+msgid "Move this transaction to a category with the same direction."
+msgstr "Verplaats deze transactie naar een categorie met dezelfde richting."
 
 msgid "Save moves matching transactions to this category. The original bank CSV is not changed."
 msgstr "Opslaan verplaatst overeenkomende transacties naar deze categorie. De oorspronkelijke bank-CSV wordt niet gewijzigd."
 
 msgid "Choose a category first."
 msgstr "Kies eerst een categorie."
-
-msgid "This category is not available in simple mode. Enable Advanced Features to change direction."
-msgstr "Deze categorie is niet beschikbaar in eenvoudige modus. Schakel Geavanceerde functies in om de richting te wijzigen."
 
 msgid "Generated from transaction category change."
 msgstr "Gemaakt vanuit een categoriewijziging van een transactie."

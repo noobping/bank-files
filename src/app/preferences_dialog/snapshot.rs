@@ -46,7 +46,7 @@ pub(super) fn preferences_page_snapshot(
         &[
             (
                 "Advanced Features",
-                "Allow budget direction controls and advanced analysis options.",
+                "Show budget codes, direction controls, and detailed move options.",
                 "app.advanced-features",
             ),
             (

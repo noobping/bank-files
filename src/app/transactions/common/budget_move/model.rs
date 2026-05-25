@@ -125,22 +125,22 @@ pub(in crate::app::transactions::common) fn transaction_budget_target_subtitle(
     target: &TransactionBudgetTarget,
     advanced_features: bool,
 ) -> String {
-    let description = target.description.trim();
+    let mut parts = Vec::new();
     if advanced_features {
-        if description.is_empty() {
-            target.code.clone()
-        } else {
-            trf(
-                "{code} · {description}",
-                &[
-                    ("code", target.code.clone()),
-                    ("description", description.to_string()),
-                ],
-            )
+        let code = target.code.trim();
+        if !code.is_empty() {
+            parts.push(code.to_string());
         }
-    } else {
-        description.to_string()
     }
+
+    parts.push(transaction_budget_direction_label(target.direction));
+
+    let description = target.description.trim();
+    if !description.is_empty() {
+        parts.push(description.to_string());
+    }
+
+    parts.join(" · ")
 }
 
 pub(in crate::app::transactions::common) fn transaction_budget_direction_label(

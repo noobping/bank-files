@@ -236,7 +236,7 @@ fn simple_budget_move_current_target_matches_visible_category() {
 }
 
 #[test]
-fn budget_move_list_subtitle_uses_budget_description() {
+fn budget_move_list_subtitle_uses_direction_and_description() {
     let target = TransactionBudgetTarget {
         code: "SHOP".to_string(),
         category: "Groceries".to_string(),
@@ -246,17 +246,11 @@ fn budget_move_list_subtitle_uses_budget_description() {
 
     assert_eq!(
         transaction_budget_target_subtitle(&target, false),
-        "Food and household shopping"
+        format!("{} · Food and household shopping", tr("Expenses"))
     );
     assert_eq!(
         transaction_budget_target_subtitle(&target, true),
-        trf(
-            "{code} · {description}",
-            &[
-                ("code", "SHOP".to_string()),
-                ("description", "Food and household shopping".to_string()),
-            ],
-        )
+        format!("SHOP · {} · Food and household shopping", tr("Expenses"))
     );
 }
 

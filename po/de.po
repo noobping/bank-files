@@ -2970,11 +2970,11 @@ msgstr "Diese Transaktion als temporäre Scheintransaktion duplizieren"
 msgid "Advanced Features"
 msgstr "Erweiterte Funktionen"
 
-msgid "Allow budget direction controls and advanced analysis options."
-msgstr "Budgetrichtungseinstellungen und erweiterte Analyseoptionen erlauben."
+msgid "Show budget codes, direction controls, and detailed move options."
+msgstr "Budgetcodes, Richtungseinstellungen und detaillierte Verschiebeoptionen anzeigen."
 
-msgid "Control simple mode, whole-form autofill, and cleanup."
-msgstr "Einfachen Modus, Autofill für das ganze Formular und Bereinigung steuern."
+msgid "Control budget detail, whole-form autofill, and cleanup."
+msgstr "Budgetdetails, Autofill für das ganze Formular und Bereinigung steuern."
 
 msgid "Whole Form Autofill"
 msgstr "Ganzes Formular automatisch ausfüllen"
@@ -2982,11 +2982,11 @@ msgstr "Ganzes Formular automatisch ausfüllen"
 msgid "Fill related form fields from the value you choose, such as matching categories, budget codes, and directions."
 msgstr "Zugehörige Formularfelder anhand des gewählten Werts ausfüllen, etwa passende Kategorien, Budgetcodes und Richtungen."
 
-msgid "Advanced Features enabled. Budget direction controls and advanced analysis options are available."
-msgstr "Erweiterte Funktionen aktiviert. Budgetrichtungseinstellungen und erweiterte Analyseoptionen sind verfuegbar."
+msgid "Advanced Features enabled. Budget codes, direction controls, and detailed move options are available."
+msgstr "Erweiterte Funktionen aktiviert. Budgetcodes, Richtungseinstellungen und detaillierte Verschiebeoptionen sind verfuegbar."
 
-msgid "Simple mode enabled. Budget direction controls and advanced analysis options are hidden."
-msgstr "Einfacher Modus aktiviert. Budgetrichtungseinstellungen und erweiterte Analyseoptionen sind ausgeblendet."
+msgid "Simple mode enabled. Budget moves stay focused on matching categories."
+msgstr "Einfacher Modus aktiviert. Budgetverschiebungen bleiben auf passende Kategorien beschraenkt."
 
 msgid "Whole Form Autofill enabled. Forms can fill matching categories, budget codes, and directions."
 msgstr "Ganzes Formular automatisch ausfüllen aktiviert. Formulare können passende Kategorien, Budgetcodes und Richtungen eintragen."
@@ -2997,8 +2997,8 @@ msgstr "Ganzes Formular automatisch ausfüllen deaktiviert. Formulare verwenden 
 msgid "Toggle Advanced Features"
 msgstr "Erweiterte Funktionen umschalten"
 
-msgid "Move this transaction to another budget code"
-msgstr "Diese Transaktion zu einem anderen Budgetcode verschieben"
+msgid "Move this transaction to another category, budget code, or direction"
+msgstr "Diese Transaktion in eine andere Kategorie, zu einem anderen Budgetcode oder in eine andere Richtung verschieben"
 
 msgid "Save Move"
 msgstr "Verschiebung speichern"
@@ -3006,8 +3006,8 @@ msgstr "Verschiebung speichern"
 msgid "Save budget code move"
 msgstr "Budgetcode-Verschiebung speichern"
 
-msgid "Move this transaction to another category or budget code."
-msgstr "Diese Transaktion in eine andere Kategorie oder zu einem anderen Budgetcode verschieben."
+msgid "Move this transaction to a category, budget code, or direction."
+msgstr "Diese Transaktion in eine Kategorie, zu einem Budgetcode oder in eine andere Richtung verschieben."
 
 msgid "Save moves matching transactions to this budget code. The original bank CSV is not changed."
 msgstr "Speichern verschiebt passende Transaktionen zu diesem Budgetcode. Die urspruengliche Bank-CSV wird nicht geaendert."
@@ -3015,11 +3015,11 @@ msgstr "Speichern verschiebt passende Transaktionen zu diesem Budgetcode. Die ur
 msgid "Choose a budget code first."
 msgstr "Waehle zuerst einen Budgetcode."
 
-msgid "This budget code is not available in simple mode. Enable Advanced Features to change direction."
-msgstr "Dieser Budgetcode ist im einfachen Modus nicht verfuegbar. Aktiviere Erweiterte Funktionen, um die Richtung zu aendern."
+msgid "Choose a budget code with the same direction, or enable Advanced Features to change direction."
+msgstr "Waehle einen Budgetcode mit derselben Richtung oder aktiviere Erweiterte Funktionen, um die Richtung zu aendern."
 
-msgid "This move changes direction. Enable Advanced Features to continue."
-msgstr "Diese Verschiebung aendert die Richtung. Aktiviere Erweiterte Funktionen, um fortzufahren."
+msgid "Choose a category with the same direction, or enable Advanced Features to change direction."
+msgstr "Waehle eine Kategorie mit derselben Richtung oder aktiviere Erweiterte Funktionen, um die Richtung zu aendern."
 
 msgid "Budget code move added to processing queue."
 msgstr "Budgetcode-Verschiebung zur Verarbeitungswarteschlange hinzugefuegt."
@@ -3048,23 +3048,20 @@ msgstr "Aenderungen werden in deiner Budgetkonfiguration gespeichert."
 msgid "Move Category"
 msgstr "Kategorie verschieben"
 
-msgid "Move this transaction to another category"
-msgstr "Diese Transaktion in eine andere Kategorie verschieben"
+msgid "Move this transaction to another category with the same direction"
+msgstr "Diese Transaktion in eine andere Kategorie mit derselben Richtung verschieben"
 
 msgid "Save category move"
 msgstr "Kategorieverschiebung speichern"
 
-msgid "Move this transaction to another category."
-msgstr "Diese Transaktion in eine andere Kategorie verschieben."
+msgid "Move this transaction to a category with the same direction."
+msgstr "Diese Transaktion in eine Kategorie mit derselben Richtung verschieben."
 
 msgid "Save moves matching transactions to this category. The original bank CSV is not changed."
 msgstr "Speichern verschiebt passende Transaktionen in diese Kategorie. Die urspruengliche Bank-CSV wird nicht geaendert."
 
 msgid "Choose a category first."
 msgstr "Waehle zuerst eine Kategorie."
-
-msgid "This category is not available in simple mode. Enable Advanced Features to change direction."
-msgstr "Diese Kategorie ist im einfachen Modus nicht verfuegbar. Aktiviere Erweiterte Funktionen, um die Richtung zu aendern."
 
 msgid "Generated from transaction category change."
 msgstr "Aus einer Kategorieaenderung der Transaktion erstellt."
