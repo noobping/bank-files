@@ -130,7 +130,8 @@ use operation_queue::{
 use overview::render_overview;
 use popup::{
     build_action_dialog_shell, build_action_form_dialog, build_settings_dialog_shell,
-    connect_action_search, connect_preference_search, searchable_action_row, SearchableActionRow,
+    connect_action_search, connect_preference_search, searchable_action_row,
+    settings_content_dialog, settings_dialog_scroll, SearchableActionRow,
     SearchablePreferencesGroup,
 };
 use preferences::Preferences;

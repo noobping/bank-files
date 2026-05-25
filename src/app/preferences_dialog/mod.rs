@@ -88,7 +88,7 @@ pub(in crate::app) fn show_preferences_dialog(
         search_groups.push(search_group);
     }
 
-    root.append(&ui::scroll(&page));
+    root.append(&settings_dialog_scroll(&page));
 
     let status_bar = build_status_bar();
     connect_embedded_status_bar(parent, &status_bar, Rc::clone(&ui.status_autohide));
@@ -104,10 +104,7 @@ pub(in crate::app) fn show_preferences_dialog(
         .set_text(&tr("Preference changes are applied immediately."));
     root.append(&status_bar.container);
 
-    let dialog = ui::content_dialog(tr("Preferences"), &root)
-        .content_width(680)
-        .content_height(620)
-        .build();
+    let dialog = settings_content_dialog("Preferences", &root, 680);
 
     ui::bind_search_bar(&dialog, &dialog, &search_bar, &search_entry);
     connect_preference_search(&search_entry, search_groups);

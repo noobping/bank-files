@@ -178,6 +178,20 @@ pub(in crate::app) fn build_settings_dialog_shell(
     }
 }
 
+pub(in crate::app) fn settings_dialog_scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
+    ui::action_dialog_scroll(child)
+}
+
+pub(in crate::app) fn settings_content_dialog(
+    title: &str,
+    root: &impl IsA<gtk::Widget>,
+    content_width: i32,
+) -> adw::Dialog {
+    ui::content_dialog(tr(title), root)
+        .content_width(content_width)
+        .build()
+}
+
 pub(in crate::app) fn build_action_form_dialog(
     title: &str,
     subtitle: &str,

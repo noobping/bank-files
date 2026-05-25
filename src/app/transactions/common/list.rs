@@ -129,7 +129,6 @@ pub(in crate::app::transactions::common) fn transaction_detail_rows(
     push_detail_row(&mut rows, "Date", tx.date.to_string());
     push_detail_row(&mut rows, "Amount", signed_money(tx.amount));
     push_detail_row(&mut rows, "Counterparty", tx.counterparty.clone());
-    push_detail_row(&mut rows, "Account", tx.account.clone());
     if !same_detail_value(&tx.description, &tx.counterparty) {
         push_detail_row(&mut rows, "Description", tx.description.clone());
     }
@@ -149,6 +148,7 @@ pub(in crate::app::transactions::common) fn transaction_detail_rows(
         );
     }
     if advanced_features {
+        push_detail_row(&mut rows, "Account", tx.account.clone());
         push_detail_row(&mut rows, "Transaction ID", tx.transaction_id.clone());
         push_detail_row(&mut rows, "Currency", tx.currency.clone());
         push_detail_row(&mut rows, "Source file", tx.source_file.clone());

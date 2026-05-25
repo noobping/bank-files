@@ -45,13 +45,10 @@ pub(in crate::app) fn show_configuration_dialog(
     page.add(&group);
     search_groups.push(search_group);
 
-    root.append(&ui::scroll(&page));
+    root.append(&settings_dialog_scroll(&page));
     root.append(&status_bar.container);
 
-    let dialog = ui::content_dialog(tr("Configuration"), &root)
-        .content_width(720)
-        .content_height(620)
-        .build();
+    let dialog = settings_content_dialog("Configuration", &root, 720);
 
     ui::bind_search_bar(&dialog, &dialog, &search_bar, &search_entry);
     connect_preference_search(&search_entry, search_groups);
