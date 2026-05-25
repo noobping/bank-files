@@ -46,9 +46,6 @@ pub(in crate::app) struct UiHandles {
     pub(in crate::app) page_copy_buttons: Rc<RefCell<Vec<gtk::Button>>>,
     pub(in crate::app) page_copy_feedback_generation: Rc<Cell<u64>>,
     pub(in crate::app) show_all: Rc<Cell<bool>>,
-    pub(in crate::app) show_predictions: Rc<Cell<bool>>,
-    #[cfg(not(feature = "flatpak"))]
-    pub(in crate::app) online_smart_insights: Rc<Cell<bool>>,
     pub(in crate::app) compare_categories_previous_period: Rc<Cell<bool>>,
     pub(in crate::app) advanced_autofill: Rc<Cell<bool>>,
     pub(in crate::app) advanced_features: Rc<Cell<bool>>,
@@ -59,7 +56,6 @@ pub(in crate::app) struct UiHandles {
     pub(in crate::app) management_actions: Rc<RefCell<Vec<gtk::gio::SimpleAction>>>,
     pub(in crate::app) config_widgets: Rc<RefCell<Vec<ConfigWidget>>>,
     pub(in crate::app) loading_sensitive_widgets: Rc<RefCell<Vec<LoadingSensitiveWidget>>>,
-    pub(in crate::app) hide_canceled_transactions: Rc<Cell<bool>>,
     pub(in crate::app) status_generation: Rc<Cell<u64>>,
     pub(in crate::app) render_generation: Rc<Cell<u64>>,
     pub(in crate::app) render_request_generation: Rc<Cell<u64>>,

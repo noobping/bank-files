@@ -46,9 +46,7 @@ cargo run --release
 
 ## Linux Install From Source
 
-Use Meson for a normal Linux install. This installs the binary, desktop file, app metadata, GSettings schema, icons, symbolic action icons, GTK resource bundle, GNOME search provider files, compiled translations, source PO/POT files, and non-embedded AI model assets in the selected prefix.
-
-Smart Insights and local AI are enabled in the default Cargo feature set. Use `--no-default-features` for a lightweight Cargo build without Smart Insights or local AI. For a Meson release build, the default feature set is enough:
+Use Meson for a normal Linux install. This installs the binary, desktop file, app metadata, GSettings schema, icons, symbolic action icons, GTK resource bundle, GNOME search provider files, compiled translations, and source PO/POT files in the selected prefix. For a Meson release build, the default feature set is enough:
 
 ```bash
 meson setup build -Dcargo_variant=release
@@ -56,7 +54,7 @@ meson compile -C build
 sudo meson install -C build
 ```
 
-The GTK resource bundle is installed to `share/bank-files/bank-files.gresource` and loaded from there by normal Linux release installs. Plain Cargo development builds, Meson developer/debug builds, Windows builds, and setup/self-contained builds keep GTK resources embedded. The AI bundle is copied beside Cargo-built executables and installed to `share/bank-files/models/ai` by Meson. Setup builds embed the AI assets instead of installing sidecar files:
+The GTK resource bundle is installed to `share/bank-files/bank-files.gresource` and loaded from there by normal Linux release installs. Plain Cargo development builds, Meson developer/debug builds, Windows builds, and setup/self-contained builds keep GTK resources embedded:
 
 ```bash
 meson setup build -Dcargo_variant=release -Dsetup=true
@@ -68,7 +66,7 @@ meson setup build -Dcargo_variant=release -Dsetup=true
 2. Click **Choose CSV Files**, drop bank CSVs onto the window, use **Open With**, or place transaction files manually in the app data folder.
 3. Open `rules.csv`, `budgetcodes.csv`, or `field_aliases.csv` the same way to update configuration.
 4. Use **Categorization Rules**, **Budgets**, and **Normalize CSV Fields** to edit configuration inside the app.
-5. Use Overview and Budget cards, charts, and detected pattern cards to jump to matching transactions.
+5. Use Overview and Budget cards and charts to jump to matching transactions.
 6. Use **Print Page** or **Export CSV** to share the current filtered view.
 
 ## Main pages
@@ -76,7 +74,7 @@ meson setup build -Dcargo_variant=release -Dsetup=true
 - **Overview** shows imported totals, the latest month, active rules, yearly comparisons, trend charts, budget warnings, and annual categories.
 - **Budget** shows one selected month with expenses, income, balance, budget room, category totals, and budget warnings.
 - **Transactions** shows the searchable transaction list. Click a transaction to expand CSV-like details such as source file, tags, account, and transaction ID.
-- **Diagnostics** shows import quality, detected fields, warnings, duplicate filtering, transaction patterns, and quick actions for rules and field mappings.
+- **Diagnostics** shows import quality, detected fields, warnings, duplicate filtering, and quick actions for rules and field mappings.
 
 ## Warnings and attention signals
 

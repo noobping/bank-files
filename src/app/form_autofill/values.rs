@@ -37,19 +37,6 @@ pub(in crate::app) fn transaction_rule_search_values(tx: &Transaction) -> Vec<St
     ])
 }
 
-pub(in crate::app) fn pattern_rule_search_values(
-    pattern: &analytics::TransactionPattern,
-) -> Vec<String> {
-    unique_texts(
-        std::iter::once(pattern.label.trim().to_string()).chain(
-            pattern
-                .match_labels
-                .iter()
-                .map(|label| label.trim().to_string()),
-        ),
-    )
-}
-
 pub(in crate::app) fn editable_category_values() -> Vec<String> {
     unique_texts(
         data::load_editable_budgets()

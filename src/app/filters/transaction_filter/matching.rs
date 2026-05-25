@@ -17,7 +17,6 @@ impl TransactionFilter {
             Self::CategoryForYear { category, year } => {
                 tx.year() == *year && transaction_category_label(tx) == category.trim()
             }
-            Self::Pattern(pattern) => analytics::transaction_matches_pattern(tx, pattern),
             Self::Scoped {
                 budget_code,
                 year,

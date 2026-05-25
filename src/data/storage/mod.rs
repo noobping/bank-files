@@ -12,9 +12,7 @@ pub use capabilities::{
 };
 pub use load::{load_app_data_read_only_aware, load_app_data_with_sources, prepare_app_storage};
 pub use reload::reload_transaction_source_file;
-pub use types::{
-    CsvCopyResult, EditableAlias, EditableBudget, EditableRule, IgnoredTransactionPattern,
-};
+pub use types::{CsvCopyResult, EditableAlias, EditableBudget, EditableRule};
 
 #[cfg(test)]
 use load::{load_app_data_from_dirs, AppDataLoadRequest};

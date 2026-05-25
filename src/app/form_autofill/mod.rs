@@ -9,7 +9,7 @@ pub(in crate::app) use connect::connect_budget_fields_autofill;
 pub(in crate::app) use values::{
     app_budget_autofill_entries, app_budget_code_values, app_category_values,
     editable_budget_autofill_entries, editable_budget_code_values, editable_category_values,
-    editable_rule_search_values, pattern_rule_search_values, transaction_rule_search_values,
+    editable_rule_search_values, transaction_rule_search_values,
 };
 
 #[derive(Debug, Clone)]

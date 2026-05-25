@@ -1,5 +1,4 @@
 use crate::model::{MonthKey, Transaction};
-use chrono::NaiveDate;
 use rust_decimal::Decimal;
 
 #[derive(Debug, Clone, Default, PartialEq)]
@@ -119,70 +118,4 @@ pub struct Dashboard {
     pub budgets: Vec<BudgetUsage>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum ForecastStatus {
-    Safe,
-    Tight,
-    Short,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct ForecastPeriod {
-    pub income: Decimal,
-    pub expenses: Decimal,
-    pub projected_balance: Decimal,
-    pub imported_income: Decimal,
-    pub expected_income: Decimal,
-    pub imported_expenses: Decimal,
-    pub planned_expenses: Decimal,
-    pub status: ForecastStatus,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct SurvivalForecast {
-    pub anchor_month: MonthKey,
-    pub next_month: MonthKey,
-    pub current_month: ForecastPeriod,
-    pub next_month_period: ForecastPeriod,
-    pub rest_of_year: ForecastPeriod,
-}
-
 pub const DASHBOARD_MONTH_LIMIT: usize = 24;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum RepeatingCadence {
-    Weekly,
-    Biweekly,
-    Monthly,
-    Quarterly,
-    Yearly,
-    Recurring,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum TransactionPatternKind {
-    Repeating(RepeatingCadence),
-    FullRefund,
-    BillSplit,
-    Transfer,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct TransactionPatternAmountStat {
-    pub amount: Decimal,
-    pub count: usize,
-}
-
-#[derive(Debug, Clone, PartialEq)]
-pub struct TransactionPattern {
-    pub kind: TransactionPatternKind,
-    pub label: String,
-    pub match_labels: Vec<String>,
-    pub transaction_keys: Vec<String>,
-    pub count: usize,
-    pub amount: Decimal,
-    pub amount_stats: Vec<TransactionPatternAmountStat>,
-    pub net: Decimal,
-    pub first_date: NaiveDate,
-    pub last_date: NaiveDate,
-}

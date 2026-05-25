@@ -26,7 +26,6 @@ pub(in crate::app) fn show_preferences_dialog(
         .build();
     let mut search_groups = Vec::new();
     let advanced_features = ui.advanced_features.get();
-    let smart_insights_enabled = ui.show_predictions.get();
 
     if let Some((group, search_group)) = preference_group(
         "Interface",
@@ -52,63 +51,10 @@ pub(in crate::app) fn show_preferences_dialog(
             ),
         ],
         advanced_features,
-        smart_insights_enabled,
         &ui.preferences,
     ) {
         page.add(&group);
         search_groups.push(search_group);
-    }
-
-    let experimental_preferences = Vec::new();
-    #[cfg(feature = "smart-insights")]
-    let mut experimental_preferences = experimental_preferences;
-    #[cfg(feature = "smart-insights")]
-    {
-        let smart_dependent_preferences_enabled = Rc::new(Cell::new(smart_insights_enabled));
-        experimental_preferences.push(
-            PreferenceSpec::new(
-                "Smart Insights",
-                "Show forecast cards and detect transaction patterns, including possible transfers, from imported transactions.",
-                "app.show-predictions",
-                ui.show_predictions.get(),
-            )
-            .toggles_enabled(Rc::clone(&smart_dependent_preferences_enabled)),
-        );
-        #[cfg(not(feature = "flatpak"))]
-        experimental_preferences.push(
-            PreferenceSpec::new(
-                "Online Smart Insights",
-                "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent.",
-                "app.online-smart-insights",
-                ui.online_smart_insights.get(),
-            )
-            .requires_smart_insights()
-            .enabled_by(Rc::clone(&smart_dependent_preferences_enabled)),
-        );
-        experimental_preferences.push(
-            PreferenceSpec::new(
-                "Hide Refunded Transactions",
-                "Requires Smart Insights. Exclude detected refunds and offsetting groups from normal views.",
-                "app.hide-canceled-transactions",
-                ui.hide_canceled_transactions.get(),
-            )
-            .requires_smart_insights()
-            .enabled_by(Rc::clone(&smart_dependent_preferences_enabled)),
-        );
-    }
-
-    let advanced_preferences_visible = Rc::new(Cell::new(advanced_features));
-    let mut experimental_group = preference_group(
-        "Experimental",
-        "Control Smart Insights, online enrichment, and detected refund hiding.",
-        &experimental_preferences,
-        true,
-        smart_insights_enabled,
-        &ui.preferences,
-    );
-    if let Some((group, search_group)) = &mut experimental_group {
-        group.set_visible(advanced_features);
-        search_group.set_visibility_gate(Rc::clone(&advanced_preferences_visible));
     }
 
     if let Some((group, search_group)) = remember_preference_group(advanced_features, state, ui) {
@@ -116,19 +62,13 @@ pub(in crate::app) fn show_preferences_dialog(
         search_groups.push(search_group);
     }
 
-    let mut advanced_features_spec = PreferenceSpec::new(
-        "Advanced Features",
-        "Allow budget direction controls and advanced analysis options.",
-        "app.advanced-features",
-        advanced_features,
-    );
-    if let Some((group, _)) = &experimental_group {
-        advanced_features_spec = advanced_features_spec
-            .toggles_visibility(group, Rc::clone(&advanced_preferences_visible));
-    }
-
     let forms_preferences = vec![
-        advanced_features_spec,
+        PreferenceSpec::new(
+            "Advanced Features",
+            "Allow budget direction controls and advanced analysis options.",
+            "app.advanced-features",
+            advanced_features,
+        ),
         PreferenceSpec::new(
             "Whole Form Autofill",
             "Fill related form fields from the value you choose, such as matching categories, budget codes, and directions.",
@@ -148,14 +88,8 @@ pub(in crate::app) fn show_preferences_dialog(
         "Control simple mode, whole-form autofill, and cleanup.",
         &forms_preferences,
         advanced_features,
-        smart_insights_enabled,
         &ui.preferences,
     ) {
-        page.add(&group);
-        search_groups.push(search_group);
-    }
-
-    if let Some((group, search_group)) = experimental_group {
         page.add(&group);
         search_groups.push(search_group);
     }
@@ -169,7 +103,7 @@ pub(in crate::app) fn show_preferences_dialog(
         "preferences",
         &status_bar.label,
         ui,
-        preferences_page_snapshot(advanced_features, smart_insights_enabled, &ui.preferences),
+        preferences_page_snapshot(advanced_features, &ui.preferences),
     );
     status_bar
         .label

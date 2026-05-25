@@ -1,31 +1,20 @@
-use super::defaults::{
-    canonical_direction, canonical_rule_field, AUTO_DETECTED_CATEGORY_NOTE,
-    GENERATED_AUTOMATIC_NOTE, GENERATED_PATTERN_NOTE, LOCAL_AI_NOTE,
-};
+use super::defaults::{canonical_direction, canonical_rule_field, AUTO_DETECTED_CATEGORY_NOTE};
 use super::fallback::fallback_category;
 use super::transaction_tag_text;
 use super::Rule;
-use crate::model::{BudgetCode, Transaction};
+use crate::model::Transaction;
 use crate::util::normalize_key;
 
 use regex::RegexBuilder;
 use rust_decimal::Decimal;
 
-pub fn apply_rules(
-    transactions: &mut [Transaction],
-    rules: &[Rule],
-    budgets: &[BudgetCode],
-    smart_insights_enabled: bool,
-) {
+pub fn apply_rules(transactions: &mut [Transaction], rules: &[Rule]) {
     for tx in transactions {
-        if apply_matching_rule(tx, rules, false) {
-            continue;
-        }
-        if smart_insights_enabled && apply_matching_rule(tx, rules, true) {
+        if apply_matching_rule(tx, rules) {
             continue;
         }
 
-        let assignment = fallback_category(tx, budgets, smart_insights_enabled);
+        let assignment = fallback_category(tx);
         tx.category = assignment.category;
         tx.budget_code = assignment.budget_code;
         if let Some(notes) = assignment.notes {
@@ -38,11 +27,8 @@ pub fn transaction_classification_is_auto_detected(tx: &Transaction) -> bool {
     note_is_auto_detection(&tx.notes)
 }
 
-fn apply_matching_rule(tx: &mut Transaction, rules: &[Rule], automatic: bool) -> bool {
-    for rule in rules
-        .iter()
-        .filter(|rule| rule.active && rule_is_automatic_detection(rule) == automatic)
-    {
+fn apply_matching_rule(tx: &mut Transaction, rules: &[Rule]) -> bool {
+    for rule in rules.iter().filter(|rule| rule.active) {
         if rule_matches(rule, tx) {
             tx.category = rule.category.clone();
             tx.budget_code = rule.budget_code.clone();
@@ -53,19 +39,8 @@ fn apply_matching_rule(tx: &mut Transaction, rules: &[Rule], automatic: bool) ->
     false
 }
 
-fn rule_is_automatic_detection(rule: &Rule) -> bool {
-    note_is_auto_detection(&rule.notes)
-}
-
 fn note_is_auto_detection(note: &str) -> bool {
-    [
-        AUTO_DETECTED_CATEGORY_NOTE,
-        GENERATED_AUTOMATIC_NOTE,
-        GENERATED_PATTERN_NOTE,
-        LOCAL_AI_NOTE,
-    ]
-    .into_iter()
-    .any(|expected| note_matches(note, expected))
+    note_matches(note, AUTO_DETECTED_CATEGORY_NOTE)
 }
 
 fn note_matches(note: &str, expected: &str) -> bool {

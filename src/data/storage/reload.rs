@@ -12,7 +12,6 @@ pub fn reload_transaction_source_file(
     mode: DedupeMode,
     auto_clean_config: bool,
     remember_mode: RememberMode,
-    smart_insights_enabled: bool,
 ) -> Result<AppData> {
     let dirs = app_dirs()?;
     let capabilities = crate::data::storage_capabilities(&dirs);
@@ -23,7 +22,6 @@ pub fn reload_transaction_source_file(
         mode,
         auto_clean_config && capabilities.config_writable,
         remember_mode,
-        smart_insights_enabled,
     )
 }
 
@@ -43,7 +41,6 @@ pub(super) fn reload_inbox_file_with_dirs(
         mode,
         auto_clean_config,
         RememberMode::DataOnly,
-        true,
     )
 }
 
@@ -54,7 +51,6 @@ fn reload_transaction_source_file_with_dirs(
     mode: DedupeMode,
     auto_clean_config: bool,
     remember_mode: RememberMode,
-    smart_insights_enabled: bool,
 ) -> Result<AppData> {
     if auto_clean_config {
         remove_orphaned_rules()?;
@@ -78,7 +74,7 @@ fn reload_transaction_source_file_with_dirs(
         .retain(|transaction| transaction.source_file != source_file);
     data.transactions.extend(transactions);
     let (mut transactions, duplicate_count) = dedupe(std::mem::take(&mut data.transactions), mode);
-    apply_rules(&mut transactions, &rules, &budgets, smart_insights_enabled);
+    apply_rules(&mut transactions, &rules);
     sort_transactions(&mut transactions);
     data.transactions = transactions;
 

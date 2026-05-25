@@ -15,16 +15,6 @@ pub(super) fn add_view_action(
     app.add_action(&action);
 }
 
-#[cfg(feature = "smart-insights")]
-pub(super) fn set_simple_action_enabled(app: &adw::Application, name: &str, enabled: bool) {
-    if let Some(action) = app
-        .lookup_action(name)
-        .and_then(|action| action.downcast::<gtk::gio::SimpleAction>().ok())
-    {
-        action.set_enabled(enabled);
-    }
-}
-
 pub(super) fn add_bool_toggle_action<F>(
     app: &adw::Application,
     name: &str,

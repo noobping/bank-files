@@ -63,10 +63,6 @@ impl SearchablePreferencesGroup {
         }
     }
 
-    pub(in crate::app) fn set_visibility_gate(&mut self, gate: Rc<Cell<bool>>) {
-        self.visibility_gate = Some(gate);
-    }
-
     pub(in crate::app) fn add_row(
         &mut self,
         row: &impl IsA<gtk::Widget>,

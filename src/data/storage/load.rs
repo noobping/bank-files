@@ -21,7 +21,6 @@ pub fn load_app_data_read_only_aware(
     mode: DedupeMode,
     auto_clean_config: bool,
     scope: TransactionLoadScope,
-    smart_insights_enabled: bool,
 ) -> Result<(AppData, StorageCapabilities)> {
     let dirs = app_dirs()?;
     let capabilities = crate::data::storage_capabilities(&dirs);
@@ -34,7 +33,6 @@ pub fn load_app_data_read_only_aware(
             scope,
             remember_mode: RememberMode::DataOnly,
             sources: &[],
-            smart_insights_enabled,
         },
     )
 }
@@ -45,7 +43,6 @@ pub fn load_app_data_with_sources(
     scope: TransactionLoadScope,
     remember_mode: RememberMode,
     sources: &[TransactionSource],
-    smart_insights_enabled: bool,
 ) -> Result<(AppData, StorageCapabilities)> {
     let dirs = app_dirs()?;
     let capabilities = crate::data::storage_capabilities(&dirs);
@@ -58,7 +55,6 @@ pub fn load_app_data_with_sources(
             scope,
             remember_mode,
             sources,
-            smart_insights_enabled,
         },
     )
 }
@@ -70,7 +66,6 @@ pub(super) struct AppDataLoadRequest<'a> {
     pub(super) scope: TransactionLoadScope,
     pub(super) remember_mode: RememberMode,
     pub(super) sources: &'a [TransactionSource],
-    pub(super) smart_insights_enabled: bool,
 }
 
 pub(super) fn load_app_data_from_dirs(
@@ -88,7 +83,6 @@ pub(super) fn load_app_data_from_dirs(
                 request.scope,
                 request.remember_mode,
                 request.sources,
-                request.smart_insights_enabled,
             )
         })
         .transpose()?;
@@ -146,12 +140,7 @@ fn load_app_data_uncached(
     }
     let (mut transactions, duplicate_count) =
         dedupe(std::mem::take(&mut outcome.transactions), request.mode);
-    apply_rules(
-        &mut transactions,
-        &rules,
-        &budgets,
-        request.smart_insights_enabled,
-    );
+    apply_rules(&mut transactions, &rules);
     sort_transactions(&mut transactions);
 
     let available_months = if outcome.available_months.is_empty() {

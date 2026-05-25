@@ -18,10 +18,6 @@ pub(super) fn force_reload_csv_file(
     let mode = state.borrow().dedupe_mode;
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
     let remember_mode = ui_handles.remember_mode.get();
-    let smart_insights_enabled = smart_pattern_detection_enabled(
-        ui_handles.advanced_features.get(),
-        ui_handles.show_predictions.get(),
-    );
     let data = state.borrow().clone();
     let state_for_reload = Rc::clone(state);
     let ui_for_reload = Rc::clone(ui_handles);
@@ -38,7 +34,6 @@ pub(super) fn force_reload_csv_file(
                 mode,
                 auto_clean_config,
                 remember_mode,
-                smart_insights_enabled,
             )
         });
 
@@ -111,10 +106,6 @@ pub(super) fn forget_or_unload_csv_file(
     let mode = state.borrow().dedupe_mode;
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
     let remember_mode = ui_handles.remember_mode.get();
-    let smart_insights_enabled = smart_pattern_detection_enabled(
-        ui_handles.advanced_features.get(),
-        ui_handles.show_predictions.get(),
-    );
     let mut sources = state.borrow().transaction_sources.clone();
     sources.retain(|existing| existing.path != source.path || existing.kind != source.kind);
     let scope = current_transaction_load_scope(&state.borrow(), ui_handles.as_ref());
@@ -145,7 +136,6 @@ pub(super) fn forget_or_unload_csv_file(
                 scope,
                 remember_mode,
                 &reload_sources,
-                smart_insights_enabled,
             )
         });
 

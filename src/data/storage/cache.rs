@@ -90,13 +90,10 @@ pub(super) fn app_data_cache_key(
     scope: TransactionLoadScope,
     remember_mode: RememberMode,
     sources: &[TransactionSource],
-    smart_insights_enabled: bool,
 ) -> Result<String> {
     let mut digest = Sha256::new();
     digest.update(env!("CARGO_PKG_VERSION").as_bytes());
-    digest.update(
-        format!("{mode:?}|{scope:?}|{remember_mode:?}|smart:{smart_insights_enabled}").as_bytes(),
-    );
+    digest.update(format!("{mode:?}|{scope:?}|{remember_mode:?}").as_bytes());
     for source in effective_cache_sources(dirs, remember_mode, sources)? {
         digest.update(format!("{:?}|{}|", source.kind, source.path.display()).as_bytes());
         match fs::metadata(&source.path) {

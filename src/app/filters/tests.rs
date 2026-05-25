@@ -1,4 +1,4 @@
-use super::page::{page_hides_canceled_transactions, AppPage};
+use super::page::AppPage;
 use super::presets::{search_preset_specs, SearchPreset};
 use super::search::SearchFilter;
 use super::transaction_filter::{TransactionAmountFilter, TransactionFilter};
@@ -107,10 +107,6 @@ fn search_presets_choose_their_most_useful_page() {
         SearchPreset::Warnings.target_page(),
         Some(AppPage::Diagnostics)
     );
-    assert_eq!(
-        SearchPreset::Patterns.target_page(),
-        Some(AppPage::Diagnostics)
-    );
 }
 
 #[test]
@@ -123,49 +119,4 @@ fn app_pages_round_trip_stack_names() {
     ] {
         assert_eq!(AppPage::from_stack_name(Some(page.stack_name())), page);
     }
-}
-
-#[test]
-fn diagnostic_transaction_filters_keep_hidden_rows_available() {
-    assert!(TransactionFilter::UnconfiguredBudgets.includes_diagnostic_hidden_rows());
-    assert!(TransactionFilter::OtherCategories.includes_diagnostic_hidden_rows());
-    assert!(!TransactionFilter::All.includes_diagnostic_hidden_rows());
-    assert!(!TransactionFilter::year(2025).includes_diagnostic_hidden_rows());
-}
-
-#[test]
-fn diagnostics_page_does_not_hide_canceled_transactions() {
-    assert!(!page_hides_canceled_transactions(
-        AppPage::Diagnostics,
-        true,
-        None,
-    ));
-}
-
-#[test]
-fn diagnostic_transaction_filters_do_not_hide_canceled_transactions() {
-    assert!(!page_hides_canceled_transactions(
-        AppPage::Transactions,
-        true,
-        Some(&TransactionFilter::UnconfiguredBudgets),
-    ));
-    assert!(page_hides_canceled_transactions(
-        AppPage::Transactions,
-        true,
-        Some(&TransactionFilter::year(2025)),
-    ));
-}
-
-#[test]
-fn ordinary_pages_honor_hide_canceled_preference() {
-    assert!(page_hides_canceled_transactions(
-        AppPage::Overview,
-        true,
-        None,
-    ));
-    assert!(!page_hides_canceled_transactions(
-        AppPage::Budget,
-        false,
-        None,
-    ));
 }

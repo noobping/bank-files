@@ -62,8 +62,7 @@ fn transaction_page_load_scope(data: &AppData, ui: &UiHandles) -> TransactionLoa
         } => TransactionLoadScope::Year(selected_year),
         TransactionFilter::All
         | TransactionFilter::UnconfiguredBudgets
-        | TransactionFilter::OtherCategories
-        | TransactionFilter::Pattern(_) => TransactionLoadScope::All,
+        | TransactionFilter::OtherCategories => TransactionLoadScope::All,
     }
 }
 

@@ -24,8 +24,6 @@ pub(in crate::app) fn clear_cache_and_reload_state(
     let scope = current_transaction_load_scope(&borrowed, ui.as_ref());
     drop(borrowed);
     let auto_clean_config = ui.preferences.auto_clean_config();
-    let smart_insights_enabled =
-        smart_pattern_detection_enabled(ui.advanced_features.get(), ui.show_predictions.get());
     let state_for_reload = Rc::clone(state);
     let ui_for_reload = Rc::clone(ui);
 
@@ -49,7 +47,6 @@ pub(in crate::app) fn clear_cache_and_reload_state(
                 scope,
                 remember_mode,
                 &sources,
-                smart_insights_enabled,
             )?;
             anyhow::Ok((removed, new_data, capabilities))
         });
@@ -150,8 +147,6 @@ pub(in crate::app) fn reload_state_with_scope(
     let sources = current_sources_for_reload(&borrowed, remember_mode);
     drop(borrowed);
     let auto_clean_config = ui.preferences.auto_clean_config();
-    let smart_insights_enabled =
-        smart_pattern_detection_enabled(ui.advanced_features.get(), ui.show_predictions.get());
     let state_for_reload = Rc::clone(state);
     let ui_for_reload = Rc::clone(ui);
     show_verbose_status(
@@ -173,7 +168,6 @@ pub(in crate::app) fn reload_state_with_scope(
                 scope,
                 remember_mode,
                 &sources,
-                smart_insights_enabled,
             )
         });
         match task.await {

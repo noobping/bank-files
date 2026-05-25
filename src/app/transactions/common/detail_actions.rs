@@ -11,7 +11,6 @@ use super::rule_helpers::{
     suggested_budget_code, suggested_category,
 };
 use super::rule_ops::{apply_invalid_auto_detection_rule, apply_transaction_direction_rule};
-use super::search::{show_diagnostics_text_search, similar_transaction_query};
 use super::*;
 
 use super::detail_state::{
@@ -35,10 +34,6 @@ pub(super) fn transaction_detail_actions(
     let mut has_menu_items = false;
 
     let advanced_features = ui_handles.advanced_features.get();
-    let smart_patterns_enabled = smart_pattern_detection_enabled(
-        ui_handles.advanced_features.get(),
-        ui_handles.show_predictions.get(),
-    );
     let auto_detected_classification =
         crate::rules::transaction_classification_is_auto_detected(tx);
     let (markable_as_transfer, budget_move_available) = {
@@ -51,7 +46,6 @@ pub(super) fn transaction_detail_actions(
     let transfer_marked = !markable_as_transfer;
     let visible_actions = visible_transaction_detail_actions(
         advanced_features,
-        smart_patterns_enabled,
         markable_as_transfer,
         budget_move_available,
         auto_detected_classification,
@@ -145,27 +139,6 @@ pub(super) fn transaction_detail_actions(
             );
             has_menu_items = true;
         }
-    }
-
-    if visible_actions.contains(&TransactionDetailAction::FindPattern) {
-        let tx_for_pattern = tx.clone();
-        let state_for_pattern = Rc::clone(state);
-        let ui_for_pattern = Rc::clone(ui_handles);
-        append_transaction_detail_menu_action(
-            &menu,
-            &menu_actions,
-            "find-pattern",
-            "Find pattern",
-            true,
-            move || {
-                show_diagnostics_text_search(
-                    &state_for_pattern,
-                    &ui_for_pattern,
-                    &similar_transaction_query(&tx_for_pattern),
-                );
-            },
-        );
-        has_menu_items = true;
     }
 
     if visible_actions.contains(&TransactionDetailAction::MarkTransfer) {

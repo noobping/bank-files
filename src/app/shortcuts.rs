@@ -39,14 +39,6 @@ const COMMON_ACTION_ACCELERATORS: &[ActionAccelerators] = &[
 const CHECK_FOR_UPDATES_ACCELERATORS: ActionAccelerators =
     ("app.check-for-updates", &["<primary>U"]);
 const SHORTCUTS_DIALOG_RESOURCE: &str = "shortcuts-dialog.ui";
-#[cfg(feature = "smart-insights")]
-const SMART_INSIGHTS_ACCELERATORS: &[ActionAccelerators] = &[
-    ("app.show-predictions", &["<primary><alt>S"]),
-    ("app.hide-canceled-transactions", &["<primary><alt>H"]),
-];
-#[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
-const ONLINE_SMART_INSIGHTS_ACCELERATORS: ActionAccelerators =
-    ("app.online-smart-insights", &["<primary><alt>O"]);
 
 #[cfg(all(target_os = "linux", feature = "setup", not(feature = "flatpak")))]
 const INSTALL_LOCALLY_ACCELERATORS: ActionAccelerators =
@@ -56,15 +48,6 @@ pub(in crate::app) fn install_action_accelerators(app: &adw::Application) {
     for (action_name, accelerators) in COMMON_ACTION_ACCELERATORS {
         app.set_accels_for_action(action_name, accelerators);
     }
-    #[cfg(feature = "smart-insights")]
-    for (action_name, accelerators) in SMART_INSIGHTS_ACCELERATORS {
-        app.set_accels_for_action(action_name, accelerators);
-    }
-    #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
-    app.set_accels_for_action(
-        ONLINE_SMART_INSIGHTS_ACCELERATORS.0,
-        ONLINE_SMART_INSIGHTS_ACCELERATORS.1,
-    );
     if updater::supports_update_checks() {
         app.set_accels_for_action(
             CHECK_FOR_UPDATES_ACCELERATORS.0,
@@ -78,22 +61,11 @@ pub(in crate::app) fn install_action_accelerators(app: &adw::Application) {
     );
 }
 
-pub(in crate::app) fn build_shortcuts_dialog(
-    advanced_features: bool,
-    _smart_patterns_enabled: bool,
-) -> adw::ShortcutsDialog {
-    #[cfg(not(feature = "smart-insights"))]
-    let _ = advanced_features;
-
+pub(in crate::app) fn build_shortcuts_dialog() -> adw::ShortcutsDialog {
     let builder = ui::builder_from_resource(SHORTCUTS_DIALOG_RESOURCE);
     let dialog = ui::builder_object::<adw::ShortcutsDialog>(
         &builder,
         "shortcuts_dialog",
-        SHORTCUTS_DIALOG_RESOURCE,
-    );
-    let settings = ui::builder_object::<adw::ShortcutsSection>(
-        &builder,
-        "shortcuts_settings_section",
         SHORTCUTS_DIALOG_RESOURCE,
     );
     let app = ui::builder_object::<adw::ShortcutsSection>(
@@ -102,32 +74,9 @@ pub(in crate::app) fn build_shortcuts_dialog(
         SHORTCUTS_DIALOG_RESOURCE,
     );
 
-    add_smart_insights_shortcuts(&settings, advanced_features);
     add_optional_app_shortcuts(&app);
     dialog
 }
-
-#[cfg(feature = "smart-insights")]
-fn add_smart_insights_shortcuts(section: &adw::ShortcutsSection, advanced_features: bool) {
-    if !advanced_features {
-        return;
-    }
-    add_action_shortcut(section, "Toggle Smart Insights", "app.show-predictions");
-    #[cfg(not(feature = "flatpak"))]
-    add_action_shortcut(
-        section,
-        "Toggle Online Smart Insights",
-        "app.online-smart-insights",
-    );
-    add_action_shortcut(
-        section,
-        "Toggle Hide Refunded Transactions",
-        "app.hide-canceled-transactions",
-    );
-}
-
-#[cfg(not(feature = "smart-insights"))]
-fn add_smart_insights_shortcuts(_section: &adw::ShortcutsSection, _advanced_features: bool) {}
 
 fn add_optional_app_shortcuts(section: &adw::ShortcutsSection) {
     if updater::supports_update_checks() {

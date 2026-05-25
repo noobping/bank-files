@@ -50,7 +50,6 @@ mod render;
 mod rule_dialog;
 mod shell;
 mod shortcuts;
-mod smart;
 mod status;
 mod text;
 mod transactions;
@@ -70,9 +69,9 @@ use annual::{
 use budget::{
     bind_percentage_basis_visibility, budget_direction_change, budget_direction_editable,
     budget_edit_button, budget_values_use_percentage, confirm_budget_direction_changes,
-    generate_configuration_from_transactions_with_status, more_budgets_row, more_categories_row,
-    render_budget_page, selected_budget_month, selected_year, show_budget_edit_dialog,
-    totals_for_month, year_selector_row, BudgetDirectionChange,
+    more_budgets_row, more_categories_row, render_budget_page, selected_budget_month,
+    selected_year, show_budget_edit_dialog, totals_for_month, year_selector_row,
+    BudgetDirectionChange,
 };
 use config_ops::{
     config_operation_is_active, finish_config_operation, register_config_widget,
@@ -105,8 +104,7 @@ use filters::{
 use form_autofill::{
     app_budget_autofill_entries, app_budget_code_values, app_category_values,
     connect_budget_fields_autofill, editable_budget_autofill_entries, editable_budget_code_values,
-    editable_category_values, editable_rule_search_values, pattern_rule_search_values,
-    transaction_rule_search_values,
+    editable_category_values, editable_rule_search_values, transaction_rule_search_values,
 };
 use import::{
     clear_cache_and_reload_state, connect_drop_target, current_sources_for_reload,
@@ -136,18 +134,12 @@ use preferences::Preferences;
 use preferences_dialog::show_preferences_dialog;
 use print::{current_print_report, print_report, table_print_report};
 use render::{render_loading_placeholder, render_views, request_render_views};
-use rule_dialog::{
-    show_rule_enqueue_dialog, RuleDialogSpec, PATTERN_RULE_FIELD_OPTIONS,
-    TRANSACTION_RULE_FIELD_OPTIONS,
-};
+use rule_dialog::{show_rule_enqueue_dialog, RuleDialogSpec, TRANSACTION_RULE_FIELD_OPTIONS};
 use shell::{
     add_responsive_page_margins, add_responsive_switcher, add_responsive_switcher_for_dialog,
     build_menu_model, open_files, refresh_menu,
 };
 use shortcuts::{build_shortcuts_dialog, install_action_accelerators};
-#[cfg(feature = "smart-insights")]
-use smart::smart_dependent_action_enabled;
-use smart::{effective_hide_canceled_transactions, smart_pattern_detection_enabled};
 use status::{
     build_status_bar, connect_embedded_status_bar, connect_page_actions,
     connect_static_page_actions, connect_status_actions, register_page_copy_feedback_button,

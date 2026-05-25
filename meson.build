@@ -74,8 +74,6 @@ if effective_cargo_features != ''
   message('Configured Meson wrapper features "@0@"'.format(effective_cargo_features))
 endif
 
-embedded_ai_feature_enabled = feature_tokens.contains('embedded-ai-model') or feature_tokens.contains('setup')
-install_ai_assets = not embedded_ai_feature_enabled
 install_gtk_resources = not feature_tokens.contains('setup') and cargo_variant != 'developer'
 installed_gresource = join_paths(installed_datadir, project_binary, project_binary + '.gresource')
 installed_resource_mode = 'false'
@@ -245,12 +243,6 @@ install_data(
   install_dir: join_paths(get_option('datadir'), 'glib-2.0', 'schemas'),
 )
 
-if install_ai_assets
-  install_subdir(
-    'data/ai',
-    install_dir: join_paths(get_option('datadir'), project_binary, 'models'),
-  )
-endif
 
 translation_languages = ['nl', 'de']
 subdir('po')

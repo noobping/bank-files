@@ -27,7 +27,6 @@ fn read_only_load_uses_defaults_without_creating_missing_config() {
             scope: TransactionLoadScope::All,
             remember_mode: RememberMode::DataOnly,
             sources: &[],
-            smart_insights_enabled: true,
         },
     )
     .expect("read-only load should use embedded defaults");
@@ -79,7 +78,6 @@ fn forget_mode_loads_live_csv_without_creating_app_storage() {
             scope: TransactionLoadScope::All,
             remember_mode: RememberMode::Forget,
             sources: &sources,
-            smart_insights_enabled: true,
         },
     )
     .expect("live load should read the selected CSV");

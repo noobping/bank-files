@@ -1,5 +1,5 @@
 use super::super::*;
-use super::{CONFIG_ARCHIVE_DIR, CONFIG_FILE_NAMES, EMPTY_IGNORED_TRANSACTION_PATTERNS};
+use super::{CONFIG_ARCHIVE_DIR, CONFIG_FILE_NAMES};
 
 pub fn read_config_file(name: &str) -> Result<(PathBuf, String)> {
     let dirs = app_dirs()?;
@@ -21,7 +21,6 @@ fn default_config_contents(name: &str) -> Result<&'static str> {
         "rules.csv" => Ok(default_rules()),
         "budgetcodes.csv" => Ok(default_budgets()),
         "field_aliases.csv" => Ok(default_aliases()),
-        "ignored_transaction_patterns.csv" => Ok(EMPTY_IGNORED_TRANSACTION_PATTERNS),
         _ => anyhow::bail!("Unknown configuration file: {name}"),
     }
 }
@@ -35,10 +34,7 @@ pub fn write_config_file(name: &str, contents: &str) -> Result<PathBuf> {
 
 pub(in crate::data) fn config_file_path(dirs: &AppDirs, name: &str) -> Result<PathBuf> {
     match name {
-        "rules.csv"
-        | "budgetcodes.csv"
-        | "field_aliases.csv"
-        | "ignored_transaction_patterns.csv" => Ok(dirs.config.join(name)),
+        "rules.csv" | "budgetcodes.csv" | "field_aliases.csv" => Ok(dirs.config.join(name)),
         _ => anyhow::bail!("Unknown configuration file: {name}"),
     }
 }
@@ -47,7 +43,6 @@ pub(super) struct ConfigurationContents<'a> {
     pub(super) rules: &'a str,
     pub(super) budgets: &'a str,
     pub(super) aliases: &'a str,
-    pub(super) ignored_patterns: &'a str,
 }
 
 pub(in crate::data) fn restore_default_configuration_in(dirs: &AppDirs) -> Result<PathBuf> {
@@ -57,7 +52,6 @@ pub(in crate::data) fn restore_default_configuration_in(dirs: &AppDirs) -> Resul
             rules: default_rules(),
             budgets: default_budgets(),
             aliases: default_aliases(),
-            ignored_patterns: EMPTY_IGNORED_TRANSACTION_PATTERNS,
         },
     )
 }
@@ -71,7 +65,6 @@ pub(in crate::data) fn restore_empty_configuration_in(dirs: &AppDirs) -> Result<
             rules: &rules,
             budgets: &budgets,
             aliases: default_aliases(),
-            ignored_patterns: EMPTY_IGNORED_TRANSACTION_PATTERNS,
         },
     )
 }
@@ -91,11 +84,6 @@ pub(super) fn write_configuration_contents(
         contents.aliases,
     )
     .with_context(|| "Could not write field name configuration".to_string())?;
-    fs::write(
-        config_file_path(dirs, "ignored_transaction_patterns.csv")?,
-        contents.ignored_patterns,
-    )
-    .with_context(|| "Could not write ignored transaction patterns".to_string())?;
 
     Ok(dirs.config.clone())
 }

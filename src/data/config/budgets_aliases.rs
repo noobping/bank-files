@@ -2,10 +2,8 @@ use super::super::*;
 use super::files::{
     archive_configuration_in, configuration_archive_exists_in, read_config_file,
     restore_configuration_archive_in, restore_default_configuration_in,
-    restore_empty_configuration_in, write_config_file, write_configuration_contents,
-    ConfigurationContents,
+    restore_empty_configuration_in, write_config_file,
 };
-use super::ignored_patterns::serialize_ignored_transaction_patterns;
 
 pub fn load_editable_budgets() -> Result<Vec<EditableBudget>> {
     let (_, contents) = read_config_file("budgetcodes.csv")?;
@@ -51,23 +49,6 @@ pub fn load_editable_aliases() -> Result<Vec<EditableAlias>> {
 pub fn write_editable_aliases(aliases: &[EditableAlias]) -> Result<PathBuf> {
     let contents = serialize_editable_aliases(aliases)?;
     write_config_file("field_aliases.csv", &contents)
-}
-
-pub fn write_generated_configuration(config: &GeneratedConfiguration) -> Result<PathBuf> {
-    let rules = serialize_editable_rules(&config.rules)?;
-    let budgets = serialize_editable_budgets(&config.budgets)?;
-    let aliases = serialize_editable_aliases(&config.aliases)?;
-    let ignored_patterns = serialize_ignored_transaction_patterns(&config.ignored_patterns)?;
-    let dirs = prepare_app_storage()?;
-    write_configuration_contents(
-        &dirs,
-        ConfigurationContents {
-            rules: &rules,
-            budgets: &budgets,
-            aliases: &aliases,
-            ignored_patterns: &ignored_patterns,
-        },
-    )
 }
 
 pub fn upsert_editable_alias(canonical: &str, alias: &str) -> Result<bool> {

@@ -39,8 +39,6 @@ modules:
       - glib-compile-schemas /app/share/glib-2.0/schemas
       - install -Dm0644 data/metainfo.xml /app/share/metainfo/${FLATPAK_ID}.metainfo.xml
       - install -Dm0644 data/${FLATPAK_ID}.desktop /app/share/applications/${FLATPAK_ID}.desktop
-      - install -dm0755 /app/share/bank-files/models/ai
-      - cp -a data/ai/. /app/share/bank-files/models/ai/
       - install -Dm0644 po/nl.po /app/share/bank-files/po/nl.po
       - install -Dm0644 po/de.po /app/share/bank-files/po/de.po
       - install -Dm0644 po/LINGUAS /app/share/bank-files/po/LINGUAS

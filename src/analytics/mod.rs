@@ -16,12 +16,11 @@ pub use categories::{
     category_totals_for_year, category_totals_for_year_comparison,
 };
 pub use dashboard::{
-    dashboard, default_reporting_month, monthly_totals_without_transfers, survival_forecast,
-    totals_for_month, totals_for_year, year_comparison,
+    dashboard, default_reporting_month, monthly_totals_without_transfers, totals_for_month,
+    totals_for_year, year_comparison,
 };
 pub use diagnostics::{
-    other_category_count, transaction_has_unconfigured_expense_budget, transaction_matches_pattern,
-    transaction_pattern_analysis, transaction_pattern_key, transactions_without_canceled_patterns,
+    other_category_count, transaction_has_unconfigured_expense_budget,
     unconfigured_expense_budget_count,
 };
 pub use types::*;

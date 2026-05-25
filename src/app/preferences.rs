@@ -47,30 +47,6 @@ impl Preferences {
         self.set_boolean("show-all", enabled);
     }
 
-    pub(in crate::app) fn show_predictions(&self) -> bool {
-        cfg!(feature = "smart-insights") && self.boolean("show-predictions", false)
-    }
-
-    #[cfg(feature = "smart-insights")]
-    pub(in crate::app) fn set_show_predictions(&self, enabled: bool) {
-        self.set_boolean("show-predictions", enabled);
-    }
-
-    #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
-    pub(in crate::app) fn online_smart_insights(&self) -> bool {
-        self.boolean("online-smart-insights", false)
-    }
-
-    #[cfg(all(not(feature = "smart-insights"), not(feature = "flatpak")))]
-    pub(in crate::app) fn online_smart_insights(&self) -> bool {
-        false
-    }
-
-    #[cfg(all(feature = "smart-insights", not(feature = "flatpak")))]
-    pub(in crate::app) fn set_online_smart_insights(&self, enabled: bool) {
-        self.set_boolean("online-smart-insights", enabled);
-    }
-
     pub(in crate::app) fn compare_categories_previous_period(&self) -> bool {
         self.boolean("compare-categories-previous-period", false)
     }
@@ -119,15 +95,6 @@ impl Preferences {
 
     pub(in crate::app) fn set_dedupe_enabled(&self, enabled: bool) {
         self.set_boolean("dedupe-enabled", enabled);
-    }
-
-    pub(in crate::app) fn hide_canceled_transactions(&self) -> bool {
-        cfg!(feature = "smart-insights") && self.boolean("hide-canceled-transactions", false)
-    }
-
-    #[cfg(feature = "smart-insights")]
-    pub(in crate::app) fn set_hide_canceled_transactions(&self, enabled: bool) {
-        self.set_boolean("hide-canceled-transactions", enabled);
     }
 
     pub(in crate::app) fn selected_year(&self) -> Option<i32> {

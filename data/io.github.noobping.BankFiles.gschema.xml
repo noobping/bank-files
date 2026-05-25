@@ -16,16 +16,6 @@
       <summary>Always show full lists</summary>
       <description>Whether budget, category, and diagnostics sections show all rows instead of previews with More buttons.</description>
     </key>
-    <key name="show-predictions" type="b">
-      <default>false</default>
-      <summary>Smart insights</summary>
-      <description>Whether forecast cards, detected transaction patterns, and smart transfer detection are enabled.</description>
-    </key>
-    <key name="online-smart-insights" type="b">
-      <default>false</default>
-      <summary>Online smart insights</summary>
-      <description>Whether privacy-filtered company category lookups may be used while Smart Insights are enabled. Transaction amounts, dates, accounts, descriptions, notes, and rows are never sent.</description>
-    </key>
     <key name="compare-categories-previous-period" type="b">
       <default>false</default>
       <summary>Compare spending with previous period</summary>
@@ -55,11 +45,6 @@
       <default>true</default>
       <summary>Duplicate filtering</summary>
       <description>Whether duplicate transactions are skipped during import.</description>
-    </key>
-    <key name="hide-canceled-transactions" type="b">
-      <default>false</default>
-      <summary>Hide refunded transactions</summary>
-      <description>Whether detected refunds and fully offsetting groups are excluded from normal views and totals while Smart Insights are enabled.</description>
     </key>
     <key name="selected-year" type="i">
       <default>0</default>

@@ -27,10 +27,6 @@ pub(in crate::data) fn ensure_default_files(dirs: &AppDirs) -> Result<()> {
     write_if_missing(&dirs.config.join("rules.csv"), default_rules())?;
     write_if_missing(&dirs.config.join("budgetcodes.csv"), default_budgets())?;
     write_if_missing(&dirs.config.join("field_aliases.csv"), default_aliases())?;
-    write_if_missing(
-        &dirs.config.join("ignored_transaction_patterns.csv"),
-        "key,label\n",
-    )?;
     Ok(())
 }
 

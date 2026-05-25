@@ -19,10 +19,6 @@ fn register_advanced_features_action(
 ) {
     let state_for_advanced_features = Rc::clone(state);
     let ui_for_advanced_features = Rc::clone(ui);
-    #[cfg(feature = "smart-insights")]
-    let app_for_advanced_features = app.clone();
-    #[cfg(not(feature = "smart-insights"))]
-    let app_for_advanced_features = app.clone();
     let advanced_features_action = add_bool_toggle_action(
         app,
         "advanced-features",
@@ -38,86 +34,21 @@ fn register_advanced_features_action(
                 &ui_for_advanced_features,
                 &state_for_advanced_features.borrow(),
             );
-            update_smart_dependent_actions(
-                enabled,
-                &app_for_advanced_features,
-                &ui_for_advanced_features,
-            );
-            clear_smart_filter_when_disabled(enabled, &ui_for_advanced_features);
-
             let success_message = tr(if enabled {
                 "Advanced Features enabled. Budget direction controls and advanced analysis options are available."
             } else {
                 "Simple mode enabled. Budget direction controls and advanced analysis options are hidden."
             });
-            if ui_for_advanced_features.show_predictions.get() {
-                reload_state_with_status(
-                    &state_for_advanced_features,
-                    &ui_for_advanced_features,
-                    "Updating Advanced Features...",
-                    success_message,
-                    "Could not update Advanced Features: {error}",
-                    Vec::new(),
-                );
-            } else {
-                render_views(
-                    &state_for_advanced_features.borrow(),
-                    &ui_for_advanced_features,
-                    &state_for_advanced_features,
-                );
-                show_status(&ui_for_advanced_features, &success_message);
-            }
+            render_views(
+                &state_for_advanced_features.borrow(),
+                &ui_for_advanced_features,
+                &state_for_advanced_features,
+            );
+            show_status(&ui_for_advanced_features, &success_message);
         },
     );
     advanced_features_action.set_enabled(ui.preferences.action_is_writable("advanced-features"));
 }
-
-#[cfg(feature = "smart-insights")]
-fn update_smart_dependent_actions(enabled: bool, app: &adw::Application, ui: &UiHandles) {
-    set_simple_action_enabled(
-        app,
-        "show-predictions",
-        enabled && ui.preferences.action_is_writable("show-predictions"),
-    );
-    set_simple_action_enabled(
-        app,
-        "hide-canceled-transactions",
-        smart_dependent_action_enabled(
-            enabled,
-            ui.show_predictions.get(),
-            ui.preferences
-                .action_is_writable("hide-canceled-transactions"),
-        ),
-    );
-    #[cfg(not(feature = "flatpak"))]
-    set_simple_action_enabled(
-        app,
-        "online-smart-insights",
-        smart_dependent_action_enabled(
-            enabled,
-            ui.show_predictions.get(),
-            ui.preferences.action_is_writable("online-smart-insights"),
-        ),
-    );
-}
-
-#[cfg(not(feature = "smart-insights"))]
-fn update_smart_dependent_actions(_enabled: bool, _app: &adw::Application, _ui: &UiHandles) {}
-
-#[cfg(feature = "smart-insights")]
-fn clear_smart_filter_when_disabled(enabled: bool, ui: &UiHandles) {
-    if !enabled
-        && matches!(
-            ui.active_transaction_filter.borrow().as_ref(),
-            Some(TransactionFilter::Pattern(_))
-        )
-    {
-        *ui.active_transaction_filter.borrow_mut() = None;
-    }
-}
-
-#[cfg(not(feature = "smart-insights"))]
-fn clear_smart_filter_when_disabled(_enabled: bool, _ui: &UiHandles) {}
 
 fn register_show_all_action(
     app: &adw::Application,

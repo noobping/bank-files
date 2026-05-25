@@ -146,9 +146,6 @@ pub(super) fn build_ui_with_startup_request(
         page_copy_buttons: Rc::new(RefCell::new(Vec::new())),
         page_copy_feedback_generation: Rc::new(Cell::new(0)),
         show_all: Rc::new(Cell::new(preferences.show_all())),
-        show_predictions: Rc::new(Cell::new(preferences.show_predictions())),
-        #[cfg(not(feature = "flatpak"))]
-        online_smart_insights: Rc::new(Cell::new(preferences.online_smart_insights())),
         compare_categories_previous_period: Rc::new(Cell::new(
             preferences.compare_categories_previous_period(),
         )),
@@ -161,7 +158,6 @@ pub(super) fn build_ui_with_startup_request(
         management_actions: Rc::new(RefCell::new(Vec::new())),
         config_widgets: Rc::new(RefCell::new(Vec::new())),
         loading_sensitive_widgets: Rc::new(RefCell::new(Vec::new())),
-        hide_canceled_transactions: Rc::new(Cell::new(preferences.hide_canceled_transactions())),
         status_generation: Rc::new(Cell::new(0)),
         render_generation: Rc::new(Cell::new(0)),
         render_request_generation: Rc::new(Cell::new(0)),

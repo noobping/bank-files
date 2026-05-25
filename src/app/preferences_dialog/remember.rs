@@ -11,12 +11,7 @@ pub(super) fn remember_preference_group(
     let writable = Preferences::key_for_action("app.remember-mode")
         .map(|key| ui.preferences.is_writable(key))
         .unwrap_or(true);
-    if !preference_row_visible(
-        writable,
-        advanced_features,
-        ui.show_predictions.get(),
-        false,
-    ) {
+    if !preference_row_visible(writable, advanced_features) {
         return None;
     }
 

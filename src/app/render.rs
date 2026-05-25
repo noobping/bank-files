@@ -124,11 +124,6 @@ fn cancel_current_page_render(ui: &UiHandles) {
 
 fn prepare_visible_page_data(generation: u64, ui: Rc<UiHandles>, state: Rc<RefCell<AppData>>) {
     let page = current_page(ui.as_ref());
-    let hide_canceled = effective_hide_canceled_transactions(
-        ui.advanced_features.get(),
-        ui.show_predictions.get(),
-        ui.hide_canceled_transactions.get(),
-    );
     let transaction_filter = ui.active_transaction_filter.borrow().clone();
     let fake_transactions = ui.fake_transactions.list();
     let data = state.borrow().clone();
@@ -136,7 +131,7 @@ fn prepare_visible_page_data(generation: u64, ui: Rc<UiHandles>, state: Rc<RefCe
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
             let data = data_with_fake_transactions(data, fake_transactions);
-            prepare_page_data(data, hide_canceled, page, transaction_filter)
+            prepare_page_data(data, page, transaction_filter)
         });
 
         match task.await {
@@ -232,11 +227,10 @@ struct PreparedPageData {
 
 fn prepare_page_data(
     data: AppData,
-    hide_canceled: bool,
-    page: AppPage,
+    _page: AppPage,
     transaction_filter: Option<TransactionFilter>,
 ) -> PreparedPageData {
-    let visible = page_data_for_render(&data, page, hide_canceled, transaction_filter.as_ref());
+    let visible = page_data_for_render(&data, transaction_filter.as_ref());
     PreparedPageData { data, visible }
 }
 

@@ -125,8 +125,6 @@ pub(in crate::app) fn set_dedupe_enabled(
     let scope = current_transaction_load_scope(&borrowed, ui.as_ref());
     drop(borrowed);
     let auto_clean_config = ui.preferences.auto_clean_config();
-    let smart_insights_enabled =
-        smart_pattern_detection_enabled(ui.advanced_features.get(), ui.show_predictions.get());
     let state_for_dedupe = Rc::clone(state);
     let ui_for_dedupe = Rc::clone(ui);
     show_verbose_status(
@@ -148,7 +146,6 @@ pub(in crate::app) fn set_dedupe_enabled(
                 scope,
                 remember_mode,
                 &sources,
-                smart_insights_enabled,
             )
         });
         match task.await {

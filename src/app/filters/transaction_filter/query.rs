@@ -10,7 +10,6 @@ impl TransactionFilter {
             Self::CategoryForYear { category, year } => {
                 format!("category:{} year:{year}", encode_filter_value(category))
             }
-            Self::Pattern(pattern) => pattern.label.clone(),
             Self::Scoped {
                 budget_code,
                 year,

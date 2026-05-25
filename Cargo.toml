@@ -11,16 +11,7 @@ repository = "https://github.com/noobping/bank-files"
 [features]
 default = []
 flatpak = []
-smart-insights = []
-local-ai = [
-    "smart-insights",
-    "dep:tract-onnx",
-    "dep:candle-core",
-    "dep:candle-transformers",
-    "dep:tokenizers",
-]
-embedded-ai-model = ["local-ai"]
-setup = ["embedded-ai-model", "dep:reqwest", "dep:semver"]
+setup = ["dep:reqwest", "dep:semver"]
 
 [dependencies]
 anyhow = "1"
@@ -40,10 +31,6 @@ serde_json = "1"
 sha2 = "0.10"
 unicode-normalization = "0.1"
 walkdir = "2"
-tract-onnx = { version = "0.21", optional = true, default-features = false }
-candle-core = { version = "0.9", optional = true }
-candle-transformers = { version = "0.9", optional = true }
-tokenizers = { version = "0.21", optional = true, default-features = false, features = ["fancy-regex"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
 libc = "0.2"

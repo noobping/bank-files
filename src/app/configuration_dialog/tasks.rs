@@ -132,10 +132,6 @@ fn run_configuration_reload_task<F>(
     let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
     drop(borrowed);
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
-    let smart_insights_enabled = smart_pattern_detection_enabled(
-        ui_handles.advanced_features.get(),
-        ui_handles.show_predictions.get(),
-    );
     if !begin_configuration_task(
         &ui_handles,
         &status,
@@ -154,7 +150,6 @@ fn run_configuration_reload_task<F>(
                 scope,
                 remember_mode,
                 &sources,
-                smart_insights_enabled,
             )
             .map(|loaded| loaded.0)
         });

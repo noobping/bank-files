@@ -2,7 +2,7 @@
 
 This is a Rust GTK/libadwaita project.
 
-The AI goal is to follow `CONTRIBUTING.md`.
+The automation goal is to follow `CONTRIBUTING.md`.
 
 Generated or modified code must follow `CONTRIBUTING.md` first, especially the rules for:
 

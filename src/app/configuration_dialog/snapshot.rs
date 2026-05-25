@@ -1,25 +1,16 @@
-use super::groups::{
-    automatic_configuration_generation_subtitle, automatic_configuration_generation_visible,
-};
 use super::*;
 
-pub(super) fn configuration_page_snapshot(
-    advanced_features: bool,
-    smart_insights_enabled: bool,
-) -> StaticPageSnapshot {
+pub(super) fn configuration_page_snapshot() -> StaticPageSnapshot {
     StaticPageSnapshot::new(
         "configuration",
         "Configuration",
         "Configuration actions report progress here.",
         &["Group", "Action", "Description"],
-        configuration_snapshot_rows(advanced_features, smart_insights_enabled),
+        configuration_snapshot_rows(),
     )
 }
 
-pub(super) fn configuration_snapshot_rows(
-    advanced_features: bool,
-    smart_insights_enabled: bool,
-) -> Vec<Vec<String>> {
+pub(super) fn configuration_snapshot_rows() -> Vec<Vec<String>> {
     let mut rows = vec![
         vec![
             tr("Configuration Backup"),
@@ -45,16 +36,6 @@ pub(super) fn configuration_snapshot_rows(
             tr("Remove all rules and budget codes while keeping CSV field names for imports."),
         ],
     ]);
-
-    if automatic_configuration_generation_visible(advanced_features) {
-        rows.push(vec![
-            tr("Experimental"),
-            tr("Generate Configuration from Transactions"),
-            tr(automatic_configuration_generation_subtitle(
-                smart_insights_enabled,
-            )),
-        ]);
-    }
 
     rows
 }

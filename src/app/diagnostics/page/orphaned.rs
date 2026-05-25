@@ -136,10 +136,6 @@ fn remove_orphaned_config_rules(
     let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
     drop(borrowed);
     let auto_clean_config = ui_handles.preferences.auto_clean_config();
-    let smart_insights_enabled = smart_pattern_detection_enabled(
-        ui_handles.advanced_features.get(),
-        ui_handles.show_predictions.get(),
-    );
     let state_for_remove = Rc::clone(state);
     let ui_for_remove = Rc::clone(ui_handles);
     button.set_sensitive(false);
@@ -155,7 +151,6 @@ fn remove_orphaned_config_rules(
                 scope,
                 remember_mode,
                 &sources,
-                smart_insights_enabled,
             )?
             .0;
             anyhow::Ok((removed, new_data))

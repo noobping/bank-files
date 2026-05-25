@@ -55,7 +55,6 @@ fn data_and_analytics_cache_reuses_processed_live_data() {
             scope: TransactionLoadScope::All,
             remember_mode: RememberMode::DataAndAnalytics,
             sources: &sources,
-            smart_insights_enabled: true,
         },
     )
     .expect("first full-cache load should parse and cache data");
@@ -68,30 +67,13 @@ fn data_and_analytics_cache_reuses_processed_live_data() {
             scope: TransactionLoadScope::All,
             remember_mode: RememberMode::DataAndAnalytics,
             sources: &sources,
-            smart_insights_enabled: true,
         },
     )
     .expect("second full-cache load should reuse cached data");
-    let (facts_only, _) = load_app_data_from_dirs(
-        &dirs,
-        &capabilities,
-        AppDataLoadRequest {
-            mode: DedupeMode::Disabled,
-            auto_clean_config: false,
-            scope: TransactionLoadScope::All,
-            remember_mode: RememberMode::DataAndAnalytics,
-            sources: &sources,
-            smart_insights_enabled: false,
-        },
-    )
-    .expect("facts-only full-cache load should use a separate cache key");
-
     assert_eq!(first.cache_status, DataCacheStatus::Updated);
     assert_eq!(second.cache_status, DataCacheStatus::Hit);
-    assert_eq!(facts_only.cache_status, DataCacheStatus::Updated);
     assert_eq!(second.transactions.len(), 1);
-    assert_eq!(first.transactions[0].budget_code, "TRANSFER");
-    assert_eq!(facts_only.transactions[0].budget_code, "OTHER");
+    assert_eq!(first.transactions[0].budget_code, "OTHER");
 
     std::env::remove_var("BANK_FILES_CACHE");
     fs::remove_dir_all(root).ok();

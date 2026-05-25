@@ -1,7 +1,4 @@
 use super::*;
-use chrono::Datelike;
-
-mod forecast;
 mod search;
 mod sections;
 
@@ -122,17 +119,6 @@ pub(in crate::app) fn render_overview(
         .overview
         .append(&ui::metric_grid(metric_cards, 3));
 
-    if smart_pattern_detection_enabled(
-        ui_handles.advanced_features.get(),
-        ui_handles.show_predictions.get(),
-    ) && forecast::prediction_scope_allows_forecast(
-        data,
-        selected_year,
-        chrono::Local::now().date_naive().year(),
-    ) {
-        forecast::append_survival_forecast(data, ui_handles, state);
-    }
-
     let selected_year = render_year_comparison(data, ui_handles, state);
     if let Some(year) = selected_year {
         sections::append_annual_pie_charts(data, year, ui_handles, state);
@@ -174,6 +160,3 @@ fn overview_selected_year(data: &AppData, ui_handles: &UiHandles) -> Option<i32>
             .unwrap_or(default_year),
     )
 }
-
-#[cfg(test)]
-mod tests;

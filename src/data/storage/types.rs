@@ -75,12 +75,6 @@ pub struct EditableAlias {
     pub alias: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-pub struct IgnoredTransactionPattern {
-    pub key: String,
-    pub label: String,
-}
-
 impl EditableAlias {
     pub fn new_default() -> Self {
         Self {

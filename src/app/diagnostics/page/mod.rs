@@ -2,7 +2,6 @@ use super::*;
 
 mod metrics;
 mod orphaned;
-mod patterns;
 mod reports;
 mod warnings;
 
@@ -39,30 +38,6 @@ pub(in crate::app) fn render_diagnostics_page(
     let mut has_search_results = false;
     if orphaned::append_orphaned_config_section(search.as_ref(), state, ui_handles) {
         has_search_results = true;
-    }
-
-    let patterns_section_search_matches = search
-        .as_ref()
-        .map(|filter| patterns::transaction_patterns_section_matches(Some(filter)))
-        .unwrap_or(false);
-    if patterns::transaction_patterns_section_visible(
-        search.as_ref(),
-        smart_pattern_detection_enabled(
-            ui_handles.advanced_features.get(),
-            ui_handles.show_predictions.get(),
-        ),
-    ) {
-        has_search_results = true;
-        patterns::append_transaction_patterns_section_async(
-            data,
-            search.clone(),
-            selected_year(data, ui_handles.as_ref()),
-            state,
-            ui_handles,
-        );
-    } else if patterns_section_search_matches {
-        has_search_results = true;
-        patterns::append_transaction_patterns_disabled_section(ui_handles);
     }
 
     if reports::append_reports_section(data, search.as_ref(), state, ui_handles) {

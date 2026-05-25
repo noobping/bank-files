@@ -15,18 +15,18 @@ fn transfer_transactions_show_undo_instead_of_mark_transfer() {
     let expense = tx(-20, "FOOD", "Groceries");
     assert!(transaction_is_markable_as_transfer(&expense, &[]));
 
-    let simple_actions = visible_transaction_detail_actions(false, true, false, true, false);
+    let simple_actions = visible_transaction_detail_actions(false, false, true, false);
     assert!(simple_actions.contains(&TransactionDetailAction::UndoTransfer));
     assert!(!simple_actions.contains(&TransactionDetailAction::MarkTransfer));
 
-    let advanced_actions = visible_transaction_detail_actions(true, true, false, true, false);
+    let advanced_actions = visible_transaction_detail_actions(true, false, true, false);
     assert!(advanced_actions.contains(&TransactionDetailAction::UndoTransfer));
     assert!(!advanced_actions.contains(&TransactionDetailAction::MarkTransfer));
 }
 
 #[test]
 fn simple_mode_hides_rule_and_budget_editing_transaction_actions() {
-    let simple_actions = visible_transaction_detail_actions(false, true, true, true, false);
+    let simple_actions = visible_transaction_detail_actions(false, true, true, false);
     assert!(!simple_actions.contains(&TransactionDetailAction::CreateRule));
     assert!(!simple_actions.contains(&TransactionDetailAction::EditBudgetCode));
     assert!(simple_actions.contains(&TransactionDetailAction::MarkTransfer));
@@ -34,36 +34,31 @@ fn simple_mode_hides_rule_and_budget_editing_transaction_actions() {
     assert!(simple_actions.contains(&TransactionDetailAction::MoveBudgetCode));
     assert!(simple_actions.contains(&TransactionDetailAction::DuplicateAsFake));
     assert!(simple_actions.contains(&TransactionDetailAction::Similar));
-    assert!(simple_actions.contains(&TransactionDetailAction::FindPattern));
 
-    let advanced_actions = visible_transaction_detail_actions(true, true, true, true, false);
+    let advanced_actions = visible_transaction_detail_actions(true, true, true, false);
     assert!(advanced_actions.contains(&TransactionDetailAction::CreateRule));
     assert!(advanced_actions.contains(&TransactionDetailAction::EditBudgetCode));
     assert!(advanced_actions.contains(&TransactionDetailAction::MarkTransfer));
     assert!(!advanced_actions.contains(&TransactionDetailAction::UndoTransfer));
     assert!(
-        !visible_transaction_detail_actions(false, true, false, true, false)
+        !visible_transaction_detail_actions(false, false, true, false)
             .contains(&TransactionDetailAction::MarkTransfer)
     );
     assert!(
-        !visible_transaction_detail_actions(true, true, false, true, false)
+        !visible_transaction_detail_actions(true, false, true, false)
             .contains(&TransactionDetailAction::MarkTransfer)
-    );
-    assert!(
-        !visible_transaction_detail_actions(false, false, true, true, false)
-            .contains(&TransactionDetailAction::FindPattern)
     );
 }
 
 #[test]
 fn auto_detected_transactions_show_mark_invalid_action() {
-    let regular_actions = visible_transaction_detail_actions(false, true, true, true, false);
+    let regular_actions = visible_transaction_detail_actions(false, true, true, false);
     assert!(!regular_actions.contains(&TransactionDetailAction::MarkInvalid));
 
-    let auto_detected_actions = visible_transaction_detail_actions(false, true, true, true, true);
+    let auto_detected_actions = visible_transaction_detail_actions(false, true, true, true);
     assert!(auto_detected_actions.contains(&TransactionDetailAction::MarkInvalid));
     let auto_detected_transfer_actions =
-        visible_transaction_detail_actions(true, true, false, true, true);
+        visible_transaction_detail_actions(true, false, true, true);
     assert!(auto_detected_transfer_actions.contains(&TransactionDetailAction::MarkInvalid));
     assert!(auto_detected_transfer_actions.contains(&TransactionDetailAction::UndoTransfer));
 }

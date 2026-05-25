@@ -82,11 +82,6 @@ const SEARCH_PRESET_SPECS: &[SearchPresetSpec] = &[
     },
     SearchPresetSpec {
         section: SearchPresetSection::Diagnostics,
-        label: "Detected Patterns",
-        id: "patterns",
-    },
-    SearchPresetSpec {
-        section: SearchPresetSection::Diagnostics,
         label: "Import Reports",
         id: "imports",
     },
@@ -157,7 +152,6 @@ pub(super) enum SearchPreset {
     UnconfiguredBudgets,
     OtherCategories,
     Warnings,
-    Patterns,
     Imports,
     Fields,
     Rules,
@@ -175,7 +169,6 @@ impl SearchPreset {
             "unconfigured-budgets" => Some(Self::UnconfiguredBudgets),
             "other-categories" => Some(Self::OtherCategories),
             "warnings" => Some(Self::Warnings),
-            "patterns" => Some(Self::Patterns),
             "imports" => Some(Self::Imports),
             "fields" => Some(Self::Fields),
             "rules" => Some(Self::Rules),
@@ -198,7 +191,6 @@ impl SearchPreset {
             Self::UnconfiguredBudgets => Some(TransactionFilter::UnconfiguredBudgets.query()),
             Self::OtherCategories => Some(TransactionFilter::OtherCategories.query()),
             Self::Warnings => Some("warnings".to_string()),
-            Self::Patterns => Some("patterns".to_string()),
             Self::Imports => Some("imports".to_string()),
             Self::Fields => Some("fields".to_string()),
             Self::Rules => Some("rules".to_string()),
@@ -215,7 +207,7 @@ impl SearchPreset {
             | Self::CurrentYear
             | Self::UnconfiguredBudgets
             | Self::OtherCategories => Some(AppPage::Transactions),
-            Self::Warnings | Self::Patterns | Self::Imports | Self::Fields | Self::Rules => {
+            Self::Warnings | Self::Imports | Self::Fields | Self::Rules => {
                 Some(AppPage::Diagnostics)
             }
         }
@@ -232,7 +224,6 @@ impl SearchPreset {
             | Self::UnconfiguredBudgets
             | Self::OtherCategories
             | Self::Warnings
-            | Self::Patterns
             | Self::Imports
             | Self::Fields
             | Self::Rules => "This filter is not available yet.",

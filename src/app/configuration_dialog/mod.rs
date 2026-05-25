@@ -4,7 +4,7 @@ mod groups;
 mod snapshot;
 mod tasks;
 
-use groups::{archive_group, automatic_configuration_group, experimental_configuration_group};
+use groups::{archive_group, automatic_configuration_group};
 use snapshot::configuration_page_snapshot;
 
 const CONFIGURATION_BUSY_MESSAGE: &str = "Another edit or save is already running.";
@@ -32,10 +32,7 @@ pub(in crate::app) fn show_configuration_dialog(
         "configuration",
         &status_bar.label,
         ui_handles,
-        configuration_page_snapshot(
-            ui_handles.advanced_features.get(),
-            ui_handles.show_predictions.get(),
-        ),
+        configuration_page_snapshot(),
     );
     let status = StatusHandle::from_status_bar(&status_bar);
     status.set_text(&tr("Configuration actions report progress here."));
@@ -47,13 +44,6 @@ pub(in crate::app) fn show_configuration_dialog(
     let (group, search_group) = automatic_configuration_group(state, ui_handles, status.clone());
     page.add(&group);
     search_groups.push(search_group);
-
-    if let Some((group, search_group)) =
-        experimental_configuration_group(state, ui_handles, status.clone())
-    {
-        page.add(&group);
-        search_groups.push(search_group);
-    }
 
     root.append(&ui::scroll(&page));
     root.append(&status_bar.container);

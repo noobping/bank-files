@@ -1,6 +1,6 @@
-# AI Goal
+# Automation Goal
 
-The AI must follow the code guidelines in `CONTRIBUTING.md`.
+The assistant must follow the code guidelines in `CONTRIBUTING.md`.
 
 When generating, changing, reviewing, or refactoring code, always check the result against `CONTRIBUTING.md`.
 

@@ -66,8 +66,6 @@ pub(super) async fn import_and_reload_in_background<F>(
     let auto_clean_config = ui.preferences.auto_clean_config();
     let scope = current_transaction_load_scope(&state.borrow(), ui.as_ref());
     let remember_mode = ui.remember_mode.get();
-    let smart_insights_enabled =
-        smart_pattern_detection_enabled(ui.advanced_features.get(), ui.show_predictions.get());
     show_verbose_status(
         ui.as_ref(),
         format!("import started; scope={scope:?}; remember={remember_mode:?}; dedupe={mode:?}"),
@@ -84,7 +82,6 @@ pub(super) async fn import_and_reload_in_background<F>(
                     scope,
                     remember_mode,
                     &[],
-                    smart_insights_enabled,
                 )
                 .map_err(|err| format!("{err:#}")),
             )
@@ -182,8 +179,6 @@ async fn open_live_sources_in_background(
     let auto_clean_config = ui.preferences.auto_clean_config();
     let scope = current_transaction_load_scope(&state.borrow(), ui.as_ref());
     let remember_mode = ui.remember_mode.get();
-    let smart_insights_enabled =
-        smart_pattern_detection_enabled(ui.advanced_features.get(), ui.show_predictions.get());
     let sources = live_source_set(&state.borrow(), remember_mode, sources);
     render_loading_placeholder(ui.as_ref());
     begin_background_operation(ui.as_ref());
@@ -195,7 +190,6 @@ async fn open_live_sources_in_background(
             scope,
             remember_mode,
             &task_sources,
-            smart_insights_enabled,
         )
     });
 

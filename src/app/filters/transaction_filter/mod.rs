@@ -1,7 +1,6 @@
 mod matching;
 mod query;
 
-use super::super::analytics;
 use crate::model::MonthKey;
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -20,7 +19,6 @@ pub(in crate::app) enum TransactionFilter {
         category: String,
         year: i32,
     },
-    Pattern(analytics::TransactionPattern),
     Scoped {
         budget_code: Option<String>,
         year: Option<i32>,
@@ -127,9 +125,7 @@ impl TransactionFilter {
                 month: month.map(|month| MonthKey::new(year, month.month)),
                 amount: *amount,
             }),
-            Self::All | Self::UnconfiguredBudgets | Self::OtherCategories | Self::Pattern(_) => {
-                None
-            }
+            Self::All | Self::UnconfiguredBudgets | Self::OtherCategories => None,
         }
     }
 
@@ -137,20 +133,11 @@ impl TransactionFilter {
         matches!(self, Self::CategoryForYear { .. } | Self::Scoped { .. })
     }
 
-    pub(super) fn includes_diagnostic_hidden_rows(&self) -> bool {
-        matches!(
-            self,
-            Self::UnconfiguredBudgets | Self::OtherCategories | Self::Pattern(_)
-        )
-    }
-
     pub(in crate::app) fn period_year(&self) -> Option<i32> {
         match self {
             Self::CategoryForYear { year, .. } => Some(*year),
             Self::Scoped { year, month, .. } => year.or_else(|| month.map(|month| month.year)),
-            Self::All | Self::UnconfiguredBudgets | Self::OtherCategories | Self::Pattern(_) => {
-                None
-            }
+            Self::All | Self::UnconfiguredBudgets | Self::OtherCategories => None,
         }
     }
 
@@ -160,7 +147,6 @@ impl TransactionFilter {
             Self::UnconfiguredBudgets => "Unconfigured budgets",
             Self::OtherCategories => "Other categories",
             Self::CategoryForYear { .. } => "Category transactions",
-            Self::Pattern(_) => "Transaction pattern",
             Self::Scoped { .. } => "Transactions",
         }
     }
@@ -173,7 +159,6 @@ impl TransactionFilter {
             }
             Self::OtherCategories => "Transactions grouped under OTHER or INC-OTHER.",
             Self::CategoryForYear { .. } => "Transactions for this category and year.",
-            Self::Pattern(_) => "Transactions matching the detected pattern.",
             Self::Scoped { .. } => "Filtered transactions",
         }
     }

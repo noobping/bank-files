@@ -264,12 +264,6 @@ msgstr "Configuratie openen"
 msgid "Toggle Duplicate Filtering"
 msgstr "Ontdubbelen aan of uit"
 
-msgid "Toggle Smart Insights"
-msgstr "Slimme inzichten aan/uit"
-
-msgid "Toggle Online Smart Insights"
-msgstr "Online slimme inzichten aan/uit"
-
 msgid "Toggle Whole Form Autofill"
 msgstr "Volledig formulier automatisch invullen aan/uit"
 
@@ -1494,9 +1488,6 @@ msgstr "Verborgen tonen"
 msgid "Show hidden transaction patterns"
 msgstr "Verborgen transactiepatronen tonen"
 
-msgid "All detected transaction patterns are hidden. Use Show Hidden to review them."
-msgstr "Alle gevonden transactiepatronen zijn verborgen. Gebruik Verborgen tonen om ze te bekijken."
-
 msgid "Hidden"
 msgstr "Verborgen"
 
@@ -1562,9 +1553,6 @@ msgstr "Gedekt door regel"
 
 msgid "Needs rule"
 msgstr "Heeft regel nodig"
-
-msgid "All detected transaction patterns are already covered. Use More to review them."
-msgstr "Alle gevonden transactiepatronen zijn al gedekt. Gebruik Meer om ze te bekijken."
 
 msgid "Hide Refunded Transactions"
 msgstr "Terugbetaalde transacties verbergen"
@@ -1938,9 +1926,6 @@ msgstr "Transactiepatronen detecteren..."
 msgid "Could not detect transaction patterns: {error}"
 msgstr "Kon transactiepatronen niet detecteren: {error}"
 
-msgid "Transaction pattern detection stopped unexpectedly."
-msgstr "Transactiepatroondetectie stopte onverwacht."
-
 msgid "Yearly budget"
 msgstr "Jaarbudget"
 
@@ -1964,9 +1949,6 @@ msgstr "Geen gegevens voor {year}"
 
 msgid "No previous year yet"
 msgstr "Nog geen vorig jaar"
-
-msgid "Forecast"
-msgstr "Voorspelling"
 
 msgid "Projected with imported transactions, budgeted income, and planned spending."
 msgstr "Voorspeld met geimporteerde transacties, begroot inkomen en geplande uitgaven."
@@ -1992,26 +1974,8 @@ msgstr "Krap"
 msgid "Short"
 msgstr "Tekort"
 
-msgid "Smart Insights"
-msgstr "Slimme inzichten"
-
-msgid "Smart Insights enabled. Forecast cards and transaction pattern detection are available."
-msgstr "Slimme inzichten ingeschakeld. Prognosekaarten en patroonherkenning voor transacties zijn beschikbaar."
-
-msgid "Smart Insights disabled. Forecast cards and transaction pattern detection are hidden."
-msgstr "Slimme inzichten uitgeschakeld. Prognosekaarten en patroonherkenning voor transacties zijn verborgen."
-
-msgid "Online Smart Insights"
-msgstr "Online slimme inzichten"
-
 msgid "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent."
 msgstr "Sta privacygefilterde bedrijfsclassificaties toe. Bedragen, datums, rekeningen, omschrijvingen, notities en rijen worden nooit verzonden."
-
-msgid "Online Smart Insights enabled. Only privacy-filtered company labels may be used for online lookups."
-msgstr "Online slimme inzichten ingeschakeld. Alleen privacygefilterde bedrijfslabels mogen voor online opzoekingen worden gebruikt."
-
-msgid "Online Smart Insights disabled. Smart Insights use local transactions only."
-msgstr "Online slimme inzichten uitgeschakeld. Slimme inzichten gebruiken alleen lokale transacties."
 
 msgid "Prediction details"
 msgstr "Details van voorspelling"
@@ -2021,9 +1985,6 @@ msgstr "Deze schatting gebruikt geimporteerde transacties, begroot inkomen, gepl
 
 msgid "Show transactions"
 msgstr "Transacties tonen"
-
-msgid "Open the transactions used for this forecast period"
-msgstr "Open de transacties voor deze prognoseperiode"
 
 msgid "Imported income"
 msgstr "Geimporteerd inkomen"
@@ -2196,9 +2157,6 @@ msgstr "Voorkeuren"
 msgid "App options"
 msgstr "App-opties"
 
-msgid "Choose how lists, forecasts, forms, and imported transactions are shown."
-msgstr "Kies hoe lijsten, voorspellingen, formulieren en geimporteerde transacties worden getoond."
-
 msgid "Interface"
 msgstr "Interface"
 
@@ -2214,12 +2172,6 @@ msgstr "Toon direct alle items en verberg Meer-rijen."
 msgid "Insights"
 msgstr "Inzichten"
 
-msgid "Control smart forecasts, pattern detection, and previous-period spending comparisons."
-msgstr "Beheer slimme prognoses, patroonherkenning en vergelijkingen met de vorige periode."
-
-msgid "Show forecast cards and detect transaction patterns from imported transactions."
-msgstr "Toon prognosekaarten en herken transactiepatronen uit geimporteerde transacties."
-
 msgid "Compare spending cards with the previous month or year."
 msgstr "Vergelijk uitgavenkaarten met de vorige maand of het vorige jaar."
 
@@ -2234,9 +2186,6 @@ msgstr "Laat gerelateerde formuliervelden elkaar invullen, zoals overboekingscat
 
 msgid "Remove orphaned rules automatically during reload and import."
 msgstr "Verwijder weesregels automatisch tijdens herladen en importeren."
-
-msgid "Requires Smart Insights. Exclude detected refunds and offsetting groups from normal views."
-msgstr "Vereist Slimme inzichten. Sluit gevonden terugbetalingen en verrekenende groepen uit van normale weergaven."
 
 msgid "Settings"
 msgstr "Instellingen"
@@ -2474,18 +2423,6 @@ msgstr "Er kon nog geen configuratie uit geimporteerde transacties worden gegene
 
 msgid "No configuration could be generated yet. Import a complete calendar year to generate budget amounts."
 msgstr "Er kon nog geen configuratie worden gegenereerd. Importeer een volledig kalenderjaar om budgetbedragen te genereren."
-
-msgid "Smart Insights are disabled. Online merchant enrichment and extra pattern hints are skipped."
-msgstr "Slimme inzichten zijn uitgeschakeld. Online bedrijfsverrijking en extra patroonhints worden overgeslagen."
-
-msgid "Smart Insights are disabled. Extra pattern hints are skipped."
-msgstr "Slimme inzichten zijn uitgeschakeld. Extra patroonhints worden overgeslagen."
-
-msgid "Online Smart Insights are enabled, but no network connection is available. External merchant lookups are skipped, and no transaction data is sent."
-msgstr "Online slimme inzichten zijn ingeschakeld, maar er is geen netwerkverbinding beschikbaar. Externe bedrijfsopzoekingen worden overgeslagen en er worden geen transactiegegevens verzonden."
-
-msgid "Online Smart Insights are enabled, but no safe lookup provider is configured in this build. External merchant lookups are skipped, and no transaction data is sent."
-msgstr "Online slimme inzichten zijn ingeschakeld, maar er is in deze build geen veilige opzoekprovider geconfigureerd. Externe bedrijfsopzoekingen worden overgeslagen en er worden geen transactiegegevens verzonden."
 
 msgid "Could not generate configuration: {error}"
 msgstr "Kon configuratie niet genereren: {error}"
@@ -3089,15 +3026,6 @@ msgstr "Budgetcodeverplaatsing toegevoegd aan de verwerkingswachtrij."
 
 
 
-msgid "Hide Refunded Transactions needs Smart Insights. Enable Smart Insights to use refunded transaction hiding."
-msgstr "Terugbetaalde transacties verbergen heeft Slimme inzichten nodig. Schakel Slimme inzichten in om terugbetaalde transacties te verbergen."
-
-msgid "Smart Insights are disabled. Enable Smart Insights to search detected transaction patterns."
-msgstr "Slimme inzichten zijn uitgeschakeld. Schakel Slimme inzichten in om gevonden transactiepatronen te zoeken."
-
-msgid "Smart Insights is disabled. Enable Smart Insights to detect transaction patterns."
-msgstr "Slimme inzichten zijn uitgeschakeld. Schakel Slimme inzichten in om transactiepatronen te detecteren."
-
 # Simple mode category wording
 msgid "New Category"
 msgstr "Nieuwe categorie"
@@ -3416,9 +3344,6 @@ msgstr "Heel formulier automatisch invullen"
 msgid "Whether forms may fill related fields from the value you choose, such as matching categories, budget codes, and directions."
 msgstr "Of formulieren gerelateerde velden mogen invullen op basis van de waarde die je kiest, zoals passende categorieën, budgetcodes en richtingen."
 
-msgid "Control Smart Insights, online enrichment, and detected refund hiding."
-msgstr "Beheer Slimme inzichten, online verrijking en het verbergen van gedetecteerde terugbetalingen."
-
 msgid "Mark invalid"
 msgstr "Ongeldig markeren"
 
@@ -3464,32 +3389,11 @@ msgstr "Configuratiesjablonen"
 msgid "Use the built-in defaults or start with an empty configuration."
 msgstr "Gebruik de ingebouwde standaardwaarden of begin met een lege configuratie."
 
-msgid "Try Smart Insights and local AI assisted configuration actions."
-msgstr "Probeer configuratieacties met Slimme inzichten en lokale AI."
-
-msgid "Enable Smart Insights to generate configuration from transactions."
-msgstr "Schakel Slimme inzichten in om configuratie uit transacties te genereren."
-
-msgid "Requires Smart Insights. Enable Smart Insights to generate configuration from transactions."
-msgstr "Vereist Slimme inzichten. Schakel Slimme inzichten in om configuratie uit transacties te genereren."
-
-msgid "Configuration generation needs Smart Insights. Enable Smart Insights to generate configuration from transactions."
-msgstr "Configuratiegeneratie vereist Slimme inzichten. Schakel Slimme inzichten in om configuratie uit transacties te genereren."
-
-msgid "Configuration generation requires Smart Insights."
-msgstr "Configuratiegeneratie vereist Slimme inzichten."
-
 msgid "Configuration generation uses complete imported calendar years for budget amounts and ignores incomplete years."
 msgstr "Configuratiegeneratie gebruikt volledige geimporteerde kalenderjaren voor budgetbedragen en negeert onvolledige jaren."
 
 msgid "Configuration generation uses local transactions only in this build."
 msgstr "Configuratiegeneratie gebruikt in deze build alleen lokale transacties."
-
-msgid "Online Smart Insights are off by default. Configuration generation uses only local transactions, and no merchant names or transaction fields are sent."
-msgstr "Online slimme inzichten staan standaard uit. Configuratiegeneratie gebruikt alleen lokale transacties; er worden geen bedrijfsnamen of transactievelden verzonden."
-
-msgid "Online Smart Insights are not available in this build. Configuration generation uses only local transactions."
-msgstr "Online Smart Insights zijn niet beschikbaar in deze build. Configuratiegeneratie gebruikt alleen lokale transacties."
 
 msgid "Message history actions"
 msgstr "Acties voor meldingengeschiedenis"
@@ -3542,9 +3446,6 @@ msgstr "Gemaakt op basis van regel."
 msgid "Data and analytics cache cleared. Current data reloaded."
 msgstr "Data- en analysecache gewist. Huidige gegevens herladen."
 
-msgid "Enable Smart Insights to use this preference."
-msgstr "Schakel Slimme inzichten in om deze voorkeur te gebruiken."
-
 msgid "Experimental"
 msgstr "Experimenteel"
 
@@ -3559,9 +3460,6 @@ msgstr "Vaste maandbudgetten worden omgerekend naar jaarbedragen; jaarbudgetten 
 
 msgid "Group Compatible Rules"
 msgstr "Compatibele regels groeperen"
-
-msgid "Local AI: {category}"
-msgstr "Lokale AI: {category}"
 
 msgid "Name"
 msgstr "Naam"

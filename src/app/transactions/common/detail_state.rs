@@ -10,12 +10,10 @@ pub(super) enum TransactionDetailAction {
     UndoTransfer,
     MarkInvalid,
     Similar,
-    FindPattern,
 }
 
 pub(super) fn visible_transaction_detail_actions(
     advanced_features: bool,
-    smart_patterns_enabled: bool,
     markable_as_transfer: bool,
     budget_move_available: bool,
     auto_detected_classification: bool,
@@ -29,14 +27,12 @@ pub(super) fn visible_transaction_detail_actions(
         TransactionDetailAction::UndoTransfer,
         TransactionDetailAction::MarkInvalid,
         TransactionDetailAction::Similar,
-        TransactionDetailAction::FindPattern,
     ]
     .into_iter()
     .filter(|action| {
         transaction_detail_action_visible(
             *action,
             advanced_features,
-            smart_patterns_enabled,
             markable_as_transfer,
             budget_move_available,
             auto_detected_classification,
@@ -48,7 +44,6 @@ pub(super) fn visible_transaction_detail_actions(
 fn transaction_detail_action_visible(
     action: TransactionDetailAction,
     advanced_features: bool,
-    smart_patterns_enabled: bool,
     markable_as_transfer: bool,
     budget_move_available: bool,
     auto_detected_classification: bool,
@@ -63,7 +58,6 @@ fn transaction_detail_action_visible(
         | TransactionDetailAction::Similar => true,
         TransactionDetailAction::UndoTransfer => !markable_as_transfer,
         TransactionDetailAction::MarkInvalid => auto_detected_classification,
-        TransactionDetailAction::FindPattern => smart_patterns_enabled,
     };
     visible && (action != TransactionDetailAction::MarkTransfer || markable_as_transfer)
 }

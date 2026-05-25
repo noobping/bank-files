@@ -9,7 +9,7 @@ pub(super) fn register_dialog_actions(
     register_configuration_action(app, window, state, ui);
     register_preferences_action(app, window, state, ui);
     register_management_actions(app, window, state, ui);
-    register_shortcuts_action(app, window, ui);
+    register_shortcuts_action(app, window);
     register_about_action(app, window);
     register_quit_action(app);
 }
@@ -113,22 +113,11 @@ fn register_management_actions(
     app.add_action(&manage_aliases_action);
 }
 
-fn register_shortcuts_action(
-    app: &adw::Application,
-    window: &adw::ApplicationWindow,
-    ui: &Rc<UiHandles>,
-) {
+fn register_shortcuts_action(app: &adw::Application, window: &adw::ApplicationWindow) {
     let window_for_shortcuts = window.clone();
-    let ui_for_shortcuts = Rc::clone(ui);
     let shortcuts_action = gtk::gio::SimpleAction::new("shortcuts", None);
     shortcuts_action.connect_activate(move |_, _| {
-        let shortcuts = build_shortcuts_dialog(
-            ui_for_shortcuts.advanced_features.get(),
-            smart_pattern_detection_enabled(
-                ui_for_shortcuts.advanced_features.get(),
-                ui_for_shortcuts.show_predictions.get(),
-            ),
-        );
+        let shortcuts = build_shortcuts_dialog();
         shortcuts.present(Some(&window_for_shortcuts));
     });
     app.add_action(&shortcuts_action);

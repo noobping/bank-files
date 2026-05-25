@@ -129,10 +129,6 @@ fn field_mapping_dialog(
         let scope = current_transaction_load_scope(&borrowed, ui_for_save.as_ref());
         drop(borrowed);
         let auto_clean_config = ui_for_save.preferences.auto_clean_config();
-        let smart_insights_enabled = smart_pattern_detection_enabled(
-    ui_for_save.advanced_features.get(),
-    ui_for_save.show_predictions.get(),
-);
         let state_for_save = Rc::clone(&state_for_save);
         let ui_for_save = Rc::clone(&ui_for_save);
         let dialog_for_save = dialog_for_save.clone();
@@ -148,8 +144,7 @@ fn field_mapping_dialog(
                     auto_clean_config,
                     scope,
                     remember_mode,
-                    &sources,
-                    smart_insights_enabled,
+                    &sources
                 )?
                 .0;
                 anyhow::Ok((saved, new_data))

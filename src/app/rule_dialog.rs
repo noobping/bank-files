@@ -9,15 +9,6 @@ pub(in crate::app) const TRANSACTION_RULE_FIELD_OPTIONS: &[(&str, &str)] = &[
     ("transaction_id", "Transaction ID"),
 ];
 
-pub(in crate::app) const PATTERN_RULE_FIELD_OPTIONS: &[(&str, &str)] = &[
-    ("any", "Everything"),
-    ("tags", "Tags"),
-    ("description", "Description"),
-    ("counterparty", "Counterparty"),
-    ("account", "Account"),
-    ("transaction_id", "Transaction ID"),
-];
-
 const RULE_DIALOG_TITLE: &str = "Create Rule";
 const RULE_DIALOG_SUBMIT_LABEL: &str = "Save";
 const RULE_DIALOG_SUBMIT_ICON: &str = "document-save-symbolic";

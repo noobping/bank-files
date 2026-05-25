@@ -264,12 +264,6 @@ msgstr "Konfiguration öffnen"
 msgid "Toggle Duplicate Filtering"
 msgstr "Duplikatfilterung umschalten"
 
-msgid "Toggle Smart Insights"
-msgstr "Intelligente Einblicke umschalten"
-
-msgid "Toggle Online Smart Insights"
-msgstr "Online-Intelligente Einblicke umschalten"
-
 msgid "Toggle Whole Form Autofill"
 msgstr "Ganzes Formular automatisch ausfüllen umschalten"
 
@@ -1494,9 +1488,6 @@ msgstr "Ausgeblendete anzeigen"
 msgid "Show hidden transaction patterns"
 msgstr "Ausgeblendete Transaktionsmuster anzeigen"
 
-msgid "All detected transaction patterns are hidden. Use Show Hidden to review them."
-msgstr "Alle erkannten Transaktionsmuster sind ausgeblendet. Nutze Ausgeblendete anzeigen, um sie zu prufen."
-
 msgid "Hidden"
 msgstr "Ausgeblendet"
 
@@ -1562,9 +1553,6 @@ msgstr "Durch Regel abgedeckt"
 
 msgid "Needs rule"
 msgstr "Braucht Regel"
-
-msgid "All detected transaction patterns are already covered. Use More to review them."
-msgstr "Alle erkannten Transaktionsmuster sind bereits abgedeckt. Verwende Mehr, um sie zu prufen."
 
 msgid "Hide Refunded Transactions"
 msgstr "Erstattete Transaktionen ausblenden"
@@ -1938,9 +1926,6 @@ msgstr "Transaktionsmuster werden erkannt..."
 msgid "Could not detect transaction patterns: {error}"
 msgstr "Transaktionsmuster konnten nicht erkannt werden: {error}"
 
-msgid "Transaction pattern detection stopped unexpectedly."
-msgstr "Transaktionsmuster-Erkennung wurde unerwartet beendet."
-
 msgid "Yearly budget"
 msgstr "Jahresbudget"
 
@@ -1964,9 +1949,6 @@ msgstr "Keine Daten für {year}"
 
 msgid "No previous year yet"
 msgstr "Noch kein Vorjahr"
-
-msgid "Forecast"
-msgstr "Prognose"
 
 msgid "Projected with imported transactions, budgeted income, and planned spending."
 msgstr "Prognose aus importierten Transaktionen, budgetiertem Einkommen und geplanten Ausgaben."
@@ -1992,26 +1974,8 @@ msgstr "Knapp"
 msgid "Short"
 msgstr "Fehlbetrag"
 
-msgid "Smart Insights"
-msgstr "Intelligente Einblicke"
-
-msgid "Smart Insights enabled. Forecast cards and transaction pattern detection are available."
-msgstr "Intelligente Einblicke aktiviert. Prognosekarten und Transaktionsmustererkennung sind verfuegbar."
-
-msgid "Smart Insights disabled. Forecast cards and transaction pattern detection are hidden."
-msgstr "Intelligente Einblicke deaktiviert. Prognosekarten und Transaktionsmustererkennung sind ausgeblendet."
-
-msgid "Online Smart Insights"
-msgstr "Online-Intelligente Einblicke"
-
 msgid "Allow privacy-filtered company category lookups. Amounts, dates, accounts, descriptions, notes, and rows are never sent."
 msgstr "Datenschutzgefilterte Unternehmenskategorie-Abfragen erlauben. Betraege, Daten, Konten, Beschreibungen, Notizen und Zeilen werden nie gesendet."
-
-msgid "Online Smart Insights enabled. Only privacy-filtered company labels may be used for online lookups."
-msgstr "Online-Intelligente Einblicke aktiviert. Fuer Online-Abfragen duerfen nur datenschutzgefilterte Unternehmensbezeichnungen verwendet werden."
-
-msgid "Online Smart Insights disabled. Smart Insights use local transactions only."
-msgstr "Online-Intelligente Einblicke deaktiviert. Intelligente Einblicke verwenden nur lokale Transaktionen."
 
 msgid "Prediction details"
 msgstr "Prognosedetails"
@@ -2021,9 +1985,6 @@ msgstr "Diese Schaetzung nutzt importierte Transaktionen, budgetiertes Einkommen
 
 msgid "Show transactions"
 msgstr "Transaktionen anzeigen"
-
-msgid "Open the transactions used for this forecast period"
-msgstr "Oeffnet die Transaktionen fuer diesen Prognosezeitraum"
 
 msgid "Imported income"
 msgstr "Importiertes Einkommen"
@@ -2196,9 +2157,6 @@ msgstr "Einstellungen"
 msgid "App options"
 msgstr "App-Optionen"
 
-msgid "Choose how lists, forecasts, forms, and imported transactions are shown."
-msgstr "Lege fest, wie Listen, Prognosen, Formulare und importierte Transaktionen angezeigt werden."
-
 msgid "Interface"
 msgstr "Oberflaeche"
 
@@ -2214,12 +2172,6 @@ msgstr "Alle Eintraege sofort anzeigen und Mehr-Zeilen ausblenden."
 msgid "Insights"
 msgstr "Einblicke"
 
-msgid "Control smart forecasts, pattern detection, and previous-period spending comparisons."
-msgstr "Intelligente Prognosen, Mustererkennung und Ausgabenvergleiche mit der vorherigen Periode steuern."
-
-msgid "Show forecast cards and detect transaction patterns from imported transactions."
-msgstr "Prognosekarten anzeigen und Transaktionsmuster aus importierten Transaktionen erkennen."
-
 msgid "Compare spending cards with the previous month or year."
 msgstr "Ausgabenkarten mit dem vorherigen Monat oder Jahr vergleichen."
 
@@ -2234,9 +2186,6 @@ msgstr "Zugehoerige Formularfelder gegenseitig ausfuellen lassen, z. B. Transfer
 
 msgid "Remove orphaned rules automatically during reload and import."
 msgstr "Verwaiste Regeln beim Neuladen und Import automatisch entfernen."
-
-msgid "Requires Smart Insights. Exclude detected refunds and offsetting groups from normal views."
-msgstr "Erfordert Intelligente Einblicke. Erkannte Erstattungen und ausgleichende Gruppen aus normalen Ansichten ausblenden."
 
 msgid "Settings"
 msgstr "Einstellungen"
@@ -2474,18 +2423,6 @@ msgstr "Aus importierten Transaktionen konnte noch keine Konfiguration erzeugt w
 
 msgid "No configuration could be generated yet. Import a complete calendar year to generate budget amounts."
 msgstr "Es konnte noch keine Konfiguration erzeugt werden. Importiere ein vollstaendiges Kalenderjahr, um Budgetbetraege zu erzeugen."
-
-msgid "Smart Insights are disabled. Online merchant enrichment and extra pattern hints are skipped."
-msgstr "Intelligente Einblicke sind deaktiviert. Online-Unternehmensanreicherung und zusaetzliche Musterhinweise werden uebersprungen."
-
-msgid "Smart Insights are disabled. Extra pattern hints are skipped."
-msgstr "Intelligente Einblicke sind deaktiviert. Zusaetzliche Musterhinweise werden uebersprungen."
-
-msgid "Online Smart Insights are enabled, but no network connection is available. External merchant lookups are skipped, and no transaction data is sent."
-msgstr "Online-Intelligente Einblicke sind aktiviert, aber es ist keine Netzwerkverbindung verfuegbar. Externe Unternehmensabfragen werden uebersprungen und es werden keine Transaktionsdaten gesendet."
-
-msgid "Online Smart Insights are enabled, but no safe lookup provider is configured in this build. External merchant lookups are skipped, and no transaction data is sent."
-msgstr "Online-Intelligente Einblicke sind aktiviert, aber in diesem Build ist kein sicherer Abfrageanbieter konfiguriert. Externe Unternehmensabfragen werden uebersprungen und es werden keine Transaktionsdaten gesendet."
 
 msgid "Could not generate configuration: {error}"
 msgstr "Konfiguration konnte nicht erzeugt werden: {error}"
@@ -3089,15 +3026,6 @@ msgstr "Budgetcode-Verschiebung zur Verarbeitungswarteschlange hinzugefuegt."
 
 
 
-msgid "Hide Refunded Transactions needs Smart Insights. Enable Smart Insights to use refunded transaction hiding."
-msgstr "Erstattete Transaktionen ausblenden benoetigt Intelligente Einblicke. Aktiviere Intelligente Einblicke, um erstattete Transaktionen auszublenden."
-
-msgid "Smart Insights are disabled. Enable Smart Insights to search detected transaction patterns."
-msgstr "Intelligente Einblicke sind deaktiviert. Aktiviere Intelligente Einblicke, um erkannte Transaktionsmuster zu suchen."
-
-msgid "Smart Insights is disabled. Enable Smart Insights to detect transaction patterns."
-msgstr "Intelligente Einblicke sind deaktiviert. Aktiviere Intelligente Einblicke, um Transaktionsmuster zu erkennen."
-
 # Simple mode category wording
 msgid "New Category"
 msgstr "Neue Kategorie"
@@ -3416,9 +3344,6 @@ msgstr "Ganzes Formular automatisch ausfüllen"
 msgid "Whether forms may fill related fields from the value you choose, such as matching categories, budget codes, and directions."
 msgstr "Ob Formulare zugehörige Felder anhand des gewählten Werts ausfüllen dürfen, etwa passende Kategorien, Budgetcodes und Richtungen."
 
-msgid "Control Smart Insights, online enrichment, and detected refund hiding."
-msgstr "Intelligente Einblicke, Online-Anreicherung und das Ausblenden erkannter Erstattungen steuern."
-
 msgid "Mark invalid"
 msgstr "Als ungültig markieren"
 
@@ -3464,32 +3389,11 @@ msgstr "Konfigurationsvorlagen"
 msgid "Use the built-in defaults or start with an empty configuration."
 msgstr "Die eingebauten Standards verwenden oder mit einer leeren Konfiguration beginnen."
 
-msgid "Try Smart Insights and local AI assisted configuration actions."
-msgstr "Konfigurationsaktionen mit Intelligenten Einblicken und lokaler KI ausprobieren."
-
-msgid "Enable Smart Insights to generate configuration from transactions."
-msgstr "Aktiviere Intelligente Einblicke, um Konfiguration aus Transaktionen zu erzeugen."
-
-msgid "Requires Smart Insights. Enable Smart Insights to generate configuration from transactions."
-msgstr "Erfordert Intelligente Einblicke. Aktiviere Intelligente Einblicke, um Konfiguration aus Transaktionen zu erzeugen."
-
-msgid "Configuration generation needs Smart Insights. Enable Smart Insights to generate configuration from transactions."
-msgstr "Konfigurationserzeugung erfordert Intelligente Einblicke. Aktiviere Intelligente Einblicke, um Konfiguration aus Transaktionen zu erzeugen."
-
-msgid "Configuration generation requires Smart Insights."
-msgstr "Konfigurationserzeugung erfordert Intelligente Einblicke."
-
 msgid "Configuration generation uses complete imported calendar years for budget amounts and ignores incomplete years."
 msgstr "Die Konfigurationserzeugung verwendet vollstaendige importierte Kalenderjahre fuer Budgetbetraege und ignoriert unvollstaendige Jahre."
 
 msgid "Configuration generation uses local transactions only in this build."
 msgstr "Die Konfigurationserzeugung verwendet in diesem Build nur lokale Transaktionen."
-
-msgid "Online Smart Insights are off by default. Configuration generation uses only local transactions, and no merchant names or transaction fields are sent."
-msgstr "Online-Intelligente Einblicke sind standardmaessig ausgeschaltet. Die Konfigurationserzeugung verwendet nur lokale Transaktionen; Unternehmensnamen oder Transaktionsfelder werden nicht gesendet."
-
-msgid "Online Smart Insights are not available in this build. Configuration generation uses only local transactions."
-msgstr "Online Smart Insights sind in diesem Build nicht verfuegbar. Die Konfigurationserzeugung verwendet nur lokale Transaktionen."
 
 msgid "Message history actions"
 msgstr "Aktionen für Nachrichtenverlauf"
@@ -3542,9 +3446,6 @@ msgstr "Aus Regel erstellt."
 msgid "Data and analytics cache cleared. Current data reloaded."
 msgstr "Daten- und Analyse-Cache geleert. Aktuelle Daten neu geladen."
 
-msgid "Enable Smart Insights to use this preference."
-msgstr "Aktiviere Intelligente Einblicke, um diese Einstellung zu verwenden."
-
 msgid "Experimental"
 msgstr "Experimentell"
 
@@ -3559,9 +3460,6 @@ msgstr "Feste Monatsbudgets werden auf Jahreswerte hochgerechnet; Jahresbudgets 
 
 msgid "Group Compatible Rules"
 msgstr "Kompatible Regeln gruppieren"
-
-msgid "Local AI: {category}"
-msgstr "Lokale KI: {category}"
 
 msgid "Name"
 msgstr "Name"
