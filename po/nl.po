@@ -2214,7 +2214,7 @@ msgid "Planned Income"
 msgstr "Geplande inkomsten"
 
 msgid "Income can be gross or net. Net income is needed for budgeting and calculations."
-msgstr "Income kan bruto en netto zijn. Het netto income is nodig voor de begroting/berekeningen."
+msgstr "Inkomsten kunnen bruto of netto zijn. Netto-inkomen is nodig voor budgetten en berekeningen."
 
 msgid "Edit planned income budget"
 msgstr "Gepland inkomstenbudget bewerken"

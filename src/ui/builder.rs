@@ -49,11 +49,23 @@ fn translate_builder_object(object: &gtk::glib::Object) {
     if let Some(row) = object.downcast_ref::<adw::ActionRow>() {
         translate_action_row(row);
     }
+    if let Some(row) = object.downcast_ref::<adw::EntryRow>() {
+        translate_entry_row(row);
+    }
+    if let Some(group) = object.downcast_ref::<adw::PreferencesGroup>() {
+        translate_preferences_group(group);
+    }
     if let Some(title) = object.downcast_ref::<adw::WindowTitle>() {
         translate_window_title(title);
     }
+    if let Some(page) = object.downcast_ref::<adw::StatusPage>() {
+        translate_status_page(page);
+    }
     if let Some(page) = object.downcast_ref::<adw::ViewStackPage>() {
         translate_view_stack_page(page);
+    }
+    if let Some(dialog) = object.downcast_ref::<adw::ShortcutsDialog>() {
+        translate_shortcuts_dialog(dialog);
     }
     if let Some(section) = object.downcast_ref::<adw::ShortcutsSection>() {
         translate_shortcuts_section(section);
@@ -116,6 +128,25 @@ fn translate_action_row(row: &adw::ActionRow) {
     }
 }
 
+fn translate_entry_row(row: &adw::EntryRow) {
+    let title = row.title();
+    if !title.is_empty() {
+        row.set_title(&translate_text(&title));
+    }
+}
+
+fn translate_preferences_group(group: &adw::PreferencesGroup) {
+    let title = group.title();
+    if !title.is_empty() {
+        group.set_title(&translate_text(&title));
+    }
+    if let Some(description) = group.description() {
+        if !description.is_empty() {
+            group.set_description(Some(&translate_text(&description)));
+        }
+    }
+}
+
 fn translate_window_title(title: &adw::WindowTitle) {
     let text = title.title();
     if !text.is_empty() {
@@ -127,11 +158,30 @@ fn translate_window_title(title: &adw::WindowTitle) {
     }
 }
 
+fn translate_status_page(page: &adw::StatusPage) {
+    let title = page.title();
+    if !title.is_empty() {
+        page.set_title(&translate_text(&title));
+    }
+    if let Some(description) = page.description() {
+        if !description.is_empty() {
+            page.set_description(Some(&translate_text(&description)));
+        }
+    }
+}
+
 fn translate_view_stack_page(page: &adw::ViewStackPage) {
     if let Some(title) = page.title() {
         if !title.is_empty() {
             page.set_title(Some(&translate_text(&title)));
         }
+    }
+}
+
+fn translate_shortcuts_dialog(dialog: &adw::ShortcutsDialog) {
+    let title = dialog.title();
+    if !title.is_empty() {
+        dialog.set_title(&translate_text(&title));
     }
 }
 

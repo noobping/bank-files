@@ -30,7 +30,19 @@ fn ui_resources_build_expected_objects() {
     assert_object::<gtk::Button>(&action, "action_search_button", "action-dialog.ui");
 
     let loading = builder_from_resource("loading-placeholder.ui");
-    assert_object::<adw::StatusPage>(&loading, "loading_placeholder", "loading-placeholder.ui");
+    let loading_placeholder = builder_object::<adw::StatusPage>(
+        &loading,
+        "loading_placeholder",
+        "loading-placeholder.ui",
+    );
+    assert_eq!(loading_placeholder.title(), gettext("Loading"));
+    let loading_description = loading_placeholder
+        .description()
+        .map(|value| value.to_string());
+    assert_eq!(
+        loading_description.as_deref(),
+        Some(gettext("Preparing this page. Large CSV files may take a moment.").as_str())
+    );
 
     let settings = builder_from_resource("settings-dialog.ui");
     assert_object::<adw::WindowTitle>(&settings, "settings_title", "settings-dialog.ui");
@@ -62,14 +74,20 @@ fn ui_resources_build_expected_objects() {
         "rule_search_chips_wrap",
         "rule-search-chips.ui",
     );
-    assert_object::<adw::EntryRow>(
+    let chips_entry = builder_object::<adw::EntryRow>(
         &rule_search_chips,
         "rule_search_chips_entry",
         "rule-search-chips.ui",
     );
+    assert_eq!(chips_entry.title(), gettext("Add search text"));
 
     let shortcuts = builder_from_resource("shortcuts-dialog.ui");
-    assert_object::<adw::ShortcutsDialog>(&shortcuts, "shortcuts_dialog", "shortcuts-dialog.ui");
+    let shortcuts_dialog = builder_object::<adw::ShortcutsDialog>(
+        &shortcuts,
+        "shortcuts_dialog",
+        "shortcuts-dialog.ui",
+    );
+    assert_eq!(shortcuts_dialog.title(), gettext("Keyboard Shortcuts"));
     assert_object::<adw::ShortcutsSection>(
         &shortcuts,
         "shortcuts_settings_section",
