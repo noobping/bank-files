@@ -18,25 +18,25 @@ fn status_log_search_matches_timestamp_and_message() {
 
 #[test]
 fn status_log_search_supports_negative_terms() {
-    let debug_entry = StatusLogEntry {
+    let render_entry = StatusLogEntry {
         timestamp: "12:34:56".to_string(),
-        message: "[debug] render started".to_string(),
+        message: "Render started".to_string(),
     };
     let normal_entry = StatusLogEntry {
         timestamp: "12:35:00".to_string(),
         message: "CSV import finished".to_string(),
     };
-    let debug_keywords = status_log_keywords(&debug_entry);
+    let render_keywords = status_log_keywords(&render_entry);
     let normal_keywords = status_log_keywords(&normal_entry);
 
-    assert!(!status_log_matches_keywords(&debug_keywords, "!debug"));
-    assert!(status_log_matches_keywords(&normal_keywords, "!debug"));
-    assert!(status_log_matches_keywords(&normal_keywords, "csv !debug"));
+    assert!(!status_log_matches_keywords(&render_keywords, "!render"));
+    assert!(status_log_matches_keywords(&normal_keywords, "!render"));
+    assert!(status_log_matches_keywords(&normal_keywords, "csv !render"));
     assert!(!status_log_matches_keywords(
-        &debug_keywords,
-        "render !debug"
+        &render_keywords,
+        "started !render"
     ));
-    assert!(status_log_matches_keywords(&debug_keywords, "!"));
+    assert!(status_log_matches_keywords(&render_keywords, "!"));
 }
 
 #[test]

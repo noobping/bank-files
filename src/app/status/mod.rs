@@ -13,7 +13,7 @@ pub(in crate::app) use feedback::{register_page_copy_feedback_button, show_page_
 pub(in crate::app) use history::StatusLogEntry;
 pub(in crate::app) use lifecycle::{
     connect_embedded_status_bar, connect_status_actions, schedule_status_autohide_after_loading,
-    show_status, show_verbose_status,
+    show_status,
 };
 pub(in crate::app) use page_actions::{connect_page_actions, connect_static_page_actions};
 pub(in crate::app) use snapshot::{PageActionSnapshot, StaticPageSnapshot};

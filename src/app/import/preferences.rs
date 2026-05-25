@@ -17,7 +17,7 @@ pub(in crate::app) fn set_remember_mode(
     }
 
     let cache_cleanup_message =
-        clear_cache_for_lower_remember_mode(previous_remember_mode, remember_mode, ui);
+        clear_cache_for_lower_remember_mode(previous_remember_mode, remember_mode);
     ui.remember_mode.set(remember_mode);
     ui.preferences.set_remember_mode(remember_mode);
     {
@@ -41,43 +41,18 @@ pub(in crate::app) fn set_remember_mode(
 fn clear_cache_for_lower_remember_mode(
     previous: RememberMode,
     current: RememberMode,
-    ui: &UiHandles,
 ) -> Option<String> {
     if !current.retains_less_than(previous) {
         return None;
     }
 
     match data::clear_processed_app_data_cache() {
-        Ok(true) => {
-            show_verbose_status(
-                ui,
-                format!(
-                    "remember lowered from {previous:?} to {current:?}; processed cache removed"
-                ),
-            );
-            Some(tr("Data and analytics cache removed."))
-        }
-        Ok(false) => {
-            show_verbose_status(
-                ui,
-                format!(
-                    "remember lowered from {previous:?} to {current:?}; no processed cache present"
-                ),
-            );
-            None
-        }
-        Err(error) => {
-            show_verbose_status(
-                ui,
-                format!(
-                    "remember lowered from {previous:?} to {current:?}; processed cache cleanup failed: {error:#}"
-                ),
-            );
-            Some(trf(
-                "Could not remove data and analytics cache: {error}",
-                &[("error", format!("{error:#}"))],
-            ))
-        }
+        Ok(true) => Some(tr("Data and analytics cache removed.")),
+        Ok(false) => None,
+        Err(error) => Some(trf(
+            "Could not remove data and analytics cache: {error}",
+            &[("error", format!("{error:#}"))],
+        )),
     }
 }
 
@@ -126,13 +101,6 @@ pub(in crate::app) fn set_dedupe_enabled(
     drop(borrowed);
     let state_for_dedupe = Rc::clone(state);
     let ui_for_dedupe = Rc::clone(ui);
-    show_verbose_status(
-        ui.as_ref(),
-        format!(
-            "dedupe reload started; enabled={enabled}; scope={scope:?}; remember={remember_mode:?}; sources={}",
-            sources.len(),
-        ),
-    );
     show_status(ui, "Updating duplicate filtering...");
     begin_background_operation(ui.as_ref());
     action.set_enabled(false);
@@ -154,14 +122,6 @@ pub(in crate::app) fn set_dedupe_enabled(
                     &state_for_dedupe,
                 );
                 refresh_menu(&ui_for_dedupe, &state_for_dedupe.borrow());
-                show_verbose_status(
-                    ui_for_dedupe.as_ref(),
-                    format!(
-                        "dedupe reload finished; transactions={}; reports={}",
-                        state_for_dedupe.borrow().transactions.len(),
-                        state_for_dedupe.borrow().reports.len(),
-                    ),
-                );
                 let message = status_with_cache(
                     trf(
                         "Duplicate filtering is {state}. {description}",

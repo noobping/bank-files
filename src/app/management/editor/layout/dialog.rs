@@ -25,12 +25,6 @@ pub(in crate::app) fn show_management_dialog(
     let dialog_closed = Rc::new(Cell::new(false));
     let save_running = Rc::new(Cell::new(false));
     let advanced_features = ui_handles.advanced_features.get();
-    show_verbose_status(
-        ui_handles.as_ref(),
-        format!(
-            "management dialog opening; tab={initial_tab}; advanced_features={advanced_features}"
-        ),
-    );
 
     let filter_placeholder = "Filter rules, budgets, and field names";
     let ManagementDialogShell {
@@ -94,7 +88,6 @@ pub(in crate::app) fn show_management_dialog(
     management_dialog.connect_closed(move |_| {
         dialog_closed_for_closed.set(true);
         ui_for_closed.management_search.borrow_mut().take();
-        show_verbose_status(ui_for_closed.as_ref(), "management dialog closed");
         if !save_running_for_closed.get() {
             finish_for_closed();
         }

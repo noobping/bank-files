@@ -1,7 +1,6 @@
 use super::super::*;
 use super::loading::{
-    management_loaded_forms_summary, ManagementFormsLoad, ManagementFormsRender,
-    ManagementFormsRenderStage, ManagementLoadedForms,
+    ManagementFormsLoad, ManagementFormsRender, ManagementFormsRenderStage, ManagementLoadedForms,
 };
 use super::MANAGEMENT_FORM_RENDER_BATCH_SIZE;
 
@@ -9,13 +8,6 @@ pub(super) fn start_management_forms_render(
     load: ManagementFormsLoad,
     loaded: ManagementLoadedForms,
 ) {
-    show_verbose_status(
-        load.ui_handles.as_ref(),
-        format!(
-            "management forms render started; batch_size={MANAGEMENT_FORM_RENDER_BATCH_SIZE}; {}",
-            management_loaded_forms_summary(&loaded)
-        ),
-    );
     ui::clear_box(&load.rules_list);
     load.rules_forms.borrow_mut().clear();
     ui::clear_box(&load.budgets_list);
@@ -77,13 +69,6 @@ fn render_rule_forms_batch(render: &mut ManagementFormsRender, remaining: &mut u
         Ok(rules) => {
             while *remaining > 0 {
                 let Some(rule) = rules.pop_front() else {
-                    show_verbose_status(
-                        render.load.ui_handles.as_ref(),
-                        format!(
-                            "management rules render finished; forms={}",
-                            render.load.rules_forms.borrow().len()
-                        ),
-                    );
                     render.stage = ManagementFormsRenderStage::Budgets;
                     return true;
                 };
@@ -99,10 +84,6 @@ fn render_rule_forms_batch(render: &mut ManagementFormsRender, remaining: &mut u
             false
         }
         Err(err) => {
-            show_verbose_status(
-                render.load.ui_handles.as_ref(),
-                format!("management rules render failed; error={err}"),
-            );
             render
                 .load
                 .rules_list
@@ -121,13 +102,6 @@ fn render_budget_forms_batch(render: &mut ManagementFormsRender, remaining: &mut
         Ok(budgets) => {
             while *remaining > 0 {
                 let Some(budget) = budgets.pop_front() else {
-                    show_verbose_status(
-                        render.load.ui_handles.as_ref(),
-                        format!(
-                            "management budgets render finished; forms={}",
-                            render.load.budgets_forms.borrow().len()
-                        ),
-                    );
                     render.stage = ManagementFormsRenderStage::Aliases;
                     return true;
                 };
@@ -153,10 +127,6 @@ fn render_budget_forms_batch(render: &mut ManagementFormsRender, remaining: &mut
             false
         }
         Err(err) => {
-            show_verbose_status(
-                render.load.ui_handles.as_ref(),
-                format!("management budgets render failed; error={err}"),
-            );
             let message = if render.load.advanced_features {
                 "Could not read budget codes: {error}"
             } else {
@@ -180,13 +150,6 @@ fn render_alias_forms_batch(render: &mut ManagementFormsRender, remaining: &mut 
         Ok(aliases) => {
             while *remaining > 0 {
                 let Some(alias) = aliases.pop_front() else {
-                    show_verbose_status(
-                        render.load.ui_handles.as_ref(),
-                        format!(
-                            "management aliases render finished; forms={}",
-                            render.load.aliases_forms.borrow().len()
-                        ),
-                    );
                     render.stage = ManagementFormsRenderStage::Done;
                     return true;
                 };
@@ -196,10 +159,6 @@ fn render_alias_forms_batch(render: &mut ManagementFormsRender, remaining: &mut 
             false
         }
         Err(err) => {
-            show_verbose_status(
-                render.load.ui_handles.as_ref(),
-                format!("management aliases render failed; error={err}"),
-            );
             render
                 .load
                 .aliases_list
@@ -214,15 +173,6 @@ fn render_alias_forms_batch(render: &mut ManagementFormsRender, remaining: &mut 
 }
 
 fn finish_management_forms_render(load: &ManagementFormsLoad) {
-    show_verbose_status(
-        load.ui_handles.as_ref(),
-        format!(
-            "management forms render finished; rules={}; budgets={}; aliases={}",
-            load.rules_forms.borrow().len(),
-            load.budgets_forms.borrow().len(),
-            load.aliases_forms.borrow().len()
-        ),
-    );
     apply_management_filter(
         &load.filter_entry.text(),
         &load.rules_forms.borrow(),

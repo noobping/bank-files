@@ -29,13 +29,6 @@ pub(super) fn connect_save_action(actions: &ManagementDialogActions<'_>) {
         direction_changes.extend(collect_rule_direction_changes(
             &rules_forms_for_save.borrow(),
         ));
-        show_verbose_status(
-            ui_for_save.as_ref(),
-            format!(
-                "management save requested; direction_changes={}",
-                direction_changes.len()
-            ),
-        );
 
         let management_dialog_for_confirm = management_dialog_for_save.clone();
         let rules_forms_for_save = Rc::clone(&rules_forms_for_save);
@@ -60,16 +53,6 @@ pub(super) fn connect_save_action(actions: &ManagementDialogActions<'_>) {
                 let rules = collect_rule_forms(&rules_forms_for_save.borrow());
                 let budgets = collect_budget_forms(&budgets_forms_for_save.borrow());
                 let aliases = collect_alias_forms(&aliases_forms_for_save.borrow());
-                show_verbose_status(
-                    ui_for_save.as_ref(),
-                    format!(
-                    "management save started; rules={}; budgets={}; aliases={}; renamed_rules={}",
-                    rules.len(),
-                    budgets.len(),
-                    aliases.len(),
-                    renamed_rule_count
-                ),
-                );
                 let borrowed = state_for_save.borrow();
                 let mode = borrowed.dedupe_mode;
                 let remember_mode = ui_for_save.remember_mode.get();
@@ -116,27 +99,18 @@ pub(super) fn connect_save_action(actions: &ManagementDialogActions<'_>) {
                             };
                             status_for_save.set_text(&message);
                             show_status(&ui_for_save, &message);
-                            show_verbose_status(ui_for_save.as_ref(), "management save finished");
                         }
                         Ok(Err(err)) => {
                             let message =
                                 trf("Save failed: {error}", &[("error", format!("{err:#}"))]);
                             status_for_save.set_text(&message);
                             show_status(&ui_for_save, &message);
-                            show_verbose_status(
-                                ui_for_save.as_ref(),
-                                format!("management save failed; error={err:#}"),
-                            );
                         }
                         Err(_) => {
                             let message =
                                 tr("Save canceled: the background task stopped unexpectedly.");
                             status_for_save.set_text(&message);
                             show_status(&ui_for_save, &message);
-                            show_verbose_status(
-                                ui_for_save.as_ref(),
-                                "management save task canceled",
-                            );
                         }
                     }
                     save_running_for_save.set(false);

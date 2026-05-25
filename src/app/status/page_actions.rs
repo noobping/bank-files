@@ -1,5 +1,4 @@
 use super::bar::set_page_actions_menu_namespace;
-use super::lifecycle::show_verbose_status;
 use super::snapshot::{PageActionSnapshot, StaticPageSnapshot};
 use super::*;
 
@@ -44,14 +43,6 @@ pub(in crate::app) fn connect_page_actions<F>(
         }
         match snapshot_for_copy() {
             Ok(snapshot) => {
-                show_verbose_status(
-                    ui_for_copy.as_ref(),
-                    format!(
-                        "page copied; page={}; rows={}",
-                        snapshot.key,
-                        snapshot.rows.len()
-                    ),
-                );
                 ui_for_copy.window.clipboard().set_text(&snapshot.text);
                 status_for_copy.set_text(&trf("Copied {page}.", &[("page", tr(&snapshot.title))]));
             }
@@ -73,14 +64,6 @@ pub(in crate::app) fn connect_page_actions<F>(
         }
         match snapshot_for_print() {
             Ok(snapshot) => {
-                show_verbose_status(
-                    ui_for_print.as_ref(),
-                    format!(
-                        "page print started; page={}; rows={}",
-                        snapshot.key,
-                        snapshot.rows.len()
-                    ),
-                );
                 status_for_print
                     .set_text(&trf("Printing {page}...", &[("page", tr(&snapshot.title))]));
                 let report = table_print_report(

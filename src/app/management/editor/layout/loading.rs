@@ -42,32 +42,16 @@ pub(super) enum ManagementFormsRenderStage {
 }
 
 pub(super) fn schedule_management_forms_load(load: ManagementFormsLoad) {
-    show_verbose_status(load.ui_handles.as_ref(), "management forms load started");
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(load_management_forms_data);
         match task.await {
             Ok(loaded) => {
                 if load.dialog_closed.get() {
-                    show_verbose_status(
-                        load.ui_handles.as_ref(),
-                        "management forms load finished after dialog closed",
-                    );
                     return;
                 }
-                show_verbose_status(
-                    load.ui_handles.as_ref(),
-                    format!(
-                        "management forms loaded; {}",
-                        management_loaded_forms_summary(&loaded)
-                    ),
-                );
                 start_management_forms_render(load, loaded);
             }
             Err(_) => {
-                show_verbose_status(
-                    load.ui_handles.as_ref(),
-                    "management forms load task canceled",
-                );
                 load.status_handle.set_loading(false);
                 load.status.set_text(&tr(
                     "Management loading canceled: the background task stopped unexpectedly.",
@@ -89,22 +73,6 @@ fn load_management_forms_data() -> ManagementLoadedForms {
         aliases: data::load_editable_aliases()
             .map(std::collections::VecDeque::from)
             .map_err(|err| format!("{err:#}")),
-    }
-}
-
-pub(super) fn management_loaded_forms_summary(loaded: &ManagementLoadedForms) -> String {
-    format!(
-        "rules={}; budgets={}; aliases={}",
-        management_loaded_count(&loaded.rules),
-        management_loaded_count(&loaded.budgets),
-        management_loaded_count(&loaded.aliases)
-    )
-}
-
-fn management_loaded_count<T>(result: &Result<std::collections::VecDeque<T>, String>) -> String {
-    match result {
-        Ok(items) => items.len().to_string(),
-        Err(_) => "error".to_string(),
     }
 }
 

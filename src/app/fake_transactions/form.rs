@@ -172,27 +172,18 @@ pub(super) fn queue_fake_transaction_update<F>(
 ) where
     F: FnOnce(&Rc<RefCell<AppData>>, &Rc<UiHandles>) -> FakeTransactionUpdateOutcome + 'static,
 {
-    show_verbose_status(
-        ui.as_ref(),
-        format!("fake transaction update queued; message={busy_message}"),
-    );
     set_fake_transactions_busy(ui, true, busy_message);
     let state = Rc::clone(state);
     let ui = Rc::clone(ui);
     gtk::glib::timeout_add_local_once(std::time::Duration::from_millis(30), move || {
         match update(&state, &ui) {
             FakeTransactionUpdateOutcome::Render(status) => {
-                show_verbose_status(
-                    ui.as_ref(),
-                    format!("fake transaction update rendered; status={status}"),
-                );
                 refresh_fake_transactions_ui(&state, &ui);
                 request_render_views(&ui, &state);
                 set_fake_transactions_busy(&ui, false, "");
                 show_status(&ui, status);
             }
             FakeTransactionUpdateOutcome::Skip => {
-                show_verbose_status(ui.as_ref(), "fake transaction update skipped");
                 set_fake_transactions_busy(&ui, false, "");
             }
         }

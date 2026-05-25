@@ -26,13 +26,6 @@ pub(in crate::app) fn clear_cache_and_reload_state(
     let state_for_reload = Rc::clone(state);
     let ui_for_reload = Rc::clone(ui);
 
-    show_verbose_status(
-        ui.as_ref(),
-        format!(
-            "cache purge reload started; scope={scope:?}; remember={remember_mode:?}; sources={}; dedupe={mode:?}",
-            sources.len(),
-        ),
-    );
     show_status(ui, "Clearing data and analytics cache...");
     render_loading_placeholder(ui.as_ref());
     begin_background_operation(ui.as_ref());
@@ -40,12 +33,8 @@ pub(in crate::app) fn clear_cache_and_reload_state(
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
             let removed = data::clear_processed_app_data_cache()?;
-            let (new_data, capabilities) = data::load_app_data_with_sources(
-                mode,
-                scope,
-                remember_mode,
-                &sources,
-            )?;
+            let (new_data, capabilities) =
+                data::load_app_data_with_sources(mode, scope, remember_mode, &sources)?;
             anyhow::Ok((removed, new_data, capabilities))
         });
 
@@ -59,14 +48,6 @@ pub(in crate::app) fn clear_cache_and_reload_state(
                     &state_for_reload,
                 );
                 refresh_menu(&ui_for_reload, &state_for_reload.borrow());
-                show_verbose_status(
-                    ui_for_reload.as_ref(),
-                    format!(
-                        "cache purge reload finished; removed={removed}; transactions={}; reports={}",
-                        state_for_reload.borrow().transactions.len(),
-                        state_for_reload.borrow().reports.len(),
-                    ),
-                );
                 let base_message = if removed {
                     tr("Data and analytics cache cleared. Current data reloaded.")
                 } else {
@@ -76,10 +57,6 @@ pub(in crate::app) fn clear_cache_and_reload_state(
                 show_status(&ui_for_reload, &message);
             }
             Ok(Err(err)) => {
-                show_verbose_status(
-                    ui_for_reload.as_ref(),
-                    format!("cache purge reload failed; error={err:#}"),
-                );
                 show_status(
                     &ui_for_reload,
                     &trf(
@@ -94,7 +71,6 @@ pub(in crate::app) fn clear_cache_and_reload_state(
                 );
             }
             Err(_) => {
-                show_verbose_status(ui_for_reload.as_ref(), "cache purge reload task canceled");
                 show_status(
                     &ui_for_reload,
                     "Cache clear canceled: the background task stopped unexpectedly.",
@@ -146,13 +122,6 @@ pub(in crate::app) fn reload_state_with_scope(
     drop(borrowed);
     let state_for_reload = Rc::clone(state);
     let ui_for_reload = Rc::clone(ui);
-    show_verbose_status(
-        ui.as_ref(),
-        format!(
-            "reload started; scope={scope:?}; remember={remember_mode:?}; sources={}; dedupe={mode:?}",
-            sources.len(),
-        ),
-    );
     show_status(ui, loading_message);
     render_loading_placeholder(ui.as_ref());
     begin_background_operation(ui.as_ref());
@@ -171,22 +140,10 @@ pub(in crate::app) fn reload_state_with_scope(
                     &state_for_reload,
                 );
                 refresh_menu(&ui_for_reload, &state_for_reload.borrow());
-                show_verbose_status(
-                    ui_for_reload.as_ref(),
-                    format!(
-                        "reload finished; transactions={}; reports={}",
-                        state_for_reload.borrow().transactions.len(),
-                        state_for_reload.borrow().reports.len(),
-                    ),
-                );
                 let message = status_with_cache(success_message, &state_for_reload.borrow());
                 show_status(&ui_for_reload, &message);
             }
             Ok(Err(err)) => {
-                show_verbose_status(
-                    ui_for_reload.as_ref(),
-                    format!("reload failed; error={err:#}"),
-                );
                 failure_replacements.push(("error", format!("{err:#}")));
                 show_status(&ui_for_reload, &trf(failure_message, &failure_replacements));
                 render_views(
@@ -196,7 +153,6 @@ pub(in crate::app) fn reload_state_with_scope(
                 );
             }
             Err(_) => {
-                show_verbose_status(ui_for_reload.as_ref(), "reload task canceled");
                 show_status(
                     &ui_for_reload,
                     "Reload canceled: the background task stopped unexpectedly.",

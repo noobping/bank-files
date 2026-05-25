@@ -29,19 +29,11 @@ fn connect_group_rules_action(
     let filter_entry = actions.filter_entry.clone();
     let status = actions.status.clone();
     let advanced_autofill = Rc::clone(&actions.ui_handles.advanced_autofill);
-    let ui = Rc::clone(actions.ui_handles);
     let bulk_actions_for_group = bulk_actions.clone();
 
     bulk_actions.group_rules.connect_activate(move |_, _| {
         set_rule_bulk_actions_enabled(&bulk_actions_for_group, false);
         status.set_text(&tr("Grouping compatible rules..."));
-        show_verbose_status(
-            ui.as_ref(),
-            format!(
-                "management rule grouping started; rules={}",
-                rules_forms.borrow().len()
-            ),
-        );
 
         let rules_list = rules_list.clone();
         let rules_forms = Rc::clone(&rules_forms);
@@ -49,21 +41,11 @@ fn connect_group_rules_action(
         let filter_entry = filter_entry.clone();
         let status = status.clone();
         let advanced_autofill = Rc::clone(&advanced_autofill);
-        let ui = Rc::clone(&ui);
         let bulk_actions = bulk_actions_for_group.clone();
         gtk::glib::timeout_add_local_once(std::time::Duration::from_millis(30), move || {
             let report = data::group_editable_rules_for_combining(&collect_rule_forms(
                 &rules_forms.borrow(),
             ));
-            show_verbose_status(
-                ui.as_ref(),
-                format!(
-                    "management rule grouping finished; changed={}; groups={}; rules={}",
-                    report.changed,
-                    report.grouped_groups,
-                    report.rules.len()
-                ),
-            );
             if report.grouped_groups == 0 {
                 status.set_text(&tr("No compatible rules to group."));
                 set_rule_bulk_actions_enabled(&bulk_actions, true);
@@ -103,19 +85,11 @@ fn connect_combine_rules_action(
     let filter_entry = actions.filter_entry.clone();
     let status = actions.status.clone();
     let advanced_autofill = Rc::clone(&actions.ui_handles.advanced_autofill);
-    let ui = Rc::clone(actions.ui_handles);
     let bulk_actions_for_combine = bulk_actions.clone();
 
     bulk_actions.combine_rules.connect_activate(move |_, _| {
         set_rule_bulk_actions_enabled(&bulk_actions_for_combine, false);
         status.set_text(&tr("Combining compatible rules..."));
-        show_verbose_status(
-            ui.as_ref(),
-            format!(
-                "management rule combine started; rules={}",
-                rules_forms.borrow().len()
-            ),
-        );
 
         let rules_list = rules_list.clone();
         let rules_forms = Rc::clone(&rules_forms);
@@ -123,19 +97,11 @@ fn connect_combine_rules_action(
         let filter_entry = filter_entry.clone();
         let status = status.clone();
         let advanced_autofill = Rc::clone(&advanced_autofill);
-        let ui = Rc::clone(&ui);
         let bulk_actions = bulk_actions_for_combine.clone();
         gtk::glib::timeout_add_local_once(std::time::Duration::from_millis(30), move || {
             let report = data::combine_editable_rules(&collect_rule_forms(
                 &rules_forms.borrow(),
             ));
-            show_verbose_status(
-                ui.as_ref(),
-                format!(
-                    "management rule combine finished; before={}; after={}; groups={}",
-                    report.before_count, report.after_count, report.combined_groups
-                ),
-            );
             if report.before_count == report.after_count {
                 status.set_text(&tr(
                     "No adjacent compatible rules to combine. Use Group first if compatible rules are spread out.",
@@ -176,7 +142,6 @@ fn connect_clean_orphaned_rules_action(
     let budgets_forms = Rc::clone(actions.budgets_forms);
     let filter_entry = actions.filter_entry.clone();
     let status = actions.status.clone();
-    let ui = Rc::clone(actions.ui_handles);
     let bulk_actions_for_clean = bulk_actions.clone();
 
     bulk_actions
@@ -184,22 +149,10 @@ fn connect_clean_orphaned_rules_action(
         .connect_activate(move |_, _| {
             set_rule_bulk_actions_enabled(&bulk_actions_for_clean, false);
             status.set_text(&tr("Cleaning orphaned rules..."));
-            show_verbose_status(
-                ui.as_ref(),
-                format!(
-                    "management orphaned rule cleanup started; rules={}; budgets={}",
-                    rules_forms.borrow().len(),
-                    budgets_forms.borrow().len()
-                ),
-            );
 
             let removed =
                 mark_orphaned_rule_forms_deleted(&rules_forms.borrow(), &budgets_forms.borrow());
             filter_rule_forms(&filter_entry.text(), &rules_forms.borrow());
-            show_verbose_status(
-                ui.as_ref(),
-                format!("management orphaned rule cleanup finished; removed={removed}"),
-            );
 
             if removed == 0 {
                 status.set_text(&tr("No orphaned rules to clean."));

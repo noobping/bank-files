@@ -36,10 +36,6 @@ fn apply_operations(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>, ids: Vec<u
         return;
     }
 
-    show_verbose_status(
-        ui.as_ref(),
-        format!("queue apply started; operations={}", ids.len()),
-    );
     ui.operation_queue.set_processing(true);
     ui.status_icon.set_icon_name(Some("view-refresh-symbolic"));
     refresh_operation_queue_ui(state, ui);
@@ -73,27 +69,15 @@ fn apply_operations(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>, ids: Vec<u
                 Ok(Ok(())) => {
                     counts.applied += 1;
                     ui_for_apply.operation_queue.mark_applied(id);
-                    show_verbose_status(
-                        ui_for_apply.as_ref(),
-                        format!("queue operation applied; id={id}"),
-                    );
                 }
                 Ok(Err(error)) => {
                     counts.failed += 1;
-                    show_verbose_status(
-                        ui_for_apply.as_ref(),
-                        format!("queue operation failed; id={id}; error={error:#}"),
-                    );
                     ui_for_apply
                         .operation_queue
                         .mark_failed(id, format!("{error:#}"));
                 }
                 Err(_) => {
                     counts.failed += 1;
-                    show_verbose_status(
-                        ui_for_apply.as_ref(),
-                        format!("queue operation canceled; id={id}"),
-                    );
                     ui_for_apply
                         .operation_queue
                         .mark_failed(id, tr("The background task stopped unexpectedly."));
@@ -144,13 +128,6 @@ async fn reload_after_queue_apply(
             current_transaction_load_scope(&borrowed, ui.as_ref()),
         )
     };
-    show_verbose_status(
-        ui.as_ref(),
-        format!(
-            "queue reload started; scope={scope:?}; remember={remember_mode:?}; sources={}",
-            sources.len()
-        ),
-    );
     show_status(&ui, "Grouping and combining queued rules...");
     begin_background_operation(ui.as_ref());
     let task = gtk::gio::spawn_blocking(move || {
@@ -162,14 +139,6 @@ async fn reload_after_queue_apply(
     match task.await {
         Ok(Ok((new_data, combine_summary))) => {
             *state.borrow_mut() = new_data;
-            show_verbose_status(
-                ui.as_ref(),
-                format!(
-                    "queue reload finished; transactions={}; reports={}",
-                    state.borrow().transactions.len(),
-                    state.borrow().reports.len(),
-                ),
-            );
             render_views(&state.borrow(), &ui, &state);
             show_apply_summary(&ui, counts, combine_summary);
         }

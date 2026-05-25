@@ -120,21 +120,6 @@ pub(in crate::app) fn show_status(ui: &UiHandles, message: &str) {
     schedule_status_autohide(ui, generation);
 }
 
-pub(in crate::app) fn show_verbose_status(ui: &UiHandles, message: impl AsRef<str>) {
-    #[cfg(debug_assertions)]
-    {
-        let message = message.as_ref().trim();
-        if !message.is_empty() {
-            show_status(ui, &format!("[debug] {message}"));
-        }
-    }
-    #[cfg(not(debug_assertions))]
-    {
-        let _ = ui;
-        let _ = message;
-    }
-}
-
 fn push_status_history(ui: &UiHandles, message: &str) {
     push_status_history_entry(&ui.status_history, message);
 }

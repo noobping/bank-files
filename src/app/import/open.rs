@@ -65,10 +65,6 @@ pub(super) async fn import_and_reload_in_background<F>(
 {
     let scope = current_transaction_load_scope(&state.borrow(), ui.as_ref());
     let remember_mode = ui.remember_mode.get();
-    show_verbose_status(
-        ui.as_ref(),
-        format!("import started; scope={scope:?}; remember={remember_mode:?}; dedupe={mode:?}"),
-    );
     render_loading_placeholder(ui.as_ref());
     begin_background_operation(ui.as_ref());
     let task = gtk::gio::spawn_blocking(move || {
@@ -90,25 +86,10 @@ pub(super) async fn import_and_reload_in_background<F>(
             set_storage_capabilities(&ui, capabilities);
             render_views(&state.borrow(), &ui, &state);
             refresh_menu(&ui, &state.borrow());
-            let imported = result.imported();
-            show_verbose_status(
-                ui.as_ref(),
-                format!(
-                    "import finished; imported={imported}; transactions={}",
-                    state.borrow().transactions.len(),
-                ),
-            );
             let message = status_with_cache(import_status(result), &state.borrow());
             show_status(&ui, &message);
         }
         Ok(Ok((result, Some(Err(err))))) => {
-            show_verbose_status(
-                ui.as_ref(),
-                format!(
-                    "import reload failed; imported={}; error={err}",
-                    result.imported()
-                ),
-            );
             show_status(
                 &ui,
                 &trf(
@@ -130,7 +111,6 @@ pub(super) async fn import_and_reload_in_background<F>(
             render_views(&state.borrow(), &ui, &state);
         }
         Ok(Err(err)) => {
-            show_verbose_status(ui.as_ref(), format!("import failed; error={err:#}"));
             show_status(
                 &ui,
                 &trf("Open CSV error: {error}", &[("error", format!("{err:#}"))]),
@@ -138,7 +118,6 @@ pub(super) async fn import_and_reload_in_background<F>(
             render_views(&state.borrow(), &ui, &state);
         }
         Err(_) => {
-            show_verbose_status(ui.as_ref(), "import task canceled");
             show_status(
                 &ui,
                 "Open CSV canceled: the background task stopped unexpectedly.",

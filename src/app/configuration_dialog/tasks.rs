@@ -5,12 +5,7 @@ pub(super) fn archive_configuration(
     status: StatusHandle,
     restore_row: adw::ActionRow,
 ) {
-    if !begin_configuration_task(
-        &ui_handles,
-        &status,
-        "Backing up current configuration...",
-        "configuration backup started",
-    ) {
+    if !begin_configuration_task(&ui_handles, &status, "Backing up current configuration...") {
         return;
     }
 
@@ -24,7 +19,6 @@ pub(super) fn archive_configuration(
                     &[("path", path.display().to_string())],
                 );
                 show_dialog_status_text(ui_handles.as_ref(), &status, &message);
-                show_verbose_status(ui_handles.as_ref(), "configuration backup finished");
             }
             Ok(Err(error)) => {
                 let message = trf(
@@ -32,10 +26,6 @@ pub(super) fn archive_configuration(
                     &[("error", format!("{error:#}"))],
                 );
                 show_dialog_status_text(ui_handles.as_ref(), &status, &message);
-                show_verbose_status(
-                    ui_handles.as_ref(),
-                    format!("configuration backup failed; error={error:#}"),
-                );
             }
             Err(_) => {
                 show_dialog_status(
@@ -43,7 +33,6 @@ pub(super) fn archive_configuration(
                     &status,
                     "Configuration backup canceled: the background task stopped unexpectedly.",
                 );
-                show_verbose_status(ui_handles.as_ref(), "configuration backup task canceled");
             }
         }
         finish_configuration_task(&ui_handles, &status);
@@ -131,12 +120,7 @@ fn run_configuration_reload_task<F>(
     let sources = current_sources_for_reload(&borrowed, remember_mode);
     let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
     drop(borrowed);
-    if !begin_configuration_task(
-        &ui_handles,
-        &status,
-        messages.progress,
-        format!("configuration task started; progress={}", messages.progress),
-    ) {
+    if !begin_configuration_task(&ui_handles, &status, messages.progress) {
         return;
     }
 
@@ -152,22 +136,13 @@ fn run_configuration_reload_task<F>(
                 *state.borrow_mut() = data;
                 render_views(&state.borrow(), &ui_handles, &state);
                 show_dialog_status(ui_handles.as_ref(), &status, messages.success);
-                show_verbose_status(
-                    ui_handles.as_ref(),
-                    format!("configuration task finished; success={}", messages.success),
-                );
             }
             Ok(Err(error)) => {
                 let message = trf(messages.failure, &[("error", format!("{error:#}"))]);
                 show_dialog_status_text(ui_handles.as_ref(), &status, &message);
-                show_verbose_status(
-                    ui_handles.as_ref(),
-                    format!("configuration task failed; error={error:#}"),
-                );
             }
             Err(_) => {
                 show_dialog_status(ui_handles.as_ref(), &status, messages.canceled);
-                show_verbose_status(ui_handles.as_ref(), "configuration task canceled");
             }
         }
         finish_configuration_task(&ui_handles, &status);
@@ -178,7 +153,6 @@ fn begin_configuration_task(
     ui_handles: &Rc<UiHandles>,
     status: &StatusHandle,
     progress_message: &str,
-    debug_message: impl AsRef<str>,
 ) -> bool {
     if !try_begin_config_operation(ui_handles, CONFIGURATION_BUSY_MESSAGE) {
         status.set_text(&tr(CONFIGURATION_BUSY_MESSAGE));
@@ -186,7 +160,6 @@ fn begin_configuration_task(
     }
 
     show_dialog_status(ui_handles.as_ref(), status, progress_message);
-    show_verbose_status(ui_handles.as_ref(), debug_message);
     status.set_loading(true);
     begin_background_operation(ui_handles.as_ref());
     true
