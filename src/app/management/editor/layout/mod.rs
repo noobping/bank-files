@@ -1,4 +1,5 @@
 mod dialog;
+mod header;
 mod loading;
 mod render;
 mod setup;

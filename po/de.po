@@ -3567,3 +3567,6 @@ msgstr "Konfiguration sichern"
 
 msgid "Restore Latest Backup"
 msgstr "Neueste Sicherung wiederherstellen"
+
+msgid "Configuration actions"
+msgstr "Konfigurationsaktionen"

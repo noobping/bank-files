@@ -3567,3 +3567,6 @@ msgstr "Configuratieback-up maken"
 
 msgid "Restore Latest Backup"
 msgstr "Nieuwste back-up herstellen"
+
+msgid "Configuration actions"
+msgstr "Configuratieacties"

@@ -1,8 +1,8 @@
 use super::super::*;
-
-const RULE_ACTION_NAMESPACE: &str = "management-rules";
-const BUDGET_ACTION_NAMESPACE: &str = "management-budgets";
-const CONFIG_ACTION_NAMESPACE: &str = "management-config";
+use super::header::{
+    connect_header_action_visibility, insert_menu_actions, HeaderActionWidgets,
+    BUDGET_ACTION_NAMESPACE, CONFIG_ACTION_NAMESPACE, RULE_ACTION_NAMESPACE,
+};
 
 pub(super) struct ManagementDialogShell {
     pub(super) root: gtk::Box,
@@ -90,6 +90,8 @@ pub(super) fn build_management_dialog_shell(
     );
     let budget_bulk_menu =
         ui::builder_object::<gtk::gio::Menu>(&builder, "management_budget_bulk_menu", RESOURCE);
+    let config_menu =
+        ui::builder_object::<gtk::gio::Menu>(&builder, "management_config_menu", RESOURCE);
 
     let add_alias_row =
         ui::builder_object::<adw::ActionRow>(&builder, "management_add_alias_row", RESOURCE);
@@ -155,10 +157,15 @@ pub(super) fn build_management_dialog_shell(
     rule_bulk_menu_button.set_tooltip_text(Some(&tr("Rule actions")));
     budget_bulk_menu_button.set_tooltip_text(Some(&tr("Budget actions")));
     connect_header_action_visibility(
-        &stack,
-        &add_button,
-        &rule_bulk_menu_button,
-        &budget_bulk_menu_button,
+        HeaderActionWidgets {
+            stack: stack.clone(),
+            add_button: add_button.clone(),
+            rule_bulk_menu_button: rule_bulk_menu_button.clone(),
+            budget_bulk_menu_button: budget_bulk_menu_button.clone(),
+            rule_bulk_menu: rule_bulk_menu.clone(),
+            budget_bulk_menu: budget_bulk_menu.clone(),
+            config_menu,
+        },
         advanced_features,
     );
 
@@ -223,75 +230,4 @@ fn configure_management_page_text(
     budgets_loading_label.set_text(&tr("Loading budgets..."));
     add_budget_row.set_title(&tr(add_label));
     add_budget_row.set_tooltip_text(Some(&tr(add_tooltip)));
-}
-
-fn connect_header_action_visibility(
-    stack: &adw::ViewStack,
-    add_button: &gtk::Button,
-    rule_bulk_menu_button: &gtk::MenuButton,
-    budget_bulk_menu_button: &gtk::MenuButton,
-    advanced_features: bool,
-) {
-    update_header_action_visibility(
-        stack,
-        add_button,
-        rule_bulk_menu_button,
-        budget_bulk_menu_button,
-        advanced_features,
-    );
-
-    let add_for_stack = add_button.clone();
-    let rule_menu_for_stack = rule_bulk_menu_button.clone();
-    let budget_menu_for_stack = budget_bulk_menu_button.clone();
-    stack.connect_visible_child_name_notify(move |stack| {
-        update_header_action_visibility(
-            stack,
-            &add_for_stack,
-            &rule_menu_for_stack,
-            &budget_menu_for_stack,
-            advanced_features,
-        );
-    });
-}
-
-fn update_header_action_visibility(
-    stack: &adw::ViewStack,
-    add_button: &gtk::Button,
-    rule_bulk_menu_button: &gtk::MenuButton,
-    budget_bulk_menu_button: &gtk::MenuButton,
-    advanced_features: bool,
-) {
-    match stack.visible_child_name().as_deref() {
-        Some("rules") => {
-            add_button.set_tooltip_text(Some(&tr("Create a new rule")));
-            rule_bulk_menu_button.set_visible(true);
-            budget_bulk_menu_button.set_visible(false);
-        }
-        Some("aliases") => {
-            add_button.set_tooltip_text(Some(&tr("Create a new field name")));
-            rule_bulk_menu_button.set_visible(false);
-            budget_bulk_menu_button.set_visible(false);
-        }
-        _ => {
-            add_button.set_tooltip_text(Some(&tr(if advanced_features {
-                "Create a new budget"
-            } else {
-                "Create a new category with monthly or yearly amounts"
-            })));
-            rule_bulk_menu_button.set_visible(false);
-            budget_bulk_menu_button.set_visible(advanced_features);
-        }
-    }
-}
-
-fn insert_menu_actions(
-    menu_button: &gtk::MenuButton,
-    namespace: &str,
-    actions: &[&gtk::gio::SimpleAction],
-) {
-    let action_group = gtk::gio::SimpleActionGroup::new();
-    for action in actions {
-        action_group.add_action(*action);
-    }
-    menu_button.insert_action_group(namespace, Some(&action_group));
 }
