@@ -10,6 +10,7 @@
     <file>ui/management-dialog.ui</file>
     <file>ui/operation-queue-dialog.ui</file>
     <file>ui/partial-load-notice.ui</file>
+    <file>ui/rule-search-chips.ui</file>
     <file>ui/main-window.ui</file>
     <file>ui/settings-dialog.ui</file>
     <file>ui/shortcuts-dialog.ui</file>

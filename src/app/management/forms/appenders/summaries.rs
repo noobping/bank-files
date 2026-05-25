@@ -12,9 +12,14 @@ pub(super) struct RuleSummaryWidgets<'a> {
     pub(super) direction: &'a gtk::ComboBoxText,
     pub(super) amount_min: &'a gtk::Entry,
     pub(super) amount_max: &'a gtk::Entry,
+    pub(super) advanced_features: bool,
 }
 
 pub(super) fn rule_summary(widgets: RuleSummaryWidgets<'_>) -> (String, String) {
+    if !widgets.advanced_features {
+        return simple_rule_summary(widgets);
+    }
+
     let title = format!(
         "{} · {}",
         entry_summary_text(&ui::combo_text(widgets.category), "Uncategorized"),
@@ -49,6 +54,21 @@ pub(super) fn rule_summary(widgets: RuleSummaryWidgets<'_>) -> (String, String) 
         parts.push(format!("{} {min}..{max}", tr("amount")));
     }
     (title, parts.join(" · "))
+}
+
+fn simple_rule_summary(widgets: RuleSummaryWidgets<'_>) -> (String, String) {
+    let mut parts = vec![rule_search_text(widgets.search)];
+    if !widgets.active.is_active() {
+        parts.push(tr("inactive"));
+    }
+    (
+        entry_summary_text(&ui::combo_text(widgets.category), "Uncategorized"),
+        parts
+            .into_iter()
+            .filter(|part| !part.trim().is_empty())
+            .collect::<Vec<_>>()
+            .join(" · "),
+    )
 }
 
 pub(super) fn budget_summary(

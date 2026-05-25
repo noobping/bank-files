@@ -1,7 +1,7 @@
 use super::super::*;
 use super::files::{read_config_file, write_config_file};
 use super::rule_search::combined_rule_search;
-use super::rule_terms::mergeable_rule_terms;
+use super::rule_terms::{literal_rule_term, mergeable_rule_terms, normalize_literal_text};
 
 #[derive(Debug, Clone)]
 pub struct OrphanedRule {
@@ -121,6 +121,40 @@ pub fn group_editable_rules_for_combining(rules: &[EditableRule]) -> RuleGroupRe
     }
 }
 
+pub fn editable_rule_literal_terms(rule: &EditableRule) -> Option<Vec<String>> {
+    let search = rule.search.trim();
+    if search.is_empty() {
+        return Some(Vec::new());
+    }
+    if !rule.is_regex {
+        return Some(vec![normalize_literal_text(search)]);
+    }
+
+    mergeable_rule_terms(rule)?
+        .into_iter()
+        .map(|term| term.literal)
+        .collect()
+}
+
+pub fn rule_search_from_literal_terms(terms: &[String]) -> (String, bool) {
+    let mut seen = HashSet::new();
+    let mut literal_terms = Vec::new();
+
+    for term in terms {
+        let literal = normalize_literal_text(term);
+        if literal.is_empty() || !seen.insert(literal.to_lowercase()) {
+            continue;
+        }
+        literal_terms.push(literal_rule_term(&literal));
+    }
+
+    match literal_terms.as_slice() {
+        [] => (String::new(), false),
+        [term] => (term.literal.clone().unwrap_or_default(), false),
+        terms => (combined_rule_search(terms), true),
+    }
+}
+
 pub fn combine_editable_rules(rules: &[EditableRule]) -> RuleCombineReport {
     let before_count = rules.len();
     let mut combined_groups = 0;
@@ -178,6 +212,55 @@ pub fn combine_editable_rules(rules: &[EditableRule]) -> RuleCombineReport {
         before_count,
         after_count,
         combined_groups,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn rule(search: &str, is_regex: bool) -> EditableRule {
+        EditableRule {
+            search: search.to_string(),
+            is_regex,
+            ..EditableRule::new_default()
+        }
+    }
+
+    #[test]
+    fn editable_rule_literal_terms_reads_plain_text() {
+        assert_eq!(
+            editable_rule_literal_terms(&rule("  grocery   store  ", false)),
+            Some(vec!["grocery store".to_string()])
+        );
+    }
+
+    #[test]
+    fn editable_rule_literal_terms_reads_combined_literal_regex() {
+        assert_eq!(
+            editable_rule_literal_terms(&rule(r"(?:alpha|beta\s+shop)", true)),
+            Some(vec!["alpha".to_string(), "beta shop".to_string()])
+        );
+    }
+
+    #[test]
+    fn rule_search_from_literal_terms_keeps_single_term_plain() {
+        assert_eq!(
+            rule_search_from_literal_terms(&["  grocery  store  ".to_string()]),
+            ("grocery store".to_string(), false)
+        );
+    }
+
+    #[test]
+    fn rule_search_from_literal_terms_builds_regex_for_multiple_terms() {
+        assert_eq!(
+            rule_search_from_literal_terms(&[
+                "grocery store".to_string(),
+                "GROCERY STORE".to_string(),
+                "pet shop".to_string(),
+            ]),
+            (r"(?:grocery\s+store|pet\s+shop)".to_string(), true)
+        );
     }
 }
 

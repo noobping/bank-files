@@ -45,15 +45,16 @@ fn connect_header_add_action(actions: &ManagementDialogActions<'_>) {
                 &status,
                 &filter_entry,
             ),
-            _ => show_new_rule_dialog(
-                &management_dialog,
-                &rules_list,
-                &rules_forms,
-                &rules_scroll,
-                &status,
-                &filter_entry,
-                &advanced_autofill,
-            ),
+            _ => show_new_rule_dialog(NewRuleDialogRequest {
+                parent: &management_dialog,
+                container: &rules_list,
+                forms: &rules_forms,
+                scrolled_window: &rules_scroll,
+                status: &status,
+                filter_entry: &filter_entry,
+                advanced_autofill: &advanced_autofill,
+                advanced_features: ui_handles.advanced_features.get(),
+            }),
         });
 }
 
@@ -65,17 +66,19 @@ fn connect_rule_add_action(actions: &ManagementDialogActions<'_>) {
     let status = actions.status.clone();
     let filter_entry = actions.filter_entry.clone();
     let advanced_autofill = Rc::clone(&actions.ui_handles.advanced_autofill);
+    let ui_handles = Rc::clone(actions.ui_handles);
 
     actions.add_rule_row.connect_activated(move |_| {
-        show_new_rule_dialog(
-            &management_dialog,
-            &rules_list,
-            &rules_forms,
-            &rules_scroll,
-            &status,
-            &filter_entry,
-            &advanced_autofill,
-        );
+        show_new_rule_dialog(NewRuleDialogRequest {
+            parent: &management_dialog,
+            container: &rules_list,
+            forms: &rules_forms,
+            scrolled_window: &rules_scroll,
+            status: &status,
+            filter_entry: &filter_entry,
+            advanced_autofill: &advanced_autofill,
+            advanced_features: ui_handles.advanced_features.get(),
+        });
     });
 }
 

@@ -15,6 +15,8 @@ fn ui_resources_build_expected_objects() {
         "management-dialog.ui",
         "main-window.ui",
         "operation-queue-dialog.ui",
+        "partial-load-notice.ui",
+        "rule-search-chips.ui",
         "settings-dialog.ui",
         "shortcuts-dialog.ui",
         "status-bar.ui",
@@ -52,6 +54,18 @@ fn ui_resources_build_expected_objects() {
         &partial_load,
         "partial_load_notice_reload_button",
         "partial-load-notice.ui",
+    );
+
+    let rule_search_chips = builder_from_resource("rule-search-chips.ui");
+    assert_object::<adw::WrapBox>(
+        &rule_search_chips,
+        "rule_search_chips_wrap",
+        "rule-search-chips.ui",
+    );
+    assert_object::<adw::EntryRow>(
+        &rule_search_chips,
+        "rule_search_chips_entry",
+        "rule-search-chips.ui",
     );
 
     let shortcuts = builder_from_resource("shortcuts-dialog.ui");

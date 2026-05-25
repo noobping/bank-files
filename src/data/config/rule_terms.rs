@@ -27,7 +27,7 @@ pub(super) fn mergeable_rule_terms(rule: &EditableRule) -> Option<Vec<MergeableR
         .collect()
 }
 
-fn literal_rule_term(literal: &str) -> MergeableRuleTerm {
+pub(super) fn literal_rule_term(literal: &str) -> MergeableRuleTerm {
     let literal = normalize_literal_text(literal);
     MergeableRuleTerm {
         pattern: literal_regex_pattern(&literal),
@@ -41,8 +41,7 @@ fn regex_rule_term(pattern: &str) -> Option<MergeableRuleTerm> {
     if pattern.is_empty() || contains_unsupported_inline_construct(pattern) {
         return None;
     }
-    let literal =
-        validation::unescape_regex_literal(pattern).map(|literal| normalize_literal_text(&literal));
+    let literal = literal_from_regex_term(pattern).map(|literal| normalize_literal_text(&literal));
     let dedupe_key = literal
         .as_ref()
         .map(|literal| format!("literal:{}", literal.to_lowercase()))
@@ -53,6 +52,36 @@ fn regex_rule_term(pattern: &str) -> Option<MergeableRuleTerm> {
         dedupe_key,
         literal,
     })
+}
+
+fn literal_from_regex_term(pattern: &str) -> Option<String> {
+    let mut literal = String::new();
+    let mut chars = pattern.chars().peekable();
+
+    while let Some(ch) = chars.next() {
+        if ch == '\\' {
+            if chars.peek() == Some(&'s') {
+                chars.next();
+                if chars.next() != Some('+') {
+                    return None;
+                }
+                literal.push(' ');
+                continue;
+            }
+            let escaped = chars.next()?;
+            if validation::is_regex_meta(escaped) || escaped == '\\' {
+                literal.push(escaped);
+            } else {
+                return None;
+            }
+        } else if validation::is_regex_meta(ch) {
+            return None;
+        } else {
+            literal.push(ch);
+        }
+    }
+
+    Some(literal)
 }
 
 fn mergeable_regex_body(mut pattern: &str) -> &str {
@@ -186,7 +215,7 @@ fn contains_unsupported_inline_construct(pattern: &str) -> bool {
     false
 }
 
-fn normalize_literal_text(input: &str) -> String {
+pub(super) fn normalize_literal_text(input: &str) -> String {
     input.split_whitespace().collect::<Vec<_>>().join(" ")
 }
 

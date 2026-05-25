@@ -29,6 +29,7 @@ fn connect_group_rules_action(
     let filter_entry = actions.filter_entry.clone();
     let status = actions.status.clone();
     let advanced_autofill = Rc::clone(&actions.ui_handles.advanced_autofill);
+    let advanced_features = actions.ui_handles.advanced_features.get();
     let bulk_actions_for_group = bulk_actions.clone();
 
     bulk_actions.group_rules.connect_activate(move |_, _| {
@@ -63,6 +64,7 @@ fn connect_group_rules_action(
                 &rules_forms,
                 report.rules,
                 &advanced_autofill,
+                advanced_features,
                 &filter_entry,
                 &rules_scroll,
             );
@@ -85,6 +87,7 @@ fn connect_combine_rules_action(
     let filter_entry = actions.filter_entry.clone();
     let status = actions.status.clone();
     let advanced_autofill = Rc::clone(&actions.ui_handles.advanced_autofill);
+    let advanced_features = actions.ui_handles.advanced_features.get();
     let bulk_actions_for_combine = bulk_actions.clone();
 
     bulk_actions.combine_rules.connect_activate(move |_, _| {
@@ -118,6 +121,7 @@ fn connect_combine_rules_action(
                 &rules_forms,
                 report.rules,
                 &advanced_autofill,
+                advanced_features,
                 &filter_entry,
                 &rules_scroll,
             );
@@ -204,13 +208,21 @@ fn replace_rule_forms(
     rules_forms: &Rc<RefCell<Vec<RuleForm>>>,
     rules: Vec<EditableRule>,
     advanced_autofill: &Rc<Cell<bool>>,
+    advanced_features: bool,
     filter_entry: &gtk::SearchEntry,
     rules_scroll: &gtk::ScrolledWindow,
 ) {
     ui::clear_box(rules_list);
     rules_forms.borrow_mut().clear();
     for rule in rules {
-        append_rule_form(rules_list, rules_forms, rule, true, advanced_autofill);
+        append_rule_form(
+            rules_list,
+            rules_forms,
+            rule,
+            true,
+            advanced_autofill,
+            advanced_features,
+        );
     }
     filter_rule_forms(&filter_entry.text(), &rules_forms.borrow());
 

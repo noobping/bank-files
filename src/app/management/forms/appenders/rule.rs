@@ -13,6 +13,7 @@ pub(in crate::app) fn append_rule_form(
     rule: EditableRule,
     persisted: bool,
     advanced_autofill: &Rc<Cell<bool>>,
+    advanced_features: bool,
 ) {
     let original_direction = persisted
         .then(|| BudgetDirection::from_config(&rule.direction))
@@ -46,6 +47,8 @@ pub(in crate::app) fn append_rule_form(
         .active(rule.is_regex)
         .valign(gtk::Align::Center)
         .build();
+    let search_chips_editor =
+        (!advanced_features).then(|| rule_search_chips_editor(&rule, &search, &is_regex));
     let category = ui::text_combo(&rule.category, editable_category_values());
     let budget_code = ui::text_combo(&rule.budget_code, editable_budget_code_values());
     let direction = combo_from_options(
@@ -72,17 +75,23 @@ pub(in crate::app) fn append_rule_form(
     let amount_max = entry(&rule.amount_max, "Optional");
     let notes = entry(&rule.notes, "Note");
 
-    add_labeled(&grid, 0, "Active", &active);
-    add_labeled(&grid, 1, "Priority", &priority);
-    add_labeled(&grid, 2, "Field", &field);
-    add_labeled(&grid, 3, "Search Text", &search_area);
-    add_labeled(&grid, 4, "Regex", &is_regex);
-    add_labeled(&grid, 5, "Category", &category);
-    add_labeled(&grid, 6, "Budget code", &budget_code);
-    add_labeled(&grid, 7, "Direction", &direction);
-    add_labeled(&grid, 8, "Min amount", &amount_min);
-    add_labeled(&grid, 9, "Max amount", &amount_max);
-    add_labeled(&grid, 10, "Note", &notes);
+    if advanced_features {
+        add_labeled(&grid, 0, "Active", &active);
+        add_labeled(&grid, 1, "Priority", &priority);
+        add_labeled(&grid, 2, "Field", &field);
+        add_labeled(&grid, 3, "Search Text", &search_area);
+        add_labeled(&grid, 4, "Regex", &is_regex);
+        add_labeled(&grid, 5, "Category", &category);
+        add_labeled(&grid, 6, "Budget code", &budget_code);
+        add_labeled(&grid, 7, "Direction", &direction);
+        add_labeled(&grid, 8, "Min amount", &amount_min);
+        add_labeled(&grid, 9, "Max amount", &amount_max);
+        add_labeled(&grid, 10, "Note", &notes);
+    } else if let Some(editor) = &search_chips_editor {
+        add_labeled(&grid, 0, "Search Text", &editor.container);
+        add_labeled(&grid, 1, "Category", &category);
+        add_labeled(&grid, 2, "Note", &notes);
+    }
     attach_details_grid(&card, &grid);
 
     let update_summary: Rc<dyn Fn()> = {
@@ -111,6 +120,7 @@ pub(in crate::app) fn append_rule_form(
                     direction: &direction,
                     amount_min: &amount_min,
                     amount_max: &amount_max,
+                    advanced_features,
                 }),
             );
         })

@@ -78,6 +78,7 @@ fn render_rule_forms_batch(render: &mut ManagementFormsRender, remaining: &mut u
                     rule,
                     true,
                     &render.load.advanced_autofill,
+                    render.load.advanced_features,
                 );
                 *remaining -= 1;
             }

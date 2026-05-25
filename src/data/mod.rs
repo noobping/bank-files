@@ -27,10 +27,11 @@ mod validation;
 pub use budget_code::generated_budget_code_for_category;
 pub use config::{
     archive_configuration, combine_editable_rules, configuration_archive_exists,
-    group_editable_rules_for_combining, load_editable_aliases, load_editable_budgets,
-    load_editable_rules, orphaned_rules, remove_orphaned_rules, restore_configuration_archive,
-    restore_default_configuration, restore_empty_configuration, upsert_editable_alias,
-    write_editable_aliases, write_editable_budgets, write_editable_rules, OrphanedRule,
+    editable_rule_literal_terms, group_editable_rules_for_combining, load_editable_aliases,
+    load_editable_budgets, load_editable_rules, orphaned_rules, remove_orphaned_rules,
+    restore_configuration_archive, restore_default_configuration, restore_empty_configuration,
+    rule_search_from_literal_terms, upsert_editable_alias, write_editable_aliases,
+    write_editable_budgets, write_editable_rules, OrphanedRule,
 };
 pub use copy::{copy_files_to_app_storage, copy_uris_to_app_storage};
 pub use export::{export_transactions_to_path, remove_inbox_file};

@@ -1,15 +1,28 @@
 use super::shared::{new_record_dialog, scroll_to_bottom};
 use super::*;
 
-pub(in crate::app) fn show_new_rule_dialog(
-    parent: &adw::Dialog,
-    container: &gtk::Box,
-    forms: &Rc<RefCell<Vec<RuleForm>>>,
-    scrolled_window: &gtk::ScrolledWindow,
-    status: &gtk::Label,
-    filter_entry: &gtk::SearchEntry,
-    advanced_autofill: &Rc<Cell<bool>>,
-) {
+pub(in crate::app) struct NewRuleDialogRequest<'a> {
+    pub(in crate::app) parent: &'a adw::Dialog,
+    pub(in crate::app) container: &'a gtk::Box,
+    pub(in crate::app) forms: &'a Rc<RefCell<Vec<RuleForm>>>,
+    pub(in crate::app) scrolled_window: &'a gtk::ScrolledWindow,
+    pub(in crate::app) status: &'a gtk::Label,
+    pub(in crate::app) filter_entry: &'a gtk::SearchEntry,
+    pub(in crate::app) advanced_autofill: &'a Rc<Cell<bool>>,
+    pub(in crate::app) advanced_features: bool,
+}
+
+pub(in crate::app) fn show_new_rule_dialog(request: NewRuleDialogRequest<'_>) {
+    let NewRuleDialogRequest {
+        parent,
+        container,
+        forms,
+        scrolled_window,
+        status,
+        filter_entry,
+        advanced_autofill,
+        advanced_features,
+    } = request;
     let rule = EditableRule::new_default();
     let (dialog, page, add_button, dialog_status) = new_record_dialog(
         "New Rule",
@@ -35,11 +48,15 @@ pub(in crate::app) fn show_new_rule_dialog(
         ],
         &rule.field,
     );
-    let search = ui::text_combo("", editable_rule_search_values());
+    let search = rule_search_text_view("");
+    let search_area = rule_search_text_area(&search);
+    let search_combo = advanced_features.then(|| ui::text_combo("", editable_rule_search_values()));
     let is_regex = gtk::Switch::builder()
         .active(false)
         .valign(gtk::Align::Center)
         .build();
+    let search_chips_editor =
+        (!advanced_features).then(|| rule_search_chips_editor(&rule, &search, &is_regex));
     let category = ui::text_combo("", editable_category_values());
     let budget_code = ui::text_combo(&rule.budget_code, editable_budget_code_values());
     let direction = combo_from_options(
@@ -62,20 +79,34 @@ pub(in crate::app) fn show_new_rule_dialog(
     let amount_max = entry("", "Optional");
     let notes = entry("", "Note");
 
-    add_labeled(&grid, 0, "Active", &active);
-    add_labeled(&grid, 1, "Priority", &priority);
-    add_labeled(&grid, 2, "Field", &field);
-    add_labeled(&grid, 3, "Search Text", &search);
-    add_labeled(&grid, 4, "Regex", &is_regex);
-    add_labeled(&grid, 5, "Category", &category);
-    add_labeled(&grid, 6, "Budget code", &budget_code);
-    add_labeled(&grid, 7, "Direction", &direction);
-    add_labeled(&grid, 8, "Min amount", &amount_min);
-    add_labeled(&grid, 9, "Max amount", &amount_max);
-    add_labeled(&grid, 10, "Note", &notes);
+    if advanced_features {
+        add_labeled(&grid, 0, "Active", &active);
+        add_labeled(&grid, 1, "Priority", &priority);
+        add_labeled(&grid, 2, "Field", &field);
+        if let Some(search_combo) = &search_combo {
+            add_labeled(&grid, 3, "Search Text", search_combo);
+        } else {
+            add_labeled(&grid, 3, "Search Text", &search_area);
+        }
+        add_labeled(&grid, 4, "Regex", &is_regex);
+        add_labeled(&grid, 5, "Category", &category);
+        add_labeled(&grid, 6, "Budget code", &budget_code);
+        add_labeled(&grid, 7, "Direction", &direction);
+        add_labeled(&grid, 8, "Min amount", &amount_min);
+        add_labeled(&grid, 9, "Max amount", &amount_max);
+        add_labeled(&grid, 10, "Note", &notes);
+    } else if let Some(editor) = &search_chips_editor {
+        add_labeled(&grid, 0, "Search Text", &editor.container);
+        add_labeled(&grid, 1, "Category", &category);
+        add_labeled(&grid, 2, "Note", &notes);
+    }
     page.append(&grid);
     page.append(&dialog_status);
-    dialog.set_focus(Some(&search));
+    if let Some(editor) = &search_chips_editor {
+        dialog.set_focus(Some(&editor.entry));
+    } else {
+        dialog.set_focus(Some(&search));
+    }
 
     let container_for_add = container.clone();
     let forms_for_add = Rc::clone(forms);
@@ -85,11 +116,20 @@ pub(in crate::app) fn show_new_rule_dialog(
     let filter_entry_for_add = filter_entry.clone();
     let advanced_autofill_for_add = Rc::clone(advanced_autofill);
     add_button.connect_clicked(move |_| {
-        let search_text = ui::combo_text(&search);
+        let search_text = search_combo
+            .as_ref()
+            .map(ui::combo_text)
+            .unwrap_or_else(|| rule_search_text(&search));
         let category_text = ui::combo_text(&category);
         if search_text.is_empty() {
             dialog_status.set_text(&tr("Enter search text first."));
-            search.grab_focus();
+            if let Some(editor) = &search_chips_editor {
+                editor.focus_entry();
+            } else if let Some(search_combo) = &search_combo {
+                search_combo.grab_focus();
+            } else {
+                search.grab_focus();
+            }
             return;
         }
         if category_text.is_empty() {
@@ -117,6 +157,7 @@ pub(in crate::app) fn show_new_rule_dialog(
             rule,
             false,
             &advanced_autofill_for_add,
+            advanced_features,
         );
         filter_rule_forms(&filter_entry_for_add.text(), &forms_for_add.borrow());
         status_for_add.set_text(&tr("New rule added. Press Save to keep it."));

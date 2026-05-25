@@ -18,8 +18,9 @@ pub(in crate::data) use files::{
     restore_empty_configuration_in,
 };
 pub use rules::{
-    combine_editable_rules, group_editable_rules_for_combining, load_editable_rules,
-    orphaned_rules, remove_orphaned_rules, write_editable_rules, OrphanedRule,
+    combine_editable_rules, editable_rule_literal_terms, group_editable_rules_for_combining,
+    load_editable_rules, orphaned_rules, remove_orphaned_rules, rule_search_from_literal_terms,
+    write_editable_rules, OrphanedRule,
 };
 
 pub(super) const CONFIG_FILE_NAMES: [&str; 3] =

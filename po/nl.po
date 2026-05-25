@@ -685,6 +685,9 @@ msgstr "Alle transacties"
 msgid "Search Text"
 msgstr "Zoektekst"
 
+msgid "Add search text"
+msgstr "Zoektekst toevoegen"
+
 msgid "Category"
 msgstr "Categorie"
 

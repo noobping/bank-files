@@ -141,4 +141,12 @@ mod tests {
             "embedded partial load notice UI should be available",
         );
     }
+
+    #[test]
+    fn embedded_rule_search_chips_ui_is_available() {
+        assert_embedded_resource(
+            "ui/rule-search-chips.ui",
+            "embedded rule search chips UI should be available",
+        );
+    }
 }
