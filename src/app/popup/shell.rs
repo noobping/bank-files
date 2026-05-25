@@ -2,6 +2,7 @@ use super::*;
 
 const LIST_PAGE: &str = "list";
 const FORM_PAGE: &str = "form";
+const PREFERENCES_DIALOG_MAX_HEIGHT: i32 = 720;
 
 struct PopupTemplateIds {
     resource: &'static str,
@@ -180,6 +181,12 @@ pub(in crate::app) fn build_settings_dialog_shell(
 
 pub(in crate::app) fn settings_dialog_scroll(child: &impl IsA<gtk::Widget>) -> gtk::ScrolledWindow {
     ui::action_dialog_scroll(child)
+}
+
+pub(in crate::app) fn preferences_dialog_scroll(
+    child: &impl IsA<gtk::Widget>,
+) -> gtk::ScrolledWindow {
+    ui::action_dialog_scroll_with_limits(child, 0, PREFERENCES_DIALOG_MAX_HEIGHT)
 }
 
 pub(in crate::app) fn settings_content_dialog(

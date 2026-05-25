@@ -88,7 +88,7 @@ pub(in crate::app) fn show_preferences_dialog(
         search_groups.push(search_group);
     }
 
-    root.append(&settings_dialog_scroll(&page));
+    root.append(&preferences_dialog_scroll(&page));
 
     let status_bar = build_status_bar();
     connect_embedded_status_bar(parent, &status_bar, Rc::clone(&ui.status_autohide));

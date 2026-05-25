@@ -9,5 +9,5 @@ pub(in crate::app) use search::{
 };
 pub(in crate::app) use shell::{
     build_action_dialog_shell, build_action_form_dialog, build_settings_dialog_shell,
-    settings_content_dialog, settings_dialog_scroll,
+    preferences_dialog_scroll, settings_content_dialog, settings_dialog_scroll,
 };
