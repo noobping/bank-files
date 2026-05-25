@@ -185,7 +185,6 @@ pub fn more_list_row(title: &str, tooltip: &str) -> MoreListRow {
     row.set_tooltip_text(Some(&gettext(tooltip)));
     row.set_activatable(true);
     row.add_prefix(&gtk::Image::from_icon_name("view-more-symbolic"));
-    row.add_suffix(&gtk::Image::from_icon_name("go-next-symbolic"));
     container.add(&row);
 
     MoreListRow { container, row }

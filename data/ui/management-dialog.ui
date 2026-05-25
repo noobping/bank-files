@@ -224,11 +224,6 @@
                                     <property name="icon-name">list-add-symbolic</property>
                                   </object>
                                 </child>
-                                <child type="suffix">
-                                  <object class="GtkImage">
-                                    <property name="icon-name">go-next-symbolic</property>
-                                  </object>
-                                </child>
                               </object>
                             </child>
                           </object>
@@ -341,11 +336,6 @@
                                 <child type="prefix">
                                   <object class="GtkImage">
                                     <property name="icon-name">list-add-symbolic</property>
-                                  </object>
-                                </child>
-                                <child type="suffix">
-                                  <object class="GtkImage">
-                                    <property name="icon-name">go-next-symbolic</property>
                                   </object>
                                 </child>
                               </object>
@@ -463,11 +453,6 @@
                                 <child type="prefix">
                                   <object class="GtkImage">
                                     <property name="icon-name">list-add-symbolic</property>
-                                  </object>
-                                </child>
-                                <child type="suffix">
-                                  <object class="GtkImage">
-                                    <property name="icon-name">go-next-symbolic</property>
                                   </object>
                                 </child>
                               </object>

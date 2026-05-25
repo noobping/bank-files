@@ -100,7 +100,6 @@ pub(in crate::app::transactions::common) fn show_transaction_budget_code_dialog(
             .build();
         more_row.set_activatable(true);
         more_row.add_prefix(&gtk::Image::from_icon_name("emblem-system-symbolic"));
-        more_row.add_suffix(&gtk::Image::from_icon_name("go-next-symbolic"));
         advanced_group.add(&more_row);
         list_page.add(&advanced_group);
 
