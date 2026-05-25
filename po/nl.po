@@ -2672,8 +2672,8 @@ msgstr "budget(s) omgezet naar jaarlijkse waarden"
 msgid "budget(s) filled with monthly and yearly values"
 msgstr "budget(s) aangevuld met maandelijkse en jaarlijkse waarden"
 
-msgid "Sum {sum}; avg {average}; modal {modal}."
-msgstr "Som {sum}; gem. {average}; modus {modal}."
+msgid "Balance {balance}; income {income}; expenses {expenses}; avg {average}; largest income {largest_income}; largest expense {largest_expense}; modal {modal}."
+msgstr "Saldo {balance}; inkomsten {income}; uitgaven {expenses}; gem. {average}; hoogste bijschrijving {largest_income}; hoogste afschrijving {largest_expense}; modus {modal}."
 
 msgid "none"
 msgstr "geen"
@@ -3419,8 +3419,8 @@ msgstr "Tijdelijke voorbeeldtransacties"
 msgid "Search fake transactions"
 msgstr "Neptransacties zoeken"
 
-msgid " Sum {sum}; avg {average}; modal {modal}."
-msgstr " Som {sum}; gem. {average}; modus {modal}."
+msgid " Balance {balance}; income {income}; expenses {expenses}; avg {average}; largest income {largest_income}; largest expense {largest_expense}; modal {modal}."
+msgstr " Saldo {balance}; inkomsten {income}; uitgaven {expenses}; gem. {average}; hoogste bijschrijving {largest_income}; hoogste afschrijving {largest_expense}; modus {modal}."
 
 msgid "Back to fake transactions"
 msgstr "Terug naar neptransacties"

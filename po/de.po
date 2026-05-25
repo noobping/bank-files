@@ -2672,8 +2672,8 @@ msgstr "Budget(s) in jährliche Werte umgewandelt"
 msgid "budget(s) filled with monthly and yearly values"
 msgstr "Budget(s) mit monatlichen und jährlichen Werten ergänzt"
 
-msgid "Sum {sum}; avg {average}; modal {modal}."
-msgstr "Summe {sum}; Durchschn. {average}; Modus {modal}."
+msgid "Balance {balance}; income {income}; expenses {expenses}; avg {average}; largest income {largest_income}; largest expense {largest_expense}; modal {modal}."
+msgstr "Saldo {balance}; Einnahmen {income}; Ausgaben {expenses}; Durchschn. {average}; höchste Einnahme {largest_income}; höchste Ausgabe {largest_expense}; Modalwert {modal}."
 
 msgid "none"
 msgstr "keiner"
@@ -3419,8 +3419,8 @@ msgstr "Temporäre Vorschautransaktionen"
 msgid "Search fake transactions"
 msgstr "Scheintransaktionen suchen"
 
-msgid " Sum {sum}; avg {average}; modal {modal}."
-msgstr " Summe {sum}; Durchschn. {average}; Modalwert {modal}."
+msgid " Balance {balance}; income {income}; expenses {expenses}; avg {average}; largest income {largest_income}; largest expense {largest_expense}; modal {modal}."
+msgstr " Saldo {balance}; Einnahmen {income}; Ausgaben {expenses}; Durchschn. {average}; höchste Einnahme {largest_income}; höchste Ausgabe {largest_expense}; Modalwert {modal}."
 
 msgid "Back to fake transactions"
 msgstr "Zurück zu Scheintransaktionen"

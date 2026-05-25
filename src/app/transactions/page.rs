@@ -119,8 +119,12 @@ fn transaction_page_subtitle(
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 struct TransactionResultStats {
-    sum: Decimal,
+    income: Decimal,
+    expenses: Decimal,
+    balance: Decimal,
     average: Decimal,
+    largest_income: Option<Decimal>,
+    largest_expense: Option<Decimal>,
     modal: Option<Decimal>,
 }
 
@@ -130,15 +134,31 @@ fn transaction_result_stats(transactions: &[&Transaction]) -> Option<Transaction
         return None;
     }
 
-    let sum = transactions
-        .iter()
-        .map(|transaction| transaction.amount)
-        .sum::<Decimal>();
+    let mut totals = analytics::Totals::default();
+    let mut largest_income = None;
+    let mut largest_expense = None;
+    for transaction in transactions {
+        totals.add(transaction);
+        if transaction.amount > Decimal::ZERO {
+            largest_income = Some(max_optional(largest_income, transaction.amount));
+        } else if transaction.amount < Decimal::ZERO {
+            largest_expense = Some(max_optional(largest_expense, -transaction.amount));
+        }
+    }
+
     Some(TransactionResultStats {
-        sum,
-        average: sum / Decimal::from(count as u64),
+        income: totals.income,
+        expenses: totals.expenses,
+        balance: totals.balance,
+        average: totals.balance / Decimal::from(count as u64),
+        largest_income,
+        largest_expense,
         modal: modal_transaction_amount(transactions),
     })
+}
+
+fn max_optional(current: Option<Decimal>, next: Decimal) -> Decimal {
+    current.map_or(next, |current| current.max(next))
 }
 
 fn modal_transaction_amount(transactions: &[&Transaction]) -> Option<Decimal> {
@@ -159,10 +179,20 @@ fn modal_transaction_amount(transactions: &[&Transaction]) -> Option<Decimal> {
 
 fn transaction_result_stats_text(stats: TransactionResultStats) -> String {
     trf(
-        " Sum {sum}; avg {average}; modal {modal}.",
+        " Balance {balance}; income {income}; expenses {expenses}; avg {average}; largest income {largest_income}; largest expense {largest_expense}; modal {modal}.",
         &[
-            ("sum", signed_money(stats.sum)),
+            ("balance", signed_money(stats.balance)),
+            ("income", money(stats.income)),
+            ("expenses", money(stats.expenses)),
             ("average", signed_money(stats.average)),
+            (
+                "largest_income",
+                stats.largest_income.map(money).unwrap_or_else(|| tr("none")),
+            ),
+            (
+                "largest_expense",
+                stats.largest_expense.map(money).unwrap_or_else(|| tr("none")),
+            ),
             (
                 "modal",
                 stats.modal.map(signed_money).unwrap_or_else(|| tr("none")),
@@ -198,15 +228,19 @@ mod tests {
     }
 
     #[test]
-    fn transaction_result_stats_sum_average_and_modal_amount() {
+    fn transaction_result_stats_include_balance_and_useful_amounts() {
         let transactions = [tx(10), tx(-5), tx(-5)];
         let refs = transactions.iter().collect::<Vec<_>>();
 
         assert_eq!(
             transaction_result_stats(&refs),
             Some(TransactionResultStats {
-                sum: Decimal::ZERO,
+                income: Decimal::new(10, 0),
+                expenses: Decimal::new(10, 0),
+                balance: Decimal::ZERO,
                 average: Decimal::ZERO,
+                largest_income: Some(Decimal::new(10, 0)),
+                largest_expense: Some(Decimal::new(5, 0)),
                 modal: Some(Decimal::new(-5, 0)),
             })
         );
@@ -218,6 +252,16 @@ mod tests {
         let refs = transactions.iter().collect::<Vec<_>>();
 
         assert_eq!(transaction_result_stats(&refs).unwrap().modal, None);
+    }
+
+    #[test]
+    fn transaction_result_stats_have_no_largest_values_for_zero_only_results() {
+        let transactions = [tx(0), tx(0)];
+        let refs = transactions.iter().collect::<Vec<_>>();
+        let stats = transaction_result_stats(&refs).unwrap();
+
+        assert_eq!(stats.largest_income, None);
+        assert_eq!(stats.largest_expense, None);
     }
 
     #[test]
