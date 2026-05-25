@@ -103,68 +103,75 @@ fn transaction_details_table(
     content.set_margin_start(12);
     content.set_margin_end(12);
 
-    let details = gtk::Box::new(gtk::Orientation::Vertical, 8);
-    details.set_hexpand(true);
-
-    let mut rows = vec![
-        ("Date", tx.date.to_string()),
-        ("Amount", signed_money(tx.amount)),
-        ("Counterparty", tx.counterparty.clone()),
-        ("Description", tx.description.clone()),
-        ("Tags", tx.tags.clone()),
-        ("Category", tx.category.clone()),
-    ];
-    if ui_handles.advanced_features.get() {
-        rows.push(("Budget code", tx.budget_code.clone()));
-    }
-    if crate::rules::transaction_classification_is_auto_detected(tx) {
-        rows.push(("Classification", tr("Auto detected")));
-    }
-    if let Some(rule_match) = &tx.rule_match {
-        rows.push((
-            "Rule match",
-            rule_match_summary(rule_match, ui_handles.advanced_features.get()),
-        ));
-    }
-    rows.extend([
-        ("Account", tx.account.clone()),
-        ("Transaction ID", tx.transaction_id.clone()),
-        ("Currency", tx.currency.clone()),
-        ("Source file", tx.source_file.clone()),
-        ("Notes", tx.notes.clone()),
-    ]);
-
-    for (label, value) in rows {
-        details.append(&transaction_detail_row(label, &value));
-    }
-
+    let details = transaction_details_grid(&transaction_detail_rows(
+        tx,
+        ui_handles.advanced_features.get(),
+    ));
     content.append(&details);
     content.append(&transaction_detail_actions(tx, state, ui_handles));
     content
 }
 
-fn transaction_detail_row(label: &str, value: &str) -> gtk::Box {
-    let row = gtk::Box::new(gtk::Orientation::Vertical, 2);
-    row.set_hexpand(true);
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(in crate::app::transactions::common) struct TransactionDetailRow {
+    pub(in crate::app::transactions::common) label: &'static str,
+    pub(in crate::app::transactions::common) value: String,
+}
 
-    let label = gtk::Label::new(Some(&tr(label)));
-    label.add_css_class("caption");
-    label.add_css_class("dim-label");
-    label.set_xalign(0.0);
-    row.append(&label);
+pub(in crate::app::transactions::common) fn transaction_detail_rows(
+    tx: &Transaction,
+    advanced_features: bool,
+) -> Vec<TransactionDetailRow> {
+    let mut rows = Vec::new();
+    push_detail_row(&mut rows, "Date", tx.date.to_string());
+    push_detail_row(&mut rows, "Amount", signed_money(tx.amount));
+    push_detail_row(&mut rows, "Counterparty", tx.counterparty.clone());
+    if !same_detail_value(&tx.description, &tx.counterparty) {
+        push_detail_row(&mut rows, "Description", tx.description.clone());
+    }
+    push_detail_row(&mut rows, "Tags", tx.tags.clone());
+    push_detail_row(&mut rows, "Category", tx.category.clone());
+    if advanced_features {
+        push_detail_row(&mut rows, "Budget code", tx.budget_code.clone());
+    }
+    if crate::rules::transaction_classification_is_auto_detected(tx) {
+        push_detail_row(&mut rows, "Classification", tr("Auto detected"));
+    }
+    if let Some(rule_match) = &tx.rule_match {
+        push_detail_row(
+            &mut rows,
+            "Rule match",
+            rule_match_summary(rule_match, advanced_features),
+        );
+    }
+    if advanced_features {
+        push_detail_row(&mut rows, "Account", tx.account.clone());
+        push_detail_row(&mut rows, "Transaction ID", tx.transaction_id.clone());
+        push_detail_row(&mut rows, "Currency", tx.currency.clone());
+        push_detail_row(&mut rows, "Source file", tx.source_file.clone());
+        push_detail_row(&mut rows, "Notes", tx.notes.clone());
+    }
+    rows
+}
 
-    let value = if value.trim().is_empty() {
-        tr("Not set")
-    } else {
-        value.trim().to_string()
-    };
-    let value = gtk::Label::new(Some(&value));
-    value.set_xalign(0.0);
-    value.set_hexpand(true);
-    value.set_selectable(true);
-    value.set_wrap(true);
-    value.set_wrap_mode(gtk::pango::WrapMode::WordChar);
-    row.append(&value);
+fn transaction_details_grid(rows: &[TransactionDetailRow]) -> gtk::Grid {
+    let grid = ui::form_grid();
+    for (index, row) in rows.iter().enumerate() {
+        let value = ui::selectable_wrapped_label(&row.value);
+        ui::add_labeled(&grid, index as i32, row.label, &value);
+    }
+    grid
+}
 
-    row
+fn push_detail_row(rows: &mut Vec<TransactionDetailRow>, label: &'static str, value: String) {
+    let value = value.trim().to_string();
+    if !value.is_empty() {
+        rows.push(TransactionDetailRow { label, value });
+    }
+}
+
+fn same_detail_value(left: &str, right: &str) -> bool {
+    let left = crate::util::normalize_key(left);
+    let right = crate::util::normalize_key(right);
+    !left.is_empty() && left == right
 }

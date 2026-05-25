@@ -113,3 +113,53 @@ fn transfer_undo_requires_matched_rule() {
     let with_match = visible_transaction_detail_actions(false, false, true, false, true);
     assert!(with_match.contains(&TransactionDetailAction::UndoTransfer));
 }
+
+fn detail_labels(rows: &[TransactionDetailRow]) -> Vec<&'static str> {
+    rows.iter().map(|row| row.label).collect()
+}
+
+#[test]
+fn simple_transaction_details_hide_advanced_empty_and_duplicate_fields() {
+    let mut transaction = tx(-20, "FOOD", "Groceries");
+    transaction.counterparty = "Corner Shop".to_string();
+    transaction.description = "corner shop".to_string();
+    transaction.account = "Checking".to_string();
+    transaction.transaction_id = "abc123".to_string();
+    transaction.notes = "Internal note".to_string();
+
+    let labels = detail_labels(&transaction_detail_rows(&transaction, false));
+
+    assert!(labels.contains(&"Date"));
+    assert!(labels.contains(&"Amount"));
+    assert!(labels.contains(&"Counterparty"));
+    assert!(labels.contains(&"Category"));
+    assert!(!labels.contains(&"Description"));
+    assert!(!labels.contains(&"Tags"));
+    assert!(!labels.contains(&"Budget code"));
+    assert!(!labels.contains(&"Account"));
+    assert!(!labels.contains(&"Transaction ID"));
+    assert!(!labels.contains(&"Currency"));
+    assert!(!labels.contains(&"Source file"));
+    assert!(!labels.contains(&"Notes"));
+}
+
+#[test]
+fn advanced_transaction_details_show_advanced_non_empty_fields() {
+    let mut transaction = tx(-20, "FOOD", "Groceries");
+    transaction.counterparty = "Corner Shop".to_string();
+    transaction.description = "Card purchase".to_string();
+    transaction.account = "Checking".to_string();
+    transaction.transaction_id = "abc123".to_string();
+    transaction.notes = "Internal note".to_string();
+
+    let labels = detail_labels(&transaction_detail_rows(&transaction, true));
+
+    assert!(labels.contains(&"Description"));
+    assert!(labels.contains(&"Budget code"));
+    assert!(labels.contains(&"Account"));
+    assert!(labels.contains(&"Transaction ID"));
+    assert!(labels.contains(&"Currency"));
+    assert!(labels.contains(&"Source file"));
+    assert!(labels.contains(&"Notes"));
+    assert!(!labels.contains(&"Tags"));
+}
