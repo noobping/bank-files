@@ -1387,27 +1387,6 @@ msgstr "Geplande uitgaven zijn samen {expenses}, maar deze periode heeft geen ge
 msgid "Check your budget"
 msgstr "Controleer je begroting"
 
-msgid "Transaction Patterns"
-msgstr "Transactiepatronen"
-
-msgid "Repeating payments, possible refunds, and bill splits detected from imported transactions."
-msgstr "Herhalende betalingen, mogelijke terugbetalingen en gedeelde rekeningen gevonden in geimporteerde transacties."
-
-msgid "Repeating {cadence} transaction"
-msgstr "Herhalende {cadence} transactie"
-
-msgid "Possible refund"
-msgstr "Mogelijke terugbetaling"
-
-msgid "Possible bill split"
-msgstr "Mogelijk gedeelde rekening"
-
-msgid "{count} transactions from {first} to {last}. Amount: {amount}."
-msgstr "{count} transacties van {first} tot {last}. Bedrag: {amount}."
-
-msgid "{count} transactions from {first} to {last}. Net effect: {net}."
-msgstr "{count} transacties van {first} tot {last}. Netto-effect: {net}."
-
 msgid "weekly"
 msgstr "wekelijkse"
 
@@ -1422,18 +1401,6 @@ msgstr "kwartaal"
 
 msgid "yearly"
 msgstr "jaarlijkse"
-
-msgid "{count} transactions total from {first} to {last}."
-msgstr "{count} transacties in totaal van {first} tot {last}."
-
-msgid "Values: {values}"
-msgstr "Waarden: {values}"
-
-msgid "{count} times {amount}"
-msgstr "{count} keer {amount}"
-
-msgid "Net effect: {net}."
-msgstr "Netto-effect: {net}."
 
 msgid "Tags"
 msgstr "Tags"
@@ -1480,47 +1447,17 @@ msgstr "Kon budgetten niet genereren: {error}"
 msgid "Generated from imported transactions over {count} imported months on {date}."
 msgstr "Gegenereerd uit geimporteerde transacties over {count} geimporteerde maanden op {date}."
 
-msgid "Generated from detected transfers."
-msgstr "Gegenereerd uit gedetecteerde overboekingen."
-
 msgid "Generated budget"
 msgstr "Gegenereerd budget"
-
-msgid "Show all transaction patterns"
-msgstr "Alle transactiepatronen tonen"
 
 msgid "Show Hidden"
 msgstr "Verborgen tonen"
 
-msgid "Show hidden transaction patterns"
-msgstr "Verborgen transactiepatronen tonen"
-
 msgid "Hidden"
 msgstr "Verborgen"
 
-msgid "Hide detected pattern"
-msgstr "Gevonden patroon verbergen"
-
-msgid "Reopen detected pattern"
-msgstr "Gevonden patroon heropenen"
-
-msgid "Pattern hidden. Use Show Hidden to reopen it."
-msgstr "Patroon verborgen. Gebruik Verborgen tonen om het te heropenen."
-
-msgid "Pattern reopened."
-msgstr "Patroon heropend."
-
-msgid "Could not update hidden pattern: {error}"
-msgstr "Kon verborgen patroon niet bijwerken: {error}"
-
-msgid "No transaction patterns detected yet. Import more transactions or adjust tags and categorization rules."
-msgstr "Nog geen transactiepatronen gevonden. Importeer meer transacties of pas tags en categorisatieregels aan."
-
 msgid "recurring"
 msgstr "terugkerende"
-
-msgid "Create rule from pattern"
-msgstr "Regel maken uit patroon"
 
 msgid "Create Rule"
 msgstr "Regel maken"
@@ -1528,14 +1465,8 @@ msgstr "Regel maken"
 msgid "Save rule"
 msgstr "Regel opslaan"
 
-msgid "Create a categorization rule from this detected transaction pattern."
-msgstr "Maak een categorisatieregel uit dit gevonden transactiepatroon."
-
 msgid "Changes are saved to rules.csv."
 msgstr "Wijzigingen worden opgeslagen in rules.csv."
-
-msgid "Generated from detected transaction pattern."
-msgstr "Gegenereerd uit gevonden transactiepatroon."
 
 msgid "Rule updated"
 msgstr "Regel bijgewerkt"
@@ -1563,21 +1494,6 @@ msgstr "Heeft regel nodig"
 
 msgid "Hide Refunded Transactions"
 msgstr "Terugbetaalde transacties verbergen"
-
-msgid "Exclude detected refunds and bill splits from normal views and totals."
-msgstr "Sluit gevonden terugbetalingen en gedeelde rekeningen uit van normale weergaven en totalen."
-
-msgid "{count} refund or bill-split transactions are hidden from normal views."
-msgstr "{count} terugbetalings- of gedeelde-rekeningtransacties zijn verborgen uit normale weergaven."
-
-msgid "{count} refund or bill-split transactions were detected. Enable Hide Refunded Transactions to exclude them from normal views."
-msgstr "{count} terugbetalings- of gedeelde-rekeningtransacties gevonden. Schakel Terugbetaalde transacties verbergen in om ze uit normale weergaven te sluiten."
-
-msgid "Hide Refunded Transactions enabled. Refunds and bill splits are excluded from normal views."
-msgstr "Terugbetaalde transacties verbergen ingeschakeld. Terugbetalingen en gedeelde rekeningen worden uitgesloten van normale weergaven."
-
-msgid "Hide Refunded Transactions disabled. Refunds and bill splits are included again."
-msgstr "Terugbetaalde transacties verbergen uitgeschakeld. Terugbetalingen en gedeelde rekeningen tellen weer mee."
 
 msgid "Applying default budgeting..."
 msgstr "Standaardbudgettering toepassen..."
@@ -1702,15 +1618,6 @@ msgstr "minder"
 msgid "more"
 msgstr "meer"
 
-msgid "Possible offsetting group"
-msgstr "Mogelijke verrekenende groep"
-
-msgid "Repeating payments, possible refunds, and fully offsetting groups detected from imported transactions."
-msgstr "Herhalende betalingen, mogelijke terugbetalingen en volledig verrekenende groepen gevonden in geïmporteerde transacties."
-
-msgid "Filtered out {count} refund or offsetting transactions because Hide Refunded Transactions is enabled."
-msgstr "{count} terugbetalings- of verrekenende transacties verborgen omdat Terugbetaalde transacties verbergen is ingeschakeld."
-
 msgid "Budget removed"
 msgstr "Budget verwijderd"
 
@@ -1762,9 +1669,6 @@ msgstr "Overboekingen"
 msgid "Possible transfer"
 msgstr "Mogelijke overboeking"
 
-msgid "Repeating payments, possible transfers, refunds, and fully offsetting groups detected from imported transactions."
-msgstr "Herhalende betalingen, mogelijke overboekingen, terugbetalingen en volledig verrekenende groepen gevonden in geïmporteerde transacties."
-
 msgid "Create rule"
 msgstr "Regel maken"
 
@@ -1798,12 +1702,6 @@ msgstr "Vergelijkbaar"
 msgid "Show similar transactions"
 msgstr "Toon vergelijkbare transacties"
 
-msgid "Find pattern"
-msgstr "Zoek patroon"
-
-msgid "Search Diagnostics for related transaction patterns"
-msgstr "Zoek in Diagnose naar gerelateerde transactiepatronen"
-
 msgid "Create a categorization rule from this transaction."
 msgstr "Maak een categorisatieregel van deze transactie."
 
@@ -1815,9 +1713,6 @@ msgstr "Gemaakt vanuit transactiedetail."
 
 msgid "Showing similar transactions."
 msgstr "Vergelijkbare transacties worden getoond."
-
-msgid "Searching Diagnostics for related patterns."
-msgstr "Diagnose zoekt naar gerelateerde patronen."
 
 msgid "Loading"
 msgstr "Laden"
@@ -1870,18 +1765,6 @@ msgstr "Wijzigingen opslaan..."
 msgid "Save canceled: the background task stopped unexpectedly."
 msgstr "Opslaan geannuleerd: de achtergrondtaak stopte onverwacht."
 
-msgid "{count} refund or offsetting transactions are hidden from normal views."
-msgstr "{count} terugbetalingen of verrekenende transacties zijn verborgen in normale weergaven."
-
-msgid "{count} refund or offsetting transactions were detected. Enable Hide Refunded Transactions to exclude them from normal views."
-msgstr "{count} terugbetalingen of verrekenende transacties gevonden. Schakel Terugbetaalde transacties verbergen in om ze uit normale weergaven te halen."
-
-msgid "Hide Refunded Transactions enabled. Detected refunds and offsetting groups are excluded from normal views."
-msgstr "Terugbetaalde transacties verbergen ingeschakeld. Gevonden terugbetalingen en verrekenende groepen worden uit normale weergaven gehaald."
-
-msgid "Hide Refunded Transactions disabled. Detected refunds and offsetting groups are included again."
-msgstr "Terugbetaalde transacties verbergen uitgeschakeld. Gevonden terugbetalingen en verrekenende groepen worden weer getoond."
-
 msgid "Change code"
 msgstr "Code wijzigen"
 
@@ -1926,12 +1809,6 @@ msgstr "Budgetcoderegel opslaan geannuleerd: de achtergrondtaak stopte onverwach
 
 msgid "Page loading canceled: the background task stopped unexpectedly."
 msgstr "Pagina laden geannuleerd: de achtergrondtaak stopte onverwacht."
-
-msgid "Detecting transaction patterns..."
-msgstr "Transactiepatronen detecteren..."
-
-msgid "Could not detect transaction patterns: {error}"
-msgstr "Kon transactiepatronen niet detecteren: {error}"
 
 msgid "Yearly budget"
 msgstr "Jaarbudget"
@@ -2016,8 +1893,6 @@ msgstr "Voorspeld saldo"
 
 msgid "Status"
 msgstr "Status"
-
-
 
 
 msgid "Orphaned Configuration"
@@ -2300,9 +2175,6 @@ msgstr "Geen transacties in dit jaar"
 msgid "Choose another year or import CSV files for this period."
 msgstr "Kies een ander jaar of importeer CSV-bestanden voor deze periode."
 
-msgid "Repeating payments, possible transfers, refunds, and offsetting groups detected in {year}."
-msgstr "Herhalende betalingen, mogelijke overboekingen, terugbetalingen en compenserende groepen gevonden in {year}."
-
 msgid "Configuration"
 msgstr "Configuratie"
 
@@ -2347,12 +2219,6 @@ msgstr "Configuratie uit transacties genereren"
 
 msgid "Create a working setup from imported transactions."
 msgstr "Maak een werkende instelling uit geimporteerde transacties."
-
-msgid "Create rules, budget codes, field mappings, and hidden refund/split patterns from imported transactions."
-msgstr "Maak regels, budgetcodes, veldkoppelingen en verborgen terugbetaling/splitpatronen uit geimporteerde transacties."
-
-msgid "Create a working setup from imported transactions and hide refund/split patterns."
-msgstr "Maak een werkende instelling uit geimporteerde transacties en verberg terugbetaling/splitpatronen."
 
 msgid "Use Defaults"
 msgstr "Standaarden gebruiken"
@@ -2402,20 +2268,8 @@ msgstr "De laatste voorkeurmelding."
 msgid "Generating configuration from transactions..."
 msgstr "Configuratie uit transacties genereren..."
 
-msgid "Analysing loaded transactions, yearly comparisons, recurring patterns, transfers, and field mappings..."
-msgstr "Geladen transacties, jaarvergelijkingen, terugkerende patronen, overboekingen en veldkoppelingen analyseren..."
-
-msgid "Loading all imported transactions before analysing yearly comparisons and patterns..."
-msgstr "Alle geimporteerde transacties laden voordat jaarvergelijkingen en patronen worden geanalyseerd..."
-
 msgid "Generated from {count} complete imported year(s), covering {months} month(s), on {date}."
 msgstr "Gegenereerd uit {count} volledig(e) geimporteerd(e) ja(a)r(en), over {months} maand(en), op {date}."
-
-msgid "Generated configuration: {budgets} budget(s), {rules} rule(s), {fields} field mapping(s), {hidden} hidden pattern(s)."
-msgstr "Configuratie gegenereerd: {budgets} budget(ten), {rules} regel(s), {fields} veldkoppeling(en), {hidden} verborgen patroon/patronen."
-
-msgid "Generated configuration from {years} complete year(s), covering {months} month(s): {budgets} budget(s), {rules} rule(s), {fields} field mapping(s), {hidden} hidden pattern(s)."
-msgstr "Configuratie gegenereerd uit {years} volledig(e) ja(a)r(en), over {months} maand(en): {budgets} budget(ten), {rules} regel(s), {fields} veldkoppeling(en), {hidden} verborgen patroon/patronen."
 
 msgid "No configuration could be generated from imported transactions yet."
 msgstr "Er kon nog geen configuratie uit geimporteerde transacties worden gegenereerd."
@@ -3032,8 +2886,6 @@ msgstr "Kies een categorie met dezelfde richting, of schakel Geavanceerde functi
 msgid "Budget code move added to processing queue."
 msgstr "Budgetcodeverplaatsing toegevoegd aan de verwerkingswachtrij."
 
-
-
 # Simple mode category wording
 msgid "New Category"
 msgstr "Nieuwe categorie"
@@ -3584,32 +3436,6 @@ msgstr "Verwerkingswachtrij openen"
 msgid "Open Message History"
 msgstr "Meldingengeschiedenis openen"
 
-# Transfer budget actions
-msgid "Add TRANSFER"
-msgstr "TRANSFER toevoegen"
-
-msgid "TRANSFER budget already exists. Review existing budget, then Save."
-msgstr "TRANSFER-budget bestaat al. Controleer het bestaande budget en druk daarna op Opslaan."
-
-msgid "TRANSFER budget added. Press Save to keep it."
-msgstr "TRANSFER-budget toegevoegd. Druk op Opslaan om het te bewaren."
-
-# Special budget and refund actions
-msgid "Add INC"
-msgstr "INC toevoegen"
-
-msgid "Add REFUNDING"
-msgstr "REFUNDING toevoegen"
-
-msgid "Add REFUNDED"
-msgstr "REFUNDED toevoegen"
-
-msgid "{code} budget already exists. Review existing budget, then Save."
-msgstr "{code}-budget bestaat al. Controleer het bestaande budget en druk daarna op Opslaan."
-
-msgid "{code} budget added. Press Save to keep it."
-msgstr "{code}-budget toegevoegd. Druk op Opslaan om het te bewaren."
-
 msgid "Refunding"
 msgstr "Terug te betalen"
 
@@ -3642,3 +3468,28 @@ msgstr "Terugbetaling ongedaan maken"
 
 msgid "Edit the rule by removing the matching refund keyword"
 msgstr "Bewerk de regel door het overeenkomende terugbetalingstrefwoord te verwijderen"
+
+# Human-readable special budget actions
+msgid "Set planned income"
+msgstr "Geplande inkomsten instellen"
+
+msgid "Set transfers"
+msgstr "Overboekingen instellen"
+
+msgid "Set outgoing refunds"
+msgstr "Uitgaande terugbetalingen instellen"
+
+msgid "Set incoming refunds"
+msgstr "Inkomende terugbetalingen instellen"
+
+msgid "Outgoing refunds"
+msgstr "Uitgaande terugbetalingen"
+
+msgid "Incoming refunds"
+msgstr "Inkomende terugbetalingen"
+
+msgid "{name} already exists. Review the existing budget, then Save."
+msgstr "{name} bestaat al. Controleer het bestaande budget en druk daarna op Opslaan."
+
+msgid "{name} added. Press Save to keep it."
+msgstr "{name} toegevoegd. Druk op Opslaan om het te bewaren."

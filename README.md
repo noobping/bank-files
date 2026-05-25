@@ -120,7 +120,7 @@ Important fields:
 - `amount_min` and `amount_max`: optional, based on absolute transaction value.
 - `category` and `budget_code`: the values assigned when the rule matches.
 
-Rules can also be created quickly from detected transaction patterns on the Diagnostics page.
+Rules can also be created from a transaction detail menu.
 
 ## Budget codes
 

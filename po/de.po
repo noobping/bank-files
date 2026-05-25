@@ -1387,27 +1387,6 @@ msgstr "Geplante Ausgaben ergeben {expenses}, aber dieser Zeitraum hat kein gepl
 msgid "Check your budget"
 msgstr "Budget prüfen"
 
-msgid "Transaction Patterns"
-msgstr "Transaktionsmuster"
-
-msgid "Repeating payments, possible refunds, and bill splits detected from imported transactions."
-msgstr "Wiederkehrende Zahlungen, mogliche Erstattungen und geteilte Rechnungen aus importierten Transaktionen erkannt."
-
-msgid "Repeating {cadence} transaction"
-msgstr "Wiederkehrende {cadence} Transaktion"
-
-msgid "Possible refund"
-msgstr "Mogliche Erstattung"
-
-msgid "Possible bill split"
-msgstr "Moglicherweise geteilte Rechnung"
-
-msgid "{count} transactions from {first} to {last}. Amount: {amount}."
-msgstr "{count} Transaktionen von {first} bis {last}. Betrag: {amount}."
-
-msgid "{count} transactions from {first} to {last}. Net effect: {net}."
-msgstr "{count} Transaktionen von {first} bis {last}. Nettoeffekt: {net}."
-
 msgid "weekly"
 msgstr "wochentlich"
 
@@ -1422,18 +1401,6 @@ msgstr "vierteljahrlich"
 
 msgid "yearly"
 msgstr "jahrlich"
-
-msgid "{count} transactions total from {first} to {last}."
-msgstr "{count} Transaktionen insgesamt von {first} bis {last}."
-
-msgid "Values: {values}"
-msgstr "Werte: {values}"
-
-msgid "{count} times {amount}"
-msgstr "{count} mal {amount}"
-
-msgid "Net effect: {net}."
-msgstr "Nettoeffekt: {net}."
 
 msgid "Tags"
 msgstr "Tags"
@@ -1480,47 +1447,17 @@ msgstr "Budgets konnten nicht generiert werden: {error}"
 msgid "Generated from imported transactions over {count} imported months on {date}."
 msgstr "Aus importierten Transaktionen uber {count} importierte Monate am {date} erzeugt."
 
-msgid "Generated from detected transfers."
-msgstr "Aus erkannten Ueberweisungen erzeugt."
-
 msgid "Generated budget"
 msgstr "Generiertes Budget"
-
-msgid "Show all transaction patterns"
-msgstr "Alle Transaktionsmuster anzeigen"
 
 msgid "Show Hidden"
 msgstr "Ausgeblendete anzeigen"
 
-msgid "Show hidden transaction patterns"
-msgstr "Ausgeblendete Transaktionsmuster anzeigen"
-
 msgid "Hidden"
 msgstr "Ausgeblendet"
 
-msgid "Hide detected pattern"
-msgstr "Erkanntes Muster ausblenden"
-
-msgid "Reopen detected pattern"
-msgstr "Erkanntes Muster wieder einblenden"
-
-msgid "Pattern hidden. Use Show Hidden to reopen it."
-msgstr "Muster ausgeblendet. Nutze Ausgeblendete anzeigen, um es wieder einzublenden."
-
-msgid "Pattern reopened."
-msgstr "Muster wieder eingeblendet."
-
-msgid "Could not update hidden pattern: {error}"
-msgstr "Ausgeblendetes Muster konnte nicht aktualisiert werden: {error}"
-
-msgid "No transaction patterns detected yet. Import more transactions or adjust tags and categorization rules."
-msgstr "Noch keine Transaktionsmuster erkannt. Importiere mehr Transaktionen oder passe Tags und Kategorisierungsregeln an."
-
 msgid "recurring"
 msgstr "wiederkehrend"
-
-msgid "Create rule from pattern"
-msgstr "Regel aus Muster erstellen"
 
 msgid "Create Rule"
 msgstr "Regel erstellen"
@@ -1528,14 +1465,8 @@ msgstr "Regel erstellen"
 msgid "Save rule"
 msgstr "Regel speichern"
 
-msgid "Create a categorization rule from this detected transaction pattern."
-msgstr "Erstellt eine Kategorisierungsregel aus diesem erkannten Transaktionsmuster."
-
 msgid "Changes are saved to rules.csv."
 msgstr "Anderungen werden in rules.csv gespeichert."
-
-msgid "Generated from detected transaction pattern."
-msgstr "Aus erkanntem Transaktionsmuster generiert."
 
 msgid "Rule updated"
 msgstr "Regel aktualisiert"
@@ -1563,21 +1494,6 @@ msgstr "Braucht Regel"
 
 msgid "Hide Refunded Transactions"
 msgstr "Erstattete Transaktionen ausblenden"
-
-msgid "Exclude detected refunds and bill splits from normal views and totals."
-msgstr "Erkannte Erstattungen und geteilte Rechnungen aus normalen Ansichten und Summen ausschliessen."
-
-msgid "{count} refund or bill-split transactions are hidden from normal views."
-msgstr "{count} Erstattungs- oder Rechnungsteilungs-Transaktionen sind in normalen Ansichten ausgeblendet."
-
-msgid "{count} refund or bill-split transactions were detected. Enable Hide Refunded Transactions to exclude them from normal views."
-msgstr "{count} Erstattungs- oder Rechnungsteilungs-Transaktionen erkannt. Aktiviere Erstattete Transaktionen ausblenden, um sie aus normalen Ansichten auszuschliessen."
-
-msgid "Hide Refunded Transactions enabled. Refunds and bill splits are excluded from normal views."
-msgstr "Erstattete Transaktionen ausblenden aktiviert. Erstattungen und geteilte Rechnungen werden aus normalen Ansichten ausgeschlossen."
-
-msgid "Hide Refunded Transactions disabled. Refunds and bill splits are included again."
-msgstr "Erstattete Transaktionen ausblenden deaktiviert. Erstattungen und geteilte Rechnungen werden wieder einbezogen."
 
 msgid "Applying default budgeting..."
 msgstr "Standardbudgetierung anwenden..."
@@ -1702,15 +1618,6 @@ msgstr "weniger"
 msgid "more"
 msgstr "mehr"
 
-msgid "Possible offsetting group"
-msgstr "Mögliche ausgleichende Gruppe"
-
-msgid "Repeating payments, possible refunds, and fully offsetting groups detected from imported transactions."
-msgstr "Wiederkehrende Zahlungen, mögliche Rückerstattungen und vollständig ausgleichende Gruppen in importierten Transaktionen erkannt."
-
-msgid "Filtered out {count} refund or offsetting transactions because Hide Refunded Transactions is enabled."
-msgstr "{count} Rückerstattungs- oder Ausgleichstransaktionen ausgeblendet, weil Erstattete Transaktionen ausblenden aktiviert ist."
-
 msgid "Budget removed"
 msgstr "Budget entfernt"
 
@@ -1762,9 +1669,6 @@ msgstr "Überweisungen"
 msgid "Possible transfer"
 msgstr "Mögliche Überweisung"
 
-msgid "Repeating payments, possible transfers, refunds, and fully offsetting groups detected from imported transactions."
-msgstr "Wiederkehrende Zahlungen, mögliche Überweisungen, Rückerstattungen und vollständig ausgleichende Gruppen in importierten Transaktionen erkannt."
-
 msgid "Create rule"
 msgstr "Regel erstellen"
 
@@ -1798,12 +1702,6 @@ msgstr "Ähnlich"
 msgid "Show similar transactions"
 msgstr "Ähnliche Transaktionen anzeigen"
 
-msgid "Find pattern"
-msgstr "Muster suchen"
-
-msgid "Search Diagnostics for related transaction patterns"
-msgstr "In Diagnose nach verwandten Transaktionsmustern suchen"
-
 msgid "Create a categorization rule from this transaction."
 msgstr "Eine Kategorisierungsregel aus dieser Transaktion erstellen."
 
@@ -1815,9 +1713,6 @@ msgstr "Aus Transaktionsdetails erstellt."
 
 msgid "Showing similar transactions."
 msgstr "Ähnliche Transaktionen werden angezeigt."
-
-msgid "Searching Diagnostics for related patterns."
-msgstr "Diagnose sucht nach verwandten Mustern."
 
 msgid "Loading"
 msgstr "Laden"
@@ -1870,18 +1765,6 @@ msgstr "Änderungen werden gespeichert..."
 msgid "Save canceled: the background task stopped unexpectedly."
 msgstr "Speichern abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
 
-msgid "{count} refund or offsetting transactions are hidden from normal views."
-msgstr "{count} Erstattungen oder ausgleichende Transaktionen werden in normalen Ansichten ausgeblendet."
-
-msgid "{count} refund or offsetting transactions were detected. Enable Hide Refunded Transactions to exclude them from normal views."
-msgstr "{count} Erstattungen oder ausgleichende Transaktionen wurden erkannt. Aktiviere Erstattete Transaktionen ausblenden, um sie aus normalen Ansichten auszublenden."
-
-msgid "Hide Refunded Transactions enabled. Detected refunds and offsetting groups are excluded from normal views."
-msgstr "Erstattete Transaktionen ausblenden ist aktiviert. Erkannte Erstattungen und ausgleichende Gruppen werden in normalen Ansichten ausgeblendet."
-
-msgid "Hide Refunded Transactions disabled. Detected refunds and offsetting groups are included again."
-msgstr "Erstattete Transaktionen ausblenden ist deaktiviert. Erkannte Erstattungen und ausgleichende Gruppen werden wieder angezeigt."
-
 msgid "Change code"
 msgstr "Code ändern"
 
@@ -1926,12 +1809,6 @@ msgstr "Speichern der Budgetcode-Regel abgebrochen: Die Hintergrundaufgabe wurde
 
 msgid "Page loading canceled: the background task stopped unexpectedly."
 msgstr "Seitenladen abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
-
-msgid "Detecting transaction patterns..."
-msgstr "Transaktionsmuster werden erkannt..."
-
-msgid "Could not detect transaction patterns: {error}"
-msgstr "Transaktionsmuster konnten nicht erkannt werden: {error}"
 
 msgid "Yearly budget"
 msgstr "Jahresbudget"
@@ -2016,8 +1893,6 @@ msgstr "Prognostizierter Saldo"
 
 msgid "Status"
 msgstr "Status"
-
-
 
 
 msgid "Orphaned Configuration"
@@ -2300,9 +2175,6 @@ msgstr "Keine Transaktionen in diesem Jahr"
 msgid "Choose another year or import CSV files for this period."
 msgstr "Wähle ein anderes Jahr oder importiere CSV-Dateien für diesen Zeitraum."
 
-msgid "Repeating payments, possible transfers, refunds, and offsetting groups detected in {year}."
-msgstr "Wiederkehrende Zahlungen, mögliche Umbuchungen, Erstattungen und ausgleichende Gruppen in {year} erkannt."
-
 msgid "Configuration"
 msgstr "Konfiguration"
 
@@ -2347,12 +2219,6 @@ msgstr "Konfiguration aus Transaktionen erzeugen"
 
 msgid "Create a working setup from imported transactions."
 msgstr "Eine funktionierende Einrichtung aus importierten Transaktionen erstellen."
-
-msgid "Create rules, budget codes, field mappings, and hidden refund/split patterns from imported transactions."
-msgstr "Regeln, Budgetcodes, Feldzuordnungen und ausgeblendete Erstattungs-/Aufteilungsmuster aus importierten Transaktionen erstellen."
-
-msgid "Create a working setup from imported transactions and hide refund/split patterns."
-msgstr "Eine funktionierende Einrichtung aus importierten Transaktionen erstellen und Erstattungs-/Aufteilungsmuster ausblenden."
 
 msgid "Use Defaults"
 msgstr "Standards verwenden"
@@ -2402,20 +2268,8 @@ msgstr "Die neueste Einstellungsmeldung."
 msgid "Generating configuration from transactions..."
 msgstr "Konfiguration aus Transaktionen wird erzeugt..."
 
-msgid "Analysing loaded transactions, yearly comparisons, recurring patterns, transfers, and field mappings..."
-msgstr "Geladene Transaktionen, Jahresvergleiche, wiederkehrende Muster, Umbuchungen und Feldzuordnungen werden analysiert..."
-
-msgid "Loading all imported transactions before analysing yearly comparisons and patterns..."
-msgstr "Alle importierten Transaktionen werden geladen, bevor Jahresvergleiche und Muster analysiert werden..."
-
 msgid "Generated from {count} complete imported year(s), covering {months} month(s), on {date}."
 msgstr "Erzeugt aus {count} vollstaendigen importierten Jahr(en), ueber {months} Monat(e), am {date}."
-
-msgid "Generated configuration: {budgets} budget(s), {rules} rule(s), {fields} field mapping(s), {hidden} hidden pattern(s)."
-msgstr "Konfiguration erzeugt: {budgets} Budget(s), {rules} Regel(n), {fields} Feldzuordnung(en), {hidden} ausgeblendete Muster."
-
-msgid "Generated configuration from {years} complete year(s), covering {months} month(s): {budgets} budget(s), {rules} rule(s), {fields} field mapping(s), {hidden} hidden pattern(s)."
-msgstr "Konfiguration aus {years} vollstaendigen Jahr(en), ueber {months} Monat(e), erzeugt: {budgets} Budget(s), {rules} Regel(n), {fields} Feldzuordnung(en), {hidden} ausgeblendete Muster."
 
 msgid "No configuration could be generated from imported transactions yet."
 msgstr "Aus importierten Transaktionen konnte noch keine Konfiguration erzeugt werden."
@@ -3032,8 +2886,6 @@ msgstr "Waehle eine Kategorie mit derselben Richtung oder aktiviere Erweiterte F
 msgid "Budget code move added to processing queue."
 msgstr "Budgetcode-Verschiebung zur Verarbeitungswarteschlange hinzugefuegt."
 
-
-
 # Simple mode category wording
 msgid "New Category"
 msgstr "Neue Kategorie"
@@ -3584,32 +3436,6 @@ msgstr "Verarbeitungswarteschlange öffnen"
 msgid "Open Message History"
 msgstr "Nachrichtenverlauf öffnen"
 
-# Transfer budget actions
-msgid "Add TRANSFER"
-msgstr "TRANSFER hinzufügen"
-
-msgid "TRANSFER budget already exists. Review existing budget, then Save."
-msgstr "TRANSFER-Budget existiert bereits. Vorhandenes Budget prüfen, dann speichern."
-
-msgid "TRANSFER budget added. Press Save to keep it."
-msgstr "TRANSFER-Budget hinzugefügt. Speichern drücken, um es zu behalten."
-
-# Special budget and refund actions
-msgid "Add INC"
-msgstr "INC hinzufügen"
-
-msgid "Add REFUNDING"
-msgstr "REFUNDING hinzufügen"
-
-msgid "Add REFUNDED"
-msgstr "REFUNDED hinzufügen"
-
-msgid "{code} budget already exists. Review existing budget, then Save."
-msgstr "{code}-Budget existiert bereits. Vorhandenes Budget prüfen, dann speichern."
-
-msgid "{code} budget added. Press Save to keep it."
-msgstr "{code}-Budget hinzugefügt. Speichern drücken, um es zu behalten."
-
 msgid "Refunding"
 msgstr "Zu erstatten"
 
@@ -3642,3 +3468,28 @@ msgstr "Erstattung rückgängig machen"
 
 msgid "Edit the rule by removing the matching refund keyword"
 msgstr "Bearbeite die Regel, indem das passende Erstattungsstichwort entfernt wird"
+
+# Human-readable special budget actions
+msgid "Set planned income"
+msgstr "Geplante Einnahmen festlegen"
+
+msgid "Set transfers"
+msgstr "Transfers festlegen"
+
+msgid "Set outgoing refunds"
+msgstr "Ausgehende Erstattungen festlegen"
+
+msgid "Set incoming refunds"
+msgstr "Eingehende Erstattungen festlegen"
+
+msgid "Outgoing refunds"
+msgstr "Ausgehende Erstattungen"
+
+msgid "Incoming refunds"
+msgstr "Eingehende Erstattungen"
+
+msgid "{name} already exists. Review the existing budget, then Save."
+msgstr "{name} existiert bereits. Vorhandenes Budget prüfen, dann speichern."
+
+msgid "{name} added. Press Save to keep it."
+msgstr "{name} hinzugefügt. Speichern drücken, um es zu behalten."

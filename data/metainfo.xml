@@ -48,12 +48,12 @@
       <li>Get warnings when spending is above income, planned budgets are above income, or spending is over budget</li>
       <li xml:lang="nl">Krijg waarschuwingen wanneer uitgaven hoger zijn dan inkomen, geplande budgetten boven inkomen liggen of uitgaven boven budget zijn</li>
       <li xml:lang="de">Erhalte Warnungen, wenn Ausgaben über dem Einkommen liegen, geplante Budgets das Einkommen überschreiten oder Ausgaben über dem Budget liegen</li>
-      <li>Detect repeating transactions, full refunds, and fully offsetting groups, then open matching transactions or create rules from patterns</li>
-      <li xml:lang="nl">Detecteer terugkerende transacties, volledige terugbetalingen en gedeelde rekeningen, en open bijpassende transacties of maak regels uit patronen</li>
-      <li xml:lang="de">Erkenne wiederkehrende Transaktionen, vollständige Rückerstattungen und geteilte Rechnungen, und öffne passende Transaktionen oder erstelle Regeln aus Mustern</li>
-      <li>Filter views from cards and charts, hide refunded or offsetting transactions when needed, print filtered reports, or export cleaned CSV data</li>
-      <li xml:lang="nl">Filter weergaven vanuit kaarten en grafieken, verberg terugbetalingen of verrekenende transacties wanneer nodig, druk gefilterde rapporten af of exporteer opgeschoonde CSV-data</li>
-      <li xml:lang="de">Filtere Ansichten über Karten und Diagramme, blende erstattete oder ausgleichende Transaktionen bei Bedarf aus, drucke gefilterte Berichte oder exportiere bereinigte CSV-Daten</li>
+      <li>Mark transfers and refunds explicitly so internal moves and refunded payments stay out of normal totals</li>
+      <li xml:lang="nl">Markeer overschrijvingen en terugbetalingen expliciet, zodat interne verplaatsingen en terugbetaalde betalingen buiten normale totalen blijven</li>
+      <li xml:lang="de">Markiere Transfers und Erstattungen ausdrücklich, damit interne Umbuchungen und erstattete Zahlungen nicht in normale Summen eingehen</li>
+      <li>Filter views from cards and charts, show or hide refunded transactions when needed, print filtered reports, or export cleaned CSV data</li>
+      <li xml:lang="nl">Filter weergaven vanuit kaarten en grafieken, toon of verberg terugbetaalde transacties wanneer nodig, druk gefilterde rapporten af of exporteer opgeschoonde CSV-data</li>
+      <li xml:lang="de">Filtere Ansichten über Karten und Diagramme, zeige oder verberge erstattete Transaktionen bei Bedarf, drucke gefilterte Berichte oder exportiere bereinigte CSV-Daten</li>
     </ul>
   </description>
 
@@ -80,18 +80,18 @@
     </screenshot>
     <screenshot>
       <image type="source">https://raw.githubusercontent.com/noobping/bank-files/main/data/screenshots/diagnostics.png</image>
-      <caption>Import diagnostics with duplicate filtering and transaction patterns</caption>
-      <caption xml:lang="nl">Importdiagnose met ontdubbelen en transactiepatronen</caption>
-      <caption xml:lang="de">Importdiagnose mit Duplikatfilterung und Transaktionsmustern</caption>
+      <caption>Import diagnostics with duplicate filtering and field mapping</caption>
+      <caption xml:lang="nl">Importdiagnose met ontdubbelen en veldkoppeling</caption>
+      <caption xml:lang="de">Importdiagnose mit Duplikatfilterung und Feldzuordnung</caption>
     </screenshot>
   </screenshots>
 
   <releases>
     <release version="0.1.0" date="2026-05-17">
       <description>
-        <p>Initial release with local bank-file import, editable budgets and rules, transaction filters, printable reports, and pattern detection.</p>
-        <p xml:lang="nl">Eerste release met lokale import van bankbestanden, bewerkbare budgetten en regels, transactiefilters, afdrukbare rapporten en patroondetectie.</p>
-        <p xml:lang="de">Erste Veröffentlichung mit lokalem Import von Bankdateien, bearbeitbaren Budgets und Regeln, Transaktionsfiltern, druckbaren Berichten und Mustererkennung.</p>
+        <p>Initial release with local bank-file import, editable budgets and rules, transaction filters, and printable reports.</p>
+        <p xml:lang="nl">Eerste release met lokale import van bankbestanden, bewerkbare budgetten en regels, transactiefilters en afdrukbare rapporten.</p>
+        <p xml:lang="de">Erste Veröffentlichung mit lokalem Import von Bankdateien, bearbeitbaren Budgets und Regeln, Transaktionsfiltern und druckbaren Berichten.</p>
       </description>
     </release>
   </releases>
@@ -113,16 +113,19 @@
     <keyword>csv</keyword>
     <keyword>bank</keyword>
     <keyword>transactions</keyword>
-    <keyword>patterns</keyword>
+    <keyword>transfers</keyword>
+    <keyword>refunds</keyword>
     <keyword xml:lang="nl">financien</keyword>
     <keyword xml:lang="nl">budget</keyword>
     <keyword xml:lang="nl">bank</keyword>
     <keyword xml:lang="nl">transacties</keyword>
-    <keyword xml:lang="nl">patronen</keyword>
+    <keyword xml:lang="nl">overschrijvingen</keyword>
+    <keyword xml:lang="nl">terugbetalingen</keyword>
     <keyword xml:lang="de">finanzen</keyword>
     <keyword xml:lang="de">budget</keyword>
     <keyword xml:lang="de">bank</keyword>
     <keyword xml:lang="de">transaktionen</keyword>
-    <keyword xml:lang="de">muster</keyword>
+    <keyword xml:lang="de">transfers</keyword>
+    <keyword xml:lang="de">erstattungen</keyword>
   </keywords>
 </component>

@@ -164,17 +164,26 @@ impl SpecialBudgetAdd {
         }
     }
 
+    fn display_name(self) -> String {
+        tr(match self {
+            Self::PlannedIncome => "Planned income",
+            Self::Transfer => "Transfers",
+            Self::Refunding => "Outgoing refunds",
+            Self::Refunded => "Incoming refunds",
+        })
+    }
+
     fn already_exists_message(self) -> String {
         trf(
-            "{code} budget already exists. Review existing budget, then Save.",
-            &[("code", self.code().to_string())],
+            "{name} already exists. Review the existing budget, then Save.",
+            &[("name", self.display_name())],
         )
     }
 
     fn added_message(self) -> String {
         trf(
-            "{code} budget added. Press Save to keep it.",
-            &[("code", self.code().to_string())],
+            "{name} added. Press Save to keep it.",
+            &[("name", self.display_name())],
         )
     }
 }

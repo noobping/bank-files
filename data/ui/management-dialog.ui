@@ -26,22 +26,22 @@
   </menu>
   <menu id="management_budget_bulk_menu">
     <item>
-      <attribute name="label" translatable="yes">Add INC</attribute>
+      <attribute name="label" translatable="yes">Set planned income</attribute>
       <attribute name="action">management-budgets.add-planned-income-budget</attribute>
       <attribute name="hidden-when">action-disabled</attribute>
     </item>
     <item>
-      <attribute name="label" translatable="yes">Add TRANSFER</attribute>
+      <attribute name="label" translatable="yes">Set transfers</attribute>
       <attribute name="action">management-budgets.add-transfer-budget</attribute>
       <attribute name="hidden-when">action-disabled</attribute>
     </item>
     <item>
-      <attribute name="label" translatable="yes">Add REFUNDING</attribute>
+      <attribute name="label" translatable="yes">Set outgoing refunds</attribute>
       <attribute name="action">management-budgets.add-refunding-budget</attribute>
       <attribute name="hidden-when">action-disabled</attribute>
     </item>
     <item>
-      <attribute name="label" translatable="yes">Add REFUNDED</attribute>
+      <attribute name="label" translatable="yes">Set incoming refunds</attribute>
       <attribute name="action">management-budgets.add-refunded-budget</attribute>
       <attribute name="hidden-when">action-disabled</attribute>
     </item>
@@ -76,22 +76,22 @@
   </menu>
   <menu id="management_simple_budget_bulk_menu">
     <item>
-      <attribute name="label" translatable="yes">Add INC</attribute>
+      <attribute name="label" translatable="yes">Set planned income</attribute>
       <attribute name="action">management-budgets.add-planned-income-budget</attribute>
       <attribute name="hidden-when">action-disabled</attribute>
     </item>
     <item>
-      <attribute name="label" translatable="yes">Add TRANSFER</attribute>
+      <attribute name="label" translatable="yes">Set transfers</attribute>
       <attribute name="action">management-budgets.add-transfer-budget</attribute>
       <attribute name="hidden-when">action-disabled</attribute>
     </item>
     <item>
-      <attribute name="label" translatable="yes">Add REFUNDING</attribute>
+      <attribute name="label" translatable="yes">Set outgoing refunds</attribute>
       <attribute name="action">management-budgets.add-refunding-budget</attribute>
       <attribute name="hidden-when">action-disabled</attribute>
     </item>
     <item>
-      <attribute name="label" translatable="yes">Add REFUNDED</attribute>
+      <attribute name="label" translatable="yes">Set incoming refunds</attribute>
       <attribute name="action">management-budgets.add-refunded-budget</attribute>
       <attribute name="hidden-when">action-disabled</attribute>
     </item>
