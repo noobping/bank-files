@@ -69,6 +69,8 @@ fn direct_period_totals_use_transactions_for_requested_scope() {
         tx("2025-01-01", 100, "Income", "INC"),
         tx("2025-01-02", -40, "Groceries", "FOOD"),
         tx("2025-01-03", -200, "Savings", "TRANSFER"),
+        tx("2025-01-04", -30, "Refunding", "REFUNDING"),
+        tx("2025-01-05", 30, "Refunded", "REFUNDED"),
         tx("2025-02-01", -25, "Transport", "TRAN"),
     ];
     let budgets = vec![BudgetCode {

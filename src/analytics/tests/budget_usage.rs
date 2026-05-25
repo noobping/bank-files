@@ -25,6 +25,41 @@ fn budget_usage_compares_latest_expenses_to_budget() {
 }
 
 #[test]
+fn budget_usage_ignores_refunding_and_refunded_budget_codes() {
+    let rows = vec![
+        tx("2025-03-01", -60, "Groceries", "FOOD"),
+        tx("2025-03-02", -60, "Refunding", "REFUNDING"),
+        tx("2025-03-03", 60, "Refunded", "REFUNDED"),
+    ];
+    let budgets = vec![
+        BudgetCode {
+            code: "FOOD".to_string(),
+            category: "Groceries".to_string(),
+            monthly_budget: Some(BudgetAmount::Fixed(Decimal::new(100, 0))),
+            yearly_budget: None,
+            direction: BudgetDirection::Expense,
+            income_basis: BudgetIncomeBasis::RealIncome,
+            notes: String::new(),
+        },
+        BudgetCode {
+            code: "REFUNDING".to_string(),
+            category: "Refunding".to_string(),
+            monthly_budget: Some(BudgetAmount::Fixed(Decimal::new(100, 0))),
+            yearly_budget: None,
+            direction: BudgetDirection::Expense,
+            income_basis: BudgetIncomeBasis::RealIncome,
+            notes: String::new(),
+        },
+    ];
+
+    let usage = budget_usage(&rows, &budgets, MonthKey::new(2025, 3));
+
+    assert_eq!(usage.len(), 1);
+    assert_eq!(usage[0].code, "FOOD");
+    assert_eq!(usage[0].actual, Decimal::new(60, 0));
+}
+
+#[test]
 fn dynamic_budget_usage_uses_month_income_percent() {
     let rows = vec![
         tx("2025-03-01", 1000, "Income", "INC"),

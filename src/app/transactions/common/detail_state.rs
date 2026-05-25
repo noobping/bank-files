@@ -7,7 +7,9 @@ pub(super) enum TransactionDetailAction {
     MoveBudgetCode,
     DuplicateAsFake,
     MarkTransfer,
+    MarkRefund,
     UndoTransfer,
+    UndoRefund,
     MarkInvalid,
     Similar,
 }
@@ -15,6 +17,7 @@ pub(super) enum TransactionDetailAction {
 pub(super) fn visible_transaction_detail_actions(
     advanced_features: bool,
     markable_as_transfer: bool,
+    markable_as_refund: bool,
     budget_move_available: bool,
     auto_detected_classification: bool,
     rule_match_available: bool,
@@ -25,7 +28,9 @@ pub(super) fn visible_transaction_detail_actions(
         TransactionDetailAction::MoveBudgetCode,
         TransactionDetailAction::DuplicateAsFake,
         TransactionDetailAction::MarkTransfer,
+        TransactionDetailAction::MarkRefund,
         TransactionDetailAction::UndoTransfer,
+        TransactionDetailAction::UndoRefund,
         TransactionDetailAction::MarkInvalid,
         TransactionDetailAction::Similar,
     ]
@@ -35,6 +40,7 @@ pub(super) fn visible_transaction_detail_actions(
             *action,
             advanced_features,
             markable_as_transfer,
+            markable_as_refund,
             budget_move_available,
             auto_detected_classification,
             rule_match_available,
@@ -47,22 +53,23 @@ fn transaction_detail_action_visible(
     action: TransactionDetailAction,
     advanced_features: bool,
     markable_as_transfer: bool,
+    markable_as_refund: bool,
     budget_move_available: bool,
     auto_detected_classification: bool,
     rule_match_available: bool,
 ) -> bool {
-    let visible = match action {
+    match action {
         TransactionDetailAction::CreateRule | TransactionDetailAction::EditBudgetCode => {
             advanced_features
         }
         TransactionDetailAction::MoveBudgetCode => budget_move_available,
-        TransactionDetailAction::DuplicateAsFake
-        | TransactionDetailAction::MarkTransfer
-        | TransactionDetailAction::Similar => true,
+        TransactionDetailAction::DuplicateAsFake | TransactionDetailAction::Similar => true,
+        TransactionDetailAction::MarkTransfer => markable_as_transfer,
+        TransactionDetailAction::MarkRefund => markable_as_refund,
         TransactionDetailAction::UndoTransfer => !markable_as_transfer && rule_match_available,
+        TransactionDetailAction::UndoRefund => !markable_as_refund && rule_match_available,
         TransactionDetailAction::MarkInvalid => auto_detected_classification,
-    };
-    visible && (action != TransactionDetailAction::MarkTransfer || markable_as_transfer)
+    }
 }
 
 pub(super) fn transaction_detail_config_action_enabled(ui_handles: &UiHandles) -> Option<bool> {

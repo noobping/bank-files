@@ -30,3 +30,13 @@ fn whole_form_autofill_is_a_forms_and_data_preference() {
         .iter()
         .any(|row| { row[0] == tr("Forms and Data") && row[1] == tr("Whole Form Autofill") }));
 }
+
+#[test]
+fn hide_refunded_transactions_is_a_forms_and_data_preference() {
+    let preferences = Preferences::default();
+    let snapshot = preferences_page_snapshot(false, &preferences);
+
+    assert!(snapshot.rows().iter().any(|row| {
+        row[0] == tr("Forms and Data") && row[1] == tr("Hide Refunded Transactions")
+    }));
+}

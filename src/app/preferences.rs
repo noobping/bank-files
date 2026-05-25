@@ -89,6 +89,14 @@ impl Preferences {
         self.set_boolean("dedupe-enabled", enabled);
     }
 
+    pub(in crate::app) fn hide_refunded_transactions(&self) -> bool {
+        self.boolean("hide-refunded-transactions", true)
+    }
+
+    pub(in crate::app) fn set_hide_refunded_transactions(&self, enabled: bool) {
+        self.set_boolean("hide-refunded-transactions", enabled);
+    }
+
     pub(in crate::app) fn selected_year(&self) -> Option<i32> {
         let year = self.int("selected-year", 0);
         (year > 0).then_some(year)

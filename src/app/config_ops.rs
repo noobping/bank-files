@@ -140,6 +140,15 @@ fn editable_budget_for_rule(rule: &EditableRule) -> EditableBudget {
         return budget;
     }
 
+    if let Some(mut budget) =
+        refund_budget::editable_budget_for_code(code, tr("Created from rule."))
+    {
+        if !rule.category.trim().is_empty() {
+            budget.category = rule.category.trim().to_string();
+        }
+        return budget;
+    }
+
     let direction = crate::model::BudgetDirection::parse(&rule.direction, code, &rule.category);
     EditableBudget {
         code: code.to_string(),

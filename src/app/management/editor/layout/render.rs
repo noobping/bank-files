@@ -183,12 +183,42 @@ fn finish_management_forms_render(load: &ManagementFormsLoad) {
     );
     set_management_form_action_widgets_sensitive(&load.action_widgets, true);
     set_management_menu_actions_enabled(&load.menu_actions, true);
+    set_special_budget_add_actions_enabled(&load.menu_actions, &load.budgets_forms.borrow());
     for widget in &load.action_widgets {
         register_loading_sensitive_widget(&load.ui_handles, widget);
     }
     load.page_actions_button.set_sensitive(true);
     register_loading_sensitive_widget(&load.ui_handles, &load.page_actions_button);
     load.status_handle.set_loading(false);
+}
+
+fn set_special_budget_add_actions_enabled(
+    actions: &[gtk::gio::SimpleAction],
+    forms: &[BudgetForm],
+) {
+    for action in actions {
+        let Some(code) = special_budget_code_for_action(action) else {
+            continue;
+        };
+        action.set_enabled(!budget_forms_contain_code(forms, code));
+    }
+}
+
+fn special_budget_code_for_action(action: &gtk::gio::SimpleAction) -> Option<&'static str> {
+    match action.name().as_str() {
+        "add-planned-income-budget" => Some(planned_income::BUDGET_CODE),
+        "add-transfer-budget" => Some(transfer_budget::BUDGET_CODE),
+        "add-refunding-budget" => Some(crate::model::REFUNDING_BUDGET_CODE),
+        "add-refunded-budget" => Some(crate::model::REFUNDED_BUDGET_CODE),
+        _ => None,
+    }
+}
+
+fn budget_forms_contain_code(forms: &[BudgetForm], code: &str) -> bool {
+    forms
+        .iter()
+        .filter(|form| !form.deleted.get())
+        .any(|form| ui::combo_text(&form.code).eq_ignore_ascii_case(code))
 }
 
 pub(super) fn set_management_form_action_widgets_sensitive(

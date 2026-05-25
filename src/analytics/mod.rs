@@ -1,4 +1,7 @@
-use crate::model::{AppData, BudgetCode, BudgetDirection, ComparisonMode, MonthKey, Transaction};
+use crate::model::{
+    is_refund_budget_code, is_transfer_budget_code, AppData, BudgetCode, BudgetDirection,
+    ComparisonMode, MonthKey, Transaction,
+};
 use rust_decimal::Decimal;
 use std::collections::{BTreeMap, HashMap};
 
@@ -45,13 +48,26 @@ pub fn planned_year_income_total(budgets: &[BudgetCode], real_year_income: Decim
 
 pub fn transaction_is_transfer(tx: &Transaction, budgets: &[BudgetCode]) -> bool {
     let code = tx.budget_code.trim();
-    if code.eq_ignore_ascii_case("TRANSFER") {
+    if is_refund_budget_code(code) {
+        return false;
+    }
+    if is_transfer_budget_code(code) {
         return true;
     }
     !code.is_empty()
         && budgets.iter().any(|budget| {
-            budget.direction.is_transfer() && budget.code.trim().eq_ignore_ascii_case(code)
+            !is_refund_budget_code(&budget.code)
+                && budget.direction.is_transfer()
+                && budget.code.trim().eq_ignore_ascii_case(code)
         })
+}
+
+pub fn transaction_is_refund(tx: &Transaction, _budgets: &[BudgetCode]) -> bool {
+    is_refund_budget_code(&tx.budget_code)
+}
+
+pub fn transaction_is_budget_neutral(tx: &Transaction, budgets: &[BudgetCode]) -> bool {
+    transaction_is_transfer(tx, budgets) || transaction_is_refund(tx, budgets)
 }
 
 pub fn financial_transactions<'a>(
@@ -60,5 +76,5 @@ pub fn financial_transactions<'a>(
 ) -> impl Iterator<Item = &'a Transaction> {
     transactions
         .iter()
-        .filter(move |tx| !transaction_is_transfer(tx, budgets))
+        .filter(move |tx| !transaction_is_budget_neutral(tx, budgets))
 }

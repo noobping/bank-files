@@ -15,7 +15,10 @@ pub(super) struct ManagementDialogShell {
     pub(super) clean_orphaned_rules_action: gtk::gio::SimpleAction,
     pub(super) rule_bulk_menu_button: gtk::MenuButton,
     pub(super) move_budget_code_action: gtk::gio::SimpleAction,
+    pub(super) add_planned_income_budget_action: gtk::gio::SimpleAction,
     pub(super) add_transfer_budget_action: gtk::gio::SimpleAction,
+    pub(super) add_refunding_budget_action: gtk::gio::SimpleAction,
+    pub(super) add_refunded_budget_action: gtk::gio::SimpleAction,
     pub(super) use_real_income_action: gtk::gio::SimpleAction,
     pub(super) use_planned_income_action: gtk::gio::SimpleAction,
     pub(super) use_monthly_values_action: gtk::gio::SimpleAction,
@@ -110,7 +113,11 @@ pub(super) fn build_management_dialog_shell(
     let combine_rules_action = gtk::gio::SimpleAction::new("combine-rules", None);
     let clean_orphaned_rules_action = gtk::gio::SimpleAction::new("clean-orphaned-rules", None);
     let move_budget_code_action = gtk::gio::SimpleAction::new("move-budget-code", None);
+    let add_planned_income_budget_action =
+        gtk::gio::SimpleAction::new("add-planned-income-budget", None);
     let add_transfer_budget_action = gtk::gio::SimpleAction::new("add-transfer-budget", None);
+    let add_refunding_budget_action = gtk::gio::SimpleAction::new("add-refunding-budget", None);
+    let add_refunded_budget_action = gtk::gio::SimpleAction::new("add-refunded-budget", None);
     let use_real_income_action = gtk::gio::SimpleAction::new("use-real-income", None);
     let use_planned_income_action = gtk::gio::SimpleAction::new("use-planned-income", None);
     let use_monthly_values_action = gtk::gio::SimpleAction::new("use-monthly-values", None);
@@ -139,7 +146,10 @@ pub(super) fn build_management_dialog_shell(
         BUDGET_ACTION_NAMESPACE,
         &[
             &move_budget_code_action,
+            &add_planned_income_budget_action,
             &add_transfer_budget_action,
+            &add_refunding_budget_action,
+            &add_refunded_budget_action,
             &use_real_income_action,
             &use_planned_income_action,
             &use_monthly_values_action,
@@ -189,7 +199,10 @@ pub(super) fn build_management_dialog_shell(
         clean_orphaned_rules_action,
         rule_bulk_menu_button,
         move_budget_code_action,
+        add_planned_income_budget_action,
         add_transfer_budget_action,
+        add_refunding_budget_action,
+        add_refunded_budget_action,
         use_real_income_action,
         use_planned_income_action,
         use_monthly_values_action,

@@ -5,7 +5,9 @@ pub(in crate::app) enum OperationSource {
     CreateRule,
     ChangeBudgetCode,
     MarkTransfer,
+    MarkRefund,
     UndoTransfer,
+    UndoRefund,
     MarkInvalid,
 }
 

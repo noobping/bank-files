@@ -26,8 +26,24 @@
   </menu>
   <menu id="management_budget_bulk_menu">
     <item>
+      <attribute name="label" translatable="yes">Add INC</attribute>
+      <attribute name="action">management-budgets.add-planned-income-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
       <attribute name="label" translatable="yes">Add TRANSFER</attribute>
       <attribute name="action">management-budgets.add-transfer-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Add REFUNDING</attribute>
+      <attribute name="action">management-budgets.add-refunding-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Add REFUNDED</attribute>
+      <attribute name="action">management-budgets.add-refunded-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
     </item>
     <item>
       <attribute name="label" translatable="yes">Move Budget Code</attribute>
@@ -60,8 +76,24 @@
   </menu>
   <menu id="management_simple_budget_bulk_menu">
     <item>
+      <attribute name="label" translatable="yes">Add INC</attribute>
+      <attribute name="action">management-budgets.add-planned-income-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
       <attribute name="label" translatable="yes">Add TRANSFER</attribute>
       <attribute name="action">management-budgets.add-transfer-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Add REFUNDING</attribute>
+      <attribute name="action">management-budgets.add-refunding-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Add REFUNDED</attribute>
+      <attribute name="action">management-budgets.add-refunded-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
     </item>
     <item>
       <attribute name="label" translatable="yes">Use Real Income</attribute>

@@ -2,6 +2,7 @@ use super::*;
 
 mod budget_move;
 mod detail_actions;
+mod detail_mark;
 mod detail_primary;
 mod detail_state;
 mod filter;
@@ -43,4 +44,6 @@ use detail_state::{
 #[cfg(test)]
 use list::{transaction_detail_rows, TransactionDetailRow};
 #[cfg(test)]
-use rule_helpers::invalid_auto_detection_rule_for_transaction;
+use rule_helpers::{
+    editable_refund_rule_for_transaction, invalid_auto_detection_rule_for_transaction,
+};

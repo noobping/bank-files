@@ -10,9 +10,13 @@ fn remember_mode_uses_data_and_analytics_by_default() {
 }
 
 #[test]
-fn spending_comparison_action_maps_to_preference_key() {
+fn preference_actions_map_to_preference_keys() {
     assert_eq!(
         Preferences::key_for_action("app.compare-categories-previous-period"),
         Some("compare-categories-previous-period")
+    );
+    assert_eq!(
+        Preferences::key_for_action("app.hide-refunded-transactions"),
+        Some("hide-refunded-transactions")
     );
 }

@@ -16,9 +16,6 @@ A local GTK app for reviewing bank CSV files. It helps you inspect transactions,
 - Use fixed monthly budgets or percentage-based budgets such as `10%` / `10% of income`.
 - Show monthly and yearly overviews, trends, category changes, budget room, and transaction lists.
 - Warn when spending is above income or planned budgets exceed income; over-budget items stay visible on budget cards. Transfers use `direction=transfer` so internal money moves do not inflate income or expenses.
-- Detect transaction patterns such as repeating payments, full refunds, and fully offsetting groups.
-- Create categorization rules from detected transaction patterns.
-- Toggle duplicate filtering and optional hiding of detected refunded or offsetting transactions.
 - Filter cards and charts into the transaction list, then copy, print, or export the filtered result.
 - Print filtered reports and export cleaned transactions as CSV.
 - Generate an initial budget from imported transactions when the default budgets are still in use.
@@ -85,7 +82,6 @@ The app highlights several situations that are easy to miss in a bank export:
 - **Spending is over budget**: one or more budget codes are over plan, including spending without a configured budget.
 - **Unconfigured budgets**: expense transactions have a missing or unknown budget code.
 - **Other categories**: transactions fall back to `OTHER` or `INC-OTHER`.
-- **Transaction patterns**: recurring payments, full refunds, and fully offsetting groups may need rules or may affect totals.
 
 ## Bundled CSV examples
 
@@ -170,16 +166,6 @@ Canonical names:
 - `transaction_id`
 - `currency`
 - `direction`
-
-## Transaction patterns
-
-Diagnostics can detect useful patterns in imported transactions:
-
-- repeating payments such as rent, salary, subscriptions, and utilities
-- full refunds where an expense and income cancel each other out
-- fully offsetting groups where multiple transactions together offset an original expense
-
-Pattern cards can open matching transactions. When useful, you can create a categorization rule from a pattern. The **Hide Refunded Transactions** preference can exclude detected refunds and splits from normal views and totals.
 
 ## Data location
 

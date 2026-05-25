@@ -50,6 +50,7 @@ pub(in crate::app) struct UiHandles {
     pub(in crate::app) advanced_autofill: Rc<Cell<bool>>,
     pub(in crate::app) advanced_features: Rc<Cell<bool>>,
     pub(in crate::app) remember_mode: Rc<Cell<RememberMode>>,
+    pub(in crate::app) hide_refunded_transactions: Rc<Cell<bool>>,
     pub(in crate::app) management_dialog_active: Rc<Cell<bool>>,
     pub(in crate::app) management_search: Rc<RefCell<Option<SearchToggleHandle>>>,
     pub(in crate::app) management_actions: Rc<RefCell<Vec<gtk::gio::SimpleAction>>>,

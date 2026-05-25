@@ -8,6 +8,7 @@ pub(super) fn register_feature_preference_actions(
     register_advanced_features_action(app, state, ui);
     register_show_all_action(app, state, ui);
     register_compare_categories_action(app, state, ui);
+    register_hide_refunded_transactions_action(app, state, ui);
     register_advanced_autofill_action(app, ui);
 }
 
@@ -114,6 +115,44 @@ fn register_compare_categories_action(
     compare_categories_action.set_enabled(
         ui.preferences
             .action_is_writable("compare-categories-previous-period"),
+    );
+}
+
+fn register_hide_refunded_transactions_action(
+    app: &adw::Application,
+    state: &Rc<RefCell<AppData>>,
+    ui: &Rc<UiHandles>,
+) {
+    let state_for_refunds = Rc::clone(state);
+    let ui_for_refunds = Rc::clone(ui);
+    let action = add_bool_toggle_action(
+        app,
+        "hide-refunded-transactions",
+        ui.hide_refunded_transactions.get(),
+        true,
+        move |enabled| {
+            ui_for_refunds.hide_refunded_transactions.set(enabled);
+            ui_for_refunds
+                .preferences
+                .set_hide_refunded_transactions(enabled);
+            render_views(
+                &state_for_refunds.borrow(),
+                &ui_for_refunds,
+                &state_for_refunds,
+            );
+            show_status(
+                &ui_for_refunds,
+                if enabled {
+                    "Hide Refunded Transactions enabled. REFUNDING and REFUNDED transactions are hidden from normal views."
+                } else {
+                    "Hide Refunded Transactions disabled. REFUNDING and REFUNDED transactions are shown in normal views."
+                },
+            );
+        },
+    );
+    action.set_enabled(
+        ui.preferences
+            .action_is_writable("hide-refunded-transactions"),
     );
 }
 

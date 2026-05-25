@@ -8,6 +8,7 @@ pub(in crate::app) enum TransactionAmountFilter {
     Income,
     Expense,
     Transfer,
+    Refund,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -139,6 +140,16 @@ impl TransactionFilter {
             Self::Scoped { year, month, .. } => year.or_else(|| month.map(|month| month.year)),
             Self::All | Self::UnconfiguredBudgets | Self::OtherCategories => None,
         }
+    }
+
+    pub(in crate::app) fn shows_refunds(&self) -> bool {
+        matches!(
+            self,
+            Self::Scoped {
+                amount: Some(TransactionAmountFilter::Refund),
+                ..
+            }
+        )
     }
 
     pub(in crate::app) fn label(&self) -> &'static str {

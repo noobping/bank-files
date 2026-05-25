@@ -1,9 +1,9 @@
 use super::*;
 
-pub(in crate::app) const BUDGET_CODE: &str = "TRANSFER";
+pub(in crate::app) const BUDGET_CODE: &str = crate::model::TRANSFER_BUDGET_CODE;
 
 pub(in crate::app) fn is_budget_code(code: &str) -> bool {
-    code.trim().eq_ignore_ascii_case(BUDGET_CODE)
+    crate::model::is_transfer_budget_code(code)
 }
 
 pub(in crate::app) fn editable_budget(notes: String) -> EditableBudget {

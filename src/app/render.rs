@@ -105,13 +105,14 @@ fn cancel_current_page_render(ui: &UiHandles) {
 fn prepare_visible_page_data(generation: u64, ui: Rc<UiHandles>, state: Rc<RefCell<AppData>>) {
     let page = current_page(ui.as_ref());
     let transaction_filter = ui.active_transaction_filter.borrow().clone();
+    let hide_refunded_transactions = ui.hide_refunded_transactions.get();
     let fake_transactions = ui.fake_transactions.list();
     let data = state.borrow().clone();
 
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
             let data = data_with_fake_transactions(data, fake_transactions);
-            prepare_page_data(data, page, transaction_filter)
+            prepare_page_data(data, page, transaction_filter, hide_refunded_transactions)
         });
 
         match task.await {
@@ -174,10 +175,20 @@ struct PreparedPageData {
 }
 
 fn prepare_page_data(
-    data: AppData,
-    _page: AppPage,
+    mut data: AppData,
+    page: AppPage,
     transaction_filter: Option<TransactionFilter>,
+    hide_refunded_transactions: bool,
 ) -> PreparedPageData {
+    let refund_filter_active = transaction_filter
+        .as_ref()
+        .map(TransactionFilter::shows_refunds)
+        .unwrap_or(false);
+    if hide_refunded_transactions && !refund_filter_active && page != AppPage::Diagnostics {
+        let budgets = data.budgets.clone();
+        data.transactions
+            .retain(|tx| !analytics::transaction_is_refund(tx, &budgets));
+    }
     let visible = page_data_for_render(&data, transaction_filter.as_ref());
     PreparedPageData { data, visible }
 }
@@ -228,5 +239,49 @@ mod tests {
             ),
             ScopeRenderAction::Render
         );
+    }
+    #[test]
+    fn prepare_page_data_hides_refunds_until_refund_filter_is_active() {
+        let data = AppData {
+            transactions: vec![
+                test_transaction("2026-01-01", -10, "FOOD"),
+                test_transaction("2026-01-02", -10, "REFUNDING"),
+                test_transaction("2026-01-03", 10, "REFUNDED"),
+            ],
+            ..Default::default()
+        };
+
+        let prepared = prepare_page_data(data.clone(), AppPage::Transactions, None, true);
+        assert_eq!(prepared.data.transactions.len(), 1);
+
+        let prepared = prepare_page_data(
+            data,
+            AppPage::Transactions,
+            TransactionFilter::from_query("amount:refund"),
+            true,
+        );
+        assert_eq!(prepared.data.transactions.len(), 3);
+        assert_eq!(prepared.visible.unwrap().transactions.len(), 2);
+    }
+
+    fn test_transaction(date: &str, amount: i64, code: &str) -> Transaction {
+        Transaction {
+            date: chrono::NaiveDate::parse_from_str(date, "%Y-%m-%d").unwrap(),
+            amount: Decimal::new(amount, 0),
+            description: String::new(),
+            counterparty: String::new(),
+            tags: String::new(),
+            account: String::new(),
+            transaction_id: String::new(),
+            currency: "EUR".to_string(),
+            source_file: String::new(),
+            source_row: 0,
+            category: String::new(),
+            budget_code: code.to_string(),
+            notes: String::new(),
+            strict_key: String::new(),
+            loose_key: String::new(),
+            rule_match: None,
+        }
     }
 }

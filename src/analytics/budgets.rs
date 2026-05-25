@@ -21,7 +21,7 @@ pub fn budget_usage(
     for tx in transactions
         .iter()
         .filter(|tx| tx.year() == month.year && tx.amount < Decimal::ZERO)
-        .filter(|tx| !transaction_is_transfer(tx, budgets))
+        .filter(|tx| !transaction_is_budget_neutral(tx, budgets))
     {
         if tx.budget_code.trim().is_empty() {
             continue;
@@ -45,7 +45,7 @@ pub fn budget_usage(
     let mut configured_codes = HashMap::new();
     for budget in budgets
         .iter()
-        .filter(|budget| budget.direction.is_expense())
+        .filter(|budget| budget.direction.is_expense() && !is_refund_budget_code(&budget.code))
     {
         configured_codes.insert(budget.code.clone(), ());
         let actual = actual_by_code
@@ -76,7 +76,7 @@ pub fn budget_usage(
     }
 
     for (code, actual) in actual_by_code {
-        if code.eq_ignore_ascii_case("TRANSFER") || configured_codes.contains_key(&code) {
+        if configured_codes.contains_key(&code) || crate::model::is_reserved_budget_code(&code) {
             continue;
         }
         rows.push(BudgetUsage {

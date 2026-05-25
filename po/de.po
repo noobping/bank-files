@@ -3593,3 +3593,52 @@ msgstr "TRANSFER-Budget existiert bereits. Vorhandenes Budget prüfen, dann spei
 
 msgid "TRANSFER budget added. Press Save to keep it."
 msgstr "TRANSFER-Budget hinzugefügt. Speichern drücken, um es zu behalten."
+
+# Special budget and refund actions
+msgid "Add INC"
+msgstr "INC hinzufügen"
+
+msgid "Add REFUNDING"
+msgstr "REFUNDING hinzufügen"
+
+msgid "Add REFUNDED"
+msgstr "REFUNDED hinzufügen"
+
+msgid "{code} budget already exists. Review existing budget, then Save."
+msgstr "{code}-Budget existiert bereits. Vorhandenes Budget prüfen, dann speichern."
+
+msgid "{code} budget added. Press Save to keep it."
+msgstr "{code}-Budget hinzugefügt. Speichern drücken, um es zu behalten."
+
+msgid "Refunding"
+msgstr "Zu erstatten"
+
+msgid "Refunded"
+msgstr "Erstattet"
+
+msgid "Refunds"
+msgstr "Erstattungen"
+
+msgid "Hide REFUNDING and REFUNDED transactions from normal views and totals."
+msgstr "REFUNDING- und REFUNDED-Transaktionen in normalen Ansichten und Summen ausblenden."
+
+msgid "Control budget detail, whole-form autofill, and refund visibility."
+msgstr "Budgetdetails, automatisches Ausfüllen ganzer Formulare und Sichtbarkeit von Erstattungen steuern."
+
+msgid "Hide Refunded Transactions enabled. REFUNDING and REFUNDED transactions are hidden from normal views."
+msgstr "Erstattete Transaktionen ausblenden aktiviert. REFUNDING- und REFUNDED-Transaktionen werden in normalen Ansichten ausgeblendet."
+
+msgid "Hide Refunded Transactions disabled. REFUNDING and REFUNDED transactions are shown in normal views."
+msgstr "Erstattete Transaktionen ausblenden deaktiviert. REFUNDING- und REFUNDED-Transaktionen werden in normalen Ansichten angezeigt."
+
+msgid "Mark refund"
+msgstr "Als Erstattung markieren"
+
+msgid "Undo refund mark"
+msgstr "Erstattungsmarkierung rückgängig machen"
+
+msgid "Undo refund"
+msgstr "Erstattung rückgängig machen"
+
+msgid "Edit the rule by removing the matching refund keyword"
+msgstr "Bearbeite die Regel, indem das passende Erstattungsstichwort entfernt wird"

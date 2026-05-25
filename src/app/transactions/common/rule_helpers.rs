@@ -35,6 +35,25 @@ fn non_transfer_rule_values(tx: &Transaction) -> (String, String, &'static str) 
     }
 }
 
+pub(super) fn editable_refund_rule_for_transaction(tx: &Transaction) -> EditableRule {
+    let kind = refund_budget::RefundBudgetKind::for_amount(tx.amount);
+    let (field, search) = transaction_rule_match(tx);
+
+    EditableRule {
+        priority: 140,
+        active: true,
+        field,
+        search,
+        is_regex: false,
+        category: kind.category(),
+        budget_code: kind.code().to_string(),
+        direction: kind.direction().to_string(),
+        amount_min: String::new(),
+        amount_max: String::new(),
+        notes: tr("Generated from transaction detail."),
+    }
+}
+
 pub(super) fn editable_rule_for_transaction(
     tx: &Transaction,
     direction_override: Option<&str>,
@@ -75,7 +94,7 @@ fn transaction_rule_match(tx: &Transaction) -> (String, String) {
 }
 
 pub(super) fn transaction_direction_id(tx: &Transaction) -> &'static str {
-    if tx.budget_code.trim().eq_ignore_ascii_case("TRANSFER") {
+    if crate::model::is_transfer_budget_code(&tx.budget_code) {
         "transfer"
     } else if tx.amount > Decimal::ZERO {
         "income"
@@ -97,7 +116,8 @@ pub(super) fn suggested_budget_code(tx: &Transaction, direction: Option<&str>) -
     let current = tx.budget_code.trim();
     if !current.is_empty()
         && !matches!(current, "OTHER" | "INC-OTHER")
-        && !current.eq_ignore_ascii_case("TRANSFER")
+        && !crate::model::is_transfer_budget_code(current)
+        && !crate::model::is_refund_budget_code(current)
     {
         return current.to_string();
     }

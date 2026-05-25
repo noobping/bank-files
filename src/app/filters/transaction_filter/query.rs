@@ -30,6 +30,7 @@ impl TransactionFilter {
                         TransactionAmountFilter::Income => "amount:income".to_string(),
                         TransactionAmountFilter::Expense => "amount:expense".to_string(),
                         TransactionAmountFilter::Transfer => "amount:transfer".to_string(),
+                        TransactionAmountFilter::Refund => "amount:refund".to_string(),
                     });
                 }
                 tokens.join(" ")
@@ -90,6 +91,10 @@ impl TransactionFilter {
                     }
                     "transfer" | "transfers" => {
                         amount = Some(TransactionAmountFilter::Transfer);
+                        recognized = true;
+                    }
+                    "refund" | "refunds" | "refunding" | "refunded" => {
+                        amount = Some(TransactionAmountFilter::Refund);
                         recognized = true;
                     }
                     _ => {}

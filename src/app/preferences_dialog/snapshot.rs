@@ -54,6 +54,11 @@ pub(super) fn preferences_page_snapshot(
                 "Fill related form fields from the value you choose, such as matching categories, budget codes, and directions.",
                 "app.advanced-autofill",
             ),
+            (
+                "Hide Refunded Transactions",
+                "Hide REFUNDING and REFUNDED transactions from normal views and totals.",
+                "app.hide-refunded-transactions",
+            ),
         ],
         advanced_features,
         preferences,

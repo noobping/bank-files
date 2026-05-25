@@ -57,6 +57,11 @@ const SEARCH_PRESET_SPECS: &[SearchPresetSpec] = &[
     },
     SearchPresetSpec {
         section: SearchPresetSection::Transactions,
+        label: "Refunds",
+        id: "refund",
+    },
+    SearchPresetSpec {
+        section: SearchPresetSection::Transactions,
         label: "Current Month",
         id: "current-month",
     },
@@ -147,6 +152,7 @@ pub(super) enum SearchPreset {
     Income,
     Expense,
     Transfer,
+    Refund,
     CurrentMonth,
     CurrentYear,
     UnconfiguredBudgets,
@@ -164,6 +170,7 @@ impl SearchPreset {
             "income" => Some(Self::Income),
             "expense" => Some(Self::Expense),
             "transfer" => Some(Self::Transfer),
+            "refund" => Some(Self::Refund),
             "current-month" => Some(Self::CurrentMonth),
             "current-year" => Some(Self::CurrentYear),
             "unconfigured-budgets" => Some(Self::UnconfiguredBudgets),
@@ -182,6 +189,7 @@ impl SearchPreset {
             Self::Income => Some("amount:income".to_string()),
             Self::Expense => Some("amount:expense".to_string()),
             Self::Transfer => Some("amount:transfer".to_string()),
+            Self::Refund => Some("amount:refund".to_string()),
             Self::CurrentMonth => selected_budget_month(data, ui)
                 .map(TransactionFilter::month)
                 .map(|filter| filter.query()),
@@ -203,6 +211,7 @@ impl SearchPreset {
             Self::Income
             | Self::Expense
             | Self::Transfer
+            | Self::Refund
             | Self::CurrentMonth
             | Self::CurrentYear
             | Self::UnconfiguredBudgets
@@ -221,6 +230,7 @@ impl SearchPreset {
             | Self::Income
             | Self::Expense
             | Self::Transfer
+            | Self::Refund
             | Self::UnconfiguredBudgets
             | Self::OtherCategories
             | Self::Warnings

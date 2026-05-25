@@ -4,7 +4,26 @@ pub(super) fn connect_add_actions(actions: &ManagementDialogActions<'_>) {
     connect_header_add_action(actions);
     connect_rule_add_action(actions);
     connect_budget_add_action(actions);
-    connect_transfer_budget_add_action(actions);
+    connect_special_budget_add_action(
+        actions,
+        actions.add_planned_income_budget_action,
+        SpecialBudgetAdd::PlannedIncome,
+    );
+    connect_special_budget_add_action(
+        actions,
+        actions.add_transfer_budget_action,
+        SpecialBudgetAdd::Transfer,
+    );
+    connect_special_budget_add_action(
+        actions,
+        actions.add_refunding_budget_action,
+        SpecialBudgetAdd::Refunding,
+    );
+    connect_special_budget_add_action(
+        actions,
+        actions.add_refunded_budget_action,
+        SpecialBudgetAdd::Refunded,
+    );
     connect_alias_add_action(actions);
 }
 
@@ -107,7 +126,64 @@ fn connect_budget_add_action(actions: &ManagementDialogActions<'_>) {
     });
 }
 
-fn connect_transfer_budget_add_action(actions: &ManagementDialogActions<'_>) {
+#[derive(Debug, Clone, Copy)]
+enum SpecialBudgetAdd {
+    PlannedIncome,
+    Transfer,
+    Refunding,
+    Refunded,
+}
+
+impl SpecialBudgetAdd {
+    fn code(self) -> &'static str {
+        match self {
+            Self::PlannedIncome => planned_income::BUDGET_CODE,
+            Self::Transfer => transfer_budget::BUDGET_CODE,
+            Self::Refunding => crate::model::REFUNDING_BUDGET_CODE,
+            Self::Refunded => crate::model::REFUNDED_BUDGET_CODE,
+        }
+    }
+
+    fn editable_budget(self) -> EditableBudget {
+        match self {
+            Self::PlannedIncome => planned_income::editable_budget(
+                tr("Income"),
+                "0".to_string(),
+                String::new(),
+                String::new(),
+            ),
+            Self::Transfer => transfer_budget::editable_budget(String::new()),
+            Self::Refunding => refund_budget::editable_budget(
+                refund_budget::RefundBudgetKind::Refunding,
+                String::new(),
+            ),
+            Self::Refunded => refund_budget::editable_budget(
+                refund_budget::RefundBudgetKind::Refunded,
+                String::new(),
+            ),
+        }
+    }
+
+    fn already_exists_message(self) -> String {
+        trf(
+            "{code} budget already exists. Review existing budget, then Save.",
+            &[("code", self.code().to_string())],
+        )
+    }
+
+    fn added_message(self) -> String {
+        trf(
+            "{code} budget added. Press Save to keep it.",
+            &[("code", self.code().to_string())],
+        )
+    }
+}
+
+fn connect_special_budget_add_action(
+    actions: &ManagementDialogActions<'_>,
+    special_action: &gtk::gio::SimpleAction,
+    special: SpecialBudgetAdd,
+) {
     let budgets_list = actions.budgets_list.clone();
     let budgets_forms = Rc::clone(actions.budgets_forms);
     let budgets_scroll = actions.budgets_scroll.clone();
@@ -116,38 +192,57 @@ fn connect_transfer_budget_add_action(actions: &ManagementDialogActions<'_>) {
     let advanced_autofill = Rc::clone(&actions.ui_handles.advanced_autofill);
     let ui_handles = Rc::clone(actions.ui_handles);
 
-    actions
-        .add_transfer_budget_action
-        .connect_activate(move |action, _| {
-            if !action.is_enabled() {
-                return;
-            }
-            if transfer_budget_form_exists(&budgets_forms.borrow()) {
-                status.set_text(&tr(
-                    "TRANSFER budget already exists. Review existing budget, then Save.",
-                ));
-                return;
-            }
+    special_action.connect_activate(move |action, _| {
+        if !action.is_enabled() {
+            return;
+        }
+        if special_budget_form_exists(&budgets_forms.borrow(), special.code()) {
+            status.set_text(&special.already_exists_message());
+            action.set_enabled(false);
+            return;
+        }
 
-            append_budget_form(
-                &budgets_list,
-                &budgets_forms,
-                transfer_budget::editable_budget(String::new()),
-                false,
-                &advanced_autofill,
-                ui_handles.advanced_features.get(),
-            );
-            filter_budget_forms(&filter_entry.text(), &budgets_forms.borrow());
-            status.set_text(&tr("TRANSFER budget added. Press Save to keep it."));
-            scroll_budget_forms_to_bottom(&budgets_scroll);
-        });
+        append_special_budget_form(
+            &budgets_list,
+            &budgets_forms,
+            special,
+            &advanced_autofill,
+            ui_handles.advanced_features.get(),
+        );
+        filter_budget_forms(&filter_entry.text(), &budgets_forms.borrow());
+        status.set_text(&special.added_message());
+        action.set_enabled(false);
+        scroll_budget_forms_to_bottom(&budgets_scroll);
+    });
 }
 
-fn transfer_budget_form_exists(forms: &[BudgetForm]) -> bool {
+fn append_special_budget_form(
+    budgets_list: &gtk::Box,
+    budgets_forms: &Rc<RefCell<Vec<BudgetForm>>>,
+    special: SpecialBudgetAdd,
+    advanced_autofill: &Rc<Cell<bool>>,
+    advanced_features: bool,
+) {
+    let budget = special.editable_budget();
+    if matches!(special, SpecialBudgetAdd::PlannedIncome) {
+        append_planned_income_budget_form(budgets_list, budgets_forms, budget, advanced_features);
+    } else {
+        append_budget_form(
+            budgets_list,
+            budgets_forms,
+            budget,
+            false,
+            advanced_autofill,
+            advanced_features,
+        );
+    }
+}
+
+fn special_budget_form_exists(forms: &[BudgetForm], code: &str) -> bool {
     forms
         .iter()
         .filter(|form| !form.deleted.get())
-        .any(|form| transfer_budget::is_budget_code(&ui::combo_text(&form.code)))
+        .any(|form| ui::combo_text(&form.code).eq_ignore_ascii_case(code))
 }
 
 fn scroll_budget_forms_to_bottom(scrolled_window: &gtk::ScrolledWindow) {

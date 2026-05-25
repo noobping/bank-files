@@ -131,15 +131,17 @@ pub(in crate::app) fn show_new_budget_dialog(request: NewBudgetDialogRequest<'_>
         };
 
         let direction_text = budget_direction_for_save(&combo_active_id(&direction));
-        let budget = transfer_budget::normalize_editable_budget(EditableBudget {
-            code: code_text,
-            category: category_text,
-            monthly_budget: monthly_budget.text().trim().to_string(),
-            yearly_budget: yearly_budget.text().trim().to_string(),
-            direction: direction_text,
-            income_basis: combo_active_id(&income_basis),
-            notes: notes.text().trim().to_string(),
-        });
+        let budget = refund_budget::normalize_editable_budget(
+            transfer_budget::normalize_editable_budget(EditableBudget {
+                code: code_text,
+                category: category_text,
+                monthly_budget: monthly_budget.text().trim().to_string(),
+                yearly_budget: yearly_budget.text().trim().to_string(),
+                direction: direction_text,
+                income_basis: combo_active_id(&income_basis),
+                notes: notes.text().trim().to_string(),
+            }),
+        );
         append_budget_form(
             &container_for_add,
             &forms_for_add,

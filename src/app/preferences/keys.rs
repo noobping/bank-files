@@ -1,7 +1,7 @@
 use super::*;
 
 impl Preferences {
-    pub(in crate::app) const WRITABLE_KEYS: [&'static str; 13] = [
+    pub(in crate::app) const WRITABLE_KEYS: [&'static str; 14] = [
         "active-tab",
         "autohide-status-bar",
         "show-all",
@@ -10,6 +10,7 @@ impl Preferences {
         "advanced-features",
         "remember-mode",
         "dedupe-enabled",
+        "hide-refunded-transactions",
         "selected-year",
         "selected-budget-month",
         "window-width",
@@ -26,6 +27,7 @@ impl Preferences {
             "advanced-features" => Some("advanced-features"),
             "remember-mode" => Some("remember-mode"),
             "dedupe-enabled" => Some("dedupe-enabled"),
+            "hide-refunded-transactions" => Some("hide-refunded-transactions"),
             _ => None,
         }
     }

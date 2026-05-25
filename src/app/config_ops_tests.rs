@@ -94,6 +94,27 @@ fn queued_transfer_rule_creates_canonical_transfer_budget() {
 }
 
 #[test]
+fn queued_refund_rule_creates_canonical_refund_budget() {
+    let mut rules = Vec::new();
+    let mut budgets = Vec::new();
+    let refund_rule = EditableRule {
+        category: "Refunded".to_string(),
+        budget_code: "refunded".to_string(),
+        direction: "income".to_string(),
+        ..rule("Return", "refunded")
+    };
+
+    let change = apply_rule_to_editable_config(&mut rules, &mut budgets, refund_rule, true);
+
+    assert!(change.budget_added);
+    assert_eq!(budgets.len(), 1);
+    assert_eq!(budgets[0].code, crate::model::REFUNDED_BUDGET_CODE);
+    assert_eq!(budgets[0].category, "Refunded");
+    assert_eq!(budgets[0].direction, "income");
+    assert_eq!(budgets[0].income_basis, "real");
+}
+
+#[test]
 fn queued_rule_does_not_create_budget_without_ensure_flag() {
     let mut rules = Vec::new();
     let mut budgets = Vec::new();

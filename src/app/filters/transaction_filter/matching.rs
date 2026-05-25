@@ -39,15 +39,18 @@ impl TransactionFilter {
                 }
                 match amount {
                     Some(TransactionAmountFilter::Income) => {
-                        !analytics::transaction_is_transfer(tx, budgets)
+                        !analytics::transaction_is_budget_neutral(tx, budgets)
                             && tx.amount > rust_decimal::Decimal::ZERO
                     }
                     Some(TransactionAmountFilter::Expense) => {
-                        !analytics::transaction_is_transfer(tx, budgets)
+                        !analytics::transaction_is_budget_neutral(tx, budgets)
                             && tx.amount < rust_decimal::Decimal::ZERO
                     }
                     Some(TransactionAmountFilter::Transfer) => {
                         analytics::transaction_is_transfer(tx, budgets)
+                    }
+                    Some(TransactionAmountFilter::Refund) => {
+                        analytics::transaction_is_refund(tx, budgets)
                     }
                     None => true,
                 }

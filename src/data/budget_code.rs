@@ -1,7 +1,5 @@
+use crate::model::is_reserved_budget_code;
 use std::collections::HashSet;
-
-const PLANNED_INCOME_CODE: &str = "INC";
-const TRANSFER_CODE: &str = "TRANSFER";
 
 pub fn generated_budget_code_for_category(category: &str, existing_codes: &[String]) -> String {
     let reserved = existing_codes
@@ -51,8 +49,7 @@ fn budget_code_is_unavailable(code: &str, reserved: &HashSet<String>) -> bool {
 }
 
 fn budget_code_is_reserved(code: &str) -> bool {
-    code.trim().eq_ignore_ascii_case(PLANNED_INCOME_CODE)
-        || code.trim().eq_ignore_ascii_case(TRANSFER_CODE)
+    is_reserved_budget_code(code)
 }
 
 #[cfg(test)]
@@ -79,6 +76,14 @@ mod tests {
         assert_eq!(
             generated_budget_code_for_category("Transfer", &[]),
             "TRANSFER-2"
+        );
+        assert_eq!(
+            generated_budget_code_for_category("Refunding", &[]),
+            "REFUNDING-2"
+        );
+        assert_eq!(
+            generated_budget_code_for_category("Refunded", &[]),
+            "REFUNDED-2"
         );
     }
 }

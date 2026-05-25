@@ -84,6 +84,40 @@ fn transfer_budget_code_forces_transfer_direction() {
 }
 
 #[test]
+fn refund_budget_codes_force_canonical_direction_and_basis() {
+    let budgets = vec![
+        EditableBudget {
+            code: " refunding ".to_string(),
+            category: "Refunding".to_string(),
+            monthly_budget: "0".to_string(),
+            yearly_budget: String::new(),
+            direction: "income".to_string(),
+            income_basis: "planned".to_string(),
+            notes: String::new(),
+        },
+        EditableBudget {
+            code: " refunded ".to_string(),
+            category: "Refunded".to_string(),
+            monthly_budget: "0".to_string(),
+            yearly_budget: String::new(),
+            direction: "expense".to_string(),
+            income_basis: "planned".to_string(),
+            notes: String::new(),
+        },
+    ];
+
+    let csv = serialize_editable_budgets(&budgets).unwrap();
+    let parsed = parse_editable_budgets(&csv).unwrap();
+
+    assert_eq!(parsed[0].code, "REFUNDING");
+    assert_eq!(parsed[0].direction, "expense");
+    assert_eq!(parsed[0].income_basis, "real");
+    assert_eq!(parsed[1].code, "REFUNDED");
+    assert_eq!(parsed[1].direction, "income");
+    assert_eq!(parsed[1].income_basis, "real");
+}
+
+#[test]
 fn upsert_alias_adds_once() {
     let mut aliases = Vec::new();
     assert!(config::upsert_alias(&mut aliases, "date", "Boekdatum").unwrap());

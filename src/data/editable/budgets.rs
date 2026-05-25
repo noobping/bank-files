@@ -1,7 +1,8 @@
 use super::*;
-use crate::model::{BudgetDirection, BudgetIncomeBasis};
-
-const TRANSFER_BUDGET_CODE: &str = "TRANSFER";
+use crate::model::{
+    canonical_special_budget_code, is_planned_income_budget_code, is_refund_budget_code,
+    is_transfer_budget_code, BudgetDirection, BudgetIncomeBasis,
+};
 
 pub(in crate::data) fn parse_editable_budgets(contents: &str) -> Result<Vec<EditableBudget>> {
     let mut rdr = csv::ReaderBuilder::new()
@@ -42,15 +43,16 @@ pub(in crate::data) fn parse_editable_budgets(contents: &str) -> Result<Vec<Edit
 }
 
 fn budget_code_for_config(code: &str) -> String {
-    if code.trim().eq_ignore_ascii_case(TRANSFER_BUDGET_CODE) {
-        TRANSFER_BUDGET_CODE.to_string()
-    } else {
-        code.trim().to_string()
-    }
+    canonical_special_budget_code(code)
+        .unwrap_or_else(|| code.trim())
+        .to_string()
 }
 
 fn budget_income_basis_for_config(input: &str, code: &str) -> BudgetIncomeBasis {
-    if code.trim().eq_ignore_ascii_case(TRANSFER_BUDGET_CODE) {
+    if is_planned_income_budget_code(code)
+        || is_transfer_budget_code(code)
+        || is_refund_budget_code(code)
+    {
         BudgetIncomeBasis::RealIncome
     } else {
         BudgetIncomeBasis::parse(input)
@@ -58,8 +60,14 @@ fn budget_income_basis_for_config(input: &str, code: &str) -> BudgetIncomeBasis 
 }
 
 fn budget_direction_for_config(input: &str, code: &str, category: &str) -> BudgetDirection {
-    if code.trim().eq_ignore_ascii_case(TRANSFER_BUDGET_CODE) {
+    if is_planned_income_budget_code(code) {
+        BudgetDirection::Income
+    } else if is_transfer_budget_code(code) {
         BudgetDirection::Transfer
+    } else if crate::model::is_refunded_budget_code(code) {
+        BudgetDirection::Income
+    } else if crate::model::is_refunding_budget_code(code) {
+        BudgetDirection::Expense
     } else {
         BudgetDirection::parse(input, code, category)
     }

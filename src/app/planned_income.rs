@@ -1,11 +1,11 @@
 use super::*;
 
-pub(in crate::app) const BUDGET_CODE: &str = "INC";
+pub(in crate::app) const BUDGET_CODE: &str = crate::model::PLANNED_INCOME_BUDGET_CODE;
 pub(in crate::app) const NET_INCOME_REMINDER: &str =
     "Income can be gross or net. Net income is needed for budgeting and calculations.";
 
 pub(in crate::app) fn is_budget_code(code: &str) -> bool {
-    code.trim().eq_ignore_ascii_case(BUDGET_CODE)
+    crate::model::is_planned_income_budget_code(code)
 }
 
 pub(in crate::app) fn fixed_budget_amount_text(input: &str) -> String {

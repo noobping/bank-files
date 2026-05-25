@@ -2,15 +2,16 @@ use super::budget_move::{
     show_transaction_budget_code_dialog, transaction_budget_move_available,
     transaction_is_markable_as_transfer,
 };
+use super::detail_mark::{append_mark_refund_action, append_mark_transfer_action};
 use super::detail_primary::{
-    append_primary_move_budget_action, append_primary_transfer_undo_action, append_similar_action,
+    append_primary_move_budget_action, append_primary_refund_undo_action,
+    append_primary_transfer_undo_action, append_similar_action,
 };
 use super::rule_dialog::show_transaction_rule_dialog;
 use super::rule_helpers::{
-    editable_rule_for_transaction, invalid_auto_detection_rule_for_transaction,
-    suggested_budget_code, suggested_category,
+    invalid_auto_detection_rule_for_transaction, suggested_budget_code, suggested_category,
 };
-use super::rule_ops::{apply_invalid_auto_detection_rule, apply_transaction_direction_rule};
+use super::rule_ops::apply_invalid_auto_detection_rule;
 use super::*;
 
 use super::detail_state::{
@@ -36,23 +37,25 @@ pub(super) fn transaction_detail_actions(
     let advanced_features = ui_handles.advanced_features.get();
     let auto_detected_classification =
         crate::rules::transaction_classification_is_auto_detected(tx);
-    let (markable_as_transfer, budget_move_available) = {
+    let (markable_as_transfer, markable_as_refund, budget_move_available) = {
         let data = state.borrow();
         (
             transaction_is_markable_as_transfer(tx, &data.budgets),
+            !analytics::transaction_is_refund(tx, &data.budgets),
             transaction_budget_move_available(tx, &data.budgets, advanced_features),
         )
     };
-    let transfer_marked = !markable_as_transfer;
+    let special_marked = !markable_as_transfer || !markable_as_refund;
     let visible_actions = visible_transaction_detail_actions(
         advanced_features,
         markable_as_transfer,
+        markable_as_refund,
         budget_move_available,
         auto_detected_classification,
         tx.rule_match.is_some(),
     );
     let config_menu_action_enabled = transaction_detail_config_action_enabled(ui_handles.as_ref());
-    let move_budget_code_placement = transaction_detail_move_budget_code_placement(transfer_marked);
+    let move_budget_code_placement = transaction_detail_move_budget_code_placement(special_marked);
 
     if visible_actions.contains(&TransactionDetailAction::MoveBudgetCode)
         && move_budget_code_placement == TransactionDetailActionPlacement::Primary
@@ -104,6 +107,12 @@ pub(super) fn transaction_detail_actions(
         }
     }
 
+    if visible_actions.contains(&TransactionDetailAction::UndoRefund) {
+        if let Some(enabled) = config_menu_action_enabled {
+            append_primary_refund_undo_action(tx, ui_handles, &primary_actions, enabled);
+        }
+    }
+
     if visible_actions.contains(&TransactionDetailAction::Similar) {
         append_similar_action(tx, state, ui_handles, &primary_actions);
     }
@@ -144,37 +153,27 @@ pub(super) fn transaction_detail_actions(
 
     if visible_actions.contains(&TransactionDetailAction::MarkTransfer) {
         if let Some(enabled) = config_menu_action_enabled {
-            let tx_for_transfer = tx.clone();
-            let ui_for_transfer = Rc::clone(ui_handles);
-            let transfer_operation = queued_rule_operation_kind(
-                editable_rule_for_transaction(tx, Some("transfer")),
-                OperationSource::MarkTransfer,
-            );
-            let action = append_transaction_detail_menu_action(
-                &menu,
-                &menu_actions,
-                "mark-transfer",
-                "Mark transfer",
-                enabled,
-                move || {
-                    if transaction_detail_config_action_blocked(
-                        &ui_for_transfer,
-                        "Another edit or save is already running.",
-                    ) {
-                        return;
-                    }
-                    apply_transaction_direction_rule(
-                        &tx_for_transfer,
-                        "transfer",
-                        &ui_for_transfer,
-                    );
-                },
-            );
-            register_operation_queue_menu_action(
+            append_mark_transfer_action(
+                tx,
                 ui_handles,
                 &primary_actions,
-                &action,
-                transfer_operation,
+                &menu,
+                &menu_actions,
+                enabled,
+            );
+            has_menu_items = true;
+        }
+    }
+
+    if visible_actions.contains(&TransactionDetailAction::MarkRefund) {
+        if let Some(enabled) = config_menu_action_enabled {
+            append_mark_refund_action(
+                tx,
+                ui_handles,
+                &primary_actions,
+                &menu,
+                &menu_actions,
+                enabled,
             );
             has_menu_items = true;
         }

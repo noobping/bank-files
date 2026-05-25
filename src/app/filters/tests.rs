@@ -62,15 +62,29 @@ fn transaction_amount_filter_aliases_are_parsed() {
             ..
         })
     ));
+    assert!(matches!(
+        TransactionFilter::from_query("amount:refunded"),
+        Some(TransactionFilter::Scoped {
+            amount: Some(TransactionAmountFilter::Refund),
+            ..
+        })
+    ));
 }
 
 #[test]
-fn transaction_transfer_filter_round_trips() {
+fn transaction_special_amount_filters_round_trip() {
     let Some(filter) = TransactionFilter::from_query("amount:transfer") else {
         panic!("transfer amount filter should parse");
     };
 
     assert_eq!(filter.query(), "amount:transfer");
+
+    let Some(filter) = TransactionFilter::from_query("amount:refund") else {
+        panic!("refund amount filter should parse");
+    };
+
+    assert_eq!(filter.query(), "amount:refund");
+    assert!(filter.shows_refunds());
 }
 
 #[test]

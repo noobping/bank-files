@@ -68,7 +68,9 @@ pub(super) fn operation_title(kind: &QueuedOperationKind) -> String {
         OperationSource::CreateRule => "Create rule",
         OperationSource::ChangeBudgetCode => "Change budget code",
         OperationSource::MarkTransfer => "Mark transfer",
+        OperationSource::MarkRefund => "Mark refund",
         OperationSource::UndoTransfer => "Undo transfer mark",
+        OperationSource::UndoRefund => "Undo refund mark",
         OperationSource::MarkInvalid => "Mark invalid detection",
     })
 }

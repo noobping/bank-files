@@ -48,6 +48,7 @@ mod popup;
 mod preferences;
 mod preferences_dialog;
 mod print;
+mod refund_budget;
 mod render;
 mod rule_dialog;
 mod rule_text;

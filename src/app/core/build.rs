@@ -152,6 +152,7 @@ pub(super) fn build_ui_with_startup_request(
         advanced_autofill: Rc::new(Cell::new(preferences.advanced_autofill())),
         advanced_features: Rc::new(Cell::new(preferences.advanced_features())),
         remember_mode: Rc::new(Cell::new(preferences.remember_mode())),
+        hide_refunded_transactions: Rc::new(Cell::new(preferences.hide_refunded_transactions())),
         management_dialog_active: Rc::new(Cell::new(false)),
         management_search: Rc::new(RefCell::new(None)),
         management_actions: Rc::new(RefCell::new(Vec::new())),

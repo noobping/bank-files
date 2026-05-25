@@ -41,6 +41,11 @@
       <summary>Duplicate filtering</summary>
       <description>Whether duplicate transactions are skipped during import.</description>
     </key>
+    <key name="hide-refunded-transactions" type="b">
+      <default>true</default>
+      <summary>Hide refunded transactions</summary>
+      <description>Whether REFUNDING and REFUNDED transactions are hidden from normal views and totals.</description>
+    </key>
     <key name="selected-year" type="i">
       <default>0</default>
       <summary>Selected overview year</summary>

@@ -15,52 +15,81 @@ fn transfer_transactions_show_undo_instead_of_mark_transfer() {
     let expense = tx(-20, "FOOD", "Groceries");
     assert!(transaction_is_markable_as_transfer(&expense, &[]));
 
-    let simple_actions = visible_transaction_detail_actions(false, false, true, false, true);
+    let simple_actions = visible_transaction_detail_actions(false, false, true, true, false, true);
     assert!(simple_actions.contains(&TransactionDetailAction::UndoTransfer));
     assert!(!simple_actions.contains(&TransactionDetailAction::MarkTransfer));
+    assert!(!simple_actions.contains(&TransactionDetailAction::UndoRefund));
 
-    let advanced_actions = visible_transaction_detail_actions(true, false, true, false, true);
+    let advanced_actions = visible_transaction_detail_actions(true, false, true, true, false, true);
     assert!(advanced_actions.contains(&TransactionDetailAction::UndoTransfer));
     assert!(!advanced_actions.contains(&TransactionDetailAction::MarkTransfer));
 }
 
 #[test]
+fn refunded_transactions_show_refund_undo_instead_of_mark_refund() {
+    let refunded_actions =
+        visible_transaction_detail_actions(false, true, false, true, false, true);
+
+    assert!(refunded_actions.contains(&TransactionDetailAction::UndoRefund));
+    assert!(!refunded_actions.contains(&TransactionDetailAction::MarkRefund));
+}
+
+#[test]
 fn simple_mode_hides_rule_and_budget_editing_transaction_actions() {
-    let simple_actions = visible_transaction_detail_actions(false, true, true, false, false);
+    let simple_actions = visible_transaction_detail_actions(false, true, true, true, false, false);
     assert!(!simple_actions.contains(&TransactionDetailAction::CreateRule));
     assert!(!simple_actions.contains(&TransactionDetailAction::EditBudgetCode));
     assert!(simple_actions.contains(&TransactionDetailAction::MarkTransfer));
+    assert!(simple_actions.contains(&TransactionDetailAction::MarkRefund));
     assert!(!simple_actions.contains(&TransactionDetailAction::UndoTransfer));
     assert!(simple_actions.contains(&TransactionDetailAction::MoveBudgetCode));
     assert!(simple_actions.contains(&TransactionDetailAction::DuplicateAsFake));
     assert!(simple_actions.contains(&TransactionDetailAction::Similar));
 
-    let advanced_actions = visible_transaction_detail_actions(true, true, true, false, false);
+    let advanced_actions = visible_transaction_detail_actions(true, true, true, true, false, false);
     assert!(advanced_actions.contains(&TransactionDetailAction::CreateRule));
     assert!(advanced_actions.contains(&TransactionDetailAction::EditBudgetCode));
     assert!(advanced_actions.contains(&TransactionDetailAction::MarkTransfer));
+    assert!(advanced_actions.contains(&TransactionDetailAction::MarkRefund));
     assert!(!advanced_actions.contains(&TransactionDetailAction::UndoTransfer));
     assert!(
-        !visible_transaction_detail_actions(false, false, true, false, false)
+        !visible_transaction_detail_actions(false, false, true, true, false, false)
             .contains(&TransactionDetailAction::MarkTransfer)
     );
     assert!(
-        !visible_transaction_detail_actions(true, false, true, false, false)
+        !visible_transaction_detail_actions(true, false, true, true, false, false)
             .contains(&TransactionDetailAction::MarkTransfer)
     );
 }
 
 #[test]
+fn refund_rule_uses_refunding_and_refunded_codes_by_amount() {
+    let expense = tx(-20, "FOOD", "Groceries");
+    let expense_rule = editable_refund_rule_for_transaction(&expense);
+    assert_eq!(expense_rule.category, tr("Refunding"));
+    assert_eq!(expense_rule.budget_code, "REFUNDING");
+    assert_eq!(expense_rule.direction, "expense");
+
+    let income = tx(20, "INC-OTHER", "Other income");
+    let income_rule = editable_refund_rule_for_transaction(&income);
+    assert_eq!(income_rule.category, tr("Refunded"));
+    assert_eq!(income_rule.budget_code, "REFUNDED");
+    assert_eq!(income_rule.direction, "income");
+}
+
+#[test]
 fn auto_detected_transactions_show_mark_invalid_action() {
-    let regular_actions = visible_transaction_detail_actions(false, true, true, false, false);
+    let regular_actions = visible_transaction_detail_actions(false, true, true, true, false, false);
     assert!(!regular_actions.contains(&TransactionDetailAction::MarkInvalid));
 
-    let auto_detected_actions = visible_transaction_detail_actions(false, true, true, true, false);
+    let auto_detected_actions =
+        visible_transaction_detail_actions(false, true, true, true, true, false);
     assert!(auto_detected_actions.contains(&TransactionDetailAction::MarkInvalid));
     let auto_detected_transfer_actions =
-        visible_transaction_detail_actions(true, false, true, true, true);
+        visible_transaction_detail_actions(true, false, true, true, true, true);
     assert!(auto_detected_transfer_actions.contains(&TransactionDetailAction::MarkInvalid));
     assert!(auto_detected_transfer_actions.contains(&TransactionDetailAction::UndoTransfer));
+    assert!(!auto_detected_transfer_actions.contains(&TransactionDetailAction::UndoRefund));
 }
 
 #[test]
@@ -107,10 +136,10 @@ fn invalid_auto_detection_rule_resets_income_to_other_income() {
 
 #[test]
 fn transfer_undo_requires_matched_rule() {
-    let without_match = visible_transaction_detail_actions(false, false, true, false, false);
+    let without_match = visible_transaction_detail_actions(false, false, true, true, false, false);
     assert!(!without_match.contains(&TransactionDetailAction::UndoTransfer));
 
-    let with_match = visible_transaction_detail_actions(false, false, true, false, true);
+    let with_match = visible_transaction_detail_actions(false, false, true, true, false, true);
     assert!(with_match.contains(&TransactionDetailAction::UndoTransfer));
 }
 

@@ -1,4 +1,4 @@
-use crate::analytics::transaction_is_transfer;
+use crate::analytics::transaction_is_budget_neutral;
 use crate::model::{BudgetCode, Transaction};
 use rust_decimal::Decimal;
 
@@ -16,7 +16,7 @@ pub fn transaction_has_unconfigured_expense_budget(
     tx: &Transaction,
     budgets: &[BudgetCode],
 ) -> bool {
-    if tx.amount >= Decimal::ZERO || transaction_is_transfer(tx, budgets) {
+    if tx.amount >= Decimal::ZERO || transaction_is_budget_neutral(tx, budgets) {
         return false;
     }
 

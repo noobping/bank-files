@@ -58,7 +58,7 @@ fn budget_move_is_hidden_when_there_is_only_one_target() {
         &transfer, &budgets, false
     ));
     assert!(
-        !visible_transaction_detail_actions(true, false, false, false, false)
+        !visible_transaction_detail_actions(true, false, true, false, false, false)
             .contains(&TransactionDetailAction::MoveBudgetCode)
     );
 }
@@ -77,7 +77,7 @@ fn budget_move_is_visible_when_an_alternative_target_exists() {
         false
     ));
     assert!(
-        visible_transaction_detail_actions(false, true, true, true, false)
+        visible_transaction_detail_actions(false, true, true, true, true, false)
             .contains(&TransactionDetailAction::MoveBudgetCode)
     );
 }

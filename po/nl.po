@@ -3593,3 +3593,52 @@ msgstr "TRANSFER-budget bestaat al. Controleer het bestaande budget en druk daar
 
 msgid "TRANSFER budget added. Press Save to keep it."
 msgstr "TRANSFER-budget toegevoegd. Druk op Opslaan om het te bewaren."
+
+# Special budget and refund actions
+msgid "Add INC"
+msgstr "INC toevoegen"
+
+msgid "Add REFUNDING"
+msgstr "REFUNDING toevoegen"
+
+msgid "Add REFUNDED"
+msgstr "REFUNDED toevoegen"
+
+msgid "{code} budget already exists. Review existing budget, then Save."
+msgstr "{code}-budget bestaat al. Controleer het bestaande budget en druk daarna op Opslaan."
+
+msgid "{code} budget added. Press Save to keep it."
+msgstr "{code}-budget toegevoegd. Druk op Opslaan om het te bewaren."
+
+msgid "Refunding"
+msgstr "Terug te betalen"
+
+msgid "Refunded"
+msgstr "Terugbetaald"
+
+msgid "Refunds"
+msgstr "Terugbetalingen"
+
+msgid "Hide REFUNDING and REFUNDED transactions from normal views and totals."
+msgstr "Verberg REFUNDING- en REFUNDED-transacties in normale weergaven en totalen."
+
+msgid "Control budget detail, whole-form autofill, and refund visibility."
+msgstr "Beheer budgetdetails, automatisch aanvullen van hele formulieren en zichtbaarheid van terugbetalingen."
+
+msgid "Hide Refunded Transactions enabled. REFUNDING and REFUNDED transactions are hidden from normal views."
+msgstr "Terugbetaalde transacties verbergen ingeschakeld. REFUNDING- en REFUNDED-transacties worden verborgen in normale weergaven."
+
+msgid "Hide Refunded Transactions disabled. REFUNDING and REFUNDED transactions are shown in normal views."
+msgstr "Terugbetaalde transacties verbergen uitgeschakeld. REFUNDING- en REFUNDED-transacties worden getoond in normale weergaven."
+
+msgid "Mark refund"
+msgstr "Als terugbetaling markeren"
+
+msgid "Undo refund mark"
+msgstr "Terugbetalingsmarkering ongedaan maken"
+
+msgid "Undo refund"
+msgstr "Terugbetaling ongedaan maken"
+
+msgid "Edit the rule by removing the matching refund keyword"
+msgstr "Bewerk de regel door het overeenkomende terugbetalingstrefwoord te verwijderen"

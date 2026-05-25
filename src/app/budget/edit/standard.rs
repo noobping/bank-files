@@ -176,15 +176,17 @@ pub(in crate::app) fn show_budget_edit_dialog(
             return;
         };
 
-        let budget = transfer_budget::normalize_editable_budget(EditableBudget {
-            code: code_text,
-            category: category_text,
-            monthly_budget: monthly_budget.text().trim().to_string(),
-            yearly_budget: yearly_budget.text().trim().to_string(),
-            direction: ui::combo_active_id(&direction),
-            income_basis: ui::combo_active_id(&income_basis),
-            notes: notes.text().trim().to_string(),
-        });
+        let budget = refund_budget::normalize_editable_budget(
+            transfer_budget::normalize_editable_budget(EditableBudget {
+                code: code_text,
+                category: category_text,
+                monthly_budget: monthly_budget.text().trim().to_string(),
+                yearly_budget: yearly_budget.text().trim().to_string(),
+                direction: ui::combo_active_id(&direction),
+                income_basis: ui::combo_active_id(&income_basis),
+                notes: notes.text().trim().to_string(),
+            }),
+        );
 
         let direction_changes = if can_delete_budget {
             let from =

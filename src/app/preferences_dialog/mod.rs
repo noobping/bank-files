@@ -75,11 +75,17 @@ pub(in crate::app) fn show_preferences_dialog(
             "app.advanced-autofill",
             ui.advanced_autofill.get(),
         ),
+        PreferenceSpec::new(
+            "Hide Refunded Transactions",
+            "Hide REFUNDING and REFUNDED transactions from normal views and totals.",
+            "app.hide-refunded-transactions",
+            ui.hide_refunded_transactions.get(),
+        ),
     ];
 
     if let Some((group, search_group)) = preference_group(
         "Forms and Data",
-        "Control budget detail and whole-form autofill.",
+        "Control budget detail, whole-form autofill, and refund visibility.",
         &forms_preferences,
         advanced_features,
         &ui.preferences,
