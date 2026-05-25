@@ -105,27 +105,19 @@ pub(in crate::app) fn render_overview(
         ),
     ];
     let rules_value = data.rules_count.to_string();
-    if ui_handles.advanced_features.get() {
-        metric_cards.push(ui::activatable_metric_card(
-            "Active rules",
-            &rules_value,
-            "Used for categorization",
-            move || {
-                show_management_dialog(
-                    &ui_for_rules.window,
-                    &state_for_rules,
-                    &ui_for_rules,
-                    "active-rules",
-                );
-            },
-        ));
-    } else {
-        metric_cards.push(ui::metric_card(
-            "Active rules",
-            &rules_value,
-            "Used for categorization",
-        ));
-    }
+    metric_cards.push(ui::activatable_metric_card(
+        "Active rules",
+        &rules_value,
+        "Used for categorization",
+        move || {
+            show_management_dialog(
+                &ui_for_rules.window,
+                &state_for_rules,
+                &ui_for_rules,
+                "active-rules",
+            );
+        },
+    ));
     ui_handles
         .overview
         .append(&ui::metric_grid(metric_cards, 3));

@@ -118,7 +118,7 @@ pub(in crate::app) fn show_preferences_dialog(
 
     let mut advanced_features_spec = PreferenceSpec::new(
         "Advanced Features",
-        "Allow rule editing and budget direction controls.",
+        "Allow budget direction controls and advanced analysis options.",
         "app.advanced-features",
         advanced_features,
     );

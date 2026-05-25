@@ -3033,8 +3033,8 @@ msgstr "Dupliceer deze transactie als tijdelijke neptransactie"
 msgid "Advanced Features"
 msgstr "Geavanceerde functies"
 
-msgid "Allow rule editing and budget direction controls."
-msgstr "Sta regelbewerking en instellingen voor budgetrichting toe."
+msgid "Allow budget direction controls and advanced analysis options."
+msgstr "Sta budgetrichtinginstellingen en geavanceerde analyseopties toe."
 
 msgid "Control simple mode, whole-form autofill, and cleanup."
 msgstr "Beheer eenvoudige modus, automatisch invullen van het hele formulier en opschonen."
@@ -3045,11 +3045,11 @@ msgstr "Volledig formulier automatisch invullen"
 msgid "Fill related form fields from the value you choose, such as matching categories, budget codes, and directions."
 msgstr "Vul gerelateerde formuliervelden in op basis van de waarde die je kiest, zoals passende categorieën, budgetcodes en richtingen."
 
-msgid "Advanced Features enabled. Rule editing and direction controls are available."
-msgstr "Geavanceerde functies ingeschakeld. Regelbewerking en richtinginstellingen zijn beschikbaar."
+msgid "Advanced Features enabled. Budget direction controls and advanced analysis options are available."
+msgstr "Geavanceerde functies ingeschakeld. Budgetrichtinginstellingen en geavanceerde analyseopties zijn beschikbaar."
 
-msgid "Simple mode enabled. Rule editing and direction controls are hidden."
-msgstr "Eenvoudige modus ingeschakeld. Regelbewerking en richtinginstellingen zijn verborgen."
+msgid "Simple mode enabled. Budget direction controls and advanced analysis options are hidden."
+msgstr "Eenvoudige modus ingeschakeld. Budgetrichtinginstellingen en geavanceerde analyseopties zijn verborgen."
 
 msgid "Whole Form Autofill enabled. Forms can fill matching categories, budget codes, and directions."
 msgstr "Volledig formulier automatisch invullen ingeschakeld. Formulieren kunnen passende categorieën, budgetcodes en richtingen invullen."
@@ -3087,11 +3087,7 @@ msgstr "Deze verplaatsing wijzigt de richting. Schakel Geavanceerde functies in 
 msgid "Budget code move added to processing queue."
 msgstr "Budgetcodeverplaatsing toegevoegd aan de verwerkingswachtrij."
 
-msgid "Filter budgets and field names"
-msgstr "Filter budgetten en veldnamen"
 
-msgid "Budgets and fields"
-msgstr "Budgetten en velden"
 
 msgid "Hide Refunded Transactions needs Smart Insights. Enable Smart Insights to use refunded transaction hiding."
 msgstr "Terugbetaalde transacties verbergen heeft Slimme inzichten nodig. Schakel Slimme inzichten in om terugbetaalde transacties te verbergen."

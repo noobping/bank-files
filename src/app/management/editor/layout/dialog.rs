@@ -32,11 +32,7 @@ pub(in crate::app) fn show_management_dialog(
         ),
     );
 
-    let filter_placeholder = if advanced_features {
-        "Filter rules, budgets, and field names"
-    } else {
-        "Filter budgets and field names"
-    };
+    let filter_placeholder = "Filter rules, budgets, and field names";
     let ManagementDialogShell {
         root,
         add_button,
@@ -70,16 +66,7 @@ pub(in crate::app) fn show_management_dialog(
     let budgets_forms: Rc<RefCell<Vec<BudgetForm>>> = Rc::new(RefCell::new(Vec::new()));
     let aliases_forms: Rc<RefCell<Vec<AliasForm>>> = Rc::new(RefCell::new(Vec::new()));
 
-    if !advanced_features {
-        stack.remove(&rules_scroll);
-    }
-
-    let initial_filter = (advanced_features && initial_tab == "active-rules").then_some("active");
-    let initial_tab = match initial_tab {
-        "active-rules" | "rules" if advanced_features => "rules",
-        "budgets" | "aliases" => initial_tab,
-        _ => "budgets",
-    };
+    let (initial_tab, initial_filter) = management_initial_tab(initial_tab);
     stack.set_visible_child_name(initial_tab);
 
     let status_bar = build_status_bar();
@@ -92,11 +79,7 @@ pub(in crate::app) fn show_management_dialog(
     let status = status_bar.label.clone();
 
     let (content_width, content_height) = management_dialog_content_size(window);
-    let management_title = if advanced_features {
-        "Rules, budgets, and fields"
-    } else {
-        "Budgets and fields"
-    };
+    let management_title = "Rules, budgets, and fields";
     let management_dialog = ui::content_dialog(tr(management_title), &root)
         .width_request(MANAGEMENT_DIALOG_MIN_WIDTH)
         .height_request(MANAGEMENT_DIALOG_MIN_HEIGHT)
@@ -168,4 +151,29 @@ pub(in crate::app) fn show_management_dialog(
         status_handle,
     });
     true
+}
+
+fn management_initial_tab(initial_tab: &str) -> (&'static str, Option<&'static str>) {
+    match initial_tab {
+        "active-rules" => ("rules", Some("active")),
+        "rules" => ("rules", None),
+        "budgets" => ("budgets", None),
+        "aliases" => ("aliases", None),
+        _ => ("budgets", None),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn active_rules_initial_tab_opens_rules_with_active_filter() {
+        assert_eq!(
+            management_initial_tab("active-rules"),
+            ("rules", Some("active"))
+        );
+        assert_eq!(management_initial_tab("rules"), ("rules", None));
+        assert_eq!(management_initial_tab("unknown"), ("budgets", None));
+    }
 }

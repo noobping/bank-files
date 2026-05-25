@@ -81,6 +81,9 @@ pub(in crate::app) fn build_shortcuts_dialog(
     advanced_features: bool,
     _smart_patterns_enabled: bool,
 ) -> adw::ShortcutsDialog {
+    #[cfg(not(feature = "smart-insights"))]
+    let _ = advanced_features;
+
     let dialog = ui::shortcuts_dialog(tr("Keyboard Shortcuts"), 640, -1);
 
     dialog.add(shortcuts_section(
@@ -109,13 +112,10 @@ pub(in crate::app) fn build_shortcuts_dialog(
             ShortcutSpec::action("Print Page", "app.print-page"),
         ],
     ));
-    let mut manage_shortcuts = Vec::new();
-    if advanced_features {
-        manage_shortcuts.push(ShortcutSpec::action(
-            "Manage Categorization Rules",
-            "app.manage-rules",
-        ));
-    }
+    let mut manage_shortcuts = vec![ShortcutSpec::action(
+        "Manage Categorization Rules",
+        "app.manage-rules",
+    )];
     manage_shortcuts.extend([
         ShortcutSpec::action("Manage Budgets", "app.manage-budgets"),
         ShortcutSpec::action("Normalize CSV Fields", "app.manage-aliases"),

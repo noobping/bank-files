@@ -3033,8 +3033,8 @@ msgstr "Diese Transaktion als temporäre Scheintransaktion duplizieren"
 msgid "Advanced Features"
 msgstr "Erweiterte Funktionen"
 
-msgid "Allow rule editing and budget direction controls."
-msgstr "Regelbearbeitung und Einstellungen fuer die Budgetrichtung erlauben."
+msgid "Allow budget direction controls and advanced analysis options."
+msgstr "Budgetrichtungseinstellungen und erweiterte Analyseoptionen erlauben."
 
 msgid "Control simple mode, whole-form autofill, and cleanup."
 msgstr "Einfachen Modus, Autofill für das ganze Formular und Bereinigung steuern."
@@ -3045,11 +3045,11 @@ msgstr "Ganzes Formular automatisch ausfüllen"
 msgid "Fill related form fields from the value you choose, such as matching categories, budget codes, and directions."
 msgstr "Zugehörige Formularfelder anhand des gewählten Werts ausfüllen, etwa passende Kategorien, Budgetcodes und Richtungen."
 
-msgid "Advanced Features enabled. Rule editing and direction controls are available."
-msgstr "Erweiterte Funktionen aktiviert. Regelbearbeitung und Richtungseinstellungen sind verfuegbar."
+msgid "Advanced Features enabled. Budget direction controls and advanced analysis options are available."
+msgstr "Erweiterte Funktionen aktiviert. Budgetrichtungseinstellungen und erweiterte Analyseoptionen sind verfuegbar."
 
-msgid "Simple mode enabled. Rule editing and direction controls are hidden."
-msgstr "Einfacher Modus aktiviert. Regelbearbeitung und Richtungseinstellungen sind ausgeblendet."
+msgid "Simple mode enabled. Budget direction controls and advanced analysis options are hidden."
+msgstr "Einfacher Modus aktiviert. Budgetrichtungseinstellungen und erweiterte Analyseoptionen sind ausgeblendet."
 
 msgid "Whole Form Autofill enabled. Forms can fill matching categories, budget codes, and directions."
 msgstr "Ganzes Formular automatisch ausfüllen aktiviert. Formulare können passende Kategorien, Budgetcodes und Richtungen eintragen."
@@ -3087,11 +3087,7 @@ msgstr "Diese Verschiebung aendert die Richtung. Aktiviere Erweiterte Funktionen
 msgid "Budget code move added to processing queue."
 msgstr "Budgetcode-Verschiebung zur Verarbeitungswarteschlange hinzugefuegt."
 
-msgid "Filter budgets and field names"
-msgstr "Budgets und Feldnamen filtern"
 
-msgid "Budgets and fields"
-msgstr "Budgets und Felder"
 
 msgid "Hide Refunded Transactions needs Smart Insights. Enable Smart Insights to use refunded transaction hiding."
 msgstr "Erstattete Transaktionen ausblenden benoetigt Intelligente Einblicke. Aktiviere Intelligente Einblicke, um erstattete Transaktionen auszublenden."

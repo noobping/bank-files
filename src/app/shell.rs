@@ -40,9 +40,7 @@ pub(in crate::app) fn build_menu_model(
 
     let manage_section = gtk::gio::Menu::new();
     if storage_capabilities.config_writable || advanced_features {
-        if advanced_features {
-            manage_section.append(Some(&tr("Categorization Rules")), Some("app.manage-rules"));
-        }
+        manage_section.append(Some(&tr("Categorization Rules")), Some("app.manage-rules"));
         manage_section.append(Some(&tr("Budgets")), Some("app.manage-budgets"));
         manage_section.append(
             Some(&tr("Normalize CSV Fields")),

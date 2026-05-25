@@ -242,7 +242,7 @@ fn update_header_action_visibility(
     advanced_features: bool,
 ) {
     match stack.visible_child_name().as_deref() {
-        Some("rules") if advanced_features => {
+        Some("rules") => {
             add_button.set_tooltip_text(Some(&tr("Create a new rule")));
             rule_bulk_menu_button.set_visible(true);
             budget_bulk_menu_button.set_visible(false);

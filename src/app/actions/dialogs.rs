@@ -63,7 +63,6 @@ fn register_management_actions(
     let manage_rules_action = gtk::gio::SimpleAction::new("manage-rules", None);
     let manage_budgets_action = gtk::gio::SimpleAction::new("manage-budgets", None);
     let manage_aliases_action = gtk::gio::SimpleAction::new("manage-aliases", None);
-    manage_rules_action.set_enabled(ui.advanced_features.get());
     *ui.management_actions.borrow_mut() = vec![
         manage_rules_action.clone(),
         manage_budgets_action.clone(),

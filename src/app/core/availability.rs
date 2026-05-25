@@ -85,11 +85,7 @@ pub(in crate::app) fn refresh_write_actions(ui: &UiHandles) {
     set_app_action_enabled(ui, "export-csv", not_loading);
     set_app_action_enabled(ui, "import-csv", idle);
     set_app_action_enabled(ui, "configuration", capabilities.config_writable && idle);
-    set_app_action_enabled(
-        ui,
-        "manage-rules",
-        capabilities.config_writable && ui.advanced_features.get() && idle,
-    );
+    set_app_action_enabled(ui, "manage-rules", capabilities.config_writable && idle);
     set_app_action_enabled(ui, "manage-budgets", capabilities.config_writable && idle);
     set_app_action_enabled(ui, "manage-aliases", capabilities.config_writable && idle);
     set_app_action_enabled(ui, "preferences", ui.preferences.any_writable());

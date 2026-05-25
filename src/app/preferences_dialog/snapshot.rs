@@ -75,7 +75,7 @@ pub(super) fn preferences_page_snapshot(
     let forms_rows = vec![
         (
             "Advanced Features",
-            "Allow rule editing and budget direction controls.",
+            "Allow budget direction controls and advanced analysis options.",
             "app.advanced-features",
             false,
         ),

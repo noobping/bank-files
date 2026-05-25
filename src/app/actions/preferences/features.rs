@@ -46,9 +46,9 @@ fn register_advanced_features_action(
             clear_smart_filter_when_disabled(enabled, &ui_for_advanced_features);
 
             let success_message = tr(if enabled {
-                "Advanced Features enabled. Rule editing and direction controls are available."
+                "Advanced Features enabled. Budget direction controls and advanced analysis options are available."
             } else {
-                "Simple mode enabled. Rule editing and direction controls are hidden."
+                "Simple mode enabled. Budget direction controls and advanced analysis options are hidden."
             });
             if ui_for_advanced_features.show_predictions.get() {
                 reload_state_with_status(
