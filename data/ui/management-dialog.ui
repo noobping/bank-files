@@ -15,6 +15,14 @@
       <attribute name="label" translatable="yes">Clean Orphaned Rules</attribute>
       <attribute name="action">management-rules.clean-orphaned-rules</attribute>
     </item>
+    <item>
+      <attribute name="label" translatable="yes">Back Up Configuration</attribute>
+      <attribute name="action">management-config.back-up-configuration</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Restore Latest Backup</attribute>
+      <attribute name="action">management-config.restore-latest-backup</attribute>
+    </item>
   </menu>
   <menu id="management_budget_bulk_menu">
     <item>
@@ -36,6 +44,14 @@
     <item>
       <attribute name="label" translatable="yes">Use Yearly Values</attribute>
       <attribute name="action">management-budgets.use-yearly-values</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Back Up Configuration</attribute>
+      <attribute name="action">management-config.back-up-configuration</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Restore Latest Backup</attribute>
+      <attribute name="action">management-config.restore-latest-backup</attribute>
     </item>
   </menu>
   <object class="AdwViewSwitcher" id="management_switcher">

@@ -15,12 +15,12 @@ pub(super) fn configuration_snapshot_rows() -> Vec<Vec<String>> {
         vec![
             tr("Configuration Backup"),
             tr("Back Up Current Configuration"),
-            tr("Replace the existing backup in the config folder."),
+            tr("Create a new backup in the config folder."),
         ],
         vec![
             tr("Configuration Backup"),
-            tr("Restore Configuration Backup"),
-            tr("Restore rules, budgets, and field names from the backup."),
+            tr("Restore Latest Configuration Backup"),
+            tr("Restore rules, budgets, and field names from the latest backup."),
         ],
     ];
 

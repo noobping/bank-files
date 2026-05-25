@@ -1,5 +1,4 @@
 use super::super::*;
-use super::{CONFIG_ARCHIVE_DIR, CONFIG_FILE_NAMES};
 
 pub fn read_config_file(name: &str) -> Result<(PathBuf, String)> {
     let dirs = app_dirs()?;
@@ -86,74 +85,4 @@ pub(super) fn write_configuration_contents(
     .with_context(|| "Could not write field name configuration".to_string())?;
 
     Ok(dirs.config.clone())
-}
-
-pub(in crate::data) fn archive_configuration_in(dirs: &AppDirs) -> Result<PathBuf> {
-    ensure_layout(dirs)?;
-    ensure_default_files(dirs)?;
-
-    let archive = configuration_archive_dir(dirs);
-    remove_existing_archive(&archive)?;
-    fs::create_dir_all(&archive)
-        .with_context(|| format!("Could not create {}", archive.display()))?;
-
-    for name in CONFIG_FILE_NAMES {
-        let source = config_file_path(dirs, name)?;
-        let target = archive.join(name);
-        fs::copy(&source, &target).with_context(|| {
-            format!(
-                "Could not back up {} to {}",
-                source.display(),
-                target.display()
-            )
-        })?;
-    }
-
-    Ok(archive)
-}
-
-pub(in crate::data) fn restore_configuration_archive_in(dirs: &AppDirs) -> Result<PathBuf> {
-    ensure_layout(dirs)?;
-
-    let archive = configuration_archive_dir(dirs);
-    if !configuration_archive_exists_in(dirs) {
-        anyhow::bail!("No configuration backup exists in {}", archive.display());
-    }
-
-    for name in CONFIG_FILE_NAMES {
-        let source = archive.join(name);
-        let target = config_file_path(dirs, name)?;
-        fs::copy(&source, &target).with_context(|| {
-            format!(
-                "Could not restore {} to {}",
-                source.display(),
-                target.display()
-            )
-        })?;
-    }
-
-    Ok(archive)
-}
-
-pub(super) fn configuration_archive_exists_in(dirs: &AppDirs) -> bool {
-    let archive = configuration_archive_dir(dirs);
-    archive.is_dir()
-        && CONFIG_FILE_NAMES
-            .iter()
-            .all(|name| archive.join(name).is_file())
-}
-
-fn configuration_archive_dir(dirs: &AppDirs) -> PathBuf {
-    dirs.config.join(CONFIG_ARCHIVE_DIR)
-}
-
-fn remove_existing_archive(archive: &Path) -> Result<()> {
-    if archive.is_dir() {
-        fs::remove_dir_all(archive)
-            .with_context(|| format!("Could not replace {}", archive.display()))?;
-    } else if archive.exists() {
-        fs::remove_file(archive)
-            .with_context(|| format!("Could not replace {}", archive.display()))?;
-    }
-    Ok(())
 }

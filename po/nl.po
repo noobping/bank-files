@@ -2312,8 +2312,8 @@ msgstr "Configuratieacties tonen hier hun voortgang."
 msgid "Configuration Backup"
 msgstr "Configuratieback-up"
 
-msgid "Back up or restore the current rules, budgets, and CSV field names."
-msgstr "Maak een back-up of herstel de huidige regels, budgetten en CSV-veldnamen."
+msgid "Back up, restore latest, or choose saved backups. New backups keep the latest five."
+msgstr "Maak een back-up, herstel de nieuwste of kies een opgeslagen back-up. Nieuwe back-ups bewaren de laatste vijf."
 
 msgid "Restore"
 msgstr "Herstellen"
@@ -2330,14 +2330,14 @@ msgstr "Huidige configuratie archiveren"
 msgid "Back Up Current Configuration"
 msgstr "Back-up van huidige configuratie maken"
 
-msgid "Replace the existing backup in the config folder."
-msgstr "Vervang de bestaande back-up in de configuratiemap."
+msgid "Create a new backup in the config folder."
+msgstr "Maak een nieuwe back-up in de configuratiemap."
 
-msgid "Restore Configuration Backup"
-msgstr "Configuratieback-up herstellen"
+msgid "Restore Latest Configuration Backup"
+msgstr "Nieuwste configuratieback-up herstellen"
 
-msgid "Restore rules, budgets, and field names from the backup."
-msgstr "Herstel regels, budgetten en veldnamen uit de back-up."
+msgid "Restore rules, budgets, and field names from the latest backup."
+msgstr "Herstel regels, budgetten en veldnamen uit de nieuwste back-up."
 
 msgid "Generate configuration from imported transactions, use defaults, or start clean."
 msgstr "Genereer configuratie uit geimporteerde transacties, gebruik standaarden of begin leeg."
@@ -3535,3 +3535,35 @@ msgstr "De bijbehorende regel kon niet worden bewerkt."
 
 msgid "No matching rule was found to edit."
 msgstr "Er is geen bijbehorende regel gevonden om te bewerken."
+msgid "Could not read configuration backups"
+msgstr "Configuratieback-ups konden niet worden gelezen"
+
+msgid "No configuration backups yet"
+msgstr "Nog geen configuratieback-ups"
+
+msgid "Create a backup to make it available here."
+msgstr "Maak een back-up om die hier beschikbaar te maken."
+
+msgid "Restore this backup"
+msgstr "Deze back-up herstellen"
+
+msgid "Remove this backup"
+msgstr "Deze back-up verwijderen"
+
+msgid "Removing configuration backup..."
+msgstr "Configuratieback-up verwijderen..."
+
+msgid "Configuration backup removed."
+msgstr "Configuratieback-up verwijderd."
+
+msgid "Could not remove configuration backup: {error}"
+msgstr "Configuratieback-up kon niet worden verwijderd: {error}"
+
+msgid "Removing configuration backup canceled: the background task stopped unexpectedly."
+msgstr "Verwijderen van configuratieback-up geannuleerd: de achtergrondtaak is onverwacht gestopt."
+
+msgid "Back Up Configuration"
+msgstr "Configuratieback-up maken"
+
+msgid "Restore Latest Backup"
+msgstr "Nieuwste back-up herstellen"

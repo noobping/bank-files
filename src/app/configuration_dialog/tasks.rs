@@ -4,6 +4,7 @@ pub(super) fn archive_configuration(
     ui_handles: Rc<UiHandles>,
     status: StatusHandle,
     restore_row: adw::ActionRow,
+    refresh_backups: Rc<dyn Fn()>,
 ) {
     if !begin_configuration_task(&ui_handles, &status, "Backing up current configuration...") {
         return;
@@ -14,6 +15,7 @@ pub(super) fn archive_configuration(
         match task.await {
             Ok(Ok(path)) => {
                 set_config_widget_base_sensitive(&ui_handles, &restore_row, true);
+                refresh_backups();
                 let message = trf(
                     "Configuration backed up in {path}.",
                     &[("path", path.display().to_string())],
@@ -56,6 +58,66 @@ pub(super) fn restore_configuration_archive(
         },
         || data::restore_configuration_archive().map(|_| ()),
     );
+}
+
+pub(super) fn restore_configuration_archive_by_id(
+    state: Rc<RefCell<AppData>>,
+    ui_handles: Rc<UiHandles>,
+    status: StatusHandle,
+    archive_id: String,
+) {
+    run_configuration_reload_task(
+        state,
+        ui_handles,
+        status,
+        ConfigurationTaskMessages {
+            progress: "Restoring configuration backup...",
+            success: "Configuration backup restored.",
+            failure: "Could not restore configuration backup: {error}",
+            canceled: "Configuration restore canceled: the background task stopped unexpectedly.",
+        },
+        move || data::restore_configuration_archive_by_id(&archive_id).map(|_| ()),
+    );
+}
+
+pub(super) fn remove_configuration_archive(
+    ui_handles: Rc<UiHandles>,
+    status: StatusHandle,
+    archive_id: String,
+    refresh_backups: Rc<dyn Fn()>,
+) {
+    if !begin_configuration_task(&ui_handles, &status, "Removing configuration backup...") {
+        return;
+    }
+
+    gtk::glib::MainContext::default().spawn_local(async move {
+        let task = gtk::gio::spawn_blocking(move || data::remove_configuration_archive(&archive_id));
+        match task.await {
+            Ok(Ok(_)) => {
+                refresh_backups();
+                show_dialog_status(
+                    ui_handles.as_ref(),
+                    &status,
+                    "Configuration backup removed.",
+                );
+            }
+            Ok(Err(error)) => {
+                let message = trf(
+                    "Could not remove configuration backup: {error}",
+                    &[("error", format!("{error:#}"))],
+                );
+                show_dialog_status_text(ui_handles.as_ref(), &status, &message);
+            }
+            Err(_) => {
+                show_dialog_status(
+                    ui_handles.as_ref(),
+                    &status,
+                    "Removing configuration backup canceled: the background task stopped unexpectedly.",
+                );
+            }
+        }
+        finish_configuration_task(&ui_handles, &status);
+    });
 }
 
 pub(super) fn restore_default_configuration(

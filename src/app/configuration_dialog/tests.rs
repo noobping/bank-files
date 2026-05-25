@@ -11,7 +11,7 @@ fn configuration_snapshot_lists_configuration_actions() {
         .any(|row| row[1] == tr("Back Up Current Configuration")));
     assert!(rows
         .iter()
-        .any(|row| row[1] == tr("Restore Configuration Backup")));
+        .any(|row| row[1] == tr("Restore Latest Configuration Backup")));
     assert!(rows
         .iter()
         .any(|row| row[1] == tr("Use Default Configuration")));

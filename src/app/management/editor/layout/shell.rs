@@ -2,6 +2,7 @@ use super::super::*;
 
 const RULE_ACTION_NAMESPACE: &str = "management-rules";
 const BUDGET_ACTION_NAMESPACE: &str = "management-budgets";
+const CONFIG_ACTION_NAMESPACE: &str = "management-config";
 
 pub(super) struct ManagementDialogShell {
     pub(super) root: gtk::Box,
@@ -19,6 +20,8 @@ pub(super) struct ManagementDialogShell {
     pub(super) use_monthly_values_action: gtk::gio::SimpleAction,
     pub(super) use_yearly_values_action: gtk::gio::SimpleAction,
     pub(super) budget_bulk_menu_button: gtk::MenuButton,
+    pub(super) back_up_configuration_action: gtk::gio::SimpleAction,
+    pub(super) restore_latest_backup_action: gtk::gio::SimpleAction,
     pub(super) save_button: gtk::Button,
     pub(super) filter_entry: gtk::SearchEntry,
     pub(super) filter_search_bar: gtk::SearchBar,
@@ -103,6 +106,14 @@ pub(super) fn build_management_dialog_shell(
     let use_planned_income_action = gtk::gio::SimpleAction::new("use-planned-income", None);
     let use_monthly_values_action = gtk::gio::SimpleAction::new("use-monthly-values", None);
     let use_yearly_values_action = gtk::gio::SimpleAction::new("use-yearly-values", None);
+    let back_up_configuration_action = gtk::gio::SimpleAction::new("back-up-configuration", None);
+    let restore_latest_backup_action = gtk::gio::SimpleAction::new("restore-latest-backup", None);
+    restore_latest_backup_action.set_enabled(data::configuration_archive_exists().unwrap_or(false));
+
+    let config_action_group = gtk::gio::SimpleActionGroup::new();
+    config_action_group.add_action(&back_up_configuration_action);
+    config_action_group.add_action(&restore_latest_backup_action);
+    root.insert_action_group(CONFIG_ACTION_NAMESPACE, Some(&config_action_group));
 
     insert_menu_actions(
         &rule_bulk_menu_button,
@@ -167,6 +178,8 @@ pub(super) fn build_management_dialog_shell(
         use_monthly_values_action,
         use_yearly_values_action,
         budget_bulk_menu_button,
+        back_up_configuration_action,
+        restore_latest_backup_action,
         save_button,
         filter_entry,
         filter_search_bar,

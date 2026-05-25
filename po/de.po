@@ -2312,8 +2312,8 @@ msgstr "Konfigurationsaktionen zeigen hier ihren Fortschritt."
 msgid "Configuration Backup"
 msgstr "Konfigurationssicherung"
 
-msgid "Back up or restore the current rules, budgets, and CSV field names."
-msgstr "Aktuelle Regeln, Budgets und CSV-Feldnamen sichern oder wiederherstellen."
+msgid "Back up, restore latest, or choose saved backups. New backups keep the latest five."
+msgstr "Sicherung erstellen, neueste wiederherstellen oder gespeicherte Sicherung wählen. Neue Sicherungen behalten die letzten fünf."
 
 msgid "Restore"
 msgstr "Wiederherstellen"
@@ -2330,14 +2330,14 @@ msgstr "Aktuelle Konfiguration archivieren"
 msgid "Back Up Current Configuration"
 msgstr "Aktuelle Konfiguration sichern"
 
-msgid "Replace the existing backup in the config folder."
-msgstr "Die vorhandene Sicherung im Konfigurationsordner ersetzen."
+msgid "Create a new backup in the config folder."
+msgstr "Eine neue Sicherung im Konfigurationsordner erstellen."
 
-msgid "Restore Configuration Backup"
-msgstr "Konfigurationssicherung wiederherstellen"
+msgid "Restore Latest Configuration Backup"
+msgstr "Neueste Konfigurationssicherung wiederherstellen"
 
-msgid "Restore rules, budgets, and field names from the backup."
-msgstr "Regeln, Budgets und Feldnamen aus der Sicherung wiederherstellen."
+msgid "Restore rules, budgets, and field names from the latest backup."
+msgstr "Regeln, Budgets und Feldnamen aus der neuesten Sicherung wiederherstellen."
 
 msgid "Generate configuration from imported transactions, use defaults, or start clean."
 msgstr "Konfiguration aus importierten Transaktionen erzeugen, Standards verwenden oder leer beginnen."
@@ -3535,3 +3535,35 @@ msgstr "Die passende Regel konnte nicht bearbeitet werden."
 
 msgid "No matching rule was found to edit."
 msgstr "Es wurde keine passende Regel zum Bearbeiten gefunden."
+msgid "Could not read configuration backups"
+msgstr "Konfigurationssicherungen konnten nicht gelesen werden"
+
+msgid "No configuration backups yet"
+msgstr "Noch keine Konfigurationssicherungen"
+
+msgid "Create a backup to make it available here."
+msgstr "Erstelle eine Sicherung, damit sie hier verfügbar ist."
+
+msgid "Restore this backup"
+msgstr "Diese Sicherung wiederherstellen"
+
+msgid "Remove this backup"
+msgstr "Diese Sicherung entfernen"
+
+msgid "Removing configuration backup..."
+msgstr "Konfigurationssicherung wird entfernt..."
+
+msgid "Configuration backup removed."
+msgstr "Konfigurationssicherung entfernt."
+
+msgid "Could not remove configuration backup: {error}"
+msgstr "Konfigurationssicherung konnte nicht entfernt werden: {error}"
+
+msgid "Removing configuration backup canceled: the background task stopped unexpectedly."
+msgstr "Entfernen der Konfigurationssicherung abgebrochen: der Hintergrundprozess wurde unerwartet beendet."
+
+msgid "Back Up Configuration"
+msgstr "Konfiguration sichern"
+
+msgid "Restore Latest Backup"
+msgstr "Neueste Sicherung wiederherstellen"

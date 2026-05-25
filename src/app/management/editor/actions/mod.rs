@@ -5,6 +5,7 @@ mod alias_search;
 mod budget;
 mod budget_bulk;
 mod budget_move;
+mod config_backup;
 mod connect;
 mod page_actions;
 mod rule_bulk;
@@ -31,6 +32,8 @@ pub(in crate::app::management::editor) struct ManagementDialogActions<'a> {
     pub(in crate::app::management::editor) use_planned_income_action: &'a gtk::gio::SimpleAction,
     pub(in crate::app::management::editor) use_monthly_values_action: &'a gtk::gio::SimpleAction,
     pub(in crate::app::management::editor) use_yearly_values_action: &'a gtk::gio::SimpleAction,
+    pub(in crate::app::management::editor) back_up_configuration_action: &'a gtk::gio::SimpleAction,
+    pub(in crate::app::management::editor) restore_latest_backup_action: &'a gtk::gio::SimpleAction,
     pub(in crate::app::management::editor) save_button: &'a gtk::Button,
     pub(in crate::app::management::editor) page_actions_button: &'a gtk::MenuButton,
     pub(in crate::app::management::editor) stack: &'a adw::ViewStack,
