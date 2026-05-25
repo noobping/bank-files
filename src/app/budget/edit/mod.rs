@@ -9,7 +9,9 @@ pub(in crate::app) use direction::{
     budget_direction_change, budget_direction_editable, confirm_budget_direction_changes,
     BudgetDirectionChange,
 };
-pub(in crate::app) use standard::{budget_edit_button, show_budget_edit_dialog};
+pub(in crate::app) use standard::{
+    budget_edit_button, show_budget_edit_dialog, show_new_budget_dialog,
+};
 
 pub(in crate::app::budget::edit) use operations::{
     connect_budget_delete_action, editable_budget_for, save_budget_with_reload, BudgetDeleteAction,

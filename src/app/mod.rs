@@ -67,11 +67,11 @@ use annual::{
     annual_spending_section_from_rows, append_annual_budget_row,
 };
 use budget::{
-    bind_percentage_basis_visibility, budget_direction_change, budget_direction_editable,
-    budget_edit_button, budget_values_use_percentage, confirm_budget_direction_changes,
-    more_budgets_row, more_categories_row, render_budget_page, selected_budget_month,
-    selected_year, show_budget_edit_dialog, totals_for_month, year_selector_row,
-    BudgetDirectionChange,
+    append_empty_budget_action, bind_percentage_basis_visibility, budget_direction_change,
+    budget_direction_editable, budget_edit_button, budget_values_use_percentage,
+    confirm_budget_direction_changes, more_budgets_row, more_categories_row, render_budget_page,
+    selected_budget_month, selected_year, show_budget_edit_dialog, totals_for_month,
+    year_selector_row, BudgetDirectionChange,
 };
 use config_ops::{
     config_operation_is_active, finish_config_operation, register_config_widget,

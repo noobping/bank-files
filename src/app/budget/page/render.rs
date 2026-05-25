@@ -44,6 +44,7 @@ pub(in crate::app) fn render_budget_page(
         page_text,
         &data.transactions,
     );
+    append_empty_budget_action(&ui_handles.categories, data, ui_handles, state);
 
     if data.transactions.is_empty() {
         append_partial_load_notice(&ui_handles.categories, ui_handles, data);

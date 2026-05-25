@@ -27,19 +27,40 @@ pub(in crate::app) fn budget_edit_button(
     button
 }
 
+pub(in crate::app) fn show_new_budget_dialog(
+    state: &Rc<RefCell<AppData>>,
+    ui_handles: &Rc<UiHandles>,
+) {
+    show_budget_edit_dialog("", "", state, ui_handles);
+}
+
 pub(in crate::app) fn show_budget_edit_dialog(
     code: &str,
     fallback_category: &str,
     state: &Rc<RefCell<AppData>>,
     ui_handles: &Rc<UiHandles>,
 ) {
-    let (initial, can_delete_budget) = editable_budget_for(code, fallback_category);
+    let creating_budget = code.trim().is_empty();
+    let (initial, can_delete_budget) = if creating_budget {
+        (new_budget_template(), false)
+    } else {
+        editable_budget_for(code, fallback_category)
+    };
     if planned_income::is_budget_code(&initial.code) {
         show_planned_income_budget_edit_dialog(initial, can_delete_budget, state, ui_handles);
         return;
     }
 
-    let header = ui::cancelable_dialog_header("Edit Budget", code);
+    let advanced_features = ui_handles.advanced_features.get();
+    let dialog_title = budget_dialog_title(creating_budget, advanced_features);
+    let header = ui::cancelable_dialog_header(
+        dialog_title,
+        if creating_budget {
+            ""
+        } else {
+            initial.code.as_str()
+        },
+    );
 
     let delete_button = ui::icon_button("user-trash-symbolic", "Delete budget");
     delete_button.add_css_class("destructive-action");
@@ -47,19 +68,29 @@ pub(in crate::app) fn show_budget_edit_dialog(
     let save_button = ui::primary_text_icon_button("document-save-symbolic", "Save", "Save budget");
     register_exclusive_config_widget(ui_handles, &save_button);
     register_exclusive_config_widget(ui_handles, &delete_button);
-    header.pack_start(&delete_button);
+    if !creating_budget {
+        header.pack_start(&delete_button);
+    }
     header.pack_end(&save_button);
 
     let page = ui::page_box();
     page.append(&ui::section_title(
-        "Edit Budget",
+        dialog_title,
         "Use monthly budgets, yearly budgets, or both. Percentage budgets can use real or planned income.",
     ));
 
     let grid = ui::form_grid();
-    let advanced_features = ui_handles.advanced_features.get();
+    let new_code = if creating_budget && advanced_features {
+        Some(ui::text_combo("", app_budget_code_values(&state.borrow())))
+    } else {
+        None
+    };
     if advanced_features {
-        ui::add_labeled(&grid, 0, "Budget code", &ui::wrapped_label(&initial.code));
+        if let Some(new_code) = &new_code {
+            ui::add_labeled(&grid, 0, "Budget code", new_code);
+        } else {
+            ui::add_labeled(&grid, 0, "Budget code", &ui::wrapped_label(&initial.code));
+        }
     }
     let category = ui::text_combo(&initial.category, app_category_values(&state.borrow()));
     let monthly_budget = ui::entry(&initial.monthly_budget, "500 or 10% of income");
@@ -102,7 +133,7 @@ pub(in crate::app) fn show_budget_edit_dialog(
     let content = ui::action_dialog_scroll(&page);
     let view = ui::dialog_toolbar_view(&header, &content);
 
-    let dialog = ui::content_dialog(tr("Edit Budget"), &view)
+    let dialog = ui::content_dialog(tr(dialog_title), &view)
         .content_width(620)
         .default_widget(&save_button)
         .build();
@@ -114,7 +145,12 @@ pub(in crate::app) fn show_budget_edit_dialog(
     let category_for_save = initial.category.clone();
     let direction_for_save = initial.direction.clone();
     let status_for_save = status.clone();
-    let delete_button_for_save = delete_button.clone();
+    let delete_button_for_save = if creating_budget {
+        None
+    } else {
+        Some(delete_button.clone())
+    };
+    let new_code_for_save = new_code.clone();
     save_button.connect_clicked(move |button| {
         let category_text = ui::combo_text(&category);
         if category_text.is_empty() {
@@ -123,8 +159,24 @@ pub(in crate::app) fn show_budget_edit_dialog(
             return;
         }
 
+        let code_text = budget_code_for_save(BudgetCodeSaveRequest {
+            creating_budget,
+            advanced_features,
+            configured_code: &code_for_save,
+            category: &category_text,
+            code_input: new_code_for_save.as_ref(),
+            state: &state_for_save,
+        });
+        let Some(code_text) = code_text else {
+            status_for_save.set_text(&tr("Enter a budget code first."));
+            if let Some(code_input) = &new_code_for_save {
+                code_input.grab_focus();
+            }
+            return;
+        };
+
         let budget = EditableBudget {
-            code: code_for_save.clone(),
+            code: code_text,
             category: category_text,
             monthly_budget: monthly_budget.text().trim().to_string(),
             yearly_budget: yearly_budget.text().trim().to_string(),
@@ -146,7 +198,7 @@ pub(in crate::app) fn show_budget_edit_dialog(
 
         let save_ui = BudgetSaveUi {
             button: button.clone(),
-            delete_button: Some(delete_button_for_save.clone()),
+            delete_button: delete_button_for_save.clone(),
             delete_button_sensitive: can_delete_budget,
             status: status_for_save.clone(),
             dialog: dialog_for_save.clone(),
@@ -159,15 +211,83 @@ pub(in crate::app) fn show_budget_edit_dialog(
         });
     });
 
-    connect_budget_delete_action(BudgetDeleteAction {
-        delete_button: &delete_button,
-        save_button: &save_button,
-        status: &status,
-        dialog: &dialog,
-        code: initial.code.clone(),
-        state: Rc::clone(state),
-        ui_handles: Rc::clone(ui_handles),
-    });
+    if !creating_budget {
+        connect_budget_delete_action(BudgetDeleteAction {
+            delete_button: &delete_button,
+            save_button: &save_button,
+            status: &status,
+            dialog: &dialog,
+            code: initial.code.clone(),
+            state: Rc::clone(state),
+            ui_handles: Rc::clone(ui_handles),
+        });
+    }
 
     dialog.present(Some(&ui_handles.window));
+}
+
+struct BudgetCodeSaveRequest<'a> {
+    creating_budget: bool,
+    advanced_features: bool,
+    configured_code: &'a str,
+    category: &'a str,
+    code_input: Option<&'a gtk::ComboBoxText>,
+    state: &'a Rc<RefCell<AppData>>,
+}
+
+fn budget_code_for_save(request: BudgetCodeSaveRequest<'_>) -> Option<String> {
+    if !request.creating_budget {
+        return Some(request.configured_code.to_string());
+    }
+
+    if request.advanced_features {
+        return request
+            .code_input
+            .map(ui::combo_text)
+            .filter(|code| !code.trim().is_empty());
+    }
+
+    let existing_codes = request
+        .state
+        .borrow()
+        .budgets
+        .iter()
+        .map(|budget| budget.code.clone())
+        .collect::<Vec<_>>();
+    Some(data::generated_budget_code_for_category(
+        request.category,
+        &existing_codes,
+    ))
+}
+
+fn budget_dialog_title(creating_budget: bool, advanced_features: bool) -> &'static str {
+    match (creating_budget, advanced_features) {
+        (true, true) => "New Budget",
+        (true, false) => "New Category",
+        _ => "Edit Budget",
+    }
+}
+
+fn new_budget_template() -> EditableBudget {
+    EditableBudget {
+        code: String::new(),
+        category: String::new(),
+        monthly_budget: "0".to_string(),
+        yearly_budget: String::new(),
+        direction: "expense".to_string(),
+        income_basis: "real".to_string(),
+        notes: String::new(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn budget_dialog_title_uses_new_budget_labels() {
+        assert_eq!(budget_dialog_title(true, true), "New Budget");
+        assert_eq!(budget_dialog_title(true, false), "New Category");
+        assert_eq!(budget_dialog_title(false, false), "Edit Budget");
+    }
 }
