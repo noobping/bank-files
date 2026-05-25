@@ -221,15 +221,3 @@ pub fn about_dialog(details: AboutDialogDetails<'_>) -> adw::AboutDialog {
         .license_type(details.license_type)
         .build()
 }
-
-pub fn shortcuts_dialog(
-    title: impl Into<String>,
-    content_width: i32,
-    content_height: i32,
-) -> adw::ShortcutsDialog {
-    adw::ShortcutsDialog::builder()
-        .title(title.into())
-        .content_width(content_width)
-        .content_height(content_height)
-        .build()
-}

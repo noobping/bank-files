@@ -7,6 +7,7 @@ struct PopupTemplateIds {
     resource: &'static str,
     root: &'static str,
     header: &'static str,
+    title: &'static str,
     search_button: &'static str,
     search_bar: &'static str,
     search_entry: &'static str,
@@ -16,6 +17,7 @@ const ACTION_POPUP_TEMPLATE: PopupTemplateIds = PopupTemplateIds {
     resource: "action-dialog.ui",
     root: "action_root",
     header: "action_header",
+    title: "action_title",
     search_button: "action_search_button",
     search_bar: "action_search_bar",
     search_entry: "action_search_entry",
@@ -25,6 +27,7 @@ const SETTINGS_POPUP_TEMPLATE: PopupTemplateIds = PopupTemplateIds {
     resource: "settings-dialog.ui",
     root: "settings_root",
     header: "settings_header",
+    title: "settings_title",
     search_button: "settings_search_button",
     search_bar: "settings_search_bar",
     search_entry: "settings_search_entry",
@@ -131,8 +134,6 @@ pub(in crate::app) fn build_action_dialog_shell(
         "action_back_button",
         ACTION_POPUP_TEMPLATE.resource,
     );
-    back_button.set_tooltip_text(Some(&tr("Back")));
-
     let submit_button = popup_object::<gtk::Button>(
         &template.builder,
         "action_submit_button",
@@ -225,11 +226,11 @@ fn build_popup_template(
     let builder = ui::builder_from_resource(ids.resource);
     let root = popup_object::<gtk::Box>(&builder, ids.root, ids.resource);
     let header = popup_object::<adw::HeaderBar>(&builder, ids.header, ids.resource);
-    header.set_title_widget(Some(&adw::WindowTitle::new(&tr(title), &tr(subtitle))));
+    let title_widget = popup_object::<adw::WindowTitle>(&builder, ids.title, ids.resource);
+    title_widget.set_title(&tr(title));
+    title_widget.set_subtitle(&tr(subtitle));
 
     let search_button = popup_object::<gtk::Button>(&builder, ids.search_button, ids.resource);
-    search_button.set_tooltip_text(Some(&tr("Search")));
-    search_button.add_css_class("flat");
 
     let search_bar = popup_object::<gtk::SearchBar>(&builder, ids.search_bar, ids.resource);
     let search_entry = popup_object::<gtk::SearchEntry>(&builder, ids.search_entry, ids.resource);

@@ -7,9 +7,13 @@
     <property name="spacing">0</property>
     <child>
       <object class="AdwHeaderBar" id="settings_header">
+        <property name="title-widget">
+          <object class="AdwWindowTitle" id="settings_title"/>
+        </property>
         <child type="start">
           <object class="GtkButton" id="settings_search_button">
             <property name="icon-name">edit-find-symbolic</property>
+            <property name="tooltip-text" translatable="yes">Search</property>
             <style>
               <class name="flat"/>
               <class name="image-button"/>

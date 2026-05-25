@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.6"/>
+  <requires lib="Adw" version="1.0"/>
+  <object class="AdwShortcutsDialog" id="shortcuts_dialog">
+    <property name="title" translatable="yes">Keyboard Shortcuts</property>
+    <property name="content-width">640</property>
+    <property name="content-height">-1</property>
+    <child>
+      <object class="AdwShortcutsSection">
+        <property name="title" translatable="yes">Navigation</property>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Go Back</property>
+            <property name="action-name">app.go-back</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Open Overview</property>
+            <property name="action-name">app.view-overview</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Open Budget</property>
+            <property name="action-name">app.view-budget</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Open Transactions</property>
+            <property name="action-name">app.view-transactions</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Open Diagnostics</property>
+            <property name="action-name">app.view-diagnostics</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwShortcutsSection">
+        <property name="title" translatable="yes">Files</property>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Choose CSV Files</property>
+            <property name="action-name">app.import-csv</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Export CSV</property>
+            <property name="action-name">app.export-csv</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Quick Reload</property>
+            <property name="action-name">app.reload</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Reload All</property>
+            <property name="action-name">app.reload-all</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Clear Cache and Reload</property>
+            <property name="action-name">app.clear-cache-and-reload</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwShortcutsSection">
+        <property name="title" translatable="yes">Page</property>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Search or Filter</property>
+            <property name="action-name">app.find</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Copy Page</property>
+            <property name="action-name">app.copy-page</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Print Page</property>
+            <property name="action-name">app.print-page</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwShortcutsSection">
+        <property name="title" translatable="yes">Manage</property>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Manage Categorization Rules</property>
+            <property name="action-name">app.manage-rules</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Manage Budgets</property>
+            <property name="action-name">app.manage-budgets</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Normalize CSV Fields</property>
+            <property name="action-name">app.manage-aliases</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Filter the Manage Window</property>
+            <property name="accelerator">&lt;primary&gt;F</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwShortcutsSection" id="shortcuts_settings_section">
+        <property name="title" translatable="yes">Settings</property>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Open Preferences</property>
+            <property name="action-name">app.preferences</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Open Configuration</property>
+            <property name="action-name">app.configuration</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Toggle Advanced Features</property>
+            <property name="action-name">app.advanced-features</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Toggle Whole Form Autofill</property>
+            <property name="action-name">app.advanced-autofill</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Toggle Duplicate Filtering</property>
+            <property name="action-name">app.dedupe-enabled</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Toggle Full Lists</property>
+            <property name="action-name">app.show-all</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Toggle Spending Comparison</property>
+            <property name="action-name">app.compare-categories-previous-period</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Toggle Auto Clean Config</property>
+            <property name="action-name">app.auto-clean-config</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Toggle Status Autohide</property>
+            <property name="action-name">app.autohide-status</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwShortcutsSection" id="shortcuts_app_section">
+        <property name="title" translatable="yes">App</property>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">About</property>
+            <property name="action-name">app.about</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Show Keyboard Shortcuts</property>
+            <property name="action-name">app.shortcuts</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwShortcutsItem">
+            <property name="title" translatable="yes">Quit</property>
+            <property name="action-name">app.quit</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

@@ -9,6 +9,9 @@
       <object class="AdwHeaderBar" id="action_header">
         <property name="show-start-title-buttons">False</property>
         <property name="show-end-title-buttons">True</property>
+        <property name="title-widget">
+          <object class="AdwWindowTitle" id="action_title"/>
+        </property>
         <child type="start">
           <object class="GtkStack" id="action_start_stack">
             <property name="transition-type">crossfade</property>
@@ -18,6 +21,7 @@
                 <property name="child">
                   <object class="GtkButton" id="action_search_button">
                     <property name="icon-name">edit-find-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Search</property>
                     <style>
                       <class name="flat"/>
                       <class name="image-button"/>
@@ -32,6 +36,7 @@
                 <property name="child">
                   <object class="GtkButton" id="action_back_button">
                     <property name="icon-name">go-previous-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Back</property>
                     <style>
                       <class name="flat"/>
                       <class name="image-button"/>

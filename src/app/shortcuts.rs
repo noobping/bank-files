@@ -38,6 +38,7 @@ const COMMON_ACTION_ACCELERATORS: &[ActionAccelerators] = &[
 
 const CHECK_FOR_UPDATES_ACCELERATORS: ActionAccelerators =
     ("app.check-for-updates", &["<primary>U"]);
+const SHORTCUTS_DIALOG_RESOURCE: &str = "shortcuts-dialog.ui";
 #[cfg(feature = "smart-insights")]
 const SMART_INSIGHTS_ACCELERATORS: &[ActionAccelerators] = &[
     ("app.show-predictions", &["<primary><alt>S"]),
@@ -84,144 +85,62 @@ pub(in crate::app) fn build_shortcuts_dialog(
     #[cfg(not(feature = "smart-insights"))]
     let _ = advanced_features;
 
-    let dialog = ui::shortcuts_dialog(tr("Keyboard Shortcuts"), 640, -1);
+    let builder = ui::builder_from_resource(SHORTCUTS_DIALOG_RESOURCE);
+    let dialog = ui::builder_object::<adw::ShortcutsDialog>(
+        &builder,
+        "shortcuts_dialog",
+        SHORTCUTS_DIALOG_RESOURCE,
+    );
+    let settings = ui::builder_object::<adw::ShortcutsSection>(
+        &builder,
+        "shortcuts_settings_section",
+        SHORTCUTS_DIALOG_RESOURCE,
+    );
+    let app = ui::builder_object::<adw::ShortcutsSection>(
+        &builder,
+        "shortcuts_app_section",
+        SHORTCUTS_DIALOG_RESOURCE,
+    );
 
-    dialog.add(shortcuts_section(
-        "Navigation",
-        &[
-            ShortcutSpec::action("Go Back", "app.go-back"),
-            ShortcutSpec::action("Open Overview", "app.view-overview"),
-            ShortcutSpec::action("Open Budget", "app.view-budget"),
-            ShortcutSpec::action("Open Transactions", "app.view-transactions"),
-            ShortcutSpec::action("Open Diagnostics", "app.view-diagnostics"),
-        ],
-    ));
-    let file_shortcuts = [
-        ShortcutSpec::action("Choose CSV Files", "app.import-csv"),
-        ShortcutSpec::action("Export CSV", "app.export-csv"),
-        ShortcutSpec::action("Quick Reload", "app.reload"),
-        ShortcutSpec::action("Reload All", "app.reload-all"),
-        ShortcutSpec::action("Clear Cache and Reload", "app.clear-cache-and-reload"),
-    ];
-    dialog.add(shortcuts_section("Files", &file_shortcuts));
-    dialog.add(shortcuts_section(
-        "Page",
-        &[
-            ShortcutSpec::action("Search or Filter", "app.find"),
-            ShortcutSpec::action("Copy Page", "app.copy-page"),
-            ShortcutSpec::action("Print Page", "app.print-page"),
-        ],
-    ));
-    let mut manage_shortcuts = vec![ShortcutSpec::action(
-        "Manage Categorization Rules",
-        "app.manage-rules",
-    )];
-    manage_shortcuts.extend([
-        ShortcutSpec::action("Manage Budgets", "app.manage-budgets"),
-        ShortcutSpec::action("Normalize CSV Fields", "app.manage-aliases"),
-        ShortcutSpec::accelerator("Filter the Manage Window", "<primary>F"),
-    ]);
-    dialog.add(shortcuts_section("Manage", &manage_shortcuts));
-
-    let mut settings_shortcuts = vec![
-        ShortcutSpec::action("Open Preferences", "app.preferences"),
-        ShortcutSpec::action("Open Configuration", "app.configuration"),
-        ShortcutSpec::action("Toggle Advanced Features", "app.advanced-features"),
-    ];
-    #[cfg(feature = "smart-insights")]
-    if advanced_features {
-        settings_shortcuts.push(ShortcutSpec::action(
-            "Toggle Smart Insights",
-            "app.show-predictions",
-        ));
-        #[cfg(not(feature = "flatpak"))]
-        settings_shortcuts.push(ShortcutSpec::action(
-            "Toggle Online Smart Insights",
-            "app.online-smart-insights",
-        ));
-    }
-    settings_shortcuts.push(ShortcutSpec::action(
-        "Toggle Whole Form Autofill",
-        "app.advanced-autofill",
-    ));
-    settings_shortcuts.extend([
-        ShortcutSpec::action("Toggle Duplicate Filtering", "app.dedupe-enabled"),
-        ShortcutSpec::action("Toggle Full Lists", "app.show-all"),
-        ShortcutSpec::action(
-            "Toggle Spending Comparison",
-            "app.compare-categories-previous-period",
-        ),
-        ShortcutSpec::action("Toggle Auto Clean Config", "app.auto-clean-config"),
-        ShortcutSpec::action("Toggle Status Autohide", "app.autohide-status"),
-    ]);
-    #[cfg(feature = "smart-insights")]
-    if advanced_features {
-        settings_shortcuts.push(ShortcutSpec::action(
-            "Toggle Hide Refunded Transactions",
-            "app.hide-canceled-transactions",
-        ));
-    }
-    dialog.add(shortcuts_section("Settings", &settings_shortcuts));
-
-    let mut app_shortcuts = Vec::new();
-    if updater::supports_update_checks() {
-        app_shortcuts.push(ShortcutSpec::action(
-            "Check for Updates",
-            "app.check-for-updates",
-        ));
-    }
-    #[cfg(all(target_os = "linux", feature = "setup", not(feature = "flatpak")))]
-    if setup::can_install_locally() {
-        app_shortcuts.push(ShortcutSpec::action(
-            "Install Locally",
-            "app.install-locally",
-        ));
-    }
-    app_shortcuts.extend([
-        ShortcutSpec::action("About", "app.about"),
-        ShortcutSpec::action("Show Keyboard Shortcuts", "app.shortcuts"),
-        ShortcutSpec::action("Quit", "app.quit"),
-    ]);
-    dialog.add(shortcuts_section("App", &app_shortcuts));
-
+    add_smart_insights_shortcuts(&settings, advanced_features);
+    add_optional_app_shortcuts(&app);
     dialog
 }
 
-enum ShortcutSpec<'a> {
-    Action {
-        title: &'a str,
-        action_name: &'a str,
-    },
-    Accelerator {
-        title: &'a str,
-        accelerator: &'a str,
-    },
+#[cfg(feature = "smart-insights")]
+fn add_smart_insights_shortcuts(section: &adw::ShortcutsSection, advanced_features: bool) {
+    if !advanced_features {
+        return;
+    }
+    add_action_shortcut(section, "Toggle Smart Insights", "app.show-predictions");
+    #[cfg(not(feature = "flatpak"))]
+    add_action_shortcut(
+        section,
+        "Toggle Online Smart Insights",
+        "app.online-smart-insights",
+    );
+    add_action_shortcut(
+        section,
+        "Toggle Hide Refunded Transactions",
+        "app.hide-canceled-transactions",
+    );
 }
 
-impl<'a> ShortcutSpec<'a> {
-    fn action(title: &'a str, action_name: &'a str) -> Self {
-        Self::Action { title, action_name }
-    }
+#[cfg(not(feature = "smart-insights"))]
+fn add_smart_insights_shortcuts(_section: &adw::ShortcutsSection, _advanced_features: bool) {}
 
-    fn accelerator(title: &'a str, accelerator: &'a str) -> Self {
-        Self::Accelerator { title, accelerator }
+fn add_optional_app_shortcuts(section: &adw::ShortcutsSection) {
+    if updater::supports_update_checks() {
+        add_action_shortcut(section, "Check for Updates", "app.check-for-updates");
+    }
+    #[cfg(all(target_os = "linux", feature = "setup", not(feature = "flatpak")))]
+    if setup::can_install_locally() {
+        add_action_shortcut(section, "Install Locally", "app.install-locally");
     }
 }
 
-fn shortcuts_section(title: &str, shortcuts: &[ShortcutSpec<'_>]) -> adw::ShortcutsSection {
-    let section = adw::ShortcutsSection::new(Some(&tr(title)));
-    for shortcut in shortcuts {
-        let item = match shortcut {
-            ShortcutSpec::Action { title, action_name } => {
-                adw::ShortcutsItem::from_action(&tr(title), action_name)
-            }
-            ShortcutSpec::Accelerator { title, accelerator } => {
-                adw::ShortcutsItem::new(&tr(title), accelerator)
-            }
-        };
-        section.add(item);
-    }
-    section
+fn add_action_shortcut(section: &adw::ShortcutsSection, title: &str, action_name: &str) {
+    section.add(adw::ShortcutsItem::from_action(&tr(title), action_name));
 }
 
 #[cfg(test)]

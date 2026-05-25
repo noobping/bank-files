@@ -55,6 +55,12 @@ fn translate_builder_object(object: &gtk::glib::Object) {
     if let Some(page) = object.downcast_ref::<adw::ViewStackPage>() {
         translate_view_stack_page(page);
     }
+    if let Some(section) = object.downcast_ref::<adw::ShortcutsSection>() {
+        translate_shortcuts_section(section);
+    }
+    if let Some(item) = object.downcast_ref::<adw::ShortcutsItem>() {
+        translate_shortcuts_item(item);
+    }
     if let Some(menu) = object.downcast_ref::<gtk::gio::Menu>() {
         translate_menu(menu);
     }
@@ -129,6 +135,25 @@ fn translate_view_stack_page(page: &adw::ViewStackPage) {
     }
 }
 
+fn translate_shortcuts_section(section: &adw::ShortcutsSection) {
+    if let Some(title) = section.title() {
+        if !title.is_empty() {
+            section.set_title(Some(&translate_text(&title)));
+        }
+    }
+}
+
+fn translate_shortcuts_item(item: &adw::ShortcutsItem) {
+    let title = item.title();
+    if !title.is_empty() {
+        item.set_title(&translate_text(&title));
+    }
+    let subtitle = item.subtitle();
+    if !subtitle.is_empty() {
+        item.set_subtitle(&translate_text(&subtitle));
+    }
+}
+
 fn translate_menu(menu: &gtk::gio::Menu) {
     let translated_items = (0..menu.n_items())
         .map(|index| translated_menu_item(menu, index))
@@ -178,15 +203,44 @@ fn translate_text(text: &str) -> String {
 mod tests {
     use super::*;
 
+    fn assert_object<T: IsA<gtk::glib::Object>>(builder: &gtk::Builder, id: &str, resource: &str) {
+        let _: T = builder_object(builder, id, resource);
+    }
+
     #[test]
-    fn main_window_resource_builds_expected_objects() {
+    fn ui_resources_build_expected_objects() {
         gtk::init().expect("initialize GTK");
         crate::resources::register().expect("register embedded resources");
-        let builder = builder_from_resource("main-window.ui");
+        for resource in [
+            "action-dialog.ui",
+            "fake-transactions-dialog.ui",
+            "management-dialog.ui",
+            "main-window.ui",
+            "settings-dialog.ui",
+            "shortcuts-dialog.ui",
+            "status-bar.ui",
+        ] {
+            let _ = builder_from_resource(resource);
+        }
 
-        let _: gtk::Box = builder_object(&builder, "main_root", "main-window.ui");
-        let _: adw::ViewStack = builder_object(&builder, "main_stack", "main-window.ui");
-        let _: gtk::SearchEntry = builder_object(&builder, "main_search_entry", "main-window.ui");
+        let action = builder_from_resource("action-dialog.ui");
+        assert_object::<adw::WindowTitle>(&action, "action_title", "action-dialog.ui");
+        assert_object::<gtk::Button>(&action, "action_search_button", "action-dialog.ui");
+
+        let settings = builder_from_resource("settings-dialog.ui");
+        assert_object::<adw::WindowTitle>(&settings, "settings_title", "settings-dialog.ui");
+
+        let shortcuts = builder_from_resource("shortcuts-dialog.ui");
+        assert_object::<adw::ShortcutsDialog>(
+            &shortcuts,
+            "shortcuts_dialog",
+            "shortcuts-dialog.ui",
+        );
+        assert_object::<adw::ShortcutsSection>(
+            &shortcuts,
+            "shortcuts_settings_section",
+            "shortcuts-dialog.ui",
+        );
     }
 
     #[test]

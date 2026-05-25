@@ -9,6 +9,7 @@
     <file>ui/management-dialog.ui</file>
     <file>ui/main-window.ui</file>
     <file>ui/settings-dialog.ui</file>
+    <file>ui/shortcuts-dialog.ui</file>
     <file>ui/status-bar.ui</file>
   </gresource>
 </gresources>
