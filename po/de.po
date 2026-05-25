@@ -3365,8 +3365,8 @@ msgstr "Überweisungsmarkierung rückgängig machen"
 msgid "Undo transfer"
 msgstr "Überweisung rückgängig machen"
 
-msgid "Remove the rule that marked this transaction as a transfer"
-msgstr "Die Regel entfernen, die diese Transaktion als Überweisung markiert hat"
+msgid "Edit the rule by removing the matching transfer keyword"
+msgstr "Die Regel bearbeiten, indem das passende Überweisungs-Stichwort entfernt wird"
 
 msgid "Marked invalid auto detection from transaction detail."
 msgstr "Ungültige automatische Erkennung aus den Transaktionsdetails markiert."
@@ -3527,11 +3527,11 @@ msgstr "{old} -> kein Budgetcode"
 msgid "{old} -> {new}"
 msgstr "{old} -> {new}"
 
-msgid "Remove {rule}"
-msgstr "{rule} entfernen"
+msgid "Edit {rule}"
+msgstr "{rule} bearbeiten"
 
-msgid "The matching rule could not be found."
-msgstr "Die passende Regel konnte nicht gefunden werden."
+msgid "The matching rule could not be edited."
+msgstr "Die passende Regel konnte nicht bearbeitet werden."
 
 msgid "No matching rule was found to edit."
 msgstr "Es wurde keine passende Regel zum Bearbeiten gefunden."

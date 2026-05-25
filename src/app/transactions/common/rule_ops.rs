@@ -22,5 +22,5 @@ pub(super) fn apply_transfer_undo_rule(tx: &Transaction, ui_handles: &Rc<UiHandl
         show_status(ui_handles, "No matching rule was found to edit.");
         return;
     };
-    enqueue_rule_removal_operation(ui_handles, rule_match, OperationSource::UndoTransfer);
+    enqueue_rule_undo_operation(ui_handles, rule_match, OperationSource::UndoTransfer);
 }

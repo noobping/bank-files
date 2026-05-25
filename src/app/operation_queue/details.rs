@@ -98,7 +98,7 @@ pub(super) fn operation_details(
                 tr(if *ensure_budget { "Yes" } else { "No" }),
             ));
         }
-        QueuedOperationKind::RuleRemoval { rule_match, .. } => {
+        QueuedOperationKind::RuleUndo { rule_match, .. } => {
             lines.push(operation_detail_line("Action", operation_title(kind)));
             lines.push(operation_detail_line(
                 "Status",

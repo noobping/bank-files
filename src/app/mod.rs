@@ -29,6 +29,7 @@ mod actions;
 mod annual;
 mod budget;
 mod config_ops;
+mod config_rule_undo;
 mod configuration_dialog;
 mod core;
 mod diagnostics;
@@ -121,7 +122,7 @@ use money::{
 };
 use operation_queue::{
     budget_move_queued_status, build_operation_queue_widgets, connect_operation_queue,
-    enqueue_rule_operation, enqueue_rule_removal_operation, operation_already_queued_status,
+    enqueue_rule_operation, enqueue_rule_undo_operation, operation_already_queued_status,
     refresh_active_operation_queue_ui, register_operation_queue_menu_action,
     register_operation_queue_widget, update_operation_queue_action_widgets, OperationQueue,
     OperationQueueWidgets, OperationSource, QueuedOperationKind,

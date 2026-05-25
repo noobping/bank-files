@@ -1,6 +1,6 @@
 use super::budget_move::show_transaction_budget_code_dialog;
 use super::detail_state::{
-    queued_rule_removal_operation_kind, transaction_detail_config_action_blocked,
+    queued_rule_undo_operation_kind, transaction_detail_config_action_blocked,
     transaction_detail_move_action_text,
 };
 use super::rule_ops::apply_transfer_undo_rule;
@@ -37,12 +37,11 @@ pub(super) fn append_primary_transfer_undo_action(
     let Some(rule_match) = tx.rule_match.clone() else {
         return;
     };
-    let undo_operation =
-        queued_rule_removal_operation_kind(rule_match, OperationSource::UndoTransfer);
+    let undo_operation = queued_rule_undo_operation_kind(rule_match, OperationSource::UndoTransfer);
     let undo_button = ui::primary_text_icon_button(
         "edit-undo-symbolic",
         "Undo transfer",
-        "Remove the rule that marked this transaction as a transfer",
+        "Edit the rule by removing the matching transfer keyword",
     );
     undo_button.set_sensitive(enabled);
     register_config_widget(ui_handles, &undo_button);

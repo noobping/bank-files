@@ -30,6 +30,8 @@ pub struct TransactionRuleMatch {
     pub priority: i32,
     pub field: String,
     pub pattern: String,
+    #[serde(default)]
+    pub matched_text: String,
     pub category: String,
     pub budget_code: String,
     pub direction: String,

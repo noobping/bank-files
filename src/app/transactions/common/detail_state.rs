@@ -132,11 +132,11 @@ pub(super) fn queued_rule_operation_kind(
     }
 }
 
-pub(super) fn queued_rule_removal_operation_kind(
+pub(super) fn queued_rule_undo_operation_kind(
     rule_match: TransactionRuleMatch,
     source: OperationSource,
 ) -> QueuedOperationKind {
-    QueuedOperationKind::RuleRemoval { rule_match, source }
+    QueuedOperationKind::RuleUndo { rule_match, source }
 }
 
 pub(super) fn append_transaction_detail_menu_action<F>(

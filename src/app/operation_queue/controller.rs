@@ -53,12 +53,12 @@ pub(in crate::app) fn enqueue_rule_operation(
     result
 }
 
-pub(in crate::app) fn enqueue_rule_removal_operation(
+pub(in crate::app) fn enqueue_rule_undo_operation(
     ui: &Rc<UiHandles>,
     rule_match: TransactionRuleMatch,
     source: OperationSource,
 ) -> EnqueueOperationResult {
-    let result = ui.operation_queue.enqueue_rule_removal(rule_match, source);
+    let result = ui.operation_queue.enqueue_rule_undo(rule_match, source);
     refresh_operation_queue_ui_for_active_session(ui);
     if result.queued() {
         show_status(ui, operation_added_status());

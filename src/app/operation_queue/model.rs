@@ -30,7 +30,7 @@ pub(in crate::app) enum QueuedOperationKind {
         ensure_budget: bool,
         source: OperationSource,
     },
-    RuleRemoval {
+    RuleUndo {
         rule_match: TransactionRuleMatch,
         source: OperationSource,
     },
@@ -116,12 +116,12 @@ impl OperationQueue {
         })
     }
 
-    pub(in crate::app) fn enqueue_rule_removal(
+    pub(in crate::app) fn enqueue_rule_undo(
         &self,
         rule_match: TransactionRuleMatch,
         source: OperationSource,
     ) -> EnqueueOperationResult {
-        self.enqueue_kind(QueuedOperationKind::RuleRemoval { rule_match, source })
+        self.enqueue_kind(QueuedOperationKind::RuleUndo { rule_match, source })
     }
 
     fn enqueue_kind(&self, kind: QueuedOperationKind) -> EnqueueOperationResult {

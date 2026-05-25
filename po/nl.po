@@ -3365,8 +3365,8 @@ msgstr "Overboekingsmarkering ongedaan maken"
 msgid "Undo transfer"
 msgstr "Overboeking ongedaan maken"
 
-msgid "Remove the rule that marked this transaction as a transfer"
-msgstr "Verwijder de regel die deze transactie als overboeking markeerde"
+msgid "Edit the rule by removing the matching transfer keyword"
+msgstr "Bewerk de regel door het bijbehorende overboekingszoekwoord te verwijderen"
 
 msgid "Marked invalid auto detection from transaction detail."
 msgstr "Ongeldige automatische detectie gemarkeerd vanuit transactiedetails."
@@ -3527,11 +3527,11 @@ msgstr "{old} -> geen budgetcode"
 msgid "{old} -> {new}"
 msgstr "{old} -> {new}"
 
-msgid "Remove {rule}"
-msgstr "Verwijder {rule}"
+msgid "Edit {rule}"
+msgstr "Bewerk {rule}"
 
-msgid "The matching rule could not be found."
-msgstr "De bijbehorende regel kon niet worden gevonden."
+msgid "The matching rule could not be edited."
+msgstr "De bijbehorende regel kon niet worden bewerkt."
 
 msgid "No matching rule was found to edit."
 msgstr "Er is geen bijbehorende regel gevonden om te bewerken."

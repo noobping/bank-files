@@ -60,8 +60,9 @@ pub(super) fn queue_summary(queue: &OperationQueue) -> String {
 
 pub(super) fn operation_title(kind: &QueuedOperationKind) -> String {
     let source = match kind {
-        QueuedOperationKind::Rule { source, .. }
-        | QueuedOperationKind::RuleRemoval { source, .. } => source,
+        QueuedOperationKind::Rule { source, .. } | QueuedOperationKind::RuleUndo { source, .. } => {
+            source
+        }
     };
     tr(match source {
         OperationSource::CreateRule => "Create rule",
@@ -94,8 +95,8 @@ pub(super) fn operation_subtitle(kind: &QueuedOperationKind) -> String {
             &rule.direction,
             true,
         ),
-        QueuedOperationKind::RuleRemoval { rule_match, .. } => trf(
-            "Remove {rule}",
+        QueuedOperationKind::RuleUndo { rule_match, .. } => trf(
+            "Edit {rule}",
             &[("rule", rule_match_summary(rule_match, true))],
         ),
     }

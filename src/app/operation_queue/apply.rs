@@ -111,8 +111,8 @@ fn apply_queued_operation(kind: QueuedOperationKind) -> anyhow::Result<()> {
             super::super::config_ops::apply_rule_config_change(rule, ensure_budget)?;
             Ok(())
         }
-        QueuedOperationKind::RuleRemoval { rule_match, .. } => {
-            super::super::config_ops::remove_rule_config_change(rule_match)?;
+        QueuedOperationKind::RuleUndo { rule_match, .. } => {
+            super::super::config_rule_undo::undo_rule_match_config_change(rule_match)?;
             Ok(())
         }
     }

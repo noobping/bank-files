@@ -63,6 +63,7 @@ fn fallback_clears_rule_match() {
         priority: 10,
         field: "counterparty".to_string(),
         pattern: "Cafe".to_string(),
+        matched_text: "Cafe".to_string(),
         category: "Old".to_string(),
         budget_code: "OLD".to_string(),
         direction: "expense".to_string(),

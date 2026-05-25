@@ -14,6 +14,7 @@ fn rule_match(search: &str) -> TransactionRuleMatch {
         priority: 120,
         field: "counterparty".to_string(),
         pattern: regex::escape(search),
+        matched_text: search.to_string(),
         category: "Transfers".to_string(),
         budget_code: "TRANSFER".to_string(),
         direction: "transfer".to_string(),
@@ -43,11 +44,10 @@ fn enqueue_assigns_stable_ids_and_counts_actionable_items() {
 }
 
 #[test]
-fn duplicate_rule_removal_operations_are_not_enqueued_twice() {
+fn duplicate_rule_undo_operations_are_not_enqueued_twice() {
     let queue = OperationQueue::new();
-    let first = queue.enqueue_rule_removal(rule_match("Savings"), OperationSource::UndoTransfer);
-    let duplicate =
-        queue.enqueue_rule_removal(rule_match("Savings"), OperationSource::UndoTransfer);
+    let first = queue.enqueue_rule_undo(rule_match("Savings"), OperationSource::UndoTransfer);
+    let duplicate = queue.enqueue_rule_undo(rule_match("Savings"), OperationSource::UndoTransfer);
 
     assert_eq!(first, EnqueueOperationResult::Queued(1));
     assert_eq!(duplicate, EnqueueOperationResult::AlreadyQueued(1));

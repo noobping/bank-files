@@ -30,11 +30,11 @@ pub fn transaction_classification_is_auto_detected(tx: &Transaction) -> bool {
 
 fn apply_matching_rule(tx: &mut Transaction, rules: &[Rule]) -> bool {
     for rule in rules.iter().filter(|rule| rule.active) {
-        if rule_matches(rule, tx) {
+        if let Some(matched_text) = rule_match_text(rule, tx) {
             tx.category = rule.category.clone();
             tx.budget_code = rule.budget_code.clone();
             tx.notes = rule.notes.clone();
-            tx.rule_match = Some(transaction_rule_match(rule));
+            tx.rule_match = Some(transaction_rule_match(rule, matched_text));
             return true;
         }
     }
@@ -56,11 +56,12 @@ fn note_matches(note: &str, expected: &str) -> bool {
             || note.starts_with(&format!("{localized_key} ")))
 }
 
-fn transaction_rule_match(rule: &Rule) -> TransactionRuleMatch {
+fn transaction_rule_match(rule: &Rule, matched_text: String) -> TransactionRuleMatch {
     TransactionRuleMatch {
         priority: rule.priority,
         field: rule.field.clone(),
         pattern: rule.pattern.clone(),
+        matched_text,
         category: rule.category.clone(),
         budget_code: rule.budget_code.clone(),
         direction: rule.direction.clone(),
@@ -70,19 +71,19 @@ fn transaction_rule_match(rule: &Rule) -> TransactionRuleMatch {
     }
 }
 
-fn rule_matches(rule: &Rule, tx: &Transaction) -> bool {
+fn rule_match_text(rule: &Rule, tx: &Transaction) -> Option<String> {
     if !direction_matches(&rule.direction, tx.amount) {
-        return false;
+        return None;
     }
     let abs = tx.amount.abs();
     if let Some(min) = rule.amount_min {
         if abs < min.abs() {
-            return false;
+            return None;
         }
     }
     if let Some(max) = rule.amount_max {
         if abs > max.abs() {
-            return false;
+            return None;
         }
     }
 
@@ -106,9 +107,11 @@ fn rule_matches(rule: &Rule, tx: &Transaction) -> bool {
         .case_insensitive(true)
         .build()
     else {
-        return normalize_key(&text).contains(&normalize_key(&rule.pattern));
+        return normalize_key(&text)
+            .contains(&normalize_key(&rule.pattern))
+            .then_some(text);
     };
-    re.is_match(&text)
+    re.is_match(&text).then_some(text)
 }
 
 fn direction_matches(direction: &str, amount: Decimal) -> bool {
