@@ -3570,3 +3570,16 @@ msgstr "Neueste Sicherung wiederherstellen"
 
 msgid "Configuration actions"
 msgstr "Konfigurationsaktionen"
+
+# Popup shortcuts
+msgid "Popups"
+msgstr "Pop-ups"
+
+msgid "Open Fake Transactions"
+msgstr "Scheintransaktionen öffnen"
+
+msgid "Open Processing Queue"
+msgstr "Verarbeitungswarteschlange öffnen"
+
+msgid "Open Message History"
+msgstr "Nachrichtenverlauf öffnen"

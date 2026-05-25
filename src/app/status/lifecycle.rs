@@ -61,18 +61,35 @@ pub(in crate::app) fn connect_status_actions(
     history_button: gtk::Button,
     hide_button: gtk::Button,
 ) {
+    let history_dialog = Rc::new(RefCell::new(None::<adw::Dialog>));
+
     let window_for_history = ui.window.clone();
     let history_for_history = Rc::clone(&ui.status_history);
-    let history_dialog = Rc::new(RefCell::new(None::<adw::Dialog>));
+    let history_dialog_for_button = Rc::clone(&history_dialog);
     let ui_for_history = Rc::clone(ui);
     history_button.connect_clicked(move |_| {
         show_status_history_dialog(
             &window_for_history,
             &history_for_history,
-            &history_dialog,
+            &history_dialog_for_button,
             Some(Rc::clone(&ui_for_history)),
         );
     });
+
+    let window_for_history_action = ui.window.clone();
+    let history_for_history_action = Rc::clone(&ui.status_history);
+    let history_dialog_for_action = Rc::clone(&history_dialog);
+    let ui_for_history_action = Rc::clone(ui);
+    let history_action = gtk::gio::SimpleAction::new("status-history", None);
+    history_action.connect_activate(move |_, _| {
+        show_status_history_dialog(
+            &window_for_history_action,
+            &history_for_history_action,
+            &history_dialog_for_action,
+            Some(Rc::clone(&ui_for_history_action)),
+        );
+    });
+    app.add_action(&history_action);
 
     let ui_for_hide = Rc::clone(ui);
     hide_button.connect_clicked(move |_| {

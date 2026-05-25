@@ -95,7 +95,8 @@ use export::export_transactions_from_action;
 use fake_transactions::{
     build_fake_transaction_widgets, connect_fake_transactions, data_with_fake_transactions,
     duplicate_transaction_as_fake, focus_fake_transaction_search, real_transactions,
-    transaction_is_fake, FakeTransactionStore, FakeTransactionWidgets,
+    show_fake_transactions_dialog, transaction_is_fake, FakeTransactionStore,
+    FakeTransactionWidgets,
 };
 use field_alias::{field_alias_combo, FIELD_ALIAS_SPECS};
 use filters::{
@@ -124,8 +125,9 @@ use operation_queue::{
     budget_move_queued_status, build_operation_queue_widgets, connect_operation_queue,
     enqueue_rule_operation, enqueue_rule_undo_operation, operation_already_queued_status,
     refresh_active_operation_queue_ui, register_operation_queue_menu_action,
-    register_operation_queue_widget, update_operation_queue_action_widgets, OperationQueue,
-    OperationQueueWidgets, OperationSource, QueuedOperationKind,
+    register_operation_queue_widget, show_operation_queue_dialog,
+    update_operation_queue_action_widgets, OperationQueue, OperationQueueWidgets, OperationSource,
+    QueuedOperationKind,
 };
 use overview::render_overview;
 use popup::{

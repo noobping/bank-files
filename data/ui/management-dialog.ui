@@ -54,6 +54,24 @@
       <attribute name="action">management-config.restore-latest-backup</attribute>
     </item>
   </menu>
+  <menu id="management_simple_budget_bulk_menu">
+    <item>
+      <attribute name="label" translatable="yes">Use Real Income</attribute>
+      <attribute name="action">management-budgets.use-real-income</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Use Planned Income</attribute>
+      <attribute name="action">management-budgets.use-planned-income</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Back Up Configuration</attribute>
+      <attribute name="action">management-config.back-up-configuration</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Restore Latest Backup</attribute>
+      <attribute name="action">management-config.restore-latest-backup</attribute>
+    </item>
+  </menu>
   <menu id="management_config_menu">
     <item>
       <attribute name="label" translatable="yes">Back Up Configuration</attribute>

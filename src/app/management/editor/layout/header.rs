@@ -12,6 +12,7 @@ pub(super) struct HeaderActionWidgets {
     pub(super) budget_bulk_menu_button: gtk::MenuButton,
     pub(super) rule_bulk_menu: gtk::gio::Menu,
     pub(super) budget_bulk_menu: gtk::gio::Menu,
+    pub(super) simple_budget_bulk_menu: gtk::gio::Menu,
     pub(super) config_menu: gtk::gio::Menu,
 }
 
@@ -95,10 +96,10 @@ fn show_budget_menu(widgets: &HeaderActionWidgets, advanced_features: bool) {
     } else {
         widgets
             .budget_bulk_menu_button
-            .set_menu_model(Some(&widgets.config_menu));
+            .set_menu_model(Some(&widgets.simple_budget_bulk_menu));
         widgets
             .budget_bulk_menu_button
-            .set_tooltip_text(Some(&tr("Configuration actions")));
+            .set_tooltip_text(Some(&tr("Budget actions")));
     }
     widgets.budget_bulk_menu_button.set_visible(true);
 }

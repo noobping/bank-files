@@ -14,6 +14,7 @@ pub(in crate::app) use action_registry::{
 };
 pub(in crate::app) use controller::{
     connect_operation_queue, enqueue_rule_operation, enqueue_rule_undo_operation,
+    show_operation_queue_dialog,
 };
 pub(in crate::app) use messages::{budget_move_queued_status, operation_already_queued_status};
 pub(in crate::app) use model::{

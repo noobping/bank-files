@@ -28,6 +28,11 @@ pub(in crate::app) fn build_menu_model(
     let menu = gtk::gio::Menu::new();
     menu.append(Some(&tr("Open CSV Files")), Some("app.import-csv"));
     menu.append(Some(&tr("Search")), Some("app.find"));
+    menu.append(
+        Some(&tr("Fake transactions")),
+        Some("app.fake-transactions"),
+    );
+    menu.append(Some(&tr("Processing queue")), Some("app.operation-queue"));
     if advanced_features {
         menu.append(Some(&tr("Quick Reload")), Some("app.reload"));
         menu.append(Some(&tr("Reload All")), Some("app.reload-all"));

@@ -11,14 +11,7 @@ pub(in crate::app) fn connect_fake_transactions(state: &Rc<RefCell<AppData>>, ui
     let ui_for_open = Rc::clone(ui);
     ui.fake_transaction_widgets
         .button
-        .connect_clicked(move |_| {
-            refresh_fake_transactions_ui(&state_for_open, &ui_for_open);
-            show_fake_transaction_list(&ui_for_open.fake_transaction_widgets);
-            ui_for_open
-                .fake_transaction_widgets
-                .dialog
-                .present(Some(&ui_for_open.window));
-        });
+        .connect_clicked(move |_| show_fake_transactions_dialog(&state_for_open, &ui_for_open));
 
     let ui_for_back = Rc::clone(ui);
     ui.fake_transaction_widgets
@@ -68,6 +61,15 @@ pub(in crate::app) fn connect_fake_transactions(state: &Rc<RefCell<AppData>>, ui
         });
 
     refresh_fake_transactions_ui(state, ui);
+}
+
+pub(in crate::app) fn show_fake_transactions_dialog(
+    state: &Rc<RefCell<AppData>>,
+    ui: &Rc<UiHandles>,
+) {
+    refresh_fake_transactions_ui(state, ui);
+    show_fake_transaction_list(&ui.fake_transaction_widgets);
+    ui.fake_transaction_widgets.dialog.present(Some(&ui.window));
 }
 
 pub(in crate::app) fn duplicate_transaction_as_fake(

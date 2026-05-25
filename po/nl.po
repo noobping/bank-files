@@ -3570,3 +3570,16 @@ msgstr "Nieuwste back-up herstellen"
 
 msgid "Configuration actions"
 msgstr "Configuratieacties"
+
+# Popup shortcuts
+msgid "Popups"
+msgstr "Pop-ups"
+
+msgid "Open Fake Transactions"
+msgstr "Neptransacties openen"
+
+msgid "Open Processing Queue"
+msgstr "Verwerkingswachtrij openen"
+
+msgid "Open Message History"
+msgstr "Meldingengeschiedenis openen"

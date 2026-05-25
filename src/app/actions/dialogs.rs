@@ -9,6 +9,7 @@ pub(super) fn register_dialog_actions(
     register_configuration_action(app, window, state, ui);
     register_preferences_action(app, window, state, ui);
     register_management_actions(app, window, state, ui);
+    register_popup_actions(app, state, ui);
     register_shortcuts_action(app, window);
     register_about_action(app, window);
     register_quit_action(app);
@@ -111,6 +112,28 @@ fn register_management_actions(
         );
     });
     app.add_action(&manage_aliases_action);
+}
+
+fn register_popup_actions(
+    app: &adw::Application,
+    state: &Rc<RefCell<AppData>>,
+    ui: &Rc<UiHandles>,
+) {
+    let state_for_fake_transactions = Rc::clone(state);
+    let ui_for_fake_transactions = Rc::clone(ui);
+    let fake_transactions_action = gtk::gio::SimpleAction::new("fake-transactions", None);
+    fake_transactions_action.connect_activate(move |_, _| {
+        show_fake_transactions_dialog(&state_for_fake_transactions, &ui_for_fake_transactions);
+    });
+    app.add_action(&fake_transactions_action);
+
+    let state_for_operation_queue = Rc::clone(state);
+    let ui_for_operation_queue = Rc::clone(ui);
+    let operation_queue_action = gtk::gio::SimpleAction::new("operation-queue", None);
+    operation_queue_action.connect_activate(move |_, _| {
+        show_operation_queue_dialog(&state_for_operation_queue, &ui_for_operation_queue);
+    });
+    app.add_action(&operation_queue_action);
 }
 
 fn register_shortcuts_action(app: &adw::Application, window: &adw::ApplicationWindow) {

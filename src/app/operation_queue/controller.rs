@@ -7,12 +7,9 @@ use super::widgets::{refresh_operation_queue_ui, refresh_operation_queue_ui_for_
 pub(in crate::app) fn connect_operation_queue(state: &Rc<RefCell<AppData>>, ui: &Rc<UiHandles>) {
     let state_for_dialog = Rc::clone(state);
     let ui_for_dialog = Rc::clone(ui);
-    let window_for_dialog = ui.window.clone();
-    let dialog_for_button = ui.operation_queue_widgets.dialog.clone();
-    ui.operation_queue_widgets.button.connect_clicked(move |_| {
-        refresh_operation_queue_ui(&state_for_dialog, &ui_for_dialog);
-        dialog_for_button.present(Some(&window_for_dialog));
-    });
+    ui.operation_queue_widgets
+        .button
+        .connect_clicked(move |_| show_operation_queue_dialog(&state_for_dialog, &ui_for_dialog));
 
     let state_for_apply_all = Rc::clone(state);
     let ui_for_apply_all = Rc::clone(ui);
@@ -35,6 +32,14 @@ pub(in crate::app) fn connect_operation_queue(state: &Rc<RefCell<AppData>>, ui: 
         });
 
     refresh_operation_queue_ui(state, ui);
+}
+
+pub(in crate::app) fn show_operation_queue_dialog(
+    state: &Rc<RefCell<AppData>>,
+    ui: &Rc<UiHandles>,
+) {
+    refresh_operation_queue_ui(state, ui);
+    ui.operation_queue_widgets.dialog.present(Some(&ui.window));
 }
 
 pub(in crate::app) fn enqueue_rule_operation(

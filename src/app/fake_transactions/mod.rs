@@ -12,7 +12,9 @@ const DEFAULT_FAKE_CURRENCY: &str = "EUR";
 const FAKE_TRANSACTIONS_LIST_PAGE: &str = "list";
 const FAKE_TRANSACTIONS_FORM_PAGE: &str = "form";
 
-pub(in crate::app) use controller::{connect_fake_transactions, duplicate_transaction_as_fake};
+pub(in crate::app) use controller::{
+    connect_fake_transactions, duplicate_transaction_as_fake, show_fake_transactions_dialog,
+};
 pub(in crate::app) use model::{
     data_with_fake_transactions, real_transactions, transaction_is_fake, FakeTransactionStore,
 };

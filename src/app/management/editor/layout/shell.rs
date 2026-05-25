@@ -90,6 +90,11 @@ pub(super) fn build_management_dialog_shell(
     );
     let budget_bulk_menu =
         ui::builder_object::<gtk::gio::Menu>(&builder, "management_budget_bulk_menu", RESOURCE);
+    let simple_budget_bulk_menu = ui::builder_object::<gtk::gio::Menu>(
+        &builder,
+        "management_simple_budget_bulk_menu",
+        RESOURCE,
+    );
     let config_menu =
         ui::builder_object::<gtk::gio::Menu>(&builder, "management_config_menu", RESOURCE);
 
@@ -164,6 +169,7 @@ pub(super) fn build_management_dialog_shell(
             budget_bulk_menu_button: budget_bulk_menu_button.clone(),
             rule_bulk_menu: rule_bulk_menu.clone(),
             budget_bulk_menu: budget_bulk_menu.clone(),
+            simple_budget_bulk_menu,
             config_menu,
         },
         advanced_features,
