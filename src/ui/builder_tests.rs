@@ -47,6 +47,13 @@ fn ui_resources_build_expected_objects() {
         "status-history-dialog.ui",
     );
 
+    let partial_load = builder_from_resource("partial-load-notice.ui");
+    assert_object::<gtk::Button>(
+        &partial_load,
+        "partial_load_notice_reload_button",
+        "partial-load-notice.ui",
+    );
+
     let shortcuts = builder_from_resource("shortcuts-dialog.ui");
     assert_object::<adw::ShortcutsDialog>(&shortcuts, "shortcuts_dialog", "shortcuts-dialog.ui");
     assert_object::<adw::ShortcutsSection>(

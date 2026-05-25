@@ -133,4 +133,12 @@ mod tests {
             "embedded operation queue dialog UI should be available",
         );
     }
+
+    #[test]
+    fn embedded_partial_load_notice_ui_is_available() {
+        assert_embedded_resource(
+            "ui/partial-load-notice.ui",
+            "embedded partial load notice UI should be available",
+        );
+    }
 }

@@ -40,44 +40,22 @@ pub(in crate::app) fn append_partial_load_notice(
 }
 
 fn partial_load_info_card(ui_handles: &Rc<UiHandles>, message: &str) -> gtk::Box {
-    let card = ui::card_container();
-    let content = ui::card_content(gtk::Orientation::Horizontal, 12);
+    let builder = ui::builder_from_resource("partial-load-notice.ui");
+    let card = partial_load_notice_object::<gtk::Box>(&builder, "partial_load_notice_card");
+    let message_label =
+        partial_load_notice_object::<gtk::Label>(&builder, "partial_load_notice_message");
+    message_label.set_text(message);
 
-    let icon = gtk::Image::from_icon_name("dialog-information-symbolic");
-    icon.add_css_class("dim-label");
-    icon.set_pixel_size(28);
-    icon.set_valign(gtk::Align::Start);
-    content.append(&icon);
-
-    let text_box = gtk::Box::new(gtk::Orientation::Vertical, 4);
-    text_box.set_hexpand(true);
-
-    let title = gtk::Label::new(Some(&super::tr("Only part of the CSV records is loaded")));
-    title.add_css_class("title-4");
-    title.set_xalign(0.0);
-    title.set_width_chars(1);
-    title.set_wrap(true);
-    title.set_wrap_mode(gtk::pango::WrapMode::WordChar);
-    text_box.append(&title);
-
-    let label = ui::selectable_wrapped_label(message);
-    label.set_width_chars(1);
-    label.set_max_width_chars(78);
-    text_box.append(&label);
-    content.append(&text_box);
-
-    let reload_button = ui::plain_text_icon_button(
-        "view-refresh-symbolic",
-        "Reload All",
-        "Force reload all CSV files",
-    );
-    reload_button.set_valign(gtk::Align::Start);
+    let reload_button =
+        partial_load_notice_object::<gtk::Button>(&builder, "partial_load_notice_reload_button");
     register_loading_sensitive_widget(ui_handles, &reload_button);
     reload_button.set_action_name(Some("app.reload-all"));
-    content.append(&reload_button);
 
-    card.append(&content);
     card
+}
+
+fn partial_load_notice_object<T: IsA<gtk::glib::Object>>(builder: &gtk::Builder, id: &str) -> T {
+    ui::builder_object(builder, id, "partial-load-notice.ui")
 }
 
 fn partial_load_record_counts(data: &AppData) -> Option<PartialLoadRecordCounts> {
