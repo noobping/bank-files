@@ -1,15 +1,27 @@
 use super::*;
 
 pub(super) fn invalid_auto_detection_rule_for_transaction(tx: &Transaction) -> EditableRule {
+    replacement_direction_rule(
+        tx,
+        150,
+        tr("Marked invalid auto detection from transaction detail."),
+    )
+}
+
+pub(super) fn transfer_undo_rule_for_transaction(tx: &Transaction) -> EditableRule {
+    replacement_direction_rule(
+        tx,
+        160,
+        tr("Marked transfer undone from transaction detail."),
+    )
+}
+
+fn replacement_direction_rule(tx: &Transaction, priority: i32, notes: String) -> EditableRule {
     let (field, search) = transaction_rule_match(tx);
-    let (category, budget_code, direction) = if tx.amount > Decimal::ZERO {
-        (tr("Other income"), "INC-OTHER".to_string(), "income")
-    } else {
-        (tr("Other"), "OTHER".to_string(), "expense")
-    };
+    let (category, budget_code, direction) = non_transfer_rule_values(tx);
 
     EditableRule {
-        priority: 150,
+        priority,
         active: true,
         field,
         search,
@@ -19,7 +31,15 @@ pub(super) fn invalid_auto_detection_rule_for_transaction(tx: &Transaction) -> E
         direction: direction.to_string(),
         amount_min: String::new(),
         amount_max: String::new(),
-        notes: tr("Marked invalid auto detection from transaction detail."),
+        notes,
+    }
+}
+
+fn non_transfer_rule_values(tx: &Transaction) -> (String, String, &'static str) {
+    if tx.amount > Decimal::ZERO {
+        (tr("Other income"), "INC-OTHER".to_string(), "income")
+    } else {
+        (tr("Other"), "OTHER".to_string(), "expense")
     }
 }
 

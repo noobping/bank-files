@@ -41,4 +41,6 @@ use detail_state::{
     TransactionDetailAction, TransactionDetailActionPlacement,
 };
 #[cfg(test)]
-use rule_helpers::invalid_auto_detection_rule_for_transaction;
+use rule_helpers::{
+    invalid_auto_detection_rule_for_transaction, transfer_undo_rule_for_transaction,
+};

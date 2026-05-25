@@ -3431,6 +3431,18 @@ msgstr "Automatische Erkennung als ungültig markieren"
 msgid "Mark invalid detection"
 msgstr "Ungültige Erkennung markieren"
 
+msgid "Undo transfer mark"
+msgstr "Überweisungsmarkierung rückgängig machen"
+
+msgid "Undo transfer"
+msgstr "Überweisung rückgängig machen"
+
+msgid "Move this transaction back to income or expenses"
+msgstr "Diese Transaktion wieder Einnahmen oder Ausgaben zuordnen"
+
+msgid "Marked transfer undone from transaction detail."
+msgstr "Überweisungsmarkierung aus den Transaktionsdetails rückgängig gemacht."
+
 msgid "Marked invalid auto detection from transaction detail."
 msgstr "Ungültige automatische Erkennung aus den Transaktionsdetails markiert."
 

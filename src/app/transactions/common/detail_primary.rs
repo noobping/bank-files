@@ -3,8 +3,8 @@ use super::detail_state::{
     queued_rule_operation_kind, transaction_detail_config_action_blocked,
     transaction_detail_move_action_text,
 };
-use super::rule_helpers::invalid_auto_detection_rule_for_transaction;
-use super::rule_ops::apply_invalid_auto_detection_rule;
+use super::rule_helpers::transfer_undo_rule_for_transaction;
+use super::rule_ops::apply_transfer_undo_rule;
 use super::search::{show_transactions_text_search, similar_transaction_query};
 use super::*;
 
@@ -27,36 +27,36 @@ pub(super) fn append_primary_move_budget_action(
     primary_actions.append(&move_button);
 }
 
-pub(super) fn append_primary_invalid_action(
+pub(super) fn append_primary_transfer_undo_action(
     tx: &Transaction,
     ui_handles: &Rc<UiHandles>,
     primary_actions: &gtk::Box,
     enabled: bool,
 ) {
-    let tx_for_invalid = tx.clone();
-    let ui_for_invalid = Rc::clone(ui_handles);
-    let invalid_operation = queued_rule_operation_kind(
-        invalid_auto_detection_rule_for_transaction(tx),
-        OperationSource::MarkInvalid,
+    let tx_for_undo = tx.clone();
+    let ui_for_undo = Rc::clone(ui_handles);
+    let undo_operation = queued_rule_operation_kind(
+        transfer_undo_rule_for_transaction(tx),
+        OperationSource::UndoTransfer,
     );
-    let invalid_button = ui::primary_text_icon_button(
+    let undo_button = ui::primary_text_icon_button(
         "edit-undo-symbolic",
-        "Mark invalid",
-        "Undo this auto-detected classification",
+        "Undo transfer",
+        "Move this transaction back to income or expenses",
     );
-    invalid_button.set_sensitive(enabled);
-    register_config_widget(ui_handles, &invalid_button);
-    register_operation_queue_widget(ui_handles, &invalid_button, invalid_operation);
-    invalid_button.connect_clicked(move |_| {
+    undo_button.set_sensitive(enabled);
+    register_config_widget(ui_handles, &undo_button);
+    register_operation_queue_widget(ui_handles, &undo_button, undo_operation);
+    undo_button.connect_clicked(move |_| {
         if transaction_detail_config_action_blocked(
-            &ui_for_invalid,
+            &ui_for_undo,
             "Another edit or save is already running.",
         ) {
             return;
         }
-        apply_invalid_auto_detection_rule(&tx_for_invalid, &ui_for_invalid);
+        apply_transfer_undo_rule(&tx_for_undo, &ui_for_undo);
     });
-    primary_actions.append(&invalid_button);
+    primary_actions.append(&undo_button);
 }
 
 pub(super) fn append_similar_action(

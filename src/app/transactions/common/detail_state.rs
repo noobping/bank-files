@@ -7,6 +7,7 @@ pub(super) enum TransactionDetailAction {
     MoveBudgetCode,
     DuplicateAsFake,
     MarkTransfer,
+    UndoTransfer,
     MarkInvalid,
     Similar,
     FindPattern,
@@ -25,6 +26,7 @@ pub(super) fn visible_transaction_detail_actions(
         TransactionDetailAction::MoveBudgetCode,
         TransactionDetailAction::DuplicateAsFake,
         TransactionDetailAction::MarkTransfer,
+        TransactionDetailAction::UndoTransfer,
         TransactionDetailAction::MarkInvalid,
         TransactionDetailAction::Similar,
         TransactionDetailAction::FindPattern,
@@ -59,6 +61,7 @@ fn transaction_detail_action_visible(
         TransactionDetailAction::DuplicateAsFake
         | TransactionDetailAction::MarkTransfer
         | TransactionDetailAction::Similar => true,
+        TransactionDetailAction::UndoTransfer => !markable_as_transfer,
         TransactionDetailAction::MarkInvalid => auto_detected_classification,
         TransactionDetailAction::FindPattern => smart_patterns_enabled,
     };
@@ -96,9 +99,9 @@ pub(super) enum TransactionDetailActionPlacement {
 }
 
 pub(super) fn transaction_detail_move_budget_code_placement(
-    auto_detected_transfer: bool,
+    transfer_marked: bool,
 ) -> TransactionDetailActionPlacement {
-    if auto_detected_transfer {
+    if transfer_marked {
         TransactionDetailActionPlacement::Menu
     } else {
         TransactionDetailActionPlacement::Primary

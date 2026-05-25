@@ -3,7 +3,7 @@ use super::budget_move::{
     transaction_is_markable_as_transfer,
 };
 use super::detail_primary::{
-    append_primary_invalid_action, append_primary_move_budget_action, append_similar_action,
+    append_primary_move_budget_action, append_primary_transfer_undo_action, append_similar_action,
 };
 use super::rule_dialog::show_transaction_rule_dialog;
 use super::rule_helpers::{
@@ -41,15 +41,14 @@ pub(super) fn transaction_detail_actions(
     );
     let auto_detected_classification =
         crate::rules::transaction_classification_is_auto_detected(tx);
-    let (markable_as_transfer, budget_move_available, auto_detected_transfer) = {
+    let (markable_as_transfer, budget_move_available) = {
         let data = state.borrow();
-        let markable_as_transfer = transaction_is_markable_as_transfer(tx, &data.budgets);
         (
-            markable_as_transfer,
+            transaction_is_markable_as_transfer(tx, &data.budgets),
             transaction_budget_move_available(tx, &data.budgets, advanced_features),
-            auto_detected_classification && !markable_as_transfer,
         )
     };
+    let transfer_marked = !markable_as_transfer;
     let visible_actions = visible_transaction_detail_actions(
         advanced_features,
         smart_patterns_enabled,
@@ -58,8 +57,7 @@ pub(super) fn transaction_detail_actions(
         auto_detected_classification,
     );
     let config_menu_action_enabled = transaction_detail_config_action_enabled(ui_handles.as_ref());
-    let move_budget_code_placement =
-        transaction_detail_move_budget_code_placement(auto_detected_transfer);
+    let move_budget_code_placement = transaction_detail_move_budget_code_placement(transfer_marked);
 
     if visible_actions.contains(&TransactionDetailAction::MoveBudgetCode)
         && move_budget_code_placement == TransactionDetailActionPlacement::Primary
@@ -105,9 +103,9 @@ pub(super) fn transaction_detail_actions(
         }
     }
 
-    if visible_actions.contains(&TransactionDetailAction::MarkInvalid) && auto_detected_transfer {
+    if visible_actions.contains(&TransactionDetailAction::UndoTransfer) {
         if let Some(enabled) = config_menu_action_enabled {
-            append_primary_invalid_action(tx, ui_handles, &primary_actions, enabled);
+            append_primary_transfer_undo_action(tx, ui_handles, &primary_actions, enabled);
         }
     }
 
@@ -115,7 +113,7 @@ pub(super) fn transaction_detail_actions(
         append_similar_action(tx, state, ui_handles, &primary_actions);
     }
 
-    if visible_actions.contains(&TransactionDetailAction::MarkInvalid) && !auto_detected_transfer {
+    if visible_actions.contains(&TransactionDetailAction::MarkInvalid) {
         if let Some(enabled) = config_menu_action_enabled {
             let tx_for_invalid = tx.clone();
             let ui_for_invalid = Rc::clone(ui_handles);
