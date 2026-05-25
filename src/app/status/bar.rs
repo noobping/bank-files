@@ -44,6 +44,7 @@ pub(in crate::app) fn build_status_bar() -> StatusBar {
     let status_icon = ui::builder_object::<gtk::Image>(&builder, "status_icon", "status-bar.ui");
     let spinner = ui::builder_object::<adw::Spinner>(&builder, "status_spinner", "status-bar.ui");
     let label = ui::builder_object::<gtk::Label>(&builder, "status_label", "status-bar.ui");
+    install_status_scroll_guard(&container, &status_icon, &spinner, &label);
     let action_group =
         ui::builder_object::<gtk::Box>(&builder, "status_action_group", "status-bar.ui");
     let history_button =
@@ -133,4 +134,31 @@ pub(super) fn status_button(icon_name: &str, tooltip: &str) -> gtk::Button {
     let button = ui::icon_button(icon_name, tooltip);
     button.add_css_class("flat");
     button
+}
+
+fn install_status_scroll_guard(
+    container: &gtk::Box,
+    icon: &gtk::Image,
+    spinner: &adw::Spinner,
+    label: &gtk::Label,
+) {
+    let container_for_visible = container.clone();
+    container.connect_visible_notify(move |_| {
+        ui::preserve_descendant_scroll_positions(&container_for_visible);
+    });
+
+    let container_for_icon = container.clone();
+    icon.connect_visible_notify(move |_| {
+        ui::preserve_descendant_scroll_positions(&container_for_icon);
+    });
+
+    let container_for_spinner = container.clone();
+    spinner.connect_visible_notify(move |_| {
+        ui::preserve_descendant_scroll_positions(&container_for_spinner);
+    });
+
+    let container_for_label = container.clone();
+    label.connect_label_notify(move |_| {
+        ui::preserve_descendant_scroll_positions(&container_for_label);
+    });
 }

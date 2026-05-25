@@ -199,6 +199,70 @@ pub fn page_box() -> gtk::Box {
     page
 }
 
+#[derive(Clone)]
+struct ScrollPosition {
+    adjustment: gtk::Adjustment,
+    value: f64,
+}
+
+pub fn preserve_descendant_scroll_positions(anchor: &impl IsA<gtk::Widget>) {
+    let root = top_widget(anchor.as_ref());
+    let positions = descendant_scroll_positions(&root);
+    if positions.is_empty() {
+        return;
+    }
+
+    let second_pass_positions = positions.clone();
+    gtk::glib::idle_add_local_once(move || {
+        restore_scroll_positions(&positions);
+        gtk::glib::idle_add_local_once(move || restore_scroll_positions(&second_pass_positions));
+    });
+}
+
+fn top_widget(widget: &gtk::Widget) -> gtk::Widget {
+    let mut current = widget.clone();
+    while let Some(parent) = current.parent() {
+        current = parent;
+    }
+    current
+}
+
+fn descendant_scroll_positions(root: &gtk::Widget) -> Vec<ScrollPosition> {
+    let mut positions = Vec::new();
+    collect_scroll_positions(root, &mut positions);
+    positions
+}
+
+fn collect_scroll_positions(widget: &gtk::Widget, positions: &mut Vec<ScrollPosition>) {
+    if let Some(scrolled_window) = widget.downcast_ref::<gtk::ScrolledWindow>() {
+        let adjustment = scrolled_window.vadjustment();
+        positions.push(ScrollPosition {
+            value: adjustment.value(),
+            adjustment,
+        });
+    }
+
+    let mut child = widget.first_child();
+    while let Some(current) = child {
+        child = current.next_sibling();
+        collect_scroll_positions(&current, positions);
+    }
+}
+
+fn restore_scroll_positions(positions: &[ScrollPosition]) {
+    for position in positions {
+        position
+            .adjustment
+            .set_value(clamped_scroll_value(&position.adjustment, position.value));
+    }
+}
+
+fn clamped_scroll_value(adjustment: &gtk::Adjustment, value: f64) -> f64 {
+    let lower = adjustment.lower();
+    let upper = (adjustment.upper() - adjustment.page_size()).max(lower);
+    value.clamp(lower, upper)
+}
+
 pub fn clear_box(container: &gtk::Box) {
     while let Some(child) = container.first_child() {
         container.remove(&child);

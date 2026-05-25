@@ -64,6 +64,7 @@
             <child>
               <object class="GtkMenuButton" id="management_rule_bulk_menu_button">
                 <property name="icon-name">view-more-symbolic</property>
+                <property name="focus-on-click">False</property>
                 <style>
                   <class name="flat"/>
                   <class name="image-button"/>
@@ -73,6 +74,7 @@
             <child>
               <object class="GtkMenuButton" id="management_budget_bulk_menu_button">
                 <property name="icon-name">view-more-symbolic</property>
+                <property name="focus-on-click">False</property>
                 <style>
                   <class name="flat"/>
                   <class name="image-button"/>

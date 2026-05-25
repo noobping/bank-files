@@ -33,6 +33,7 @@ pub(super) fn show_status_history_dialog(
         .icon_name("open-menu-symbolic")
         .tooltip_text(tr("Menu"))
         .build();
+    actions_button.set_focus_on_click(false);
     shell.header.pack_end(&actions_button);
 
     let content = ui::page_box();

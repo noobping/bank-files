@@ -52,6 +52,7 @@
         <child type="end">
           <object class="GtkMenuButton" id="main_menu_button">
             <property name="icon-name">open-menu-symbolic</property>
+            <property name="focus-on-click">False</property>
             <property name="tooltip-text" translatable="yes">Menu</property>
             <style>
               <class name="flat"/>
