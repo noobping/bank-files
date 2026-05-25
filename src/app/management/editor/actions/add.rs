@@ -4,6 +4,7 @@ pub(super) fn connect_add_actions(actions: &ManagementDialogActions<'_>) {
     connect_header_add_action(actions);
     connect_rule_add_action(actions);
     connect_budget_add_action(actions);
+    connect_transfer_budget_add_action(actions);
     connect_alias_add_action(actions);
 }
 
@@ -103,6 +104,58 @@ fn connect_budget_add_action(actions: &ManagementDialogActions<'_>) {
             advanced_autofill: &advanced_autofill,
             advanced_features: ui_handles.advanced_features.get(),
         });
+    });
+}
+
+fn connect_transfer_budget_add_action(actions: &ManagementDialogActions<'_>) {
+    let budgets_list = actions.budgets_list.clone();
+    let budgets_forms = Rc::clone(actions.budgets_forms);
+    let budgets_scroll = actions.budgets_scroll.clone();
+    let status = actions.status.clone();
+    let filter_entry = actions.filter_entry.clone();
+    let advanced_autofill = Rc::clone(&actions.ui_handles.advanced_autofill);
+    let ui_handles = Rc::clone(actions.ui_handles);
+
+    actions
+        .add_transfer_budget_action
+        .connect_activate(move |action, _| {
+            if !action.is_enabled() {
+                return;
+            }
+            if transfer_budget_form_exists(&budgets_forms.borrow()) {
+                status.set_text(&tr(
+                    "TRANSFER budget already exists. Review existing budget, then Save.",
+                ));
+                return;
+            }
+
+            append_budget_form(
+                &budgets_list,
+                &budgets_forms,
+                transfer_budget::editable_budget(String::new()),
+                false,
+                &advanced_autofill,
+                ui_handles.advanced_features.get(),
+            );
+            filter_budget_forms(&filter_entry.text(), &budgets_forms.borrow());
+            status.set_text(&tr("TRANSFER budget added. Press Save to keep it."));
+            scroll_budget_forms_to_bottom(&budgets_scroll);
+        });
+}
+
+fn transfer_budget_form_exists(forms: &[BudgetForm]) -> bool {
+    forms
+        .iter()
+        .filter(|form| !form.deleted.get())
+        .any(|form| transfer_budget::is_budget_code(&ui::combo_text(&form.code)))
+}
+
+fn scroll_budget_forms_to_bottom(scrolled_window: &gtk::ScrolledWindow) {
+    let scrolled_window = scrolled_window.clone();
+    gtk::glib::idle_add_local_once(move || {
+        let adjustment = scrolled_window.vadjustment();
+        let bottom = (adjustment.upper() - adjustment.page_size()).max(adjustment.lower());
+        adjustment.set_value(bottom);
     });
 }
 

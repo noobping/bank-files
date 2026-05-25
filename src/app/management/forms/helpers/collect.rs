@@ -32,6 +32,7 @@ pub(in crate::app) fn collect_budget_forms(forms: &[BudgetForm]) -> Vec<Editable
                 budget.code = data::generated_budget_code_for_category(&budget.category, &reserved);
                 set_text_combo(&form.code, &budget.code);
             }
+            budget = transfer_budget::normalize_editable_budget(budget);
             let key = budget_code_key(&budget.code);
             if !key.is_empty() {
                 reserved.push(budget.code.clone());
@@ -224,6 +225,23 @@ mod tests {
         assert!(budget_code_is_planned_income("inc"));
         assert!(budget_code_is_planned_income(" INC "));
         assert!(!budget_code_is_planned_income("INC-OTHER"));
+    }
+
+    #[test]
+    fn transfer_budget_code_is_reserved_for_canonical_fields() {
+        let budget = transfer_budget::normalize_editable_budget(EditableBudget {
+            code: " transfer ".to_string(),
+            category: "Internal".to_string(),
+            monthly_budget: "10%".to_string(),
+            yearly_budget: String::new(),
+            direction: "expense".to_string(),
+            income_basis: "planned".to_string(),
+            notes: String::new(),
+        });
+
+        assert_eq!(budget.code, transfer_budget::BUDGET_CODE);
+        assert_eq!(budget.direction, "transfer");
+        assert_eq!(budget.income_basis, "real");
     }
 
     #[test]

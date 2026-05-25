@@ -1,6 +1,8 @@
 use super::*;
 use crate::model::{BudgetDirection, BudgetIncomeBasis};
 
+const TRANSFER_BUDGET_CODE: &str = "TRANSFER";
+
 pub(in crate::data) fn parse_editable_budgets(contents: &str) -> Result<Vec<EditableBudget>> {
     let mut rdr = csv::ReaderBuilder::new()
         .flexible(true)
@@ -16,27 +18,51 @@ pub(in crate::data) fn parse_editable_budgets(contents: &str) -> Result<Vec<Edit
 
     for row in rdr.records() {
         let row = row?;
-        let code = csv_cell(&headers, &row, "code");
+        let code = budget_code_for_config(&csv_cell(&headers, &row, "code"));
         if code.trim().is_empty() {
             continue;
         }
         let category = non_empty(csv_cell(&headers, &row, "category"), "Uncategorized");
         let direction =
-            BudgetDirection::parse(&csv_cell(&headers, &row, "direction"), &code, &category);
+            budget_direction_for_config(&csv_cell(&headers, &row, "direction"), &code, &category);
+        let income_basis =
+            budget_income_basis_for_config(&csv_cell(&headers, &row, "income_basis"), &code);
         budgets.push(EditableBudget {
             code,
             category,
             monthly_budget: csv_cell(&headers, &row, "monthly_budget"),
             yearly_budget: csv_cell(&headers, &row, "yearly_budget"),
             direction: direction.as_str().to_string(),
-            income_basis: BudgetIncomeBasis::parse(&csv_cell(&headers, &row, "income_basis"))
-                .as_str()
-                .to_string(),
+            income_basis: income_basis.as_str().to_string(),
             notes: csv_cell(&headers, &row, "notes"),
         });
     }
 
     Ok(budgets)
+}
+
+fn budget_code_for_config(code: &str) -> String {
+    if code.trim().eq_ignore_ascii_case(TRANSFER_BUDGET_CODE) {
+        TRANSFER_BUDGET_CODE.to_string()
+    } else {
+        code.trim().to_string()
+    }
+}
+
+fn budget_income_basis_for_config(input: &str, code: &str) -> BudgetIncomeBasis {
+    if code.trim().eq_ignore_ascii_case(TRANSFER_BUDGET_CODE) {
+        BudgetIncomeBasis::RealIncome
+    } else {
+        BudgetIncomeBasis::parse(input)
+    }
+}
+
+fn budget_direction_for_config(input: &str, code: &str, category: &str) -> BudgetDirection {
+    if code.trim().eq_ignore_ascii_case(TRANSFER_BUDGET_CODE) {
+        BudgetDirection::Transfer
+    } else {
+        BudgetDirection::parse(input, code, category)
+    }
 }
 
 pub(in crate::data) fn serialize_editable_budgets(budgets: &[EditableBudget]) -> Result<String> {
@@ -55,10 +81,11 @@ pub(in crate::data) fn serialize_editable_budgets(budgets: &[EditableBudget]) ->
         .iter()
         .filter(|budget| !budget.code.trim().is_empty())
     {
-        let direction = BudgetDirection::parse(&budget.direction, &budget.code, &budget.category);
-        let income_basis = BudgetIncomeBasis::parse(&budget.income_basis);
+        let direction =
+            budget_direction_for_config(&budget.direction, &budget.code, &budget.category);
+        let income_basis = budget_income_basis_for_config(&budget.income_basis, &budget.code);
         wtr.write_record([
-            budget.code.trim().to_string(),
+            budget_code_for_config(&budget.code),
             budget.category.trim().to_string(),
             budget.monthly_budget.trim().to_string(),
             budget.yearly_budget.trim().to_string(),

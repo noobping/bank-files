@@ -123,11 +123,15 @@ pub(in crate::app) fn show_new_budget_dialog(request: NewBudgetDialogRequest<'_>
                 .filter(|form| !form.deleted.get())
                 .map(|form| ui::combo_text(&form.code))
                 .collect::<Vec<_>>();
-            generated_budget_code_for_category(&category_text, &existing_codes)
+            transfer_budget::code_for_new_budget(
+                &category_text,
+                &combo_active_id(&direction),
+                &existing_codes,
+            )
         };
 
         let direction_text = budget_direction_for_save(&combo_active_id(&direction));
-        let budget = EditableBudget {
+        let budget = transfer_budget::normalize_editable_budget(EditableBudget {
             code: code_text,
             category: category_text,
             monthly_budget: monthly_budget.text().trim().to_string(),
@@ -135,7 +139,7 @@ pub(in crate::app) fn show_new_budget_dialog(request: NewBudgetDialogRequest<'_>
             direction: direction_text,
             income_basis: combo_active_id(&income_basis),
             notes: notes.text().trim().to_string(),
-        };
+        });
         append_budget_form(
             &container_for_add,
             &forms_for_add,

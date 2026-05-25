@@ -26,6 +26,10 @@
   </menu>
   <menu id="management_budget_bulk_menu">
     <item>
+      <attribute name="label" translatable="yes">Add TRANSFER</attribute>
+      <attribute name="action">management-budgets.add-transfer-budget</attribute>
+    </item>
+    <item>
       <attribute name="label" translatable="yes">Move Budget Code</attribute>
       <attribute name="action">management-budgets.move-budget-code</attribute>
     </item>
@@ -55,6 +59,10 @@
     </item>
   </menu>
   <menu id="management_simple_budget_bulk_menu">
+    <item>
+      <attribute name="label" translatable="yes">Add TRANSFER</attribute>
+      <attribute name="action">management-budgets.add-transfer-budget</attribute>
+    </item>
     <item>
       <attribute name="label" translatable="yes">Use Real Income</attribute>
       <attribute name="action">management-budgets.use-real-income</attribute>

@@ -3583,3 +3583,13 @@ msgstr "Verwerkingswachtrij openen"
 
 msgid "Open Message History"
 msgstr "Meldingengeschiedenis openen"
+
+# Transfer budget actions
+msgid "Add TRANSFER"
+msgstr "TRANSFER toevoegen"
+
+msgid "TRANSFER budget already exists. Review existing budget, then Save."
+msgstr "TRANSFER-budget bestaat al. Controleer het bestaande budget en druk daarna op Opslaan."
+
+msgid "TRANSFER budget added. Press Save to keep it."
+msgstr "TRANSFER-budget toegevoegd. Druk op Opslaan om het te bewaren."

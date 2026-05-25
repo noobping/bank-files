@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
 const PLANNED_INCOME_CODE: &str = "INC";
+const TRANSFER_CODE: &str = "TRANSFER";
 
 pub fn generated_budget_code_for_category(category: &str, existing_codes: &[String]) -> String {
     let reserved = existing_codes
@@ -46,8 +47,12 @@ fn generated_budget_code_base(category: &str) -> String {
 }
 
 fn budget_code_is_unavailable(code: &str, reserved: &HashSet<String>) -> bool {
+    budget_code_is_reserved(code) || reserved.contains(&budget_code_key(code))
+}
+
+fn budget_code_is_reserved(code: &str) -> bool {
     code.trim().eq_ignore_ascii_case(PLANNED_INCOME_CODE)
-        || reserved.contains(&budget_code_key(code))
+        || code.trim().eq_ignore_ascii_case(TRANSFER_CODE)
 }
 
 #[cfg(test)]
@@ -71,5 +76,9 @@ mod tests {
             "DINING-3"
         );
         assert_eq!(generated_budget_code_for_category("Inc", &[]), "INC-2");
+        assert_eq!(
+            generated_budget_code_for_category("Transfer", &[]),
+            "TRANSFER-2"
+        );
     }
 }

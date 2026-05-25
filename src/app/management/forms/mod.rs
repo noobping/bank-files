@@ -4,7 +4,6 @@ mod appenders;
 mod helpers;
 mod types;
 
-pub(in crate::app) use crate::data::generated_budget_code_for_category;
 pub(in crate::app) use crate::ui::{
     add_labeled, combo_active_id, combo_from_options, entry, form_grid,
 };

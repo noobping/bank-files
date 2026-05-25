@@ -28,6 +28,7 @@ pub(in crate::app::management::editor) struct ManagementDialogActions<'a> {
     pub(in crate::app::management::editor) combine_rules_action: &'a gtk::gio::SimpleAction,
     pub(in crate::app::management::editor) clean_orphaned_rules_action: &'a gtk::gio::SimpleAction,
     pub(in crate::app::management::editor) move_budget_code_action: &'a gtk::gio::SimpleAction,
+    pub(in crate::app::management::editor) add_transfer_budget_action: &'a gtk::gio::SimpleAction,
     pub(in crate::app::management::editor) use_real_income_action: &'a gtk::gio::SimpleAction,
     pub(in crate::app::management::editor) use_planned_income_action: &'a gtk::gio::SimpleAction,
     pub(in crate::app::management::editor) use_monthly_values_action: &'a gtk::gio::SimpleAction,

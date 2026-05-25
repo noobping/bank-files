@@ -56,6 +56,7 @@ mod shortcuts;
 mod status;
 mod text;
 mod transactions;
+mod transfer_budget;
 mod warning_cards;
 mod warnings;
 mod year;

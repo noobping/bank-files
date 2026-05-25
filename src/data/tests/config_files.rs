@@ -64,6 +64,26 @@ fn editable_budgets_accept_income_percentages() {
 }
 
 #[test]
+fn transfer_budget_code_forces_transfer_direction() {
+    let budgets = vec![EditableBudget {
+        code: " transfer ".to_string(),
+        category: "Transfers".to_string(),
+        monthly_budget: "0".to_string(),
+        yearly_budget: String::new(),
+        direction: "expense".to_string(),
+        income_basis: "planned".to_string(),
+        notes: String::new(),
+    }];
+
+    let csv = serialize_editable_budgets(&budgets).unwrap();
+    let parsed = parse_editable_budgets(&csv).unwrap();
+
+    assert_eq!(parsed[0].code, "TRANSFER");
+    assert_eq!(parsed[0].direction, "transfer");
+    assert_eq!(parsed[0].income_basis, "real");
+}
+
+#[test]
 fn upsert_alias_adds_once() {
     let mut aliases = Vec::new();
     assert!(config::upsert_alias(&mut aliases, "date", "Boekdatum").unwrap());

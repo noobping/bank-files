@@ -3583,3 +3583,13 @@ msgstr "Verarbeitungswarteschlange öffnen"
 
 msgid "Open Message History"
 msgstr "Nachrichtenverlauf öffnen"
+
+# Transfer budget actions
+msgid "Add TRANSFER"
+msgstr "TRANSFER hinzufügen"
+
+msgid "TRANSFER budget already exists. Review existing budget, then Save."
+msgstr "TRANSFER-Budget existiert bereits. Vorhandenes Budget prüfen, dann speichern."
+
+msgid "TRANSFER budget added. Press Save to keep it."
+msgstr "TRANSFER-Budget hinzugefügt. Speichern drücken, um es zu behalten."

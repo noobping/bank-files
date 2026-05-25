@@ -164,6 +164,7 @@ pub(in crate::app) fn show_budget_edit_dialog(
             advanced_features,
             configured_code: &code_for_save,
             category: &category_text,
+            direction: &ui::combo_active_id(&direction),
             code_input: new_code_for_save.as_ref(),
             state: &state_for_save,
         });
@@ -175,7 +176,7 @@ pub(in crate::app) fn show_budget_edit_dialog(
             return;
         };
 
-        let budget = EditableBudget {
+        let budget = transfer_budget::normalize_editable_budget(EditableBudget {
             code: code_text,
             category: category_text,
             monthly_budget: monthly_budget.text().trim().to_string(),
@@ -183,7 +184,7 @@ pub(in crate::app) fn show_budget_edit_dialog(
             direction: ui::combo_active_id(&direction),
             income_basis: ui::combo_active_id(&income_basis),
             notes: notes.text().trim().to_string(),
-        };
+        });
 
         let direction_changes = if can_delete_budget {
             let from =
@@ -231,6 +232,7 @@ struct BudgetCodeSaveRequest<'a> {
     advanced_features: bool,
     configured_code: &'a str,
     category: &'a str,
+    direction: &'a str,
     code_input: Option<&'a gtk::ComboBoxText>,
     state: &'a Rc<RefCell<AppData>>,
 }
@@ -254,8 +256,9 @@ fn budget_code_for_save(request: BudgetCodeSaveRequest<'_>) -> Option<String> {
         .iter()
         .map(|budget| budget.code.clone())
         .collect::<Vec<_>>();
-    Some(data::generated_budget_code_for_category(
+    Some(transfer_budget::code_for_new_budget(
         request.category,
+        request.direction,
         &existing_codes,
     ))
 }

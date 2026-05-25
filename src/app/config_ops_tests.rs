@@ -73,6 +73,27 @@ fn queued_rule_creates_missing_budget_when_requested() {
 }
 
 #[test]
+fn queued_transfer_rule_creates_canonical_transfer_budget() {
+    let mut rules = Vec::new();
+    let mut budgets = Vec::new();
+    let transfer_rule = EditableRule {
+        category: "Internal transfers".to_string(),
+        budget_code: "transfer".to_string(),
+        direction: "expense".to_string(),
+        ..rule("Savings", "transfer")
+    };
+
+    let change = apply_rule_to_editable_config(&mut rules, &mut budgets, transfer_rule, true);
+
+    assert!(change.budget_added);
+    assert_eq!(budgets.len(), 1);
+    assert_eq!(budgets[0].code, transfer_budget::BUDGET_CODE);
+    assert_eq!(budgets[0].category, "Internal transfers");
+    assert_eq!(budgets[0].direction, "transfer");
+    assert_eq!(budgets[0].income_basis, "real");
+}
+
+#[test]
 fn queued_rule_does_not_create_budget_without_ensure_flag() {
     let mut rules = Vec::new();
     let mut budgets = Vec::new();

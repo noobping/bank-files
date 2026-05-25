@@ -15,6 +15,7 @@ pub(in crate::app) fn append_budget_form(
     advanced_autofill: &Rc<Cell<bool>>,
     advanced_features: bool,
 ) {
+    let is_transfer_budget = transfer_budget::is_budget_code(&budget.code);
     let original_direction = persisted
         .then(|| BudgetDirection::parse(&budget.direction, &budget.code, &budget.category));
     let card = collapsible_form_card("Budget", "", "Delete budget");
@@ -44,7 +45,10 @@ pub(in crate::app) fn append_budget_form(
         &[("real", "Real income"), ("planned", "Planned income")],
         ui::budget_income_basis_id(&budget.income_basis),
     );
-    if advanced_features {
+    if is_transfer_budget {
+        direction.set_sensitive(false);
+        income_basis.set_sensitive(false);
+    } else if advanced_features {
         connect_budget_fields_autofill(
             &category,
             &code,
@@ -192,7 +196,9 @@ pub(in crate::app) fn append_budget_form(
         deleted,
         original_code: Rc::new(RefCell::new(budget.code.trim().to_string())),
         original_direction: Rc::new(RefCell::new(original_direction)),
-        auto_code: Rc::new(Cell::new(!advanced_features && !persisted)),
+        auto_code: Rc::new(Cell::new(
+            !advanced_features && !persisted && !transfer_budget::is_budget_code(&budget.code),
+        )),
         code,
         category,
         monthly_budget,

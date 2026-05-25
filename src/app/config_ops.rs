@@ -126,8 +126,22 @@ fn ensure_budget_for_rule_in(budgets: &mut Vec<EditableBudget>, rule: &EditableR
         return false;
     }
 
+    budgets.push(editable_budget_for_rule(rule));
+    true
+}
+
+fn editable_budget_for_rule(rule: &EditableRule) -> EditableBudget {
+    let code = rule.budget_code.trim();
+    if transfer_budget::is_budget_code(code) {
+        let mut budget = transfer_budget::editable_budget(tr("Created from rule."));
+        if !rule.category.trim().is_empty() {
+            budget.category = rule.category.trim().to_string();
+        }
+        return budget;
+    }
+
     let direction = crate::model::BudgetDirection::parse(&rule.direction, code, &rule.category);
-    budgets.push(EditableBudget {
+    EditableBudget {
         code: code.to_string(),
         category: rule.category.trim().to_string(),
         monthly_budget: "0".to_string(),
@@ -135,8 +149,7 @@ fn ensure_budget_for_rule_in(budgets: &mut Vec<EditableBudget>, rule: &EditableR
         direction: direction.as_str().to_string(),
         income_basis: "real".to_string(),
         notes: tr("Created from rule."),
-    });
-    true
+    }
 }
 
 pub(in crate::app) fn register_exclusive_config_widget<W: IsA<gtk::Widget>>(
