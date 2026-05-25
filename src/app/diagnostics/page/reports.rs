@@ -36,8 +36,8 @@ pub(super) fn append_reports_section(
         "Reload All",
         "Force reload all CSV files",
     );
-    reload_all_button.set_action_name(Some("app.reload-all"));
     register_loading_sensitive_widget(ui_handles, &reload_all_button);
+    reload_all_button.set_action_name(Some("app.reload-all"));
     ui_handles.debug.append(&ui::section_title_with_action(
         "CSV files",
         "These are remembered app copies or live CSV files for this session. Removing a live CSV only forgets it for this session.",

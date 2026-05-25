@@ -72,8 +72,8 @@ fn partial_load_info_card(ui_handles: &Rc<UiHandles>, message: &str) -> gtk::Box
         "Force reload all CSV files",
     );
     reload_button.set_valign(gtk::Align::Start);
-    reload_button.set_action_name(Some("app.reload-all"));
     register_loading_sensitive_widget(ui_handles, &reload_button);
+    reload_button.set_action_name(Some("app.reload-all"));
     content.append(&reload_button);
 
     card.append(&content);
