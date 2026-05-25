@@ -153,11 +153,8 @@ pub(in crate::app) fn render_loading_placeholder(ui: &UiHandles) {
     ui::clear_box(container);
 
     let builder = ui::builder_from_resource("loading-placeholder.ui");
-    let placeholder = ui::builder_object::<adw::StatusPage>(
-        &builder,
-        "loading_placeholder",
-        "loading-placeholder.ui",
-    );
+    let placeholder =
+        ui::builder_object::<gtk::Box>(&builder, "loading_placeholder", "loading-placeholder.ui");
     container.append(&placeholder);
 }
 

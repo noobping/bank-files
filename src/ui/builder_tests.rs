@@ -30,18 +30,26 @@ fn ui_resources_build_expected_objects() {
     assert_object::<gtk::Button>(&action, "action_search_button", "action-dialog.ui");
 
     let loading = builder_from_resource("loading-placeholder.ui");
-    let loading_placeholder = builder_object::<adw::StatusPage>(
+    assert_object::<gtk::Box>(&loading, "loading_placeholder", "loading-placeholder.ui");
+    assert_object::<adw::Spinner>(
         &loading,
-        "loading_placeholder",
+        "loading_placeholder_spinner",
         "loading-placeholder.ui",
     );
-    assert_eq!(loading_placeholder.title(), gettext("Loading"));
-    let loading_description = loading_placeholder
-        .description()
-        .map(|value| value.to_string());
+    let loading_title = builder_object::<gtk::Label>(
+        &loading,
+        "loading_placeholder_title",
+        "loading-placeholder.ui",
+    );
+    assert_eq!(loading_title.label(), gettext("Loading"));
+    let loading_description = builder_object::<gtk::Label>(
+        &loading,
+        "loading_placeholder_description",
+        "loading-placeholder.ui",
+    );
     assert_eq!(
-        loading_description.as_deref(),
-        Some(gettext("Preparing this page. Large CSV files may take a moment.").as_str())
+        loading_description.label(),
+        gettext("Preparing this page. Large CSV files may take a moment.")
     );
 
     let settings = builder_from_resource("settings-dialog.ui");
