@@ -12,10 +12,6 @@ pub(in crate::app) fn annual_budgets_section(
         year,
         comparison_mode(ui_handles.as_ref()),
     );
-    if budgets.is_empty() {
-        return None;
-    }
-
     let subtitle = if ui_handles.compare_categories_previous_period.get() {
         trf(
             "Budgets needing attention in {year}. More shows everything; faded bars show {previous_year}.",
@@ -30,8 +26,15 @@ pub(in crate::app) fn annual_budgets_section(
             &[("year", year.to_string())],
         )
     };
-    let section = ui::card_list_section_group("Annual Budgets", &subtitle);
+    let add_button = budget_add_action(ui_handles, state);
+    let section = ui::card_list_section_group_with_action("Annual Budgets", &subtitle, &add_button);
     let budgets_box = ui::card_grid(Vec::new(), 2);
+    if budgets.is_empty() {
+        ui::append_card_to_grid(&budgets_box, ui::text_card(&tr("No annual budgets yet.")));
+        section.append(&budgets_box);
+        return Some(section);
+    }
+
     let show_all = ui_handles.show_all.get();
     let visible_budgets = if show_all {
         budgets.clone()

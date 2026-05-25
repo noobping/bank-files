@@ -29,7 +29,6 @@ pub(in crate::app) fn render_overview(
         summary::render_overview(data),
         &data.transactions,
     );
-    append_empty_budget_action(&ui_handles.overview, data, ui_handles, state);
 
     if let Some(filter) = search {
         append_partial_load_notice(&ui_handles.overview, ui_handles, data);

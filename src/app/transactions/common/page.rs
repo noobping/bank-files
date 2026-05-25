@@ -25,12 +25,12 @@ pub(in crate::app) fn append_page_header(
     export_button.set_sensitive(transactions.iter().any(|tx| !transaction_is_fake(tx)));
     export_button.set_action_name(Some("app.export-csv"));
 
-    let actions = ui::linked_button_group();
-    actions.append(&copy_button);
-    actions.append(&print_button);
-    actions.append(&export_button);
+    let page_actions = ui::linked_button_group();
+    page_actions.append(&copy_button);
+    page_actions.append(&print_button);
+    page_actions.append(&export_button);
 
-    let page_header = ui::section_title_with_action(title, subtitle, &actions);
+    let page_header = ui::section_title_with_action(title, subtitle, &page_actions);
     ui_handles
         .mobile_header_title
         .bind_property("visible", &page_header, "visible")

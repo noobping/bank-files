@@ -1450,6 +1450,12 @@ msgstr "Ersetze deine aktuelle Budgetliste durch die eingebauten Standardbudgets
 msgid "No budgets could be generated from the imported transactions yet."
 msgstr "Aus den importierten Transaktionen konnten noch keine Budgets generiert werden."
 
+msgid "No budgets yet."
+msgstr "Noch keine Budgets."
+
+msgid "No annual budgets yet."
+msgstr "Noch keine Jahresbudgets."
+
 msgid "Replaced default budgets with {count} budgets from transactions."
 msgstr "Standardbudgets durch {count} Budgets aus Transaktionen ersetzt."
 

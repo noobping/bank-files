@@ -67,7 +67,7 @@ use annual::{
     annual_spending_section_from_rows, append_annual_budget_row,
 };
 use budget::{
-    append_empty_budget_action, bind_percentage_basis_visibility, budget_direction_change,
+    bind_percentage_basis_visibility, budget_add_action, budget_direction_change,
     budget_direction_editable, budget_edit_button, budget_values_use_percentage,
     confirm_budget_direction_changes, more_budgets_row, more_categories_row, render_budget_page,
     selected_budget_month, selected_year, show_budget_edit_dialog, totals_for_month,

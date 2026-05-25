@@ -100,7 +100,7 @@ pub(super) fn append_budget_detail_sections_now(
     state: &Rc<RefCell<AppData>>,
 ) -> bool {
     let mut sections = Vec::new();
-    if !data.budgets.is_empty() {
+    if !data.search_active || !data.budgets.is_empty() {
         let visible_budgets = if data.search_active || data.show_all {
             data.budgets.clone()
         } else {
@@ -116,9 +116,13 @@ pub(super) fn append_budget_detail_sections_now(
             data.budgets.len().saturating_sub(visible_budgets.len())
         };
         let section_subtitle = budget_room_subtitle(data.search_active, &data.month_label);
-        let section = ui::card_list_section_group("Budget Room", &section_subtitle);
+        let add_button = budget_add_action(ui_handles, state);
+        let section =
+            ui::card_list_section_group_with_action("Budget Room", &section_subtitle, &add_button);
         let box_ = ui::card_grid(Vec::new(), 2);
-        if visible_budgets.is_empty() {
+        if data.budgets.is_empty() {
+            ui::append_card_to_grid(&box_, ui::text_card(&tr("No budgets yet.")));
+        } else if visible_budgets.is_empty() {
             ui::append_card_to_grid(
                 &box_,
                 ui::text_card(&tr(

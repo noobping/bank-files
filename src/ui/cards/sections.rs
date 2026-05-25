@@ -52,8 +52,30 @@ pub fn section_group(title: &str, subtitle: &str) -> gtk::Box {
     section
 }
 
+pub fn section_group_with_action(
+    title: &str,
+    subtitle: &str,
+    action: &impl IsA<gtk::Widget>,
+) -> gtk::Box {
+    let section = gtk::Box::new(gtk::Orientation::Vertical, 8);
+    section.set_hexpand(true);
+    section.set_width_request(320);
+    section.append(&section_title_with_action(title, subtitle, action));
+    section
+}
+
 pub fn card_list_section_group(title: &str, subtitle: &str) -> gtk::Box {
     let section = section_group(title, subtitle);
+    section.add_css_class("card-list-section");
+    section
+}
+
+pub fn card_list_section_group_with_action(
+    title: &str,
+    subtitle: &str,
+    action: &impl IsA<gtk::Widget>,
+) -> gtk::Box {
+    let section = section_group_with_action(title, subtitle, action);
     section.add_css_class("card-list-section");
     section
 }
