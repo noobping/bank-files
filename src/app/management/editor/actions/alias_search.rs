@@ -1,7 +1,6 @@
 use super::*;
 
 pub(super) fn connect_alias_and_search_actions(actions: &ManagementDialogActions<'_>) {
-    let management_dialog = actions.management_dialog;
     let filter_entry = actions.filter_entry;
     let filter_search_bar = actions.filter_search_bar;
     let rules_forms = actions.rules_forms;
@@ -35,6 +34,4 @@ pub(super) fn connect_alias_and_search_actions(actions: &ManagementDialogActions
             filter_entry_for_close.set_text("");
         }
     });
-
-    ui::connect_search_shortcut(management_dialog, filter_search_bar, filter_entry);
 }

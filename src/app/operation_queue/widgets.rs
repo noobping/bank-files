@@ -64,8 +64,7 @@ pub(in crate::app) fn build_operation_queue_widgets() -> OperationQueueWidgets {
         .content_width(620)
         .content_height(560)
         .build();
-    ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);
-    search_bar.set_key_capture_widget(Some(&dialog));
+    ui::bind_search_bar(&dialog, &dialog, &search_bar, &search_entry);
 
     OperationQueueWidgets {
         button,

@@ -127,7 +127,6 @@ pub(super) fn build_management_dialog_shell(
 
     save_button.set_tooltip_text(Some(&tr("Save rules, budgets, and field names")));
     filter_entry.set_placeholder_text(Some(&tr(filter_placeholder)));
-    filter_search_bar.connect_entry(&filter_entry);
 
     configure_management_page_text(
         advanced_features,

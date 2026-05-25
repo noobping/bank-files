@@ -66,15 +66,12 @@ pub(in crate::app) fn build_fake_transaction_widgets() -> FakeTransactionWidgets
     let list = fake_transactions_object::<gtk::ListBox>(&builder, "fake_transactions_list");
     let form_box = fake_transactions_object::<gtk::Box>(&builder, "fake_transactions_form_box");
 
-    search_bar.connect_entry(&search_entry);
-
     let dialog = ui::content_dialog(tr(FAKE_TRANSACTIONS_TITLE), &root)
         .content_width(560)
         .content_height(560)
         .default_widget(&add_button)
         .build();
-    ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);
-    search_bar.set_key_capture_widget(Some(&dialog));
+    ui::bind_search_bar(&dialog, &dialog, &search_bar, &search_entry);
 
     FakeTransactionWidgets {
         button,

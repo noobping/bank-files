@@ -68,8 +68,7 @@ pub(super) fn show_status_history_dialog(
         .content_width(620)
         .content_height(560)
         .build();
-    ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);
-    search_bar.set_key_capture_widget(Some(&dialog));
+    ui::bind_search_bar(&dialog, &dialog, &search_bar, &search_entry);
 
     let active_dialog_for_closed = Rc::clone(active_dialog);
     dialog.connect_closed(move |_| {

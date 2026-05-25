@@ -262,7 +262,7 @@ pub(in crate::app::transactions::common) fn show_transaction_budget_code_dialog(
         .content_width(680)
         .default_widget(&shell.submit_button)
         .build();
-    ui::connect_search_shortcut(&shell.root, &shell.search_bar, &shell.search_entry);
+    ui::bind_search_bar(&shell.root, &dialog, &shell.search_bar, &shell.search_entry);
 
     let shell_for_back = shell.page_handle();
     shell.back_button.connect_clicked(move |_| {

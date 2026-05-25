@@ -119,7 +119,12 @@ pub(in crate::app) fn show_management_dialog(
         search_bar: filter_search_bar.clone(),
         search_entry: filter_entry.clone(),
     });
-    filter_search_bar.set_key_capture_widget(Some(&management_dialog));
+    ui::bind_search_bar(
+        &management_dialog,
+        &management_dialog,
+        &filter_search_bar,
+        &filter_entry,
+    );
     add_responsive_switcher_for_dialog(&management_dialog, &switcher, &switcher_bar);
 
     finish_management_dialog_setup(ManagementDialogSetup {

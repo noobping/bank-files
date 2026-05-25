@@ -234,7 +234,6 @@ fn build_popup_template(
     let search_bar = popup_object::<gtk::SearchBar>(&builder, ids.search_bar, ids.resource);
     let search_entry = popup_object::<gtk::SearchEntry>(&builder, ids.search_entry, ids.resource);
     search_entry.set_placeholder_text(Some(&tr(search_placeholder)));
-    search_bar.connect_entry(&search_entry);
     ui::connect_search_button(&search_button, &search_bar, &search_entry);
 
     PopupTemplate {

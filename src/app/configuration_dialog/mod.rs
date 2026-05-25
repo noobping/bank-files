@@ -63,8 +63,7 @@ pub(in crate::app) fn show_configuration_dialog(
         .content_height(620)
         .build();
 
-    ui::connect_search_shortcut(&dialog, &search_bar, &search_entry);
-    search_bar.set_key_capture_widget(Some(&dialog));
+    ui::bind_search_bar(&dialog, &dialog, &search_bar, &search_entry);
     connect_preference_search(&search_entry, search_groups);
 
     dialog.present(Some(parent));

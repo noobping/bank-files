@@ -17,6 +17,7 @@ mod chart;
 mod dialogs;
 mod forms;
 mod progress;
+mod search;
 mod style;
 
 pub use basic::*;
@@ -26,4 +27,5 @@ pub use chart::*;
 pub use dialogs::*;
 pub use forms::*;
 pub use progress::*;
+pub use search::*;
 pub use style::*;

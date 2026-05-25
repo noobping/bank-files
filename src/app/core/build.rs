@@ -86,8 +86,7 @@ pub(super) fn build_ui_with_startup_request(
         &initial_storage_capabilities,
         &preferences,
     )));
-    search_bar.connect_entry(&search_entry);
-    search_bar.set_key_capture_widget(Some(&window));
+    ui::setup_search_bar(&window, &search_bar, &search_entry);
     add_responsive_switcher(&window, &switcher, &switcher_bar, &mobile_header_title);
     add_responsive_page_margins(
         &window,
