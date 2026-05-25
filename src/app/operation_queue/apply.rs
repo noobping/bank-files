@@ -144,7 +144,6 @@ async fn reload_after_queue_apply(
             current_transaction_load_scope(&borrowed, ui.as_ref()),
         )
     };
-    let auto_clean_config = ui.preferences.auto_clean_config();
     show_verbose_status(
         ui.as_ref(),
         format!(
@@ -156,14 +155,7 @@ async fn reload_after_queue_apply(
     begin_background_operation(ui.as_ref());
     let task = gtk::gio::spawn_blocking(move || {
         let combine_summary = combine_queued_rules()?;
-        let new_data = data::load_app_data_with_sources(
-            mode,
-            auto_clean_config,
-            scope,
-            remember_mode,
-            &sources,
-        )?
-        .0;
+        let new_data = data::load_app_data_with_sources(mode, scope, remember_mode, &sources)?.0;
         anyhow::Ok((new_data, combine_summary))
     });
 

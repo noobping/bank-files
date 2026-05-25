@@ -37,19 +37,12 @@ pub(in crate::app::budget::edit) fn save_budget_with_reload(
     let sources = current_sources_for_reload(&borrowed, remember_mode);
     let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
     drop(borrowed);
-    let auto_clean_config = ui_handles.preferences.auto_clean_config();
 
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
             upsert_budget(budget)?;
-            let new_data = data::load_app_data_with_sources(
-                mode,
-                auto_clean_config,
-                scope,
-                remember_mode,
-                &sources,
-            )?
-            .0;
+            let new_data =
+                data::load_app_data_with_sources(mode, scope, remember_mode, &sources)?.0;
             anyhow::Ok(new_data)
         });
 
@@ -122,7 +115,6 @@ pub(in crate::app::budget::edit) fn connect_budget_delete_action(action: BudgetD
         let sources = current_sources_for_reload(&borrowed, remember_mode);
         let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
         drop(borrowed);
-        let auto_clean_config = ui_handles.preferences.auto_clean_config();
         let state = Rc::clone(&state);
         let ui_handles = Rc::clone(&ui_handles);
         let dialog_for_delete = dialog_for_delete.clone();
@@ -136,14 +128,8 @@ pub(in crate::app::budget::edit) fn connect_budget_delete_action(action: BudgetD
                 if !delete_budget(&code)? {
                     return anyhow::Ok(None);
                 }
-                let new_data = data::load_app_data_with_sources(
-                    mode,
-                    auto_clean_config,
-                    scope,
-                    remember_mode,
-                    &sources,
-                )?
-                .0;
+                let new_data =
+                    data::load_app_data_with_sources(mode, scope, remember_mode, &sources)?.0;
                 anyhow::Ok(Some(new_data))
             });
 

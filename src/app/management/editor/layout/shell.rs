@@ -11,6 +11,7 @@ pub(super) struct ManagementDialogShell {
     pub(super) add_alias_row: adw::ActionRow,
     pub(super) group_rules_action: gtk::gio::SimpleAction,
     pub(super) combine_rules_action: gtk::gio::SimpleAction,
+    pub(super) clean_orphaned_rules_action: gtk::gio::SimpleAction,
     pub(super) rule_bulk_menu_button: gtk::MenuButton,
     pub(super) move_budget_code_action: gtk::gio::SimpleAction,
     pub(super) use_real_income_action: gtk::gio::SimpleAction,
@@ -96,6 +97,7 @@ pub(super) fn build_management_dialog_shell(
 
     let group_rules_action = gtk::gio::SimpleAction::new("group-rules", None);
     let combine_rules_action = gtk::gio::SimpleAction::new("combine-rules", None);
+    let clean_orphaned_rules_action = gtk::gio::SimpleAction::new("clean-orphaned-rules", None);
     let move_budget_code_action = gtk::gio::SimpleAction::new("move-budget-code", None);
     let use_real_income_action = gtk::gio::SimpleAction::new("use-real-income", None);
     let use_planned_income_action = gtk::gio::SimpleAction::new("use-planned-income", None);
@@ -105,7 +107,11 @@ pub(super) fn build_management_dialog_shell(
     insert_menu_actions(
         &rule_bulk_menu_button,
         RULE_ACTION_NAMESPACE,
-        &[&group_rules_action, &combine_rules_action],
+        &[
+            &group_rules_action,
+            &combine_rules_action,
+            &clean_orphaned_rules_action,
+        ],
     );
     rule_bulk_menu_button.set_menu_model(Some(&rule_bulk_menu));
     insert_menu_actions(
@@ -153,6 +159,7 @@ pub(super) fn build_management_dialog_shell(
         add_alias_row,
         group_rules_action,
         combine_rules_action,
+        clean_orphaned_rules_action,
         rule_bulk_menu_button,
         move_budget_code_action,
         use_real_income_action,

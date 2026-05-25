@@ -36,11 +36,6 @@
       <summary>Remember</summary>
       <description>How opened CSV data is remembered: forget for live session files, data-only for copied CSV storage, or data-and-analytics for copied CSV storage plus processed cache.</description>
     </key>
-    <key name="auto-clean-config" type="b">
-      <default>false</default>
-      <summary>Auto clean configuration</summary>
-      <description>Whether rules pointing to missing budget codes are removed during reload and import.</description>
-    </key>
     <key name="dedupe-enabled" type="b">
       <default>true</default>
       <summary>Duplicate filtering</summary>

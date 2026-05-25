@@ -29,7 +29,6 @@ const COMMON_ACTION_ACCELERATORS: &[ActionAccelerators] = &[
         &["<primary><alt>P"],
     ),
     ("app.advanced-autofill", &["<primary><alt>F"]),
-    ("app.auto-clean-config", &["<primary><alt>C"]),
     ("app.autohide-status", &["<primary><alt>M"]),
     ("app.about", &["<primary>I"]),
     ("app.shortcuts", &["F1", "<primary>question"]),

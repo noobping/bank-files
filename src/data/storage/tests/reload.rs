@@ -42,9 +42,8 @@ fn reload_inbox_file_replaces_only_selected_file() {
         ..AppData::default()
     };
 
-    let reloaded =
-        reload_inbox_file_with_dirs(data, &dirs, &selected_csv, DedupeMode::Disabled, false)
-            .expect("selected csv should reload");
+    let reloaded = reload_inbox_file_with_dirs(data, &dirs, &selected_csv, DedupeMode::Disabled)
+        .expect("selected csv should reload");
 
     assert!(reloaded
         .transactions

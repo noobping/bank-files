@@ -19,7 +19,6 @@ pub fn prepare_app_storage() -> Result<AppDirs> {
 
 pub fn load_app_data_read_only_aware(
     mode: DedupeMode,
-    auto_clean_config: bool,
     scope: TransactionLoadScope,
 ) -> Result<(AppData, StorageCapabilities)> {
     let dirs = app_dirs()?;
@@ -29,7 +28,6 @@ pub fn load_app_data_read_only_aware(
         &capabilities,
         AppDataLoadRequest {
             mode,
-            auto_clean_config,
             scope,
             remember_mode: RememberMode::DataOnly,
             sources: &[],
@@ -39,7 +37,6 @@ pub fn load_app_data_read_only_aware(
 
 pub fn load_app_data_with_sources(
     mode: DedupeMode,
-    auto_clean_config: bool,
     scope: TransactionLoadScope,
     remember_mode: RememberMode,
     sources: &[TransactionSource],
@@ -51,7 +48,6 @@ pub fn load_app_data_with_sources(
         &capabilities,
         AppDataLoadRequest {
             mode,
-            auto_clean_config,
             scope,
             remember_mode,
             sources,
@@ -62,7 +58,6 @@ pub fn load_app_data_with_sources(
 #[derive(Clone, Copy)]
 pub(super) struct AppDataLoadRequest<'a> {
     pub(super) mode: DedupeMode,
-    pub(super) auto_clean_config: bool,
     pub(super) scope: TransactionLoadScope,
     pub(super) remember_mode: RememberMode,
     pub(super) sources: &'a [TransactionSource],
@@ -116,9 +111,6 @@ fn load_app_data_uncached(
     capabilities: &StorageCapabilities,
     request: AppDataLoadRequest<'_>,
 ) -> Result<AppData> {
-    if request.auto_clean_config && capabilities.config_writable {
-        remove_orphaned_rules()?;
-    }
     let AppDataLoadInputs {
         mut outcome,
         rules,
@@ -132,11 +124,6 @@ fn load_app_data_uncached(
         outcome
             .warnings
             .extend(mark_existing_transaction_csvs_readonly(dirs));
-    }
-    if request.auto_clean_config && !capabilities.config_writable {
-        outcome.warnings.push(
-            "Auto Clean Config skipped because configuration storage is read-only.".to_string(),
-        );
     }
     let (mut transactions, duplicate_count) =
         dedupe(std::mem::take(&mut outcome.transactions), request.mode);

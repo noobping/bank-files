@@ -16,7 +16,6 @@ pub(super) fn force_reload_csv_file(
     let source_is_live = source.is_live();
     let name = name.to_string();
     let mode = state.borrow().dedupe_mode;
-    let auto_clean_config = ui_handles.preferences.auto_clean_config();
     let remember_mode = ui_handles.remember_mode.get();
     let data = state.borrow().clone();
     let state_for_reload = Rc::clone(state);
@@ -28,13 +27,7 @@ pub(super) fn force_reload_csv_file(
 
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
-            data::reload_transaction_source_file(
-                data,
-                &source,
-                mode,
-                auto_clean_config,
-                remember_mode,
-            )
+            data::reload_transaction_source_file(data, &source, mode, remember_mode)
         });
 
         match task.await {
@@ -104,7 +97,6 @@ pub(super) fn forget_or_unload_csv_file(
     let source_is_live = source.is_live();
     let name = name.to_string();
     let mode = state.borrow().dedupe_mode;
-    let auto_clean_config = ui_handles.preferences.auto_clean_config();
     let remember_mode = ui_handles.remember_mode.get();
     let mut sources = state.borrow().transaction_sources.clone();
     sources.retain(|existing| existing.path != source.path || existing.kind != source.kind);
@@ -130,13 +122,7 @@ pub(super) fn forget_or_unload_csv_file(
             } else {
                 Vec::new()
             };
-            data::load_app_data_with_sources(
-                mode,
-                auto_clean_config,
-                scope,
-                remember_mode,
-                &reload_sources,
-            )
+            data::load_app_data_with_sources(mode, scope, remember_mode, &reload_sources)
         });
 
         match task.await {

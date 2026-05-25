@@ -276,8 +276,6 @@ msgstr "Volledige lijsten aan/uit"
 msgid "Toggle Spending Comparison"
 msgstr "Uitgavenvergelijking aan/uit"
 
-msgid "Toggle Auto Clean Config"
-msgstr "Auto Clean Config aan/uit"
 
 msgid "Toggle Status Autohide"
 msgstr "Status automatisch verbergen aan/uit"
@@ -2010,14 +2008,8 @@ msgstr "Voorspeld saldo"
 msgid "Status"
 msgstr "Status"
 
-msgid "Auto Clean Config"
-msgstr "Configuratie automatisch opschonen"
 
-msgid "Auto Clean Config enabled. Orphaned rules are removed during reload and import."
-msgstr "Configuratie automatisch opschonen ingeschakeld. Weesregels worden verwijderd tijdens herladen en importeren."
 
-msgid "Auto Clean Config disabled. Orphaned rules stay visible in Diagnostics."
-msgstr "Configuratie automatisch opschonen uitgeschakeld. Weesregels blijven zichtbaar in Diagnose."
 
 msgid "Orphaned Configuration"
 msgstr "Weesconfiguratie"
@@ -2184,8 +2176,6 @@ msgstr "Beheer automatisch invullen, opschonen en zichtbaarheid van terugbetaald
 msgid "Let related form fields fill each other, such as transfer categories and codes."
 msgstr "Laat gerelateerde formuliervelden elkaar invullen, zoals overboekingscategorieen en codes."
 
-msgid "Remove orphaned rules automatically during reload and import."
-msgstr "Verwijder weesregels automatisch tijdens herladen en importeren."
 
 msgid "Settings"
 msgstr "Instellingen"
@@ -2561,6 +2551,15 @@ msgstr "Compatibele regels groeperen..."
 
 msgid "Combining compatible rules..."
 msgstr "Compatibele regels combineren..."
+
+msgid "Cleaning orphaned rules..."
+msgstr "Weesregels opschonen..."
+
+msgid "No orphaned rules to clean."
+msgstr "Geen weesregels om op te schonen."
+
+msgid "Cleaned {count} orphaned rule(s). Review, then Save."
+msgstr "{count} weesregel(s) opgeschoond. Controleer en kies daarna Opslaan."
 
 msgid "No adjacent compatible rules to combine. Use Group first if compatible rules are spread out."
 msgstr "Geen aangrenzende compatibele regels om te combineren. Gebruik eerst Groeperen als compatibele regels verspreid staan."
@@ -2973,8 +2972,8 @@ msgstr "Geavanceerde functies"
 msgid "Show budget codes, direction controls, and detailed move options."
 msgstr "Toon budgetcodes, richtinginstellingen en gedetailleerde verplaatsingsopties."
 
-msgid "Control budget detail, whole-form autofill, and cleanup."
-msgstr "Beheer budgetdetails, automatisch invullen van het hele formulier en opschonen."
+msgid "Control budget detail and whole-form autofill."
+msgstr "Beheer budgetdetails en automatisch invullen van het hele formulier."
 
 msgid "Whole Form Autofill"
 msgstr "Volledig formulier automatisch invullen"
@@ -3083,8 +3082,6 @@ msgstr "CSV-opslag is alleen-lezen."
 msgid "Configuration storage is read-only."
 msgstr "Configuratieopslag is alleen-lezen."
 
-msgid "Auto Clean Config skipped because configuration storage is read-only."
-msgstr "Configuratie automatisch opschonen overgeslagen omdat de configuratieopslag alleen-lezen is."
 
 msgid "This preference is managed by the system."
 msgstr "Deze voorkeur wordt door het systeem beheerd."
@@ -3430,6 +3427,9 @@ msgstr "Cache wissen en herladen"
 
 msgid "Combine Compatible Rules"
 msgstr "Compatibele regels combineren"
+
+msgid "Clean Orphaned Rules"
+msgstr "Weesregels opschonen"
 
 msgid "Could not clear data and analytics cache: {error}"
 msgstr "Kon data- en analysecache niet wissen: {error}"

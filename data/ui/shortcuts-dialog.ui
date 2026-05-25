@@ -175,12 +175,6 @@
         </child>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes">Toggle Auto Clean Config</property>
-            <property name="action-name">app.auto-clean-config</property>
-          </object>
-        </child>
-        <child>
-          <object class="AdwShortcutsItem">
             <property name="title" translatable="yes">Toggle Status Autohide</property>
             <property name="action-name">app.autohide-status</property>
           </object>

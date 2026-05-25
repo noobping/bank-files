@@ -128,7 +128,6 @@ fn field_mapping_dialog(
         let sources = current_sources_for_reload(&borrowed, remember_mode);
         let scope = current_transaction_load_scope(&borrowed, ui_for_save.as_ref());
         drop(borrowed);
-        let auto_clean_config = ui_for_save.preferences.auto_clean_config();
         let state_for_save = Rc::clone(&state_for_save);
         let ui_for_save = Rc::clone(&ui_for_save);
         let dialog_for_save = dialog_for_save.clone();
@@ -141,8 +140,7 @@ fn field_mapping_dialog(
                 let saved = data::upsert_editable_alias(&canonical_for_save, &alias_for_save)?;
                 let new_data = data::load_app_data_with_sources(
                     mode,
-                    auto_clean_config,
-                    scope,
+                        scope,
                     remember_mode,
                     &sources
                 )?

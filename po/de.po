@@ -276,8 +276,6 @@ msgstr "Vollständige Listen umschalten"
 msgid "Toggle Spending Comparison"
 msgstr "Ausgabenvergleich umschalten"
 
-msgid "Toggle Auto Clean Config"
-msgstr "Auto Clean Config umschalten"
 
 msgid "Toggle Status Autohide"
 msgstr "Status automatisch ausblenden umschalten"
@@ -2010,14 +2008,8 @@ msgstr "Prognostizierter Saldo"
 msgid "Status"
 msgstr "Status"
 
-msgid "Auto Clean Config"
-msgstr "Konfiguration automatisch bereinigen"
 
-msgid "Auto Clean Config enabled. Orphaned rules are removed during reload and import."
-msgstr "Automatische Konfigurationsbereinigung aktiviert. Verwaiste Regeln werden beim Neuladen und Importieren entfernt."
 
-msgid "Auto Clean Config disabled. Orphaned rules stay visible in Diagnostics."
-msgstr "Automatische Konfigurationsbereinigung deaktiviert. Verwaiste Regeln bleiben in der Diagnose sichtbar."
 
 msgid "Orphaned Configuration"
 msgstr "Verwaiste Konfiguration"
@@ -2184,8 +2176,6 @@ msgstr "Autofill, Bereinigung und Sichtbarkeit erstatteter Transaktionen steuern
 msgid "Let related form fields fill each other, such as transfer categories and codes."
 msgstr "Zugehoerige Formularfelder gegenseitig ausfuellen lassen, z. B. Transferkategorien und Codes."
 
-msgid "Remove orphaned rules automatically during reload and import."
-msgstr "Verwaiste Regeln beim Neuladen und Import automatisch entfernen."
 
 msgid "Settings"
 msgstr "Einstellungen"
@@ -2561,6 +2551,15 @@ msgstr "Kompatible Regeln werden gruppiert..."
 
 msgid "Combining compatible rules..."
 msgstr "Kompatible Regeln werden kombiniert..."
+
+msgid "Cleaning orphaned rules..."
+msgstr "Verwaiste Regeln werden bereinigt..."
+
+msgid "No orphaned rules to clean."
+msgstr "Keine verwaisten Regeln zum Bereinigen."
+
+msgid "Cleaned {count} orphaned rule(s). Review, then Save."
+msgstr "{count} verwaiste Regel(n) bereinigt. Prüfen und dann speichern."
 
 msgid "No adjacent compatible rules to combine. Use Group first if compatible rules are spread out."
 msgstr "Keine benachbarten kompatiblen Regeln zum Kombinieren. Verwende zuerst Gruppieren, wenn kompatible Regeln verteilt sind."
@@ -2973,8 +2972,8 @@ msgstr "Erweiterte Funktionen"
 msgid "Show budget codes, direction controls, and detailed move options."
 msgstr "Budgetcodes, Richtungseinstellungen und detaillierte Verschiebeoptionen anzeigen."
 
-msgid "Control budget detail, whole-form autofill, and cleanup."
-msgstr "Budgetdetails, Autofill für das ganze Formular und Bereinigung steuern."
+msgid "Control budget detail and whole-form autofill."
+msgstr "Budgetdetails und Autofill für das ganze Formular steuern."
 
 msgid "Whole Form Autofill"
 msgstr "Ganzes Formular automatisch ausfüllen"
@@ -3083,8 +3082,6 @@ msgstr "CSV-Speicher ist schreibgeschützt."
 msgid "Configuration storage is read-only."
 msgstr "Konfigurationsspeicher ist schreibgeschützt."
 
-msgid "Auto Clean Config skipped because configuration storage is read-only."
-msgstr "Automatische Konfigurationsbereinigung wurde übersprungen, weil der Konfigurationsspeicher schreibgeschützt ist."
 
 msgid "This preference is managed by the system."
 msgstr "Diese Einstellung wird vom System verwaltet."
@@ -3430,6 +3427,9 @@ msgstr "Cache leeren und neu laden"
 
 msgid "Combine Compatible Rules"
 msgstr "Kompatible Regeln zusammenführen"
+
+msgid "Clean Orphaned Rules"
+msgstr "Verwaiste Regeln bereinigen"
 
 msgid "Could not clear data and analytics cache: {error}"
 msgstr "Daten- und Analyse-Cache konnte nicht geleert werden: {error}"

@@ -63,7 +63,6 @@ pub(super) async fn import_and_reload_in_background<F>(
 ) where
     F: FnOnce() -> anyhow::Result<data::CsvCopyResult> + Send + 'static,
 {
-    let auto_clean_config = ui.preferences.auto_clean_config();
     let scope = current_transaction_load_scope(&state.borrow(), ui.as_ref());
     let remember_mode = ui.remember_mode.get();
     show_verbose_status(
@@ -76,14 +75,8 @@ pub(super) async fn import_and_reload_in_background<F>(
         let result = copy_files()?;
         let reload = if result.imported() > 0 {
             Some(
-                data::load_app_data_with_sources(
-                    mode,
-                    auto_clean_config,
-                    scope,
-                    remember_mode,
-                    &[],
-                )
-                .map_err(|err| format!("{err:#}")),
+                data::load_app_data_with_sources(mode, scope, remember_mode, &[])
+                    .map_err(|err| format!("{err:#}")),
             )
         } else {
             None
@@ -176,7 +169,6 @@ async fn open_live_sources_in_background(
     }
 
     let mode = state.borrow().dedupe_mode;
-    let auto_clean_config = ui.preferences.auto_clean_config();
     let scope = current_transaction_load_scope(&state.borrow(), ui.as_ref());
     let remember_mode = ui.remember_mode.get();
     let sources = live_source_set(&state.borrow(), remember_mode, sources);
@@ -184,13 +176,7 @@ async fn open_live_sources_in_background(
     begin_background_operation(ui.as_ref());
     let task_sources = sources.clone();
     let task = gtk::gio::spawn_blocking(move || {
-        data::load_app_data_with_sources(
-            mode,
-            auto_clean_config,
-            scope,
-            remember_mode,
-            &task_sources,
-        )
+        data::load_app_data_with_sources(mode, scope, remember_mode, &task_sources)
     });
 
     match task.await {

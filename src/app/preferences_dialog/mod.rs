@@ -75,17 +75,11 @@ pub(in crate::app) fn show_preferences_dialog(
             "app.advanced-autofill",
             ui.advanced_autofill.get(),
         ),
-        PreferenceSpec::new(
-            "Auto Clean Config",
-            "Remove orphaned rules automatically during reload and import.",
-            "app.auto-clean-config",
-            ui.auto_clean_config.get(),
-        ),
     ];
 
     if let Some((group, search_group)) = preference_group(
         "Forms and Data",
-        "Control budget detail, whole-form autofill, and cleanup.",
+        "Control budget detail and whole-form autofill.",
         &forms_preferences,
         advanced_features,
         &ui.preferences,

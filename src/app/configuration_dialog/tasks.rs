@@ -131,7 +131,6 @@ fn run_configuration_reload_task<F>(
     let sources = current_sources_for_reload(&borrowed, remember_mode);
     let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
     drop(borrowed);
-    let auto_clean_config = ui_handles.preferences.auto_clean_config();
     if !begin_configuration_task(
         &ui_handles,
         &status,
@@ -144,14 +143,8 @@ fn run_configuration_reload_task<F>(
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
             operation()?;
-            data::load_app_data_with_sources(
-                mode,
-                auto_clean_config,
-                scope,
-                remember_mode,
-                &sources,
-            )
-            .map(|loaded| loaded.0)
+            data::load_app_data_with_sources(mode, scope, remember_mode, &sources)
+                .map(|loaded| loaded.0)
         });
 
         match task.await {

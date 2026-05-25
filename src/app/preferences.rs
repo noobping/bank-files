@@ -81,14 +81,6 @@ impl Preferences {
         self.set_string("remember-mode", mode.as_settings());
     }
 
-    pub(in crate::app) fn auto_clean_config(&self) -> bool {
-        self.boolean("auto-clean-config", false)
-    }
-
-    pub(in crate::app) fn set_auto_clean_config(&self, enabled: bool) {
-        self.set_boolean("auto-clean-config", enabled);
-    }
-
     pub(in crate::app) fn dedupe_enabled(&self) -> bool {
         self.boolean("dedupe-enabled", true)
     }

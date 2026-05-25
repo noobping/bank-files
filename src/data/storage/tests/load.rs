@@ -23,7 +23,6 @@ fn read_only_load_uses_defaults_without_creating_missing_config() {
         &capabilities,
         AppDataLoadRequest {
             mode: DedupeMode::Disabled,
-            auto_clean_config: true,
             scope: TransactionLoadScope::All,
             remember_mode: RememberMode::DataOnly,
             sources: &[],
@@ -35,10 +34,6 @@ fn read_only_load_uses_defaults_without_creating_missing_config() {
     assert!(!dirs.config.exists());
     assert!(!dirs.inbox.exists());
     assert!(!data.budgets.is_empty());
-    assert!(data
-        .warnings
-        .iter()
-        .any(|warning| warning.contains("Auto Clean Config skipped")));
     assert_eq!(returned_capabilities, capabilities);
 
     fs::remove_dir_all(root).ok();
@@ -74,7 +69,6 @@ fn forget_mode_loads_live_csv_without_creating_app_storage() {
         &capabilities,
         AppDataLoadRequest {
             mode: DedupeMode::Disabled,
-            auto_clean_config: false,
             scope: TransactionLoadScope::All,
             remember_mode: RememberMode::Forget,
             sources: &sources,

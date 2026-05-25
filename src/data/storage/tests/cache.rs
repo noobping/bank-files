@@ -51,7 +51,6 @@ fn data_and_analytics_cache_reuses_processed_live_data() {
         &capabilities,
         AppDataLoadRequest {
             mode: DedupeMode::Disabled,
-            auto_clean_config: false,
             scope: TransactionLoadScope::All,
             remember_mode: RememberMode::DataAndAnalytics,
             sources: &sources,
@@ -63,7 +62,6 @@ fn data_and_analytics_cache_reuses_processed_live_data() {
         &capabilities,
         AppDataLoadRequest {
             mode: DedupeMode::Disabled,
-            auto_clean_config: false,
             scope: TransactionLoadScope::All,
             remember_mode: RememberMode::DataAndAnalytics,
             sources: &sources,

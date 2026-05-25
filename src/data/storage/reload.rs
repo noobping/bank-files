@@ -10,19 +10,10 @@ pub fn reload_transaction_source_file(
     data: AppData,
     source: &TransactionSource,
     mode: DedupeMode,
-    auto_clean_config: bool,
     remember_mode: RememberMode,
 ) -> Result<AppData> {
     let dirs = app_dirs()?;
-    let capabilities = crate::data::storage_capabilities(&dirs);
-    reload_transaction_source_file_with_dirs(
-        data,
-        &dirs,
-        source,
-        mode,
-        auto_clean_config && capabilities.config_writable,
-        remember_mode,
-    )
+    reload_transaction_source_file_with_dirs(data, &dirs, source, mode, remember_mode)
 }
 
 #[cfg(test)]
@@ -31,17 +22,9 @@ pub(super) fn reload_inbox_file_with_dirs(
     dirs: &AppDirs,
     path: &Path,
     mode: DedupeMode,
-    auto_clean_config: bool,
 ) -> Result<AppData> {
     let source = TransactionSource::inbox_file(path.to_path_buf());
-    reload_transaction_source_file_with_dirs(
-        data,
-        dirs,
-        &source,
-        mode,
-        auto_clean_config,
-        RememberMode::DataOnly,
-    )
+    reload_transaction_source_file_with_dirs(data, dirs, &source, mode, RememberMode::DataOnly)
 }
 
 fn reload_transaction_source_file_with_dirs(
@@ -49,13 +32,8 @@ fn reload_transaction_source_file_with_dirs(
     dirs: &AppDirs,
     source: &TransactionSource,
     mode: DedupeMode,
-    auto_clean_config: bool,
     remember_mode: RememberMode,
 ) -> Result<AppData> {
-    if auto_clean_config {
-        remove_orphaned_rules()?;
-    }
-
     let file = validated_transaction_source_file(source, dirs)?;
     let source_file = source_file_name(&file)?;
     let aliases = FieldAliases::load(&dirs.config)?;

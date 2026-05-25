@@ -124,7 +124,6 @@ pub(in crate::app) fn set_dedupe_enabled(
     let sources = current_sources_for_reload(&borrowed, remember_mode);
     let scope = current_transaction_load_scope(&borrowed, ui.as_ref());
     drop(borrowed);
-    let auto_clean_config = ui.preferences.auto_clean_config();
     let state_for_dedupe = Rc::clone(state);
     let ui_for_dedupe = Rc::clone(ui);
     show_verbose_status(
@@ -140,13 +139,7 @@ pub(in crate::app) fn set_dedupe_enabled(
 
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
-            data::load_app_data_with_sources(
-                mode,
-                auto_clean_config,
-                scope,
-                remember_mode,
-                &sources,
-            )
+            data::load_app_data_with_sources(mode, scope, remember_mode, &sources)
         });
         match task.await {
             Ok(Ok((mut new_data, capabilities))) => {

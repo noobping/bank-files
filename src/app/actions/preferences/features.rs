@@ -9,7 +9,6 @@ pub(super) fn register_feature_preference_actions(
     register_show_all_action(app, state, ui);
     register_compare_categories_action(app, state, ui);
     register_advanced_autofill_action(app, ui);
-    register_auto_clean_config_action(app, ui);
 }
 
 fn register_advanced_features_action(
@@ -141,29 +140,4 @@ fn register_advanced_autofill_action(app: &adw::Application, ui: &Rc<UiHandles>)
         },
     );
     advanced_autofill_action.set_enabled(ui.preferences.action_is_writable("advanced-autofill"));
-}
-
-fn register_auto_clean_config_action(app: &adw::Application, ui: &Rc<UiHandles>) {
-    let ui_for_auto_clean_config = Rc::clone(ui);
-    let auto_clean_config_action = add_bool_toggle_action(
-        app,
-        "auto-clean-config",
-        ui.auto_clean_config.get(),
-        true,
-        move |enabled| {
-            ui_for_auto_clean_config.auto_clean_config.set(enabled);
-            ui_for_auto_clean_config
-                .preferences
-                .set_auto_clean_config(enabled);
-            show_status(
-                &ui_for_auto_clean_config,
-                if enabled {
-                    "Auto Clean Config enabled. Orphaned rules are removed during reload and import."
-                } else {
-                    "Auto Clean Config disabled. Orphaned rules stay visible in Diagnostics."
-                },
-            );
-        },
-    );
-    auto_clean_config_action.set_enabled(ui.preferences.action_is_writable("auto-clean-config"));
 }

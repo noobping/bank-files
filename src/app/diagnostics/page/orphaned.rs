@@ -135,7 +135,6 @@ fn remove_orphaned_config_rules(
     let sources = current_sources_for_reload(&borrowed, remember_mode);
     let scope = current_transaction_load_scope(&borrowed, ui_handles.as_ref());
     drop(borrowed);
-    let auto_clean_config = ui_handles.preferences.auto_clean_config();
     let state_for_remove = Rc::clone(state);
     let ui_for_remove = Rc::clone(ui_handles);
     button.set_sensitive(false);
@@ -145,14 +144,8 @@ fn remove_orphaned_config_rules(
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
             let removed = data::remove_orphaned_rules()?;
-            let new_data = data::load_app_data_with_sources(
-                mode,
-                auto_clean_config,
-                scope,
-                remember_mode,
-                &sources,
-            )?
-            .0;
+            let new_data =
+                data::load_app_data_with_sources(mode, scope, remember_mode, &sources)?.0;
             anyhow::Ok((removed, new_data))
         });
 

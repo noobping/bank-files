@@ -11,6 +11,10 @@
       <attribute name="label" translatable="yes">Combine Compatible Rules</attribute>
       <attribute name="action">management-rules.combine-rules</attribute>
     </item>
+    <item>
+      <attribute name="label" translatable="yes">Clean Orphaned Rules</attribute>
+      <attribute name="action">management-rules.clean-orphaned-rules</attribute>
+    </item>
   </menu>
   <menu id="management_budget_bulk_menu">
     <item>

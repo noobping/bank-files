@@ -23,7 +23,6 @@ pub(in crate::app) fn clear_cache_and_reload_state(
     let sources = current_sources_for_reload(&borrowed, remember_mode);
     let scope = current_transaction_load_scope(&borrowed, ui.as_ref());
     drop(borrowed);
-    let auto_clean_config = ui.preferences.auto_clean_config();
     let state_for_reload = Rc::clone(state);
     let ui_for_reload = Rc::clone(ui);
 
@@ -43,7 +42,6 @@ pub(in crate::app) fn clear_cache_and_reload_state(
             let removed = data::clear_processed_app_data_cache()?;
             let (new_data, capabilities) = data::load_app_data_with_sources(
                 mode,
-                auto_clean_config,
                 scope,
                 remember_mode,
                 &sources,
@@ -146,7 +144,6 @@ pub(in crate::app) fn reload_state_with_scope(
     let remember_mode = ui.remember_mode.get();
     let sources = current_sources_for_reload(&borrowed, remember_mode);
     drop(borrowed);
-    let auto_clean_config = ui.preferences.auto_clean_config();
     let state_for_reload = Rc::clone(state);
     let ui_for_reload = Rc::clone(ui);
     show_verbose_status(
@@ -162,13 +159,7 @@ pub(in crate::app) fn reload_state_with_scope(
 
     gtk::glib::MainContext::default().spawn_local(async move {
         let task = gtk::gio::spawn_blocking(move || {
-            data::load_app_data_with_sources(
-                mode,
-                auto_clean_config,
-                scope,
-                remember_mode,
-                &sources,
-            )
+            data::load_app_data_with_sources(mode, scope, remember_mode, &sources)
         });
         match task.await {
             Ok(Ok((new_data, capabilities))) => {
