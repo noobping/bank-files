@@ -4,7 +4,8 @@ use crate::data::{self, EditableAlias, EditableBudget, EditableRule};
 use crate::i18n::gettext;
 use crate::model::{
     AppData, BudgetDirection, ComparisonMode, DataCacheStatus, DedupeMode, FieldMap, ImportReport,
-    MonthKey, RememberMode, Transaction, TransactionLoadScope, TransactionSource,
+    MonthKey, RememberMode, Transaction, TransactionLoadScope, TransactionRuleMatch,
+    TransactionSource,
 };
 #[cfg(all(target_os = "linux", feature = "setup", not(feature = "flatpak")))]
 use crate::setup;
@@ -48,6 +49,7 @@ mod preferences_dialog;
 mod print;
 mod render;
 mod rule_dialog;
+mod rule_text;
 mod shell;
 mod shortcuts;
 mod status;
@@ -119,10 +121,10 @@ use money::{
 };
 use operation_queue::{
     budget_move_queued_status, build_operation_queue_widgets, connect_operation_queue,
-    enqueue_rule_operation, operation_already_queued_status, refresh_active_operation_queue_ui,
-    register_operation_queue_menu_action, register_operation_queue_widget,
-    update_operation_queue_action_widgets, OperationQueue, OperationQueueWidgets, OperationSource,
-    QueuedOperationKind,
+    enqueue_rule_operation, enqueue_rule_removal_operation, operation_already_queued_status,
+    refresh_active_operation_queue_ui, register_operation_queue_menu_action,
+    register_operation_queue_widget, update_operation_queue_action_widgets, OperationQueue,
+    OperationQueueWidgets, OperationSource, QueuedOperationKind,
 };
 use overview::render_overview;
 use popup::{
@@ -135,6 +137,10 @@ use preferences_dialog::show_preferences_dialog;
 use print::{current_print_report, print_report, table_print_report};
 use render::{render_loading_placeholder, render_views, request_render_views};
 use rule_dialog::{show_rule_enqueue_dialog, RuleDialogSpec, TRANSACTION_RULE_FIELD_OPTIONS};
+use rule_text::{
+    rule_assignment_summary, rule_direction_label, rule_field_label, rule_match_search,
+    rule_match_summary,
+};
 use shell::{
     add_responsive_page_margins, add_responsive_switcher, add_responsive_switcher_for_dialog,
     build_menu_model, open_files, refresh_menu,

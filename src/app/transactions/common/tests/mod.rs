@@ -23,6 +23,7 @@ pub(super) fn tx(amount: i64, budget_code: &str, category: &str) -> Transaction 
         notes: String::new(),
         strict_key: String::new(),
         loose_key: String::new(),
+        rule_match: None,
     }
 }
 

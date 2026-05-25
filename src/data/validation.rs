@@ -66,14 +66,14 @@ pub(in crate::data) fn validate_optional_decimal(input: &str) -> Result<()> {
     }
 }
 
-pub(in crate::data) fn form_search_from_pattern(pattern: &str) -> (String, bool) {
+pub(crate) fn form_search_from_pattern(pattern: &str) -> (String, bool) {
     match unescape_regex_literal(pattern) {
         Some(search) => (search, false),
         None => (pattern.to_string(), true),
     }
 }
 
-pub(in crate::data) fn pattern_from_form(rule: &EditableRule) -> String {
+pub(crate) fn pattern_from_form(rule: &EditableRule) -> String {
     if rule.is_regex {
         rule.search.trim().to_string()
     } else {

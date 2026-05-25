@@ -17,6 +17,7 @@ pub(super) fn visible_transaction_detail_actions(
     markable_as_transfer: bool,
     budget_move_available: bool,
     auto_detected_classification: bool,
+    rule_match_available: bool,
 ) -> Vec<TransactionDetailAction> {
     [
         TransactionDetailAction::CreateRule,
@@ -36,6 +37,7 @@ pub(super) fn visible_transaction_detail_actions(
             markable_as_transfer,
             budget_move_available,
             auto_detected_classification,
+            rule_match_available,
         )
     })
     .collect()
@@ -47,6 +49,7 @@ fn transaction_detail_action_visible(
     markable_as_transfer: bool,
     budget_move_available: bool,
     auto_detected_classification: bool,
+    rule_match_available: bool,
 ) -> bool {
     let visible = match action {
         TransactionDetailAction::CreateRule | TransactionDetailAction::EditBudgetCode => {
@@ -56,7 +59,7 @@ fn transaction_detail_action_visible(
         TransactionDetailAction::DuplicateAsFake
         | TransactionDetailAction::MarkTransfer
         | TransactionDetailAction::Similar => true,
-        TransactionDetailAction::UndoTransfer => !markable_as_transfer,
+        TransactionDetailAction::UndoTransfer => !markable_as_transfer && rule_match_available,
         TransactionDetailAction::MarkInvalid => auto_detected_classification,
     };
     visible && (action != TransactionDetailAction::MarkTransfer || markable_as_transfer)
@@ -127,6 +130,13 @@ pub(super) fn queued_rule_operation_kind(
         ensure_budget: true,
         source,
     }
+}
+
+pub(super) fn queued_rule_removal_operation_kind(
+    rule_match: TransactionRuleMatch,
+    source: OperationSource,
+) -> QueuedOperationKind {
+    QueuedOperationKind::RuleRemoval { rule_match, source }
 }
 
 pub(super) fn append_transaction_detail_menu_action<F>(

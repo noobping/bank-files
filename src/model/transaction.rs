@@ -21,6 +21,21 @@ pub struct Transaction {
     pub notes: String,
     pub strict_key: String,
     pub loose_key: String,
+    #[serde(default)]
+    pub rule_match: Option<TransactionRuleMatch>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TransactionRuleMatch {
+    pub priority: i32,
+    pub field: String,
+    pub pattern: String,
+    pub category: String,
+    pub budget_code: String,
+    pub direction: String,
+    pub amount_min: Option<Decimal>,
+    pub amount_max: Option<Decimal>,
+    pub notes: String,
 }
 
 impl Transaction {

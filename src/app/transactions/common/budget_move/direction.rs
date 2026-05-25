@@ -62,14 +62,3 @@ pub(in crate::app::transactions::common) fn budget_code_change_label(
         ),
     }
 }
-
-pub(in crate::app::transactions::common) fn rule_field_label(field: &str) -> &'static str {
-    match field {
-        "counterparty" => "Counterparty",
-        "description" => "Description",
-        "tags" => "Tags",
-        "account" => "Account",
-        "transaction_id" => "Transaction ID",
-        _ => "Everything",
-    }
-}

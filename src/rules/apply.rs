@@ -2,7 +2,7 @@ use super::defaults::{canonical_direction, canonical_rule_field, AUTO_DETECTED_C
 use super::fallback::fallback_category;
 use super::transaction_tag_text;
 use super::Rule;
-use crate::model::Transaction;
+use crate::model::{Transaction, TransactionRuleMatch};
 use crate::util::normalize_key;
 
 use regex::RegexBuilder;
@@ -17,6 +17,7 @@ pub fn apply_rules(transactions: &mut [Transaction], rules: &[Rule]) {
         let assignment = fallback_category(tx);
         tx.category = assignment.category;
         tx.budget_code = assignment.budget_code;
+        tx.rule_match = None;
         if let Some(notes) = assignment.notes {
             tx.notes = notes;
         }
@@ -33,6 +34,7 @@ fn apply_matching_rule(tx: &mut Transaction, rules: &[Rule]) -> bool {
             tx.category = rule.category.clone();
             tx.budget_code = rule.budget_code.clone();
             tx.notes = rule.notes.clone();
+            tx.rule_match = Some(transaction_rule_match(rule));
             return true;
         }
     }
@@ -52,6 +54,20 @@ fn note_matches(note: &str, expected: &str) -> bool {
             || note.starts_with(&format!("{expected_key} "))
             || note == localized_key
             || note.starts_with(&format!("{localized_key} ")))
+}
+
+fn transaction_rule_match(rule: &Rule) -> TransactionRuleMatch {
+    TransactionRuleMatch {
+        priority: rule.priority,
+        field: rule.field.clone(),
+        pattern: rule.pattern.clone(),
+        category: rule.category.clone(),
+        budget_code: rule.budget_code.clone(),
+        direction: rule.direction.clone(),
+        amount_min: rule.amount_min,
+        amount_max: rule.amount_max,
+        notes: rule.notes.clone(),
+    }
 }
 
 fn rule_matches(rule: &Rule, tx: &Transaction) -> bool {

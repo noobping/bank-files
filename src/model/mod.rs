@@ -13,4 +13,4 @@ pub use budget::{BudgetAmount, BudgetCode, BudgetDirection, BudgetIncomeBasis};
 pub use dedupe::DedupeMode;
 pub use import::{FieldMap, ImportOutcome, ImportReport};
 pub use time::MonthKey;
-pub use transaction::Transaction;
+pub use transaction::{Transaction, TransactionRuleMatch};

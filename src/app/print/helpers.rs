@@ -102,6 +102,7 @@ mod tests {
             notes: "Receipt checked".to_string(),
             strict_key: String::new(),
             loose_key: String::new(),
+            rule_match: None,
         };
 
         let columns = transaction_print_columns();

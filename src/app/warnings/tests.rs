@@ -48,6 +48,7 @@ fn tx(date: &str, amount: i64, category: &str, budget_code: &str) -> Transaction
         notes: String::new(),
         strict_key: format!("{date}-{amount}-strict"),
         loose_key: format!("{date}-{amount}-loose"),
+        rule_match: None,
     }
 }
 

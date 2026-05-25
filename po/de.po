@@ -2754,8 +2754,8 @@ msgstr "Diesen Vorgang entfernen"
 msgid "Change budget code"
 msgstr "Budgetcode ändern"
 
-msgid "Rule {field}: {search} -> {category} / {code} ({direction})"
-msgstr "Regel {field}: {search} -> {category} / {code} ({direction})"
+msgid "Rule {field}: {search} -> {target} ({direction})"
+msgstr "Regel {field}: {search} -> {target} ({direction})"
 
 msgid "Pending"
 msgstr "Ausstehend"
@@ -3365,11 +3365,8 @@ msgstr "Überweisungsmarkierung rückgängig machen"
 msgid "Undo transfer"
 msgstr "Überweisung rückgängig machen"
 
-msgid "Move this transaction back to income or expenses"
-msgstr "Diese Transaktion wieder Einnahmen oder Ausgaben zuordnen"
-
-msgid "Marked transfer undone from transaction detail."
-msgstr "Überweisungsmarkierung aus den Transaktionsdetails rückgängig gemacht."
+msgid "Remove the rule that marked this transaction as a transfer"
+msgstr "Die Regel entfernen, die diese Transaktion als Überweisung markiert hat"
 
 msgid "Marked invalid auto detection from transaction detail."
 msgstr "Ungültige automatische Erkennung aus den Transaktionsdetails markiert."
@@ -3529,3 +3526,12 @@ msgstr "{old} -> kein Budgetcode"
 
 msgid "{old} -> {new}"
 msgstr "{old} -> {new}"
+
+msgid "Remove {rule}"
+msgstr "{rule} entfernen"
+
+msgid "The matching rule could not be found."
+msgstr "Die passende Regel konnte nicht gefunden werden."
+
+msgid "No matching rule was found to edit."
+msgstr "Es wurde keine passende Regel zum Bearbeiten gefunden."

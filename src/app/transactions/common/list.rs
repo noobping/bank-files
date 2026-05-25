@@ -120,6 +120,12 @@ fn transaction_details_table(
     if crate::rules::transaction_classification_is_auto_detected(tx) {
         rows.push(("Classification", tr("Auto detected")));
     }
+    if let Some(rule_match) = &tx.rule_match {
+        rows.push((
+            "Rule match",
+            rule_match_summary(rule_match, ui_handles.advanced_features.get()),
+        ));
+    }
     rows.extend([
         ("Account", tx.account.clone()),
         ("Transaction ID", tx.transaction_id.clone()),

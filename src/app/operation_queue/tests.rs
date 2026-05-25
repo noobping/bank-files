@@ -1,4 +1,4 @@
-use super::super::EditableRule;
+use super::super::{EditableRule, TransactionRuleMatch};
 use super::action_registry::operation_queue_action_enabled;
 use super::apply::{apply_summary_message, group_and_combine_queued_rules};
 use super::details::{operation_details, operation_details_icon_name};
@@ -8,6 +8,20 @@ use super::model::{
 };
 use super::presentation::{operation_apply_button_sensitive, operation_matches_query};
 use super::widgets::operation_queue_button_is_suggested;
+
+fn rule_match(search: &str) -> TransactionRuleMatch {
+    TransactionRuleMatch {
+        priority: 120,
+        field: "counterparty".to_string(),
+        pattern: regex::escape(search),
+        category: "Transfers".to_string(),
+        budget_code: "TRANSFER".to_string(),
+        direction: "transfer".to_string(),
+        amount_min: None,
+        amount_max: None,
+        notes: String::new(),
+    }
+}
 
 fn rule(search: &str) -> EditableRule {
     EditableRule {
@@ -26,6 +40,18 @@ fn enqueue_assigns_stable_ids_and_counts_actionable_items() {
     assert_eq!(first, EnqueueOperationResult::Queued(1));
     assert_eq!(second, EnqueueOperationResult::Queued(2));
     assert_eq!(queue.actionable_count(), 2);
+}
+
+#[test]
+fn duplicate_rule_removal_operations_are_not_enqueued_twice() {
+    let queue = OperationQueue::new();
+    let first = queue.enqueue_rule_removal(rule_match("Savings"), OperationSource::UndoTransfer);
+    let duplicate =
+        queue.enqueue_rule_removal(rule_match("Savings"), OperationSource::UndoTransfer);
+
+    assert_eq!(first, EnqueueOperationResult::Queued(1));
+    assert_eq!(duplicate, EnqueueOperationResult::AlreadyQueued(1));
+    assert_eq!(queue.operations().len(), 1);
 }
 
 #[test]

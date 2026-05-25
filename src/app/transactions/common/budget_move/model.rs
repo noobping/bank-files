@@ -1,4 +1,3 @@
-use super::direction::rule_field_label;
 use super::*;
 
 pub(in crate::app::transactions::common) fn transaction_budget_move_dialog_title(

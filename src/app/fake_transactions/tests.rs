@@ -31,6 +31,7 @@ fn tx(date: &str, amount: i64, description: &str) -> Transaction {
         notes: String::new(),
         strict_key: String::new(),
         loose_key: String::new(),
+        rule_match: None,
     }
 }
 

@@ -98,6 +98,48 @@ pub(super) fn operation_details(
                 tr(if *ensure_budget { "Yes" } else { "No" }),
             ));
         }
+        QueuedOperationKind::RuleRemoval { rule_match, .. } => {
+            lines.push(operation_detail_line("Action", operation_title(kind)));
+            lines.push(operation_detail_line(
+                "Status",
+                operation_status_text(status),
+            ));
+            lines.push(operation_detail_line(
+                "Field",
+                tr(rule_field_label(&rule_match.field)),
+            ));
+            lines.push(operation_detail_line(
+                "Match",
+                rule_match_search(rule_match),
+            ));
+            lines.push(operation_detail_line(
+                "Category",
+                rule_match.category.trim(),
+            ));
+            lines.push(operation_detail_line(
+                "Budget code",
+                rule_match.budget_code.trim(),
+            ));
+            lines.push(operation_detail_line(
+                "Direction",
+                tr(rule_direction_label(&rule_match.direction)),
+            ));
+            if let Some(amount_min) = rule_match.amount_min {
+                lines.push(operation_detail_line(
+                    "Minimum amount",
+                    amount_min.to_string(),
+                ));
+            }
+            if let Some(amount_max) = rule_match.amount_max {
+                lines.push(operation_detail_line(
+                    "Maximum amount",
+                    amount_max.to_string(),
+                ));
+            }
+            if !rule_match.notes.trim().is_empty() {
+                lines.push(operation_detail_line("Notes", rule_match.notes.trim()));
+            }
+        }
     }
 
     if let QueuedOperationStatus::Failed(message) = status {
@@ -121,24 +163,4 @@ pub(super) fn operation_status_text(status: &QueuedOperationStatus) -> String {
         QueuedOperationStatus::Applied => "Applied",
         QueuedOperationStatus::Failed(_) => "Failed",
     })
-}
-
-pub(super) fn rule_field_label(field: &str) -> &'static str {
-    match field {
-        "counterparty" => "Counterparty",
-        "description" => "Description",
-        "tags" => "Tags",
-        "account" => "Account",
-        "transaction_id" => "Transaction ID",
-        _ => "Everything",
-    }
-}
-
-pub(super) fn rule_direction_label(direction: &str) -> &'static str {
-    match direction {
-        "expense" => "Expenses",
-        "income" => "Income",
-        "transfer" => "Transfers",
-        _ => "All transactions",
-    }
 }

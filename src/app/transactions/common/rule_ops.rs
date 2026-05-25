@@ -1,6 +1,5 @@
 use super::rule_helpers::{
     editable_rule_for_transaction, invalid_auto_detection_rule_for_transaction,
-    transfer_undo_rule_for_transaction,
 };
 use super::*;
 
@@ -19,6 +18,9 @@ pub(super) fn apply_invalid_auto_detection_rule(tx: &Transaction, ui_handles: &R
 }
 
 pub(super) fn apply_transfer_undo_rule(tx: &Transaction, ui_handles: &Rc<UiHandles>) {
-    let rule = transfer_undo_rule_for_transaction(tx);
-    enqueue_rule_operation(ui_handles, rule, true, OperationSource::UndoTransfer);
+    let Some(rule_match) = tx.rule_match.clone() else {
+        show_status(ui_handles, "No matching rule was found to edit.");
+        return;
+    };
+    enqueue_rule_removal_operation(ui_handles, rule_match, OperationSource::UndoTransfer);
 }

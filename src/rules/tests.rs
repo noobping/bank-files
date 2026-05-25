@@ -1,7 +1,7 @@
 use super::defaults::AUTO_DETECTED_CATEGORY_NOTE;
 use super::fallback::fallback_category;
 use super::*;
-use crate::model::Transaction;
+use crate::model::{Transaction, TransactionRuleMatch};
 
 use chrono::NaiveDate;
 use rust_decimal::Decimal;
@@ -44,9 +44,37 @@ fn matching_rules_override_fallbacks() {
 
     assert_eq!(transactions[0].budget_code, "DINING");
     assert_eq!(transactions[0].category, "Dining out");
+    assert_eq!(
+        transactions[0]
+            .rule_match
+            .as_ref()
+            .map(|rule_match| rule_match.pattern.as_str()),
+        Some("Tikkie"),
+    );
     assert!(!transaction_classification_is_auto_detected(
         &transactions[0]
     ));
+}
+
+#[test]
+fn fallback_clears_rule_match() {
+    let mut transaction = tx("Coffee", "Cafe", -250);
+    transaction.rule_match = Some(TransactionRuleMatch {
+        priority: 10,
+        field: "counterparty".to_string(),
+        pattern: "Cafe".to_string(),
+        category: "Old".to_string(),
+        budget_code: "OLD".to_string(),
+        direction: "expense".to_string(),
+        amount_min: None,
+        amount_max: None,
+        notes: String::new(),
+    });
+
+    let mut transactions = vec![transaction];
+    apply_rules(&mut transactions, &[]);
+
+    assert!(transactions[0].rule_match.is_none());
 }
 
 #[test]
@@ -77,5 +105,6 @@ fn tx(description: &str, counterparty: &str, cents: i64) -> Transaction {
         source_row: 1,
         strict_key: format!("key-{description}-{counterparty}-{cents}"),
         loose_key: format!("loose-{description}-{counterparty}-{cents}"),
+        rule_match: None,
     }
 }

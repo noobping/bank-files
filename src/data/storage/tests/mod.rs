@@ -62,5 +62,6 @@ fn transaction(source_file: &str, description: &str) -> Transaction {
         notes: String::new(),
         strict_key: format!("strict-{source_file}-{description}"),
         loose_key: format!("loose-{source_file}-{description}"),
+        rule_match: None,
     }
 }

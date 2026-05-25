@@ -1,7 +1,5 @@
 use super::super::*;
-use super::details::{
-    operation_details, operation_status_text, rule_direction_label, rule_field_label,
-};
+use super::details::{operation_details, operation_status_text};
 use super::model::{
     OperationQueue, OperationSource, QueuedOperation, QueuedOperationKind, QueuedOperationStatus,
 };
@@ -61,15 +59,17 @@ pub(super) fn queue_summary(queue: &OperationQueue) -> String {
 }
 
 pub(super) fn operation_title(kind: &QueuedOperationKind) -> String {
-    match kind {
-        QueuedOperationKind::Rule { source, .. } => tr(match source {
-            OperationSource::CreateRule => "Create rule",
-            OperationSource::ChangeBudgetCode => "Change budget code",
-            OperationSource::MarkTransfer => "Mark transfer",
-            OperationSource::UndoTransfer => "Undo transfer mark",
-            OperationSource::MarkInvalid => "Mark invalid detection",
-        }),
-    }
+    let source = match kind {
+        QueuedOperationKind::Rule { source, .. }
+        | QueuedOperationKind::RuleRemoval { source, .. } => source,
+    };
+    tr(match source {
+        OperationSource::CreateRule => "Create rule",
+        OperationSource::ChangeBudgetCode => "Change budget code",
+        OperationSource::MarkTransfer => "Mark transfer",
+        OperationSource::UndoTransfer => "Undo transfer mark",
+        OperationSource::MarkInvalid => "Mark invalid detection",
+    })
 }
 
 pub(super) fn operation_queue_actions_are_idle(processing: bool, loading_count: u32) -> bool {
@@ -86,15 +86,17 @@ pub(super) fn operation_apply_button_sensitive(
 
 pub(super) fn operation_subtitle(kind: &QueuedOperationKind) -> String {
     match kind {
-        QueuedOperationKind::Rule { rule, .. } => trf(
-            "Rule {field}: {search} -> {category} / {code} ({direction})",
-            &[
-                ("field", tr(rule_field_label(&rule.field))),
-                ("search", truncate(&rule.search, 48)),
-                ("category", truncate(&rule.category, 32)),
-                ("code", truncate(&rule.budget_code, 20)),
-                ("direction", tr(rule_direction_label(&rule.direction))),
-            ],
+        QueuedOperationKind::Rule { rule, .. } => rule_assignment_summary(
+            &rule.field,
+            &truncate(&rule.search, 48),
+            &truncate(&rule.category, 32),
+            &truncate(&rule.budget_code, 20),
+            &rule.direction,
+            true,
+        ),
+        QueuedOperationKind::RuleRemoval { rule_match, .. } => trf(
+            "Remove {rule}",
+            &[("rule", rule_match_summary(rule_match, true))],
         ),
     }
 }

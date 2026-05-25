@@ -85,3 +85,61 @@ fn queued_rule_does_not_create_budget_without_ensure_flag() {
     assert_eq!(rules.len(), 1);
     assert!(budgets.is_empty());
 }
+
+fn rule_match_from(rule: &EditableRule) -> TransactionRuleMatch {
+    TransactionRuleMatch {
+        priority: rule.priority,
+        field: rule.field.clone(),
+        pattern: data::pattern_from_form(rule),
+        category: rule.category.clone(),
+        budget_code: rule.budget_code.clone(),
+        direction: rule.direction.clone(),
+        amount_min: crate::util::parse_decimal(&rule.amount_min),
+        amount_max: crate::util::parse_decimal(&rule.amount_max),
+        notes: rule.notes.clone(),
+    }
+}
+
+#[test]
+fn queued_rule_removal_removes_matching_existing_rule() {
+    let transfer_rule = EditableRule {
+        priority: 200,
+        search: "Savings".to_string(),
+        category: "Transfers".to_string(),
+        budget_code: "TRANSFER".to_string(),
+        direction: "transfer".to_string(),
+        amount_min: "10".to_string(),
+        ..rule("Savings", "TRANSFER")
+    };
+    let mut rules = vec![rule("Market", "FOOD"), transfer_rule.clone()];
+
+    assert!(remove_rule_from_editable_config(
+        &mut rules,
+        &rule_match_from(&transfer_rule),
+    ));
+
+    assert_eq!(rules, vec![rule("Market", "FOOD")]);
+}
+
+#[test]
+fn queued_rule_removal_does_not_create_replacement_rule() {
+    let transfer_rule = EditableRule {
+        category: "Transfers".to_string(),
+        budget_code: "TRANSFER".to_string(),
+        direction: "transfer".to_string(),
+        ..rule("Savings", "TRANSFER")
+    };
+    let missing = EditableRule {
+        search: "Other transfer".to_string(),
+        ..transfer_rule.clone()
+    };
+    let mut rules = vec![transfer_rule];
+
+    assert!(!remove_rule_from_editable_config(
+        &mut rules,
+        &rule_match_from(&missing),
+    ));
+
+    assert_eq!(rules.len(), 1);
+    assert_eq!(rules[0].search, "Savings");
+}

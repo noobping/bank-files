@@ -25,6 +25,7 @@ fn transaction(description: &str, counterparty: &str, amount: &str) -> Transacti
         notes: String::new(),
         strict_key: format!("{description}:{counterparty}:{amount}"),
         loose_key: String::new(),
+        rule_match: None,
     }
 }
 

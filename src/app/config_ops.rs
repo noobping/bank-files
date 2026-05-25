@@ -80,6 +80,31 @@ pub(in crate::app) fn apply_rule_config_change(
     Ok(change)
 }
 
+pub(in crate::app) fn remove_rule_config_change(
+    rule_match: TransactionRuleMatch,
+) -> anyhow::Result<()> {
+    let mut rules = data::load_editable_rules()?;
+    if !remove_rule_from_editable_config(&mut rules, &rule_match) {
+        anyhow::bail!(tr("The matching rule could not be found."));
+    }
+    data::write_editable_rules(&rules)?;
+    Ok(())
+}
+
+pub(in crate::app) fn remove_rule_from_editable_config(
+    rules: &mut Vec<EditableRule>,
+    rule_match: &TransactionRuleMatch,
+) -> bool {
+    let Some(index) = rules
+        .iter()
+        .position(|rule| editable_rule_matches_transaction_rule(rule, rule_match))
+    else {
+        return false;
+    };
+    rules.remove(index);
+    true
+}
+
 pub(in crate::app) fn apply_rule_to_editable_config(
     rules: &mut Vec<EditableRule>,
     budgets: &mut Vec<EditableBudget>,
@@ -114,6 +139,24 @@ fn rule_matches_existing(existing: &EditableRule, rule: &EditableRule) -> bool {
             .trim()
             .eq_ignore_ascii_case(rule.search.trim())
         && existing.direction.trim() == rule.direction.trim()
+}
+
+fn editable_rule_matches_transaction_rule(
+    rule: &EditableRule,
+    rule_match: &TransactionRuleMatch,
+) -> bool {
+    rule.priority == rule_match.priority
+        && rule.active
+        && rule.field.trim() == rule_match.field.trim()
+        && data::pattern_from_form(rule).trim() == rule_match.pattern.trim()
+        && rule.category.trim() == rule_match.category.trim()
+        && rule
+            .budget_code
+            .trim()
+            .eq_ignore_ascii_case(rule_match.budget_code.trim())
+        && rule.direction.trim() == rule_match.direction.trim()
+        && crate::util::parse_decimal(&rule.amount_min) == rule_match.amount_min
+        && crate::util::parse_decimal(&rule.amount_max) == rule_match.amount_max
 }
 
 fn ensure_budget_for_rule_in(budgets: &mut Vec<EditableBudget>, rule: &EditableRule) -> bool {

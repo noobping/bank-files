@@ -49,6 +49,7 @@ pub(super) fn transaction_detail_actions(
         markable_as_transfer,
         budget_move_available,
         auto_detected_classification,
+        tx.rule_match.is_some(),
     );
     let config_menu_action_enabled = transaction_detail_config_action_enabled(ui_handles.as_ref());
     let move_budget_code_placement = transaction_detail_move_budget_code_placement(transfer_marked);

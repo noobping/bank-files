@@ -8,14 +8,6 @@ pub(super) fn invalid_auto_detection_rule_for_transaction(tx: &Transaction) -> E
     )
 }
 
-pub(super) fn transfer_undo_rule_for_transaction(tx: &Transaction) -> EditableRule {
-    replacement_direction_rule(
-        tx,
-        160,
-        tr("Marked transfer undone from transaction detail."),
-    )
-}
-
 fn replacement_direction_rule(tx: &Transaction, priority: i32, notes: String) -> EditableRule {
     let (field, search) = transaction_rule_match(tx);
     let (category, budget_code, direction) = non_transfer_rule_values(tx);

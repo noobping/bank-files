@@ -37,5 +37,6 @@ fn test_transaction(id: &str) -> Transaction {
         notes: String::new(),
         strict_key: "same-strict-key".to_string(),
         loose_key: format!("loose-{id}"),
+        rule_match: None,
     }
 }

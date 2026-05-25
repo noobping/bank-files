@@ -30,6 +30,10 @@ pub(in crate::app) enum QueuedOperationKind {
         ensure_budget: bool,
         source: OperationSource,
     },
+    RuleRemoval {
+        rule_match: TransactionRuleMatch,
+        source: OperationSource,
+    },
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -105,11 +109,22 @@ impl OperationQueue {
         ensure_budget: bool,
         source: OperationSource,
     ) -> EnqueueOperationResult {
-        let kind = QueuedOperationKind::Rule {
+        self.enqueue_kind(QueuedOperationKind::Rule {
             rule,
             ensure_budget,
             source,
-        };
+        })
+    }
+
+    pub(in crate::app) fn enqueue_rule_removal(
+        &self,
+        rule_match: TransactionRuleMatch,
+        source: OperationSource,
+    ) -> EnqueueOperationResult {
+        self.enqueue_kind(QueuedOperationKind::RuleRemoval { rule_match, source })
+    }
+
+    fn enqueue_kind(&self, kind: QueuedOperationKind) -> EnqueueOperationResult {
         if let Some(id) = self.existing_operation_id(&kind) {
             return EnqueueOperationResult::AlreadyQueued(id);
         }

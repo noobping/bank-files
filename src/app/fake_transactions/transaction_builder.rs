@@ -78,6 +78,7 @@ pub(super) fn transaction_from_form(fields: FakeTransactionFormFields<'_>) -> Op
         notes: optional_entry_text(fields.notes, &fields.advanced_values.notes),
         strict_key: String::new(),
         loose_key: String::new(),
+        rule_match: None,
     })
 }
 
@@ -188,6 +189,7 @@ pub(super) fn default_fake_transaction(data: &AppData, ui: &UiHandles) -> Transa
         notes: String::new(),
         strict_key: String::new(),
         loose_key: String::new(),
+        rule_match: None,
     }
 }
 

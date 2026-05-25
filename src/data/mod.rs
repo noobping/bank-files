@@ -48,10 +48,8 @@ use editable::{
     serialize_editable_aliases, serialize_editable_budgets, serialize_editable_rules,
 };
 use maintenance::{dedupe, ensure_default_files, is_csv};
-use validation::{
-    csv_cell, form_search_from_pattern, non_empty, parse_bool_cell, pattern_from_form,
-    writer_to_string,
-};
+use validation::{csv_cell, non_empty, parse_bool_cell, writer_to_string};
+pub(crate) use validation::{form_search_from_pattern, pattern_from_form};
 use validation::{validate_editable_budgets, validate_editable_rules};
 
 pub(crate) fn editable_rules_to_csv(rules: &[EditableRule]) -> Result<String> {

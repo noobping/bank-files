@@ -59,6 +59,7 @@ pub(super) fn parse_record(
         notes: String::new(),
         strict_key,
         loose_key,
+        rule_match: None,
     })
 }
 

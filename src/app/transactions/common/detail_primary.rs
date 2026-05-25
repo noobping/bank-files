@@ -1,9 +1,8 @@
 use super::budget_move::show_transaction_budget_code_dialog;
 use super::detail_state::{
-    queued_rule_operation_kind, transaction_detail_config_action_blocked,
+    queued_rule_removal_operation_kind, transaction_detail_config_action_blocked,
     transaction_detail_move_action_text,
 };
-use super::rule_helpers::transfer_undo_rule_for_transaction;
 use super::rule_ops::apply_transfer_undo_rule;
 use super::search::{show_transactions_text_search, similar_transaction_query};
 use super::*;
@@ -35,14 +34,15 @@ pub(super) fn append_primary_transfer_undo_action(
 ) {
     let tx_for_undo = tx.clone();
     let ui_for_undo = Rc::clone(ui_handles);
-    let undo_operation = queued_rule_operation_kind(
-        transfer_undo_rule_for_transaction(tx),
-        OperationSource::UndoTransfer,
-    );
+    let Some(rule_match) = tx.rule_match.clone() else {
+        return;
+    };
+    let undo_operation =
+        queued_rule_removal_operation_kind(rule_match, OperationSource::UndoTransfer);
     let undo_button = ui::primary_text_icon_button(
         "edit-undo-symbolic",
         "Undo transfer",
-        "Move this transaction back to income or expenses",
+        "Remove the rule that marked this transaction as a transfer",
     );
     undo_button.set_sensitive(enabled);
     register_config_widget(ui_handles, &undo_button);

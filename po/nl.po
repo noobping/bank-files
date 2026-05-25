@@ -2754,8 +2754,8 @@ msgstr "Deze bewerking verwijderen"
 msgid "Change budget code"
 msgstr "Budgetcode wijzigen"
 
-msgid "Rule {field}: {search} -> {category} / {code} ({direction})"
-msgstr "Regel {field}: {search} -> {category} / {code} ({direction})"
+msgid "Rule {field}: {search} -> {target} ({direction})"
+msgstr "Regel {field}: {search} -> {target} ({direction})"
 
 msgid "Pending"
 msgstr "Wachtend"
@@ -3365,11 +3365,8 @@ msgstr "Overboekingsmarkering ongedaan maken"
 msgid "Undo transfer"
 msgstr "Overboeking ongedaan maken"
 
-msgid "Move this transaction back to income or expenses"
-msgstr "Zet deze transactie terug naar inkomsten of uitgaven"
-
-msgid "Marked transfer undone from transaction detail."
-msgstr "Overboekingsmarkering ongedaan gemaakt vanuit transactiedetails."
+msgid "Remove the rule that marked this transaction as a transfer"
+msgstr "Verwijder de regel die deze transactie als overboeking markeerde"
 
 msgid "Marked invalid auto detection from transaction detail."
 msgstr "Ongeldige automatische detectie gemarkeerd vanuit transactiedetails."
@@ -3529,3 +3526,12 @@ msgstr "{old} -> geen budgetcode"
 
 msgid "{old} -> {new}"
 msgstr "{old} -> {new}"
+
+msgid "Remove {rule}"
+msgstr "Verwijder {rule}"
+
+msgid "The matching rule could not be found."
+msgstr "De bijbehorende regel kon niet worden gevonden."
+
+msgid "No matching rule was found to edit."
+msgstr "Er is geen bijbehorende regel gevonden om te bewerken."
