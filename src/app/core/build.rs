@@ -85,6 +85,7 @@ pub(super) fn build_ui_with_startup_request(
         preferences.advanced_features(),
         &initial_storage_capabilities,
         &preferences,
+        MainMenuCounts::default(),
     )));
     ui::setup_search_bar(&window, &search_bar, &search_entry);
     add_responsive_switcher(&window, &switcher, &switcher_bar, &mobile_header_title);

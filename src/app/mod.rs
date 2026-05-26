@@ -149,7 +149,7 @@ use rule_text::{
 };
 use shell::{
     add_responsive_page_margins, add_responsive_switcher, add_responsive_switcher_for_dialog,
-    build_menu_model, open_files, refresh_menu,
+    build_menu_model, open_files, refresh_menu, MainMenuCounts,
 };
 use shortcuts::{build_shortcuts_dialog, install_action_accelerators};
 use status::{

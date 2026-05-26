@@ -36,6 +36,7 @@ pub(super) fn refresh_fake_transactions_ui(state: &Rc<RefCell<AppData>>, ui: &Rc
         widgets.list.append(&fake_transaction_text_row(&tr(
             EMPTY_FAKE_TRANSACTIONS_TEXT,
         )));
+        refresh_menu(ui.as_ref(), &state.borrow());
         return;
     }
 
@@ -53,6 +54,7 @@ pub(super) fn refresh_fake_transactions_ui(state: &Rc<RefCell<AppData>>, ui: &Rc
             EMPTY_FAKE_TRANSACTIONS_SEARCH_TEXT,
         )));
     }
+    refresh_menu(ui.as_ref(), &state.borrow());
 }
 
 fn fake_transaction_text_row(text: &str) -> adw::ActionRow {

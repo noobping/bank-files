@@ -115,6 +115,7 @@ pub(super) fn refresh_operation_queue_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<U
     }
     if operations.is_empty() {
         widgets.list.append(&queue_text_row(&tr(EMPTY_QUEUE_TEXT)));
+        refresh_menu(ui.as_ref(), &state.borrow());
         return;
     }
 
@@ -132,6 +133,7 @@ pub(super) fn refresh_operation_queue_ui(state: &Rc<RefCell<AppData>>, ui: &Rc<U
             .list
             .append(&queue_text_row(&tr(EMPTY_QUEUE_SEARCH_TEXT)));
     }
+    refresh_menu(ui.as_ref(), &state.borrow());
 }
 
 fn set_operation_queue_button_style(button: &gtk::Button, actionable: usize) {

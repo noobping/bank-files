@@ -19,20 +19,30 @@ pub(in crate::app) fn open_files(app: &adw::Application, files: &[gtk::gio::File
     }
 }
 
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub(in crate::app) struct MainMenuCounts {
+    pub(in crate::app) fake_transactions: usize,
+    pub(in crate::app) pending_operations: usize,
+}
+
 pub(in crate::app) fn build_menu_model(
     _data: &AppData,
     advanced_features: bool,
     storage_capabilities: &data::StorageCapabilities,
     preferences: &Preferences,
+    counts: MainMenuCounts,
 ) -> gtk::gio::Menu {
     let menu = gtk::gio::Menu::new();
     menu.append(Some(&tr("Open CSV Files")), Some("app.import-csv"));
     menu.append(Some(&tr("Search")), Some("app.find"));
     menu.append(
-        Some(&tr("Fake transactions")),
+        Some(&fake_transactions_menu_label(counts.fake_transactions)),
         Some("app.fake-transactions"),
     );
-    menu.append(Some(&tr("Processing queue")), Some("app.operation-queue"));
+    menu.append(
+        Some(&operation_queue_menu_label(counts.pending_operations)),
+        Some("app.operation-queue"),
+    );
     if advanced_features {
         menu.append(Some(&tr("Quick Reload")), Some("app.reload"));
         menu.append(Some(&tr("Reload All")), Some("app.reload-all"));
@@ -87,6 +97,27 @@ pub(in crate::app) fn build_menu_model(
     menu
 }
 
+fn main_menu_counts(ui_handles: &UiHandles) -> MainMenuCounts {
+    MainMenuCounts {
+        fake_transactions: ui_handles.fake_transactions.count(),
+        pending_operations: ui_handles.operation_queue.actionable_count(),
+    }
+}
+
+fn fake_transactions_menu_label(count: usize) -> String {
+    trf(
+        "Fake transactions ({count})",
+        &[("count", count.to_string())],
+    )
+}
+
+fn operation_queue_menu_label(count: usize) -> String {
+    trf(
+        "Processing queue ({count})",
+        &[("count", count.to_string())],
+    )
+}
+
 pub(in crate::app) fn refresh_menu(ui_handles: &UiHandles, data: &AppData) {
     let storage_capabilities = ui_handles.storage_capabilities.borrow();
     let menu = build_menu_model(
@@ -94,6 +125,7 @@ pub(in crate::app) fn refresh_menu(ui_handles: &UiHandles, data: &AppData) {
         ui_handles.advanced_features.get(),
         &storage_capabilities,
         &ui_handles.preferences,
+        main_menu_counts(ui_handles),
     );
     ui_handles.menu_button.set_menu_model(Some(&menu));
 }
@@ -149,4 +181,34 @@ pub(in crate::app) fn add_responsive_switcher_for_dialog(
     breakpoint.add_setter(switcher, "visible", Some(&false.to_value()));
     breakpoint.add_setter(switcher_bar, "reveal", Some(&true.to_value()));
     dialog.add_breakpoint(breakpoint);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn main_menu_labels_include_session_counts() {
+        let menu = build_menu_model(
+            &AppData::default(),
+            false,
+            &data::StorageCapabilities::default(),
+            &Preferences::default(),
+            MainMenuCounts {
+                fake_transactions: 3,
+                pending_operations: 2,
+            },
+        );
+
+        let fake_label = trf("Fake transactions ({count})", &[("count", "3".to_string())]);
+        let queue_label = trf("Processing queue ({count})", &[("count", "2".to_string())]);
+
+        assert_eq!(menu_label(&menu, 2).as_deref(), Some(fake_label.as_str()));
+        assert_eq!(menu_label(&menu, 3).as_deref(), Some(queue_label.as_str()));
+    }
+
+    fn menu_label(menu: &gtk::gio::Menu, index: i32) -> Option<String> {
+        menu.item_attribute_value(index, "label", None)
+            .and_then(|value| value.get::<String>())
+    }
 }

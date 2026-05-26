@@ -39,6 +39,10 @@ pub(super) fn register_local_setup_action(
                     ui_for_install.advanced_features.get(),
                     &storage_capabilities,
                     &ui_for_install.preferences,
+                    MainMenuCounts {
+                        fake_transactions: ui_for_install.fake_transactions.count(),
+                        pending_operations: ui_for_install.operation_queue.actionable_count(),
+                    },
                 );
                 menu_button_for_install.set_menu_model(Some(&menu));
             }

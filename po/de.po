@@ -3493,3 +3493,10 @@ msgstr "{name} existiert bereits. Vorhandenes Budget prüfen, dann speichern."
 
 msgid "{name} added. Press Save to keep it."
 msgstr "{name} hinzugefügt. Speichern drücken, um es zu behalten."
+
+# Main menu status counts
+msgid "Fake transactions ({count})"
+msgstr "Scheintransaktionen ({count})"
+
+msgid "Processing queue ({count})"
+msgstr "Verarbeitungswarteschlange ({count})"

@@ -3493,3 +3493,10 @@ msgstr "{name} bestaat al. Controleer het bestaande budget en druk daarna op Ops
 
 msgid "{name} added. Press Save to keep it."
 msgstr "{name} toegevoegd. Druk op Opslaan om het te bewaren."
+
+# Main menu status counts
+msgid "Fake transactions ({count})"
+msgstr "Neptransacties ({count})"
+
+msgid "Processing queue ({count})"
+msgstr "Verwerkingswachtrij ({count})"
