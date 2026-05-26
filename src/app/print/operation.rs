@@ -4,6 +4,7 @@ pub(in crate::app) fn print_report(ui: &Rc<UiHandles>, report: PrintReport) {
     let operation = gtk::PrintOperation::new();
     let page_setup = minimal_print_page_setup();
     operation.set_default_page_setup(Some(&page_setup));
+    operation.set_unit(gtk::Unit::Points);
     operation.set_job_name(&format!("{} - {}", app_info::display_name(), report.title));
     operation.set_allow_async(false);
     operation.set_show_progress(true);
@@ -59,6 +60,9 @@ fn minimal_print_page_setup() -> gtk::PageSetup {
     const PAGE_MARGIN_MM: f64 = 4.0;
 
     let setup = gtk::PageSetup::new();
+    let paper = gtk::PaperSize::new(Some(gtk::PAPER_NAME_A4));
+    setup.set_paper_size(&paper);
+    setup.set_orientation(gtk::PageOrientation::Portrait);
     setup.set_top_margin(PAGE_MARGIN_MM, gtk::Unit::Mm);
     setup.set_bottom_margin(PAGE_MARGIN_MM, gtk::Unit::Mm);
     setup.set_left_margin(PAGE_MARGIN_MM, gtk::Unit::Mm);
