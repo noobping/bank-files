@@ -111,8 +111,8 @@ msgstr "Info"
 msgid "Quit"
 msgstr "Beenden"
 
-msgid "Choose bank files or drop them onto the window to review spending, budgets, and trends."
-msgstr "Wähle Bankdateien aus oder ziehe sie in das Fenster, um Ausgaben, Budgets und Trends zu prüfen."
+msgid "Open bank files, add fake transactions, and see what changes before money moves."
+msgstr "Öffne Bankdateien, füge Beispieltransaktionen hinzu und sieh, was sich ändert, bevor Geld bewegt wird."
 
 msgid "Opening the file portal for CSV import..."
 msgstr "Dateiportal für den CSV-Import wird geöffnet..."
@@ -198,8 +198,8 @@ msgstr "Filter gelöscht. Alle Elemente werden angezeigt."
 msgid "Filter active: “{query}”. Clear the search text to show everything."
 msgstr "Filter aktiv: „{query}“. Lösche den Suchtext, um alles anzuzeigen."
 
-msgid "Review spending, budgets, and trends"
-msgstr "Ausgaben, Budgets und Trends"
+msgid "Preview money decisions"
+msgstr "Geldentscheidungen testen"
 
 msgid "Navigation"
 msgstr "Navigation"

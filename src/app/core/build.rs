@@ -177,7 +177,7 @@ pub(super) fn build_ui_with_startup_request(
 
     show_status(
         &ui,
-        "Choose bank files or drop them onto the window to review spending, budgets, and trends.",
+        "Open bank files, add fake transactions, and see what changes before money moves.",
     );
 
     connect_status_actions(app, &ui, status_bar.history_button, status_bar.hide_button);

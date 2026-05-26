@@ -1,12 +1,19 @@
 # Bank Files
 
-A local GTK app for reviewing bank CSV files. It helps you inspect transactions, compare months and years, manage budgets and categorization rules, and spot spending that needs attention.
+A local GTK app for testing money decisions against your real bank-file history. Add temporary fake transactions to see what happens if you buy something, take on a new cost, receive salary, or solve a problem with the money you have.
+
+Bank Files can also be used as a simple bank CSV viewer. It opens bank files locally, keeps remembered history so older imports are not lost, and lets you turn that off when you only want to inspect files for the current session.
+
+Duplicate filtering keeps repeated downloads from changing results, so you can import bank exports whenever you feel like it. The app keeps the overview easy and warns you when spending, budgets, or missing rules need attention.
 
 ![overview](data/screenshots/overview.png)
 
 ## Features
 
+- Add fake transactions to preview purchases, salary changes, refunds, transfers, recurring costs, and other what-if choices without editing the original bank files.
 - Open bank transaction CSVs through **Choose CSV Files**, drag-and-drop, **Open With**, or the app data folder.
+- Remember opened bank files so history stays available across sessions, or use forget mode as a temporary viewer.
+- Filter duplicate rows so bank exports downloaded at random moments do not distort totals.
 - Automatic field detection for columns such as date, amount, description, counterparty, account, currency, transaction ID, debit, and credit.
 - Open configuration CSVs the same way: `rules.csv`, `budgetcodes.csv`, and `field_aliases.csv`.
 - Detect common bank fields such as date, amount, debit, credit, description, counterparty, tags, account, currency, direction, and transaction ID.
@@ -63,13 +70,14 @@ meson setup build -Dcargo_variant=release -Dsetup=true
 2. Click **Choose CSV Files**, drop bank CSVs onto the window, use **Open With**, or place transaction files manually in the app data folder.
 3. Open `rules.csv`, `budgetcodes.csv`, or `field_aliases.csv` the same way to update configuration.
 4. Use **Categorization Rules**, **Budgets**, and **Normalize CSV Fields** to edit configuration inside the app.
-5. Use Overview and Budget cards and charts to jump to matching transactions.
-6. Use **Print Page** or **Export CSV** to share the current filtered view.
+5. Add fake transactions from the main menu or from an existing transaction to preview what changes.
+6. Use Overview and Budget cards and charts to jump to matching transactions.
+7. Use **Print Page** or **Export CSV** to share the current filtered view.
 
 ## Main pages
 
-- **Overview** shows imported totals, the latest month, active rules, yearly comparisons, trend charts, budget warnings, and annual categories.
-- **Budget** shows one selected month with expenses, income, balance, budget room, category totals, and budget warnings.
+- **Overview** shows imported totals, fake-transaction effects, the latest month, active rules, yearly comparisons, trend charts, budget warnings, and annual categories.
+- **Budget** shows one selected month with expenses, income, balance, budget room, category totals, fake-transaction effects, and budget warnings.
 - **Transactions** shows the searchable transaction list. Click a transaction to expand CSV-like details such as source file, tags, account, and transaction ID.
 - **Diagnostics** shows import quality, detected fields, warnings, duplicate filtering, and quick actions for rules and field mappings.
 

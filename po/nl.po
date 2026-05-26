@@ -111,8 +111,8 @@ msgstr "Over"
 msgid "Quit"
 msgstr "Afsluiten"
 
-msgid "Choose bank files or drop them onto the window to review spending, budgets, and trends."
-msgstr "Kies bankbestanden of sleep ze in het venster om uitgaven, budgetten en trends te bekijken."
+msgid "Open bank files, add fake transactions, and see what changes before money moves."
+msgstr "Open bankbestanden, voeg neptransacties toe en zie wat er verandert voordat geld beweegt."
 
 msgid "Opening the file portal for CSV import..."
 msgstr "Bestandsportal wordt geopend voor CSV-import..."
@@ -198,8 +198,8 @@ msgstr "Filter gewist. Alle items worden getoond."
 msgid "Filter active: “{query}”. Clear the search text to show everything."
 msgstr "Filter actief: “{query}”. Wis de zoektekst om alles te tonen."
 
-msgid "Review spending, budgets, and trends"
-msgstr "Bekijk uitgaven, budgetten en trends"
+msgid "Preview money decisions"
+msgstr "Verken geldkeuzes"
 
 msgid "Navigation"
 msgstr "Navigatie"

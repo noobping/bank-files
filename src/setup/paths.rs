@@ -2,16 +2,17 @@ use super::*;
 
 const DESKTOP_NAME_NL: &str = "Bankbestanden";
 const DESKTOP_NAME_DE: &str = "Bankdateien";
-const DESKTOP_GENERIC_NAME: &str = "Personal Finance Viewer";
-const DESKTOP_GENERIC_NAME_NL: &str = "Persoonlijk financieel overzicht";
-const DESKTOP_GENERIC_NAME_DE: &str = "Persönliche Finanzübersicht";
-const DESKTOP_COMMENT_NL: &str = "Bekijk uitgaven, budgetten en trends";
-const DESKTOP_COMMENT_DE: &str = "Ausgaben, Budgets und Trends";
-const DESKTOP_KEYWORDS: &str = "finance;budget;csv;bank;money;transactions;transfers;refunds;";
+const DESKTOP_GENERIC_NAME: &str = "Personal Finance Preview";
+const DESKTOP_GENERIC_NAME_NL: &str = "Persoonlijke geldplanner";
+const DESKTOP_GENERIC_NAME_DE: &str = "Persönliche Finanzvorschau";
+const DESKTOP_COMMENT_NL: &str = "Verken geldkeuzes";
+const DESKTOP_COMMENT_DE: &str = "Geldentscheidungen testen";
+const DESKTOP_KEYWORDS: &str =
+    "finance;budget;csv;bank;money;transactions;preview;what-if;transfers;refunds;";
 const DESKTOP_KEYWORDS_NL: &str =
-    "financien;budget;csv;bank;geld;transacties;overschrijvingen;terugbetalingen;";
+    "financien;budget;csv;bank;geld;transacties;vooruitblik;wat-als;overschrijvingen;terugbetalingen;";
 const DESKTOP_KEYWORDS_DE: &str =
-    "finanzen;budget;csv;bank;geld;transaktionen;transfers;erstattungen;";
+    "finanzen;budget;csv;bank;geld;transaktionen;vorschau;was-wenn;transfers;erstattungen;";
 
 pub(super) fn installed_local_binary_path() -> Option<PathBuf> {
     dirs_next::executable_dir().map(|bin| bin.join(env!("CARGO_PKG_NAME")))

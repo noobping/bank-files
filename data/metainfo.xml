@@ -5,9 +5,9 @@
   <name>Bank Files</name>
   <name xml:lang="nl">Bankbestanden</name>
   <name xml:lang="de">Bankdateien</name>
-  <summary>Review spending, budgets, and trends</summary>
-  <summary xml:lang="nl">Bekijk uitgaven, budgetten en trends</summary>
-  <summary xml:lang="de">Ausgaben, Budgets und Trends</summary>
+  <summary>Preview money decisions</summary>
+  <summary xml:lang="nl">Verken geldkeuzes</summary>
+  <summary xml:lang="de">Geldentscheidungen testen</summary>
 
   <metadata_license translate="no">CC0-1.0</metadata_license>
   <project_license translate="no">MIT</project_license>
@@ -32,13 +32,22 @@
   </supports>
 
   <description>
-    <p>Review bank CSV files locally. Import transaction and configuration files, detect common bank fields, and keep data on your device.</p>
-    <p xml:lang="nl">Bekijk bank-CSV-bestanden lokaal. Importeer transactie- en configuratiebestanden, herken gangbare bankvelden en houd je gegevens op je apparaat.</p>
-    <p xml:lang="de">Werte Bank-CSV-Dateien lokal aus. Importiere Transaktions- und Konfigurationsdateien, erkenne gängige Bankfelder und behalte deine Daten auf deinem Gerät.</p>
+    <p>Test choices before the money moves. Add temporary fake transactions to see whether a purchase still fits, or whether your salary really solves the problem you are planning for.</p>
+    <p xml:lang="nl">Test keuzes voordat het geld beweegt. Voeg tijdelijke neptransacties toe om te zien of een aankoop nog past, of je salaris het probleem echt oplost waarvoor je plant.</p>
+    <p xml:lang="de">Teste Entscheidungen, bevor Geld bewegt wird. Füge temporäre Beispieltransaktionen hinzu und sieh, ob ein Kauf noch passt oder dein Gehalt das geplante Problem wirklich löst.</p>
+    <p>Open bank CSV files locally, keep remembered history so older imports are not lost, or disable remembering when you only want a viewer for the current session.</p>
+    <p xml:lang="nl">Open bank-CSV-bestanden lokaal, bewaar geschiedenis zodat oudere imports niet verloren gaan, of schakel onthouden uit wanneer je alleen een viewer voor deze sessie wilt.</p>
+    <p xml:lang="de">Öffne Bank-CSV-Dateien lokal, behalte gespeicherte Historie, damit ältere Importe nicht verloren gehen, oder deaktiviere das Merken für eine reine Ansicht in dieser Sitzung.</p>
     <ul>
+      <li>Preview purchases, salary changes, refunds, transfers, and recurring costs with fake transactions</li>
+      <li xml:lang="nl">Verken aankopen, salariswijzigingen, terugbetalingen, overschrijvingen en terugkerende kosten met neptransacties</li>
+      <li xml:lang="de">Teste Käufe, Gehaltsänderungen, Erstattungen, Transfers und wiederkehrende Kosten mit Beispieltransaktionen</li>
       <li>Inspect transactions, categories, budgets, monthly trends, yearly comparisons, and printable reports</li>
       <li xml:lang="nl">Inspecteer transacties, categorieën, budgetten, maandtrends, jaarvergelijkingen en afdrukbare rapporten</li>
       <li xml:lang="de">Prüfe Transaktionen, Kategorien, Budgets, Monatstrends, Jahresvergleiche und druckbare Berichte</li>
+      <li>Filter duplicate rows so repeated bank downloads do not change totals</li>
+      <li xml:lang="nl">Filter dubbele regels zodat herhaalde bankdownloads totalen niet veranderen</li>
+      <li xml:lang="de">Filtere doppelte Zeilen, damit wiederholte Bankdownloads Summen nicht verändern</li>
       <li>Recognize common bank columns such as date, amount, description, counterparty, account, currency, tags, and transaction ID</li>
       <li xml:lang="nl">Herken gangbare bankkolommen zoals datum, bedrag, omschrijving, tegenpartij, rekening, valuta, tags en transactie-ID</li>
       <li xml:lang="de">Erkenne gängige Bankspalten wie Datum, Betrag, Beschreibung, Gegenpartei, Konto, Währung, Tags und Transaktions-ID</li>
@@ -51,9 +60,9 @@
       <li>Mark transfers and refunds explicitly so internal moves and refunded payments stay out of normal totals</li>
       <li xml:lang="nl">Markeer overschrijvingen en terugbetalingen expliciet, zodat interne verplaatsingen en terugbetaalde betalingen buiten normale totalen blijven</li>
       <li xml:lang="de">Markiere Transfers und Erstattungen ausdrücklich, damit interne Umbuchungen und erstattete Zahlungen nicht in normale Summen eingehen</li>
-      <li>Filter views from cards and charts, show or hide refunded transactions when needed, print filtered reports, or export cleaned CSV data</li>
-      <li xml:lang="nl">Filter weergaven vanuit kaarten en grafieken, toon of verberg terugbetaalde transacties wanneer nodig, druk gefilterde rapporten af of exporteer opgeschoonde CSV-data</li>
-      <li xml:lang="de">Filtere Ansichten über Karten und Diagramme, zeige oder verberge erstattete Transaktionen bei Bedarf, drucke gefilterte Berichte oder exportiere bereinigte CSV-Daten</li>
+      <li>Filter views from cards and charts, print filtered reports, or export cleaned CSV data</li>
+      <li xml:lang="nl">Filter weergaven vanuit kaarten en grafieken, druk gefilterde rapporten af of exporteer opgeschoonde CSV-data</li>
+      <li xml:lang="de">Filtere Ansichten über Karten und Diagramme, drucke gefilterte Berichte oder exportiere bereinigte CSV-Daten</li>
     </ul>
   </description>
 
@@ -89,9 +98,9 @@
   <releases>
     <release version="0.1.0" date="2026-05-17">
       <description>
-        <p>Initial release with local bank-file import, editable budgets and rules, transaction filters, and printable reports.</p>
-        <p xml:lang="nl">Eerste release met lokale import van bankbestanden, bewerkbare budgetten en regels, transactiefilters en afdrukbare rapporten.</p>
-        <p xml:lang="de">Erste Veröffentlichung mit lokalem Import von Bankdateien, bearbeitbaren Budgets und Regeln, Transaktionsfiltern und druckbaren Berichten.</p>
+        <p>Initial release with fake transactions, local bank-file import, remembered history, duplicate filtering, editable budgets and rules, transaction filters, and printable reports.</p>
+        <p xml:lang="nl">Eerste release met neptransacties, lokale import van bankbestanden, bewaarde geschiedenis, ontdubbelen, bewerkbare budgetten en regels, transactiefilters en afdrukbare rapporten.</p>
+        <p xml:lang="de">Erste Veröffentlichung mit Beispieltransaktionen, lokalem Import von Bankdateien, gespeicherter Historie, Duplikatfilterung, bearbeitbaren Budgets und Regeln, Transaktionsfiltern und druckbaren Berichten.</p>
       </description>
     </release>
   </releases>
