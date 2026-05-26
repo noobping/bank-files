@@ -172,6 +172,38 @@ jobs:
             }
           }
 
+          # ntldd reports Windows API-set and optional OS DLLs as missing in CI;
+          # those are provided by Windows itself, not by the app bundle.
+          $ignoredWindowsMissingDlls = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+          @(
+            'AzureAttestManager.dll',
+            'AzureAttestNormal.dll',
+            'HvsiFileTrust.dll',
+            'PdmUtilities.dll',
+            'wpaxholder.dll',
+            'wtdccm.dll',
+            'WTDSENSOR.dll'
+          ) | ForEach-Object { $null = $ignoredWindowsMissingDlls.Add($_) }
+
+          function Get-DllNameFromLine([string]$line) {
+            $match = [regex]::Match($line, '(?i)([A-Za-z0-9_.+-]+\.dll)')
+            if ($match.Success) {
+              return $match.Groups[1].Value
+            }
+            return $null
+          }
+
+          function Test-IgnoredMissingDll([string]$line) {
+            $name = Get-DllNameFromLine $line
+            if ([string]::IsNullOrWhiteSpace($name)) {
+              return $false
+            }
+            $lower = $name.ToLowerInvariant()
+            return $lower.StartsWith('api-ms-') -or `
+              $lower.StartsWith('ext-ms-') -or `
+              $ignoredWindowsMissingDlls.Contains($name)
+          }
+
           function Get-NeededDllNames([string]$binaryPath) {
             $raw = & $ntldd -R $binaryPath 2>$null
             foreach ($line in $raw) {
@@ -231,7 +263,9 @@ jobs:
           }
           $missing = @()
           foreach ($binary in $binariesToVerify) {
-            $missing += @(& $ntldd -R $binary 2>$null | Where-Object { $_ -match 'not found' })
+            $missing += @(& $ntldd -R $binary 2>$null | Where-Object {
+              $_ -match 'not found' -and -not (Test-IgnoredMissingDll $_)
+            })
           }
           if ($missing.Count -gt 0) {
             $missing | ForEach-Object { Write-Host $_ }
