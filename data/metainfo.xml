@@ -119,31 +119,27 @@
   <keywords>
     <keyword>finance</keyword>
     <keyword>budget</keyword>
-    <keyword>csv</keyword>
-    <keyword>excel</keyword>
-    <keyword>calc</keyword>
-    <keyword>spreadsheet</keyword>
     <keyword>bank</keyword>
+    <keyword>money</keyword>
     <keyword>transactions</keyword>
-    <keyword>transfers</keyword>
-    <keyword>refunds</keyword>
+    <keyword>csv</keyword>
+    <keyword>spreadsheet</keyword>
+    <keyword>excel</keyword>
     <keyword xml:lang="nl">financien</keyword>
     <keyword xml:lang="nl">budget</keyword>
-    <keyword xml:lang="nl">excel</keyword>
-    <keyword xml:lang="nl">calc</keyword>
-    <keyword xml:lang="nl">spreadsheet</keyword>
     <keyword xml:lang="nl">bank</keyword>
+    <keyword xml:lang="nl">geld</keyword>
     <keyword xml:lang="nl">transacties</keyword>
-    <keyword xml:lang="nl">overschrijvingen</keyword>
-    <keyword xml:lang="nl">terugbetalingen</keyword>
+    <keyword xml:lang="nl">csv</keyword>
+    <keyword xml:lang="nl">spreadsheet</keyword>
+    <keyword xml:lang="nl">excel</keyword>
     <keyword xml:lang="de">finanzen</keyword>
     <keyword xml:lang="de">budget</keyword>
-    <keyword xml:lang="de">excel</keyword>
-    <keyword xml:lang="de">calc</keyword>
-    <keyword xml:lang="de">tabellenkalkulation</keyword>
     <keyword xml:lang="de">bank</keyword>
+    <keyword xml:lang="de">geld</keyword>
     <keyword xml:lang="de">transaktionen</keyword>
-    <keyword xml:lang="de">transfers</keyword>
-    <keyword xml:lang="de">erstattungen</keyword>
+    <keyword xml:lang="de">csv</keyword>
+    <keyword xml:lang="de">tabellenkalkulation</keyword>
+    <keyword xml:lang="de">excel</keyword>
   </keywords>
 </component>

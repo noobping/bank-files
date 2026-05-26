@@ -7,12 +7,10 @@ const DESKTOP_GENERIC_NAME_NL: &str = "Persoonlijke geldplanner";
 const DESKTOP_GENERIC_NAME_DE: &str = "Persönliche Finanzvorschau";
 const DESKTOP_COMMENT_NL: &str = "Verken geldkeuzes";
 const DESKTOP_COMMENT_DE: &str = "Geldentscheidungen testen";
-const DESKTOP_KEYWORDS: &str =
-    "finance;budget;csv;excel;calc;spreadsheet;bank;money;transactions;preview;what-if;transfers;refunds;";
-const DESKTOP_KEYWORDS_NL: &str =
-    "financien;budget;csv;excel;calc;spreadsheet;bank;geld;transacties;vooruitblik;wat-als;overschrijvingen;terugbetalingen;";
+const DESKTOP_KEYWORDS: &str = "finance;budget;bank;money;transactions;csv;spreadsheet;excel;";
+const DESKTOP_KEYWORDS_NL: &str = "financien;budget;bank;geld;transacties;csv;spreadsheet;excel;";
 const DESKTOP_KEYWORDS_DE: &str =
-    "finanzen;budget;csv;excel;calc;tabellenkalkulation;bank;geld;transaktionen;vorschau;was-wenn;transfers;erstattungen;";
+    "finanzen;budget;bank;geld;transaktionen;csv;tabellenkalkulation;excel;";
 
 pub(super) fn installed_local_binary_path() -> Option<PathBuf> {
     dirs_next::executable_dir().map(|bin| bin.join(env!("CARGO_PKG_NAME")))
