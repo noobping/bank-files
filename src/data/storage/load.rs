@@ -17,6 +17,7 @@ pub fn prepare_app_storage() -> Result<AppDirs> {
     Ok(dirs)
 }
 
+#[cfg(target_os = "linux")]
 pub fn load_app_data_read_only_aware(
     mode: DedupeMode,
     scope: TransactionLoadScope,

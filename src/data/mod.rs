@@ -38,11 +38,13 @@ pub use config::{
 };
 pub use copy::{copy_files_to_app_storage, copy_uris_to_app_storage};
 pub use export::{export_transactions_to_path, remove_inbox_file};
+#[cfg(target_os = "linux")]
+pub use storage::load_app_data_read_only_aware;
 pub use storage::{
-    clear_processed_app_data_cache, current_storage_capabilities, load_app_data_read_only_aware,
-    load_app_data_with_sources, mark_transaction_csv_readonly, prepare_app_storage,
-    reload_transaction_source_file, storage_capabilities, CsvCopyResult, EditableAlias,
-    EditableBudget, EditableRule, StorageCapabilities,
+    clear_processed_app_data_cache, current_storage_capabilities, load_app_data_with_sources,
+    mark_transaction_csv_readonly, prepare_app_storage, reload_transaction_source_file,
+    storage_capabilities, CsvCopyResult, EditableAlias, EditableBudget, EditableRule,
+    StorageCapabilities,
 };
 
 use defaults::{default_aliases, default_budgets, default_rules, FALSE_ALIASES};
