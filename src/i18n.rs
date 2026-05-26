@@ -17,7 +17,7 @@ pub enum Language {
 pub fn init() {
     Lazy::force(&NL_TRANSLATIONS);
     Lazy::force(&DE_TRANSLATIONS);
-    Lazy::force(&ACTIVE_LANGUAGE);
+    configure_process_locale(active_language());
 }
 
 pub fn active_language() -> Language {
@@ -51,26 +51,90 @@ pub fn format(message: &str, replacements: &[(&str, String)]) -> String {
 }
 
 fn detect_language() -> Language {
+    detect_environment_language()
+        .or_else(detect_platform_language)
+        .unwrap_or(Language::English)
+}
+
+fn detect_environment_language() -> Option<Language> {
     for name in ["LANGUAGE", "LC_ALL", "LC_MESSAGES", "LANG"] {
         let Ok(value) = std::env::var(name) else {
             continue;
         };
 
         for locale in value.split(':') {
-            let normalized = locale.trim().to_ascii_lowercase();
-            if normalized.starts_with("nl") {
-                return Language::Dutch;
-            }
-            if normalized.starts_with("de") {
-                return Language::German;
-            }
-            if normalized == "c" || normalized == "posix" {
-                return Language::English;
+            if let Some(language) = language_from_locale(locale) {
+                return Some(language);
             }
         }
     }
 
-    Language::English
+    None
+}
+
+fn language_from_locale(locale: &str) -> Option<Language> {
+    let normalized = locale.trim().to_ascii_lowercase();
+    if normalized.starts_with("nl") {
+        return Some(Language::Dutch);
+    }
+    if normalized.starts_with("de") {
+        return Some(Language::German);
+    }
+    if normalized.starts_with("en") || normalized == "c" || normalized == "posix" {
+        return Some(Language::English);
+    }
+
+    None
+}
+
+#[cfg(target_os = "windows")]
+#[link(name = "kernel32")]
+extern "system" {
+    #[link_name = "GetUserDefaultUILanguage"]
+    fn get_user_default_ui_language() -> u16;
+}
+
+#[cfg(target_os = "windows")]
+fn detect_platform_language() -> Option<Language> {
+    language_from_windows_lang_id(unsafe { get_user_default_ui_language() })
+}
+
+#[cfg(not(target_os = "windows"))]
+fn detect_platform_language() -> Option<Language> {
+    None
+}
+
+#[cfg(any(target_os = "windows", test))]
+fn language_from_windows_lang_id(lang_id: u16) -> Option<Language> {
+    match lang_id & 0x03ff {
+        0x07 => Some(Language::German),
+        0x09 => Some(Language::English),
+        0x13 => Some(Language::Dutch),
+        _ => None,
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn configure_process_locale(language: Language) {
+    let (language_code, locale) = match language {
+        Language::English => ("en", "en_US.UTF-8"),
+        Language::Dutch => ("nl", "nl_NL.UTF-8"),
+        Language::German => ("de", "de_DE.UTF-8"),
+    };
+
+    set_env_if_missing("LANGUAGE", language_code);
+    set_env_if_missing("LC_MESSAGES", locale);
+    set_env_if_missing("LANG", locale);
+}
+
+#[cfg(not(target_os = "windows"))]
+fn configure_process_locale(_language: Language) {}
+
+#[cfg(target_os = "windows")]
+fn set_env_if_missing(name: &str, value: &str) {
+    if std::env::var_os(name).is_none() {
+        std::env::set_var(name, value);
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -159,4 +223,32 @@ fn parse_po_string(value: &str) -> String {
     }
 
     output
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn locale_prefixes_detect_supported_languages() {
+        assert_eq!(language_from_locale("nl_NL.UTF-8"), Some(Language::Dutch));
+        assert_eq!(language_from_locale("de_DE.UTF-8"), Some(Language::German));
+        assert_eq!(language_from_locale("en_US.UTF-8"), Some(Language::English));
+        assert_eq!(language_from_locale("C"), Some(Language::English));
+        assert_eq!(language_from_locale("fr_FR.UTF-8"), None);
+    }
+
+    #[test]
+    fn windows_primary_language_id_detects_supported_languages() {
+        assert_eq!(language_from_windows_lang_id(0x0413), Some(Language::Dutch));
+        assert_eq!(
+            language_from_windows_lang_id(0x0407),
+            Some(Language::German)
+        );
+        assert_eq!(
+            language_from_windows_lang_id(0x0409),
+            Some(Language::English)
+        );
+        assert_eq!(language_from_windows_lang_id(0x040c), None);
+    }
 }
