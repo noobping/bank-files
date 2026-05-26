@@ -73,7 +73,8 @@ use annual::{
 };
 use budget::{
     bind_percentage_basis_visibility, budget_add_action, budget_direction_change,
-    budget_direction_editable, budget_edit_button, budget_values_use_percentage,
+    budget_direction_editable, budget_edit_button, budget_is_special_neutral,
+    budget_special_controls_are_hidden, budget_values_use_percentage,
     confirm_budget_direction_changes, more_budgets_row, more_categories_row, render_budget_page,
     selected_budget_month, selected_year, show_budget_edit_dialog, totals_for_month,
     year_selector_row, BudgetDirectionChange,

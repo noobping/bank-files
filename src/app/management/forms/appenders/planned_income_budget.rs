@@ -1,5 +1,5 @@
 use super::super::*;
-use super::card::collapsible_form_card;
+use super::card::{collapsible_form_card, enable_budget_card_reorder};
 use super::state::{
     attach_details_grid, connect_budget_delete_button, connect_combo_summary,
     connect_entry_summary, set_summary,
@@ -14,6 +14,7 @@ pub(in crate::app) fn append_planned_income_budget_form(
     advanced_features: bool,
 ) {
     let card = collapsible_form_card("Planned Income", "", "Delete planned income budget");
+    enable_budget_card_reorder(container, forms, &card, advanced_features);
 
     let grid = form_grid();
     let code = ui::text_combo(

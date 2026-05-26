@@ -62,3 +62,19 @@ pub(super) fn collapsible_form_card(
         delete_button,
     }
 }
+
+pub(super) fn enable_budget_card_reorder(
+    container: &gtk::Box,
+    forms: &Rc<RefCell<Vec<BudgetForm>>>,
+    card: &CollapsibleFormCard,
+    advanced_features: bool,
+) {
+    card.drag_handle
+        .set_tooltip_text(Some(&tr(if advanced_features {
+            "Move budget"
+        } else {
+            "Move category"
+        })));
+    card.drag_handle.set_visible(true);
+    connect_budget_form_reorder(container, forms, &card.drag_handle, &card.form_box);
+}

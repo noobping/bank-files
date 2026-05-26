@@ -157,12 +157,7 @@ fn budget_move_targets(forms: &[BudgetForm]) -> Vec<BudgetMoveTarget> {
     let mut options = Vec::new();
     for form in forms.iter().filter(|form| !form.deleted.get()) {
         let code = ui::combo_text(&form.code).trim().to_string();
-        if code.is_empty()
-            || planned_income::is_budget_code(&code)
-            || options
-                .iter()
-                .any(|option: &BudgetMoveTarget| budget_code_matches(&option.code, &code))
-        {
+        if !budget_move_code_is_eligible(&code, &options) {
             continue;
         }
         options.push(BudgetMoveTarget {
@@ -172,6 +167,14 @@ fn budget_move_targets(forms: &[BudgetForm]) -> Vec<BudgetMoveTarget> {
         });
     }
     options
+}
+
+pub(super) fn budget_move_code_is_eligible(code: &str, options: &[BudgetMoveTarget]) -> bool {
+    let code = code.trim();
+    !code.is_empty()
+        && !options
+            .iter()
+            .any(|option| budget_code_matches(&option.code, code))
 }
 
 fn move_budget_code_between_forms(

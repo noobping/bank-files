@@ -1,5 +1,5 @@
 use super::super::*;
-use super::card::collapsible_form_card;
+use super::card::{collapsible_form_card, enable_budget_card_reorder};
 use super::state::{
     attach_details_grid, connect_budget_delete_button, connect_combo_summary,
     connect_entry_summary, set_option_combo, set_summary,
@@ -15,19 +15,13 @@ pub(in crate::app) fn append_budget_form(
     advanced_autofill: &Rc<Cell<bool>>,
     advanced_features: bool,
 ) {
-    let is_special_neutral_budget = transfer_budget::is_budget_code(&budget.code)
-        || refund_budget::is_budget_code(&budget.code);
+    let is_special_neutral_budget = budget_is_special_neutral(&budget.code);
+    let hide_special_controls =
+        budget_special_controls_are_hidden(advanced_features, is_special_neutral_budget);
     let original_direction = persisted
         .then(|| BudgetDirection::parse(&budget.direction, &budget.code, &budget.category));
     let card = collapsible_form_card("Budget", "", "Delete budget");
-    card.drag_handle
-        .set_tooltip_text(Some(&tr(if advanced_features {
-            "Move budget"
-        } else {
-            "Move category"
-        })));
-    card.drag_handle.set_visible(true);
-    connect_budget_form_reorder(container, forms, &card.drag_handle, &card.form_box);
+    enable_budget_card_reorder(container, forms, &card, advanced_features);
 
     let grid = form_grid();
     let code = ui::text_combo(&budget.code, editable_budget_code_values());
@@ -69,23 +63,32 @@ pub(in crate::app) fn append_budget_form(
         add_labeled(&grid, 4, "Direction", &direction);
         let income_basis_label = add_labeled(&grid, 5, "Percentage basis", &income_basis);
         add_labeled(&grid, 6, "Note", &notes);
-        income_basis_label
+        Some(income_basis_label)
     } else {
         code.set_visible(false);
         add_labeled(&grid, 0, "Category", &category);
         add_labeled(&grid, 1, "Monthly budget", &monthly_budget);
         add_labeled(&grid, 2, "Yearly budget", &yearly_budget);
-        add_labeled(&grid, 3, "Direction", &direction);
-        let income_basis_label = add_labeled(&grid, 4, "Percentage basis", &income_basis);
-        add_labeled(&grid, 5, "Note", &notes);
-        income_basis_label
+        if hide_special_controls {
+            direction.set_visible(false);
+            income_basis.set_visible(false);
+            add_labeled(&grid, 3, "Note", &notes);
+            None
+        } else {
+            add_labeled(&grid, 3, "Direction", &direction);
+            let income_basis_label = add_labeled(&grid, 4, "Percentage basis", &income_basis);
+            add_labeled(&grid, 5, "Note", &notes);
+            Some(income_basis_label)
+        }
     };
-    bind_percentage_basis_visibility(
-        &monthly_budget,
-        &yearly_budget,
-        &income_basis_label,
-        &income_basis,
-    );
+    if let Some(income_basis_label) = &income_basis_label {
+        bind_percentage_basis_visibility(
+            &monthly_budget,
+            &yearly_budget,
+            income_basis_label,
+            &income_basis,
+        );
+    }
     attach_details_grid(&card, &grid);
 
     let update_summary: Rc<dyn Fn()> = {

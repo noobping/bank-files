@@ -1,5 +1,7 @@
 use super::budget_bulk::{budget_values_for_period, BudgetValuePeriod, BudgetValueUpdate};
-use super::budget_move::{budget_move_changes_direction, BudgetMoveTarget};
+use super::budget_move::{
+    budget_move_changes_direction, budget_move_code_is_eligible, BudgetMoveTarget,
+};
 
 #[test]
 fn budget_values_convert_monthly_fixed_values_to_yearly() {
@@ -64,4 +66,17 @@ fn simple_budget_move_detects_direction_changes() {
 
     assert!(!budget_move_changes_direction(&options, "FOOD", "OTHER"));
     assert!(budget_move_changes_direction(&options, "FOOD", "SALARY"));
+}
+
+#[test]
+fn budget_move_keeps_planned_income_available() {
+    assert!(budget_move_code_is_eligible("INC", &[]));
+    assert!(!budget_move_code_is_eligible(
+        "INC",
+        &[BudgetMoveTarget {
+            code: "inc".to_string(),
+            category: "Income".to_string(),
+            direction: "income".to_string(),
+        }]
+    ));
 }

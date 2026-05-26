@@ -5,6 +5,7 @@ mod edit;
 mod forms;
 mod page;
 mod period;
+mod special;
 
 pub(in crate::app) use add::budget_add_action;
 pub(in crate::app) use edit::{
@@ -17,3 +18,4 @@ pub(in crate::app) use page::{more_budgets_row, more_categories_row, render_budg
 pub(in crate::app) use period::{
     budget_period_row, selected_budget_month, selected_year, totals_for_month, year_selector_row,
 };
+pub(in crate::app) use special::{budget_is_special_neutral, budget_special_controls_are_hidden};

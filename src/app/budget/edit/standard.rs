@@ -52,6 +52,9 @@ pub(in crate::app) fn show_budget_edit_dialog(
     }
 
     let advanced_features = ui_handles.advanced_features.get();
+    let is_special_neutral_budget = budget_is_special_neutral(&initial.code);
+    let hide_special_controls =
+        budget_special_controls_are_hidden(advanced_features, is_special_neutral_budget);
     let dialog_title = budget_dialog_title(creating_budget, advanced_features);
     let header = ui::cancelable_dialog_header(
         dialog_title,
@@ -107,7 +110,10 @@ pub(in crate::app) fn show_budget_edit_dialog(
         &[("real", "Real income"), ("planned", "Planned income")],
         ui::budget_income_basis_id(&initial.income_basis),
     );
-    if !budget_direction_editable(advanced_features, can_delete_budget) {
+    if is_special_neutral_budget {
+        direction.set_sensitive(false);
+        income_basis.set_sensitive(false);
+    } else if !budget_direction_editable(advanced_features, can_delete_budget) {
         direction.set_sensitive(false);
     }
     let notes = ui::entry(&initial.notes, "Note");
@@ -115,16 +121,26 @@ pub(in crate::app) fn show_budget_edit_dialog(
     ui::add_labeled(&grid, first_row, "Category", &category);
     ui::add_labeled(&grid, first_row + 1, "Monthly budget", &monthly_budget);
     ui::add_labeled(&grid, first_row + 2, "Yearly budget", &yearly_budget);
-    ui::add_labeled(&grid, first_row + 3, "Direction", &direction);
-    let income_basis_label =
-        ui::add_labeled(&grid, first_row + 4, "Percentage basis", &income_basis);
-    ui::add_labeled(&grid, first_row + 5, "Note", &notes);
-    bind_percentage_basis_visibility(
-        &monthly_budget,
-        &yearly_budget,
-        &income_basis_label,
-        &income_basis,
-    );
+    let income_basis_label = if hide_special_controls {
+        direction.set_visible(false);
+        income_basis.set_visible(false);
+        ui::add_labeled(&grid, first_row + 3, "Note", &notes);
+        None
+    } else {
+        ui::add_labeled(&grid, first_row + 3, "Direction", &direction);
+        let income_basis_label =
+            ui::add_labeled(&grid, first_row + 4, "Percentage basis", &income_basis);
+        ui::add_labeled(&grid, first_row + 5, "Note", &notes);
+        Some(income_basis_label)
+    };
+    if let Some(income_basis_label) = &income_basis_label {
+        bind_percentage_basis_visibility(
+            &monthly_budget,
+            &yearly_budget,
+            income_basis_label,
+            &income_basis,
+        );
+    }
     page.append(&grid);
 
     let status = ui::wrapped_label(&tr("Changes are saved to your budget configuration."));
@@ -227,42 +243,6 @@ pub(in crate::app) fn show_budget_edit_dialog(
     }
 
     dialog.present(Some(&ui_handles.window));
-}
-
-struct BudgetCodeSaveRequest<'a> {
-    creating_budget: bool,
-    advanced_features: bool,
-    configured_code: &'a str,
-    category: &'a str,
-    direction: &'a str,
-    code_input: Option<&'a gtk::ComboBoxText>,
-    state: &'a Rc<RefCell<AppData>>,
-}
-
-fn budget_code_for_save(request: BudgetCodeSaveRequest<'_>) -> Option<String> {
-    if !request.creating_budget {
-        return Some(request.configured_code.to_string());
-    }
-
-    if request.advanced_features {
-        return request
-            .code_input
-            .map(ui::combo_text)
-            .filter(|code| !code.trim().is_empty());
-    }
-
-    let existing_codes = request
-        .state
-        .borrow()
-        .budgets
-        .iter()
-        .map(|budget| budget.code.clone())
-        .collect::<Vec<_>>();
-    Some(transfer_budget::code_for_new_budget(
-        request.category,
-        request.direction,
-        &existing_codes,
-    ))
 }
 
 fn budget_dialog_title(creating_budget: bool, advanced_features: bool) -> &'static str {
