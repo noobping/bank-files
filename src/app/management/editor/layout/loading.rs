@@ -36,6 +36,20 @@ fn budget_forms_queue(budgets: Vec<EditableBudget>) -> std::collections::VecDequ
     std::collections::VecDeque::from(budgets)
 }
 
+fn alias_forms_queue(mut aliases: Vec<EditableAlias>) -> std::collections::VecDeque<EditableAlias> {
+    aliases.sort_by(|left, right| {
+        alias_sort_text(left)
+            .cmp(&alias_sort_text(right))
+            .then_with(|| left.canonical.cmp(&right.canonical))
+            .then_with(|| left.alias.cmp(&right.alias))
+    });
+    std::collections::VecDeque::from(aliases)
+}
+
+fn alias_sort_text(alias: &EditableAlias) -> String {
+    crate::util::normalize_key(&alias.alias)
+}
+
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub(super) enum ManagementFormsRenderStage {
     Rules,
@@ -73,7 +87,7 @@ fn load_management_forms_data() -> ManagementLoadedForms {
             .map(budget_forms_queue)
             .map_err(|err| format!("{err:#}")),
         aliases: data::load_editable_aliases()
-            .map(std::collections::VecDeque::from)
+            .map(alias_forms_queue)
             .map_err(|err| format!("{err:#}")),
     }
 }
@@ -108,5 +122,27 @@ mod tests {
             .collect::<Vec<_>>();
 
         assert_eq!(codes, vec!["FOOD", "INC", "OTHER"]);
+    }
+
+    fn alias(canonical: &str, alias: &str) -> EditableAlias {
+        EditableAlias {
+            canonical: canonical.to_string(),
+            alias: alias.to_string(),
+        }
+    }
+
+    #[test]
+    fn alias_forms_queue_sorts_by_bank_column_name() {
+        let queue = alias_forms_queue(vec![
+            alias("amount", "Bedrag"),
+            alias("date", "Datum"),
+            alias("description", "af bij"),
+        ]);
+        let aliases = queue
+            .iter()
+            .map(|alias| alias.alias.as_str())
+            .collect::<Vec<_>>();
+
+        assert_eq!(aliases, vec!["af bij", "Bedrag", "Datum"]);
     }
 }
