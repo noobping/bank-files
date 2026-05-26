@@ -5,6 +5,7 @@ use rust_decimal::Decimal;
 use std::os::unix::fs::PermissionsExt;
 
 mod config_backups;
+mod config_defaults;
 mod config_files;
 mod rules;
 
