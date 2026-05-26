@@ -105,17 +105,25 @@ fn main_menu_counts(ui_handles: &UiHandles) -> MainMenuCounts {
 }
 
 fn fake_transactions_menu_label(count: usize) -> String {
-    trf(
-        "Fake transactions ({count})",
-        &[("count", count.to_string())],
-    )
+    if count == 0 {
+        tr("Fake transactions")
+    } else {
+        trf(
+            "Fake transactions ({count})",
+            &[("count", count.to_string())],
+        )
+    }
 }
 
 fn operation_queue_menu_label(count: usize) -> String {
-    trf(
-        "Processing queue ({count})",
-        &[("count", count.to_string())],
-    )
+    if count == 0 {
+        tr("Processing queue")
+    } else {
+        trf(
+            "Processing queue ({count})",
+            &[("count", count.to_string())],
+        )
+    }
 }
 
 pub(in crate::app) fn refresh_menu(ui_handles: &UiHandles, data: &AppData) {
@@ -203,6 +211,22 @@ mod tests {
         let fake_label = trf("Fake transactions ({count})", &[("count", "3".to_string())]);
         let queue_label = trf("Processing queue ({count})", &[("count", "2".to_string())]);
 
+        assert_eq!(menu_label(&menu, 2).as_deref(), Some(fake_label.as_str()));
+        assert_eq!(menu_label(&menu, 3).as_deref(), Some(queue_label.as_str()));
+    }
+
+    #[test]
+    fn main_menu_labels_hide_zero_counts() {
+        let menu = build_menu_model(
+            &AppData::default(),
+            false,
+            &data::StorageCapabilities::default(),
+            &Preferences::default(),
+            MainMenuCounts::default(),
+        );
+
+        let fake_label = tr("Fake transactions");
+        let queue_label = tr("Processing queue");
         assert_eq!(menu_label(&menu, 2).as_deref(), Some(fake_label.as_str()));
         assert_eq!(menu_label(&menu, 3).as_deref(), Some(queue_label.as_str()));
     }
