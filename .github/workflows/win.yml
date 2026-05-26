@@ -155,38 +155,88 @@ jobs:
       - name: Filter bundled DLLs
         shell: pwsh
         run: |
-          $exe = Join-Path $env:GITHUB_WORKSPACE "bundle\$env:BIN_NAME.exe"
+          $bundleDir = Join-Path $env:GITHUB_WORKSPACE 'bundle'
+          $exe = Join-Path $bundleDir "$env:BIN_NAME.exe"
           $msys2Root = '${{ steps.msys2.outputs.msys2-location }}'
-          $ntldd = Join-Path $msys2Root 'mingw64\bin\ntldd.exe'
+          $mingwBin = Join-Path $msys2Root 'mingw64\bin'
+          $ntldd = Join-Path $mingwBin 'ntldd.exe'
           if (-not (Test-Path $ntldd)) {
             Write-Host "ntldd not present; keeping full DLL bundle."
             exit 0
           }
 
+          $needed = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
+          function Add-NeededDllName([string]$name) {
+            if (-not [string]::IsNullOrWhiteSpace($name)) {
+              $null = $needed.Add((Split-Path $name.Trim() -Leaf))
+            }
+          }
+
           function Get-NeededDllNames([string]$binaryPath) {
             $raw = & $ntldd -R $binaryPath 2>$null
-            $raw |
-              ForEach-Object { $_.Trim() } |
-              Where-Object { $_ -match '^[A-Za-z]:\\' -and $_.ToLower().EndsWith('.dll') } |
-              ForEach-Object { Split-Path $_ -Leaf }
-          }
-
-          $needed = New-Object 'System.Collections.Generic.HashSet[string]' ([System.StringComparer]::OrdinalIgnoreCase)
-          foreach ($name in (Get-NeededDllNames $exe)) {
-            $null = $needed.Add($name)
-          }
-
-          $loaderDir = Join-Path $env:GITHUB_WORKSPACE 'bundle\lib\gdk-pixbuf-2.0\2.10.0\loaders'
-          if (Test-Path $loaderDir) {
-            Get-ChildItem $loaderDir -Filter '*.dll' | ForEach-Object {
-              foreach ($name in (Get-NeededDllNames $_.FullName)) {
-                $null = $needed.Add($name)
+            foreach ($line in $raw) {
+              foreach ($match in [regex]::Matches($line, '(?i)([A-Za-z0-9_.+-]+\.dll)')) {
+                $match.Groups[1].Value
               }
             }
           }
 
-          Get-ChildItem bundle -Filter '*.dll' | Where-Object { -not $needed.Contains($_.Name) } |
+          function Add-BinaryDependencies([string]$binaryPath) {
+            foreach ($name in (Get-NeededDllNames $binaryPath)) {
+              Add-NeededDllName $name
+            }
+          }
+
+          Add-BinaryDependencies $exe
+
+          $requiredRuntimeDlls = @(
+            'libadwaita-1-0.dll',
+            'libgtk-4-1.dll',
+            'libgio-2.0-0.dll',
+            'libglib-2.0-0.dll',
+            'libgobject-2.0-0.dll',
+            'libgdk_pixbuf-2.0-0.dll',
+            'libpango-1.0-0.dll',
+            'libcairo-2.dll',
+            'libgraphene-1.0-0.dll'
+          )
+          foreach ($name in $requiredRuntimeDlls) {
+            $runtimeDll = Join-Path $bundleDir $name
+            if (-not (Test-Path $runtimeDll)) {
+              throw "Required Windows runtime DLL was not bundled: $name"
+            }
+            Add-NeededDllName $name
+            Add-BinaryDependencies $runtimeDll
+          }
+
+          $loaderDir = Join-Path $bundleDir 'lib\gdk-pixbuf-2.0\2.10.0\loaders'
+          if (Test-Path $loaderDir) {
+            Get-ChildItem $loaderDir -Filter '*.dll' | ForEach-Object {
+              Add-BinaryDependencies $_.FullName
+            }
+          }
+
+          Get-ChildItem $bundleDir -Filter '*.dll' | Where-Object { -not $needed.Contains($_.Name) } |
             Remove-Item -Force
+
+          foreach ($name in $requiredRuntimeDlls) {
+            if (-not (Test-Path (Join-Path $bundleDir $name))) {
+              throw "Required Windows runtime DLL was removed from the bundle: $name"
+            }
+          }
+
+          $binariesToVerify = @($exe)
+          if (Test-Path $loaderDir) {
+            $binariesToVerify += @(Get-ChildItem $loaderDir -Filter '*.dll' | Select-Object -ExpandProperty FullName)
+          }
+          $missing = @()
+          foreach ($binary in $binariesToVerify) {
+            $missing += @(& $ntldd -R $binary 2>$null | Where-Object { $_ -match 'not found' })
+          }
+          if ($missing.Count -gt 0) {
+            $missing | ForEach-Object { Write-Host $_ }
+            throw 'Windows bundle has unresolved runtime DLL dependencies.'
+          }
 
       - name: Install WiX Toolset
         run: choco install wixtoolset --no-progress -y
