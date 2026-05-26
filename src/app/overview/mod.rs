@@ -18,7 +18,7 @@ pub(in crate::app) fn render_overview(
             )
         })
         .unwrap_or_else(|| {
-            "Latest month, yearly comparison, trend, and budget room based on your imported CSV files."
+            "Latest month, yearly comparison, trend, and budget room based on your imported bank files."
                 .to_string()
         });
     append_page_header(
@@ -42,7 +42,7 @@ pub(in crate::app) fn render_overview(
             .icon_name("document-open-symbolic")
             .title(tr("No transactions yet"))
             .description(tr(
-                "Choose CSV files or drop bank files onto this window. Your data stays local.",
+                "Choose bank files or drop them onto this window. Your data stays local.",
             ))
             .build();
         ui_handles.overview.append(&empty);

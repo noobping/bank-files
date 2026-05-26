@@ -81,7 +81,7 @@ pub(super) fn update_header_navigation_button(ui: &UiHandles) {
             ui.import_button.set_visible(true);
             ui.import_button.set_sensitive(ui.loading_count.get() == 0);
             ui.import_button
-                .set_tooltip_text(Some(&tr("Open CSV files")));
+                .set_tooltip_text(Some(&tr("Open bank files")));
         }
         ActionAvailability::Hidden => {
             ui.import_button.set_visible(false);

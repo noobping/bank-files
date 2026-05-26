@@ -7,7 +7,7 @@ pub fn copy_files_to_app_storage(files: &[PathBuf]) -> Result<CsvCopyResult> {
     for file in files {
         let source = adw::gtk::gio::File::for_path(file);
         match copy_gio_file_to_app_storage(&source, &dirs) {
-            Ok(CsvCopyTarget::Transactions) => outcome.transaction_csvs += 1,
+            Ok(CsvCopyTarget::Transactions(count)) => outcome.transaction_csvs += count,
             Ok(CsvCopyTarget::Config) => outcome.config_csvs += 1,
             Ok(CsvCopyTarget::Skipped) => outcome.skipped += 1,
             Err(err) => {
@@ -25,7 +25,7 @@ pub fn copy_uris_to_app_storage(uris: &[String]) -> Result<CsvCopyResult> {
     for uri in uris {
         let source = adw::gtk::gio::File::for_uri(uri);
         match copy_gio_file_to_app_storage(&source, &dirs) {
-            Ok(CsvCopyTarget::Transactions) => outcome.transaction_csvs += 1,
+            Ok(CsvCopyTarget::Transactions(count)) => outcome.transaction_csvs += count,
             Ok(CsvCopyTarget::Config) => outcome.config_csvs += 1,
             Ok(CsvCopyTarget::Skipped) => outcome.skipped += 1,
             Err(err) => return Err(err).with_context(|| format!("Could not import {uri}")),
@@ -49,7 +49,7 @@ fn prepare_import_storage() -> Result<AppDirs> {
 
 #[derive(Debug, PartialEq, Eq)]
 pub(in crate::data) enum CsvCopyTarget {
-    Transactions,
+    Transactions(usize),
     Config,
     Skipped,
 }
@@ -65,11 +65,11 @@ pub(in crate::data) fn copy_gio_file_to_app_storage(
     let Some(name) = source.basename() else {
         return Ok(CsvCopyTarget::Skipped);
     };
-    if !is_csv(&name) {
+    if !is_transaction_import_file(&name) {
         return Ok(CsvCopyTarget::Skipped);
     }
 
-    let temp = unique_temp_csv_target(dirs, &name);
+    let temp = unique_temp_import_target(dirs, &name);
     let destination = adw::gtk::gio::File::for_path(&temp);
     source
         .copy(
@@ -79,6 +79,16 @@ pub(in crate::data) fn copy_gio_file_to_app_storage(
             None,
         )
         .with_context(|| format!("Could not copy {} to {}", source.uri(), temp.display()))?;
+
+    if is_spreadsheet(&name) {
+        let converted = convert_spreadsheet_to_csv_files(&temp, &dirs.inbox)?;
+        let _ = fs::remove_file(temp);
+        return if converted.is_empty() {
+            Ok(CsvCopyTarget::Skipped)
+        } else {
+            Ok(CsvCopyTarget::Transactions(converted.len()))
+        };
+    }
 
     let target = match config_csv_name(&name).or_else(|| detect_config_csv_file(&temp)) {
         Some(config_name) => {
@@ -98,7 +108,7 @@ pub(in crate::data) fn copy_gio_file_to_app_storage(
                 format!("Could not move CSV to app storage: {}", target.display())
             })?;
             mark_transaction_csv_readonly(&target)?;
-            return Ok(CsvCopyTarget::Transactions);
+            return Ok(CsvCopyTarget::Transactions(1));
         }
     };
 
@@ -106,14 +116,20 @@ pub(in crate::data) fn copy_gio_file_to_app_storage(
     Ok(target)
 }
 
-pub(in crate::data) fn unique_temp_csv_target(dirs: &AppDirs, name: &Path) -> PathBuf {
+pub(in crate::data) fn unique_temp_import_target(dirs: &AppDirs, name: &Path) -> PathBuf {
     let stem = name
         .file_stem()
         .map(|s| s.to_string_lossy().to_string())
         .unwrap_or_else(|| "file".to_string());
+    let ext = name
+        .extension()
+        .map(|s| s.to_string_lossy().to_string())
+        .unwrap_or_else(|| "tmp".to_string());
     let ts = chrono::Local::now().format("%Y%m%d-%H%M%S%.f");
-    dirs.data
-        .join(format!(".incoming-{stem}-{}-{ts}.tmp", std::process::id()))
+    dirs.data.join(format!(
+        ".incoming-{stem}-{}-{ts}.{ext}",
+        std::process::id()
+    ))
 }
 
 pub(in crate::data) fn unique_inbox_target(inbox: &Path, name: &Path) -> PathBuf {

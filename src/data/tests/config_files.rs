@@ -191,7 +191,7 @@ fn copy_gio_files_routes_transactions_and_config_csvs() {
     assert_eq!(
         copy_gio_file_to_app_storage(&adw::gtk::gio::File::for_path(&transaction), &dirs)
             .expect("copy transaction"),
-        CsvCopyTarget::Transactions
+        CsvCopyTarget::Transactions(1)
     );
     assert_eq!(
         copy_gio_file_to_app_storage(&adw::gtk::gio::File::for_path(&budget), &dirs)

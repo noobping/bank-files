@@ -27,8 +27,8 @@ msgstr "Diagnose"
 msgid "Back"
 msgstr "Zurück"
 
-msgid "Open CSV files"
-msgstr "CSV-Dateien öffnen"
+msgid "Open bank files"
+msgstr "Bankdateien öffnen"
 
 msgid "Search this page"
 msgstr "Diese Seite durchsuchen"
@@ -57,8 +57,8 @@ msgstr "Keine Nachrichten gefunden."
 msgid "No messages yet."
 msgstr "Noch keine Nachrichten."
 
-msgid "Choose CSV Files"
-msgstr "CSV-Dateien auswählen"
+msgid "Choose Bank Files"
+msgstr "Bankdateien auswählen"
 
 msgid "Search"
 msgstr "Suchen"
@@ -117,11 +117,11 @@ msgstr "Öffne Bankdateien, füge Beispieltransaktionen hinzu und sieh, was sich
 msgid "Opening the file portal for CSV import..."
 msgstr "Dateiportal für den CSV-Import wird geöffnet..."
 
-msgid "Choose one or more CSV files"
-msgstr "Eine oder mehrere CSV-Dateien auswählen"
+msgid "Choose one or more bank files"
+msgstr "Eine oder mehrere Bankdateien auswählen"
 
-msgid "CSV import canceled."
-msgstr "CSV-Import abgebrochen."
+msgid "Bank file opening canceled."
+msgstr "Öffnen der Bankdatei abgebrochen."
 
 msgid "Importing CSV files..."
 msgstr "CSV-Dateien werden importiert..."
@@ -310,14 +310,14 @@ msgstr "CSV-Export gespeichert"
 msgid "Export saved: {path}"
 msgstr "Export gespeichert: {path}"
 
-msgid "Latest month, yearly comparison, trend, and budget room based on your imported CSV files."
-msgstr "Letzter Monat, Jahresvergleich, Trend und Budgetspielraum basierend auf deinen importierten CSV-Dateien."
+msgid "Latest month, yearly comparison, trend, and budget room based on your imported bank files."
+msgstr "Letzter Monat, Jahresvergleich, Trend und Budgetspielraum basierend auf deinen importierten Bankdateien."
 
 msgid "No transactions yet"
 msgstr "Noch keine Transaktionen"
 
-msgid "Choose CSV files or drop bank files onto this window. Your data stays local."
-msgstr "Wähle CSV-Dateien aus oder ziehe Bankdateien in dieses Fenster. Deine Daten bleiben lokal."
+msgid "Choose bank files or drop them onto this window. Your data stays local."
+msgstr "Wähle Bankdateien aus oder ziehe sie in dieses Fenster. Deine Daten bleiben lokal."
 
 msgid "Imported after duplicate filtering"
 msgstr "Nach Duplikatfilterung importiert"
@@ -418,8 +418,8 @@ msgstr "Importiere zuerst CSV-Dateien. Danach erscheinen Budgets und Kategorien 
 msgid "No period found"
 msgstr "Kein Zeitraum gefunden"
 
-msgid "Import CSV files to choose a month and year."
-msgstr "Importiere CSV-Dateien, um Monat und Jahr auszuwählen."
+msgid "Import bank files to choose a month and year."
+msgstr "Importiere Bankdateien, um Monat und Jahr auszuwählen."
 
 msgid "Budget Room"
 msgstr "Budgetspielraum"
@@ -445,8 +445,8 @@ msgstr "Keine Budgets oder Kategorien passen zu diesem Suchbegriff."
 msgid "Recent transactions as a scannable list. Copy this page for a text export."
 msgstr "Aktuelle Transaktionen als gut scanbare Liste. Kopiere diese Seite für einen Textexport."
 
-msgid "Import CSV files to see recent transactions here."
-msgstr "Importiere CSV-Dateien, um hier aktuelle Transaktionen zu sehen."
+msgid "Import bank files to see recent transactions here."
+msgstr "Importiere Bankdateien, um hier aktuelle Transaktionen zu sehen."
 
 msgid "No transactions found"
 msgstr "Keine Transaktionen gefunden"
@@ -475,8 +475,8 @@ msgstr "Diese Einstellungen steuern, wie CSV-Dateien eingelesen werden."
 msgid "No CSV files opened"
 msgstr "Keine CSV-Dateien geöffnet"
 
-msgid "Choose CSV files or drop bank files onto the window to see import diagnostics."
-msgstr "Wähle CSV-Dateien aus oder ziehe Bankdateien in das Fenster, um Importdiagnosen zu sehen."
+msgid "Choose bank files or drop them onto the window to see import diagnostics."
+msgstr "Wähle Bankdateien aus oder ziehe sie in das Fenster, um Importdiagnosen zu sehen."
 
 msgid "Warnings"
 msgstr "Warnungen"
@@ -787,8 +787,8 @@ msgstr "Keine CSV-Dateien gefunden. Nur Dateien mit der Erweiterung .csv werden 
 msgid "No files chosen."
 msgstr "Keine Dateien ausgewählt."
 
-msgid "{transactions} transaction CSV file(s) and {configs} configuration CSV file(s) were opened and applied."
-msgstr "{transactions} Transaktions-CSV-Datei(en) und {configs} Konfigurations-CSV-Datei(en) wurden geöffnet und angewendet."
+msgid "{transactions} transaction file(s) and {configs} configuration CSV file(s) were opened and applied."
+msgstr "{transactions} Transaktionsdatei(en) und {configs} Konfigurations-CSV-Datei(en) wurden geöffnet und angewendet."
 
 msgid "{count} transaction CSV file(s) were opened and imported."
 msgstr "{count} Transaktions-CSV-Datei(en) wurden geöffnet und importiert."
@@ -796,11 +796,11 @@ msgstr "{count} Transaktions-CSV-Datei(en) wurden geöffnet und importiert."
 msgid "{count} configuration CSV file(s) were opened and applied."
 msgstr "{count} Konfigurations-CSV-Datei(en) wurden geöffnet und angewendet."
 
-msgid "No CSV files were opened."
-msgstr "Es wurden keine CSV-Dateien geöffnet."
+msgid "No supported bank files were opened."
+msgstr "Es wurden keine unterstützten Bankdateien geöffnet."
 
-msgid " {count} file(s) skipped because they were not CSV files."
-msgstr " {count} Datei(en) übersprungen, weil sie keine CSV-Dateien waren."
+msgid " {count} file(s) skipped because they were not supported bank files."
+msgstr " {count} Datei(en) übersprungen, weil sie keine unterstützten Bankdateien waren."
 
 msgid "Import canceled: the background task stopped unexpectedly."
 msgstr "Import abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
@@ -811,14 +811,14 @@ msgstr "Übersicht aktualisiert."
 msgid "Current data reloaded."
 msgstr "Aktuelle Daten wurden neu geladen."
 
-msgid "All CSV data reloaded."
-msgstr "Alle CSV-Daten wurden neu geladen."
+msgid "All bank data reloaded."
+msgstr "Alle Bankdaten wurden neu geladen."
 
 msgid "Quick reloading current data..."
 msgstr "Aktuelle Daten werden schnell neu geladen..."
 
-msgid "Reloading all CSV data..."
-msgstr "Alle CSV-Daten werden neu geladen..."
+msgid "Reloading all bank data..."
+msgstr "Alle Bankdaten werden neu geladen..."
 
 msgid "Updated"
 msgstr "Aktualisiert"
@@ -967,8 +967,8 @@ msgstr "Ablage enthält keine lesbaren Dateien: {error}"
 msgid "Could not read drop: {error}"
 msgstr "Ablage konnte nicht gelesen werden: {error}"
 
-msgid "{count} CSV file(s) copied, but reload failed: {error}"
-msgstr "{count} CSV-Datei(en) kopiert, aber Neuladen fehlgeschlagen: {error}"
+msgid "{count} bank file(s) copied, but reload failed: {error}"
+msgstr "{count} Bankdatei(en) kopiert, aber Neuladen fehlgeschlagen: {error}"
 
 msgid "{name} was unloaded. The original CSV remains where you chose it."
 msgstr "{name} wurde entladen. Die ursprüngliche CSV bleibt dort, wo du sie ausgewählt hast."
@@ -1168,8 +1168,8 @@ msgstr "{amount} über Jahresbudget"
 msgid "No period"
 msgstr "Kein Zeitraum"
 
-msgid "Choose CSV files or drop bank files onto the window to print monthly and yearly overviews."
-msgstr "Wähle CSV-Dateien aus oder ziehe Bankdateien in das Fenster, um Monats- und Jahresübersichten zu drucken."
+msgid "Choose bank files or drop them onto the window to print monthly and yearly overviews."
+msgstr "Wähle Bankdateien aus oder ziehe sie in das Fenster, um Monats- und Jahresübersichten zu drucken."
 
 msgid "Monthly trend, yearly comparison, and budget room."
 msgstr "Monatstrend, Jahresvergleich und Budgetspielraum."
@@ -1309,8 +1309,8 @@ msgstr "Haben"
 msgid "Budget codes"
 msgstr "Budgetcodes"
 
-msgid "Import CSV files to print budgets and categories."
-msgstr "Importiere CSV-Dateien, um Budgets und Kategorien zu drucken."
+msgid "Import bank files to print budgets and categories."
+msgstr "Importiere Bankdateien, um Budgets und Kategorien zu drucken."
 
 msgid "Map CSV Field"
 msgstr "CSV-Feld zuordnen"
@@ -1513,8 +1513,8 @@ msgstr "Kategorie-Transaktionen"
 msgid "Transactions for this category and year."
 msgstr "Transaktionen fur diese Kategorie und dieses Jahr."
 
-msgid "No CSV files opened. Choose CSV files or drop bank files onto the window."
-msgstr "Keine CSV-Dateien geöffnet. Wähle CSV-Dateien aus oder ziehe Bankdateien in das Fenster."
+msgid "No bank files opened. Choose bank files or drop them onto the window."
+msgstr "Keine Bankdateien geöffnet. Wähle Bankdateien aus oder ziehe sie in das Fenster."
 
 msgid "{count} stored CSV file(s): {files}"
 msgstr "{count} gespeicherte CSV-Datei(en): {files}"
@@ -1723,11 +1723,11 @@ msgstr "Diese Seite wird vorbereitet. Große CSV-Dateien können einen Moment da
 msgid "Loading data..."
 msgstr "Daten werden geladen..."
 
-msgid "Loading saved CSV files..."
-msgstr "Gespeicherte CSV-Dateien werden geladen..."
+msgid "Loading saved bank files..."
+msgstr "Gespeicherte Bankdateien werden geladen..."
 
-msgid "Saved CSV files loaded."
-msgstr "Gespeicherte CSV-Dateien geladen."
+msgid "Saved bank files loaded."
+msgstr "Gespeicherte Bankdateien geladen."
 
 msgid "Saving rule..."
 msgstr "Regel wird gespeichert..."
@@ -1997,8 +1997,8 @@ msgstr "Waehle Monat und Jahr fuer Budgets und Ausgaben."
 msgid "Choose a month and year to see budget room and spending for that period."
 msgstr "Waehle Monat und Jahr, um Budgetspielraum und Ausgaben fuer diesen Zeitraum zu sehen."
 
-msgid "Import CSV files first. Then budgets and spending appear here as graphical rows."
-msgstr "Importiere zuerst CSV-Dateien. Danach erscheinen Budgets und Ausgaben hier als grafische Zeilen."
+msgid "Import bank files first. Then budgets and spending appear here as graphical rows."
+msgstr "Importiere zuerst Bankdateien. Danach erscheinen Budgets und Ausgaben hier als grafische Zeilen."
 
 msgid "Monthly Spending"
 msgstr "Monatsausgaben"
@@ -2172,8 +2172,8 @@ msgstr "{count} Transaktionen in {year}."
 msgid "No transactions in this year"
 msgstr "Keine Transaktionen in diesem Jahr"
 
-msgid "Choose another year or import CSV files for this period."
-msgstr "Wähle ein anderes Jahr oder importiere CSV-Dateien für diesen Zeitraum."
+msgid "Choose another year or import bank files for this period."
+msgstr "Wähle ein anderes Jahr oder importiere Bankdateien für diesen Zeitraum."
 
 msgid "Configuration"
 msgstr "Konfiguration"
@@ -2937,8 +2937,8 @@ msgstr "Budgets konnten nicht gelesen werden: {error}"
 
 # Read-only storage and managed preferences
 
-msgid "CSV storage is read-only."
-msgstr "CSV-Speicher ist schreibgeschützt."
+msgid "Bank file storage is read-only."
+msgstr "Bankdateispeicher ist schreibgeschützt."
 
 msgid "Configuration storage is read-only."
 msgstr "Konfigurationsspeicher ist schreibgeschützt."
@@ -3010,65 +3010,65 @@ msgstr "Nur Daten"
 msgid "Data and analytics"
 msgstr "Daten und Analyse"
 
-msgid "Open CSV Files"
-msgstr "CSV-Dateien öffnen"
+msgid "Open Bank Files"
+msgstr "Bankdateien öffnen"
 
-msgid "Choose whether opened CSV data is forgotten after this session, remembered as data, or remembered with reusable analysis cache."
-msgstr "Wählen Sie, ob geöffnete CSV-Daten nach dieser Sitzung vergessen, als Daten gemerkt oder mit wiederverwendbarem Analysecache gemerkt werden."
+msgid "Choose whether opened bank files are forgotten after this session, remembered as data, or remembered with reusable analysis cache."
+msgstr "Wähle, ob geöffnete Bankdateien nach dieser Sitzung vergessen, als Daten gemerkt oder mit wiederverwendbarem Analysecache gemerkt werden."
 
-msgid "Forget opens CSVs live for this session. Data only remembers copied CSVs. Data and analytics also keeps a reusable processed cache."
-msgstr "Vergessen öffnet CSV-Dateien nur live für diese Sitzung. Nur Daten merkt kopierte CSV-Dateien. Daten und Analyse speichert zusätzlich einen wiederverwendbaren verarbeiteten Cache."
+msgid "Forget opens bank files live for this session. Data only remembers copied bank files. Data and analytics also keeps a reusable processed cache."
+msgstr "Vergessen öffnet Bankdateien nur live für diese Sitzung. Nur Daten merkt kopierte Bankdateien. Daten und Analyse speichert zusätzlich einen wiederverwendbaren verarbeiteten Cache."
 
-msgid "Open CSV files live for this session only."
-msgstr "CSV-Dateien nur für diese Sitzung live öffnen."
+msgid "Open bank files live for this session only."
+msgstr "Bankdateien nur für diese Sitzung live öffnen."
 
-msgid "Remember copied CSV files and configuration."
-msgstr "Kopierte CSV-Dateien und Konfiguration merken."
+msgid "Remember copied bank files and configuration."
+msgstr "Kopierte Bankdateien und Konfiguration merken."
 
-msgid "Remember copied CSV files and reusable analysis data."
-msgstr "Kopierte CSV-Dateien und wiederverwendbare Analysedaten merken."
+msgid "Remember copied bank files and reusable analysis data."
+msgstr "Kopierte Bankdateien und wiederverwendbare Analysedaten merken."
 
-msgid "Opening the file portal for CSV files..."
-msgstr "Dateiportal für CSV-Dateien wird geöffnet..."
+msgid "Opening the file portal for bank files..."
+msgstr "Dateiportal für Bankdateien wird geöffnet..."
 
-msgid "Opening CSV files..."
-msgstr "CSV-Dateien werden geöffnet..."
+msgid "Opening bank files..."
+msgstr "Bankdateien werden geöffnet..."
 
-msgid "CSV files received. Opening files..."
-msgstr "CSV-Dateien empfangen. Dateien werden geöffnet..."
+msgid "Bank files received. Opening files..."
+msgstr "Bankdateien empfangen. Dateien werden geöffnet..."
 
-msgid "CSV drop received. Opening files..."
-msgstr "CSV-Ablage empfangen. Dateien werden geöffnet..."
+msgid "Dropped bank files. Opening files..."
+msgstr "Bankdateien abgelegt. Dateien werden geöffnet..."
 
-msgid "CSV storage is read-only. Opening local CSV files live for this session."
-msgstr "Der CSV-Speicher ist schreibgeschützt. Lokale CSV-Dateien werden für diese Sitzung live geöffnet."
+msgid "Bank file storage is read-only. Opening local files live for this session."
+msgstr "Der Bankdateispeicher ist schreibgeschützt. Lokale Dateien werden für diese Sitzung live geöffnet."
 
-msgid "No local CSV files found. Live opening needs readable .csv files."
-msgstr "Keine lokalen CSV-Dateien gefunden. Live-Öffnen benötigt lesbare .csv-Dateien."
+msgid "No local bank files found. Live opening needs readable CSV, Excel, or Calc files."
+msgstr "Keine lokalen Bankdateien gefunden. Live-Öffnen benötigt lesbare CSV-, Excel- oder Calc-Dateien."
 
-msgid "{count} live transaction CSV file(s) opened for this session."
-msgstr "{count} Live-Transaktions-CSV-Datei(en) für diese Sitzung geöffnet."
+msgid "{count} live transaction file(s) opened for this session."
+msgstr "{count} Live-Transaktionsdatei(en) für diese Sitzung geöffnet."
 
-msgid " {count} file(s) skipped because they were not local CSV files."
-msgstr " {count} Datei(en) übersprungen, weil sie keine lokalen CSV-Dateien waren."
+msgid " {count} file(s) skipped because they were not local bank files."
+msgstr " {count} Datei(en) übersprungen, weil sie keine lokalen Bankdateien waren."
 
-msgid "{count} transaction CSV file(s) were opened and remembered."
-msgstr "{count} Transaktions-CSV-Datei(en) wurden geöffnet und gemerkt."
+msgid "{count} transaction file(s) were opened and remembered."
+msgstr "{count} Transaktionsdatei(en) wurden geöffnet und gemerkt."
 
-msgid "No CSV files found. Only files with the .csv extension are opened."
-msgstr "Keine CSV-Dateien gefunden. Nur Dateien mit der Endung .csv werden geöffnet."
+msgid "No supported bank files found. Open CSV, Excel, or Calc files."
+msgstr "Keine unterstützten Bankdateien gefunden. Öffne CSV-, Excel- oder Calc-Dateien."
 
-msgid "Open CSV error: {error}"
-msgstr "Fehler beim Öffnen der CSV-Datei: {error}"
+msgid "Open bank file error: {error}"
+msgstr "Fehler beim Öffnen der Bankdatei: {error}"
 
-msgid "Open CSV canceled: the background task stopped unexpectedly."
-msgstr "CSV-Öffnen abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+msgid "Bank file opening canceled: the background task stopped unexpectedly."
+msgstr "Öffnen der Bankdatei abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
 
-msgid "Could not open live CSV files: {error}"
-msgstr "Live-CSV-Dateien konnten nicht geöffnet werden: {error}"
+msgid "Could not open live bank files: {error}"
+msgstr "Live-Bankdateien konnten nicht geöffnet werden: {error}"
 
-msgid "Live CSV opening canceled: the background task stopped unexpectedly."
-msgstr "Live-CSV-Öffnen abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
+msgid "Live bank file opening canceled: the background task stopped unexpectedly."
+msgstr "Live-Öffnen von Bankdateien abgebrochen: Die Hintergrundaufgabe wurde unerwartet beendet."
 
 msgid "Applying Remember preference..."
 msgstr "Merk-Einstellung wird angewendet..."
@@ -3094,17 +3094,17 @@ msgstr " Daten- und Analysecache aktualisiert."
 msgid " Data and analytics cache was skipped: {error}"
 msgstr " Daten- und Analysecache wurde übersprungen: {error}"
 
-msgid "Force reload live CSV"
-msgstr "Live-CSV erzwungen neu laden"
+msgid "Force reload live bank file"
+msgstr "Live-Bankdatei erzwungen neu laden"
 
-msgid "Forget live CSV for this session"
-msgstr "Live-CSV für diese Sitzung vergessen"
+msgid "Forget live bank file for this session"
+msgstr "Live-Bankdatei für diese Sitzung vergessen"
 
-msgid "{name} was reloaded from the live CSV file."
-msgstr "{name} wurde aus der Live-CSV-Datei neu geladen."
+msgid "{name} was reloaded from the live bank file."
+msgstr "{name} wurde aus der Live-Bankdatei neu geladen."
 
-msgid "{name} was forgotten for this session. The CSV file was not changed."
-msgstr "{name} wurde für diese Sitzung vergessen. Die CSV-Datei wurde nicht geändert."
+msgid "{name} was forgotten for this session. The bank file was not changed."
+msgstr "{name} wurde für diese Sitzung vergessen. Die Bankdatei wurde nicht geändert."
 
 msgid "CSV removed from this session. Updating the overview..."
 msgstr "CSV aus dieser Sitzung entfernt. Übersicht wird aktualisiert..."
@@ -3118,8 +3118,8 @@ msgstr "CSV-Entfernung abgebrochen: Die Hintergrundaufgabe wurde unerwartet been
 msgid "{count} open CSV file(s): {files}"
 msgstr "{count} geöffnete CSV-Datei(en): {files}"
 
-msgid "These are remembered app copies or live CSV files for this session. Removing a live CSV only forgets it for this session."
-msgstr "Dies sind gemerkte App-Kopien oder Live-CSV-Dateien für diese Sitzung. Das Entfernen einer Live-CSV vergisst sie nur für diese Sitzung."
+msgid "These are remembered app copies or live bank files for this session. Removing a live file only forgets it for this session."
+msgstr "Dies sind gemerkte App-Kopien oder Live-Bankdateien für diese Sitzung. Das Entfernen einer Live-Datei vergisst sie nur für diese Sitzung."
 
 msgid "Search filters"
 msgstr "Suchfilter"
@@ -3500,3 +3500,6 @@ msgstr "Scheintransaktionen ({count})"
 
 msgid "Processing queue ({count})"
 msgstr "Verarbeitungswarteschlange ({count})"
+
+msgid "Bank files"
+msgstr "Bankdateien"

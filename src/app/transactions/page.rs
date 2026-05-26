@@ -34,13 +34,13 @@ pub(in crate::app) fn render_transactions_page(
             ui_handles.transactions.append(&empty_page(
                 "view-list-symbolic",
                 "No transactions in this year",
-                "Choose another year or import CSV files for this period.",
+                "Choose another year or import bank files for this period.",
             ));
         } else {
             ui_handles.transactions.append(&empty_page(
                 "view-list-symbolic",
                 "No transactions yet",
-                "Import CSV files to see recent transactions here.",
+                "Import bank files to see recent transactions here.",
             ));
         }
         return;

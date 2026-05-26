@@ -50,7 +50,7 @@ pub(in crate::app) fn render_budget_page(
         ui_handles.categories.append(&empty_page(
             "view-list-symbolic",
             "No budget view yet",
-            "Import CSV files first. Then budgets and spending appear here as graphical rows.",
+            "Import bank files first. Then budgets and spending appear here as graphical rows.",
         ));
         return;
     }
@@ -60,7 +60,7 @@ pub(in crate::app) fn render_budget_page(
         ui_handles.categories.append(&empty_page(
             "view-list-symbolic",
             "No period found",
-            "Import CSV files to choose a month and year.",
+            "Import bank files to choose a month and year.",
         ));
         return;
     };

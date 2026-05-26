@@ -14,7 +14,7 @@ fn read_only_load_uses_defaults_without_creating_missing_config() {
         data_writable: false,
         config_readable: true,
         config_writable: false,
-        data_reason: "CSV storage is read-only.".to_string(),
+        data_reason: "Bank file storage is read-only.".to_string(),
         config_reason: "Configuration storage is read-only.".to_string(),
     };
 
@@ -59,7 +59,7 @@ fn forget_mode_loads_live_csv_without_creating_app_storage() {
         data_writable: false,
         config_readable: true,
         config_writable: false,
-        data_reason: "CSV storage is read-only.".to_string(),
+        data_reason: "Bank file storage is read-only.".to_string(),
         config_reason: "Configuration storage is read-only.".to_string(),
     };
     let sources = vec![TransactionSource::live_file(live_csv.clone())];

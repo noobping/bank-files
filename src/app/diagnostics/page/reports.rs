@@ -10,7 +10,7 @@ pub(super) fn append_reports_section(
         ui_handles.debug.append(&empty_page(
             "dialog-information-symbolic",
             "No CSV files opened",
-            "Choose CSV files or drop bank files onto the window to see import diagnostics.",
+            "Choose bank files or drop them onto the window to see import diagnostics.",
         ));
         return false;
     }
@@ -40,7 +40,7 @@ pub(super) fn append_reports_section(
     reload_all_button.set_action_name(Some("app.reload-all"));
     ui_handles.debug.append(&ui::section_title_with_action(
         "CSV files",
-        "These are remembered app copies or live CSV files for this session. Removing a live CSV only forgets it for this session.",
+        "These are remembered app copies or live bank files for this session. Removing a live file only forgets it for this session.",
         &reload_all_button,
     ));
     let files = gtk::Box::new(gtk::Orientation::Vertical, 8);

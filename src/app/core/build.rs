@@ -217,8 +217,8 @@ pub(super) fn build_ui_with_startup_request(
             reload_state_with_status(
                 &state_for_startup,
                 &ui_for_startup,
-                "Loading saved CSV files...",
-                tr("Saved CSV files loaded."),
+                "Loading saved bank files...",
+                tr("Saved bank files loaded."),
                 "Startup error: {error}",
                 Vec::new(),
             );

@@ -29,7 +29,7 @@ fn register_import_action(
             return;
         }
         action.set_enabled(false);
-        show_status(&ui_for_import, "Opening the file portal for CSV files...");
+        show_status(&ui_for_import, "Opening the file portal for bank files...");
 
         let action_for_import = action.clone();
         let state_for_import = Rc::clone(&state_for_import);
@@ -37,14 +37,14 @@ fn register_import_action(
         let window_for_import = window_for_import.clone();
         gtk::glib::MainContext::default().spawn_local(async move {
             let handles = rfd::AsyncFileDialog::new()
-                .set_title(tr("Choose one or more CSV files"))
-                .add_filter("CSV", &["csv"])
+                .set_title(tr("Choose one or more bank files"))
+                .add_filter(tr("Bank files"), crate::data::TRANSACTION_IMPORT_EXTENSIONS)
                 .pick_files()
                 .await;
 
             let Some(handles) = handles.filter(|handles| !handles.is_empty()) else {
                 action_for_import.set_enabled(true);
-                show_status(&ui_for_import, "CSV import canceled.");
+                show_status(&ui_for_import, "Bank file opening canceled.");
                 return;
             };
             let files = handles
@@ -52,7 +52,7 @@ fn register_import_action(
                 .map(|handle| handle.path().to_path_buf())
                 .collect::<Vec<_>>();
 
-            show_status(&ui_for_import, "Opening CSV files...");
+            show_status(&ui_for_import, "Opening bank files...");
             open_paths_in_background(
                 files,
                 Rc::clone(&state_for_import),
@@ -100,8 +100,8 @@ fn register_reload_all_action(
             &state_for_reload_all,
             &ui_for_reload_all,
             TransactionLoadScope::All,
-            "Reloading all CSV data...",
-            tr("All CSV data reloaded."),
+            "Reloading all bank data...",
+            tr("All bank data reloaded."),
             "Reload error: {error}",
             Vec::new(),
         );

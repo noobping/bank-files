@@ -19,6 +19,7 @@ mod defaults;
 mod editable;
 mod export;
 mod maintenance;
+mod spreadsheet;
 mod storage;
 #[cfg(test)]
 mod tests;
@@ -50,6 +51,8 @@ use editable::{
     serialize_editable_aliases, serialize_editable_budgets, serialize_editable_rules,
 };
 use maintenance::{dedupe, ensure_default_files, is_csv};
+use spreadsheet::{convert_spreadsheet_to_csv_files, is_spreadsheet, live_spreadsheet_csv_dir};
+pub(crate) use spreadsheet::{is_transaction_import_file, TRANSACTION_IMPORT_EXTENSIONS};
 use validation::{csv_cell, non_empty, parse_bool_cell, writer_to_string};
 pub(crate) use validation::{form_search_from_pattern, pattern_from_form};
 use validation::{validate_editable_budgets, validate_editable_rules};

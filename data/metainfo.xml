@@ -35,9 +35,9 @@
     <p>Test choices before the money moves. Add temporary fake transactions to see whether a purchase still fits, or whether your salary really solves the problem you are planning for.</p>
     <p xml:lang="nl">Test keuzes voordat het geld beweegt. Voeg tijdelijke neptransacties toe om te zien of een aankoop nog past, of je salaris het probleem echt oplost waarvoor je plant.</p>
     <p xml:lang="de">Teste Entscheidungen, bevor Geld bewegt wird. Füge temporäre Beispieltransaktionen hinzu und sieh, ob ein Kauf noch passt oder dein Gehalt das geplante Problem wirklich löst.</p>
-    <p>Open bank CSV files locally, keep remembered history so older imports are not lost, or disable remembering when you only want a viewer for the current session.</p>
-    <p xml:lang="nl">Open bank-CSV-bestanden lokaal, bewaar geschiedenis zodat oudere imports niet verloren gaan, of schakel onthouden uit wanneer je alleen een viewer voor deze sessie wilt.</p>
-    <p xml:lang="de">Öffne Bank-CSV-Dateien lokal, behalte gespeicherte Historie, damit ältere Importe nicht verloren gehen, oder deaktiviere das Merken für eine reine Ansicht in dieser Sitzung.</p>
+    <p>Open bank CSV, Excel, and Calc files locally, keep remembered history so older imports are not lost, or disable remembering when you only want a viewer for the current session.</p>
+    <p xml:lang="nl">Open bank-CSV-, Excel- en Calc-bestanden lokaal, bewaar geschiedenis zodat oudere imports niet verloren gaan, of schakel onthouden uit wanneer je alleen een viewer voor deze sessie wilt.</p>
+    <p xml:lang="de">Öffne Bank-CSV-, Excel- und Calc-Dateien lokal, behalte gespeicherte Historie, damit ältere Importe nicht verloren gehen, oder deaktiviere das Merken für eine reine Ansicht in dieser Sitzung.</p>
     <ul>
       <li>Preview purchases, salary changes, refunds, transfers, and recurring costs with fake transactions</li>
       <li xml:lang="nl">Verken aankopen, salariswijzigingen, terugbetalingen, overschrijvingen en terugkerende kosten met neptransacties</li>
@@ -120,18 +120,27 @@
     <keyword>finance</keyword>
     <keyword>budget</keyword>
     <keyword>csv</keyword>
+    <keyword>excel</keyword>
+    <keyword>calc</keyword>
+    <keyword>spreadsheet</keyword>
     <keyword>bank</keyword>
     <keyword>transactions</keyword>
     <keyword>transfers</keyword>
     <keyword>refunds</keyword>
     <keyword xml:lang="nl">financien</keyword>
     <keyword xml:lang="nl">budget</keyword>
+    <keyword xml:lang="nl">excel</keyword>
+    <keyword xml:lang="nl">calc</keyword>
+    <keyword xml:lang="nl">spreadsheet</keyword>
     <keyword xml:lang="nl">bank</keyword>
     <keyword xml:lang="nl">transacties</keyword>
     <keyword xml:lang="nl">overschrijvingen</keyword>
     <keyword xml:lang="nl">terugbetalingen</keyword>
     <keyword xml:lang="de">finanzen</keyword>
     <keyword xml:lang="de">budget</keyword>
+    <keyword xml:lang="de">excel</keyword>
+    <keyword xml:lang="de">calc</keyword>
+    <keyword xml:lang="de">tabellenkalkulation</keyword>
     <keyword xml:lang="de">bank</keyword>
     <keyword xml:lang="de">transaktionen</keyword>
     <keyword xml:lang="de">transfers</keyword>

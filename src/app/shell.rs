@@ -33,7 +33,7 @@ pub(in crate::app) fn build_menu_model(
     counts: MainMenuCounts,
 ) -> gtk::gio::Menu {
     let menu = gtk::gio::Menu::new();
-    menu.append(Some(&tr("Open CSV Files")), Some("app.import-csv"));
+    menu.append(Some(&tr("Open Bank Files")), Some("app.import-csv"));
     menu.append(Some(&tr("Search")), Some("app.find"));
     menu.append(
         Some(&fake_transactions_menu_label(counts.fake_transactions)),

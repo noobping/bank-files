@@ -27,8 +27,8 @@ msgstr "Diagnose"
 msgid "Back"
 msgstr "Terug"
 
-msgid "Open CSV files"
-msgstr "CSV-bestanden openen"
+msgid "Open bank files"
+msgstr "Bankbestanden openen"
 
 msgid "Search this page"
 msgstr "Zoeken in deze pagina"
@@ -57,8 +57,8 @@ msgstr "Geen meldingen gevonden."
 msgid "No messages yet."
 msgstr "Nog geen meldingen."
 
-msgid "Choose CSV Files"
-msgstr "CSV’s kiezen"
+msgid "Choose Bank Files"
+msgstr "Bankbestanden kiezen"
 
 msgid "Search"
 msgstr "Zoeken"
@@ -117,11 +117,11 @@ msgstr "Open bankbestanden, voeg neptransacties toe en zie wat er verandert voor
 msgid "Opening the file portal for CSV import..."
 msgstr "Bestandsportal wordt geopend voor CSV-import..."
 
-msgid "Choose one or more CSV files"
-msgstr "Kies een of meer CSV-bestanden"
+msgid "Choose one or more bank files"
+msgstr "Kies een of meer bankbestanden"
 
-msgid "CSV import canceled."
-msgstr "CSV-import geannuleerd."
+msgid "Bank file opening canceled."
+msgstr "Openen van bankbestand geannuleerd."
 
 msgid "Importing CSV files..."
 msgstr "CSV-bestanden worden geïmporteerd..."
@@ -310,14 +310,14 @@ msgstr "CSV-export opgeslagen"
 msgid "Export saved: {path}"
 msgstr "Export opgeslagen: {path}"
 
-msgid "Latest month, yearly comparison, trend, and budget room based on your imported CSV files."
-msgstr "Laatste maand, jaarvergelijking, trend en budgetruimte op basis van je geïmporteerde CSV’s."
+msgid "Latest month, yearly comparison, trend, and budget room based on your imported bank files."
+msgstr "Laatste maand, jaarvergelijking, trend en budgetruimte op basis van je geïmporteerde bankbestanden."
 
 msgid "No transactions yet"
 msgstr "Nog geen transacties"
 
-msgid "Choose CSV files or drop bank files onto this window. Your data stays local."
-msgstr "Kies CSV’s of sleep bankbestanden in dit venster. Je data blijft lokaal."
+msgid "Choose bank files or drop them onto this window. Your data stays local."
+msgstr "Kies bankbestanden of sleep ze naar dit venster. Je data blijft lokaal."
 
 msgid "Imported after duplicate filtering"
 msgstr "Geïmporteerd na ontdubbelen"
@@ -418,8 +418,8 @@ msgstr "Importeer eerst CSV’s. Daarna zie je hier budgetten en categorieën al
 msgid "No period found"
 msgstr "Geen periode gevonden"
 
-msgid "Import CSV files to choose a month and year."
-msgstr "Importeer CSV’s om een maand en jaar te kiezen."
+msgid "Import bank files to choose a month and year."
+msgstr "Importeer bankbestanden om een maand en jaar te kiezen."
 
 msgid "Budget Room"
 msgstr "Budgetruimte"
@@ -445,8 +445,8 @@ msgstr "Geen budgetten of categorieën passen bij deze zoekterm."
 msgid "Recent transactions as a scannable list. Copy this page for a text export."
 msgstr "De laatste transacties als scanbare lijst. Kopieer deze pagina voor een tekstexport."
 
-msgid "Import CSV files to see recent transactions here."
-msgstr "Importeer CSV’s om hier recente transacties te zien."
+msgid "Import bank files to see recent transactions here."
+msgstr "Importeer bankbestanden om hier recente transacties te zien."
 
 msgid "No transactions found"
 msgstr "Geen transacties gevonden"
@@ -475,8 +475,8 @@ msgstr "Deze instellingen bepalen hoe CSV’s worden ingelezen."
 msgid "No CSV files opened"
 msgstr "Geen CSV-bestanden geopend"
 
-msgid "Choose CSV files or drop bank files onto the window to see import diagnostics."
-msgstr "Kies CSV’s of sleep bankbestanden naar het venster om importdiagnose te zien."
+msgid "Choose bank files or drop them onto the window to see import diagnostics."
+msgstr "Kies bankbestanden of sleep ze naar het venster om importdiagnose te zien."
 
 msgid "Warnings"
 msgstr "Waarschuwingen"
@@ -787,8 +787,8 @@ msgstr "Geen CSV-bestanden gevonden. Alleen bestanden met extensie .csv worden g
 msgid "No files chosen."
 msgstr "Geen bestanden gekozen."
 
-msgid "{transactions} transaction CSV file(s) and {configs} configuration CSV file(s) were opened and applied."
-msgstr "{transactions} transactie-CSV-bestand(en) en {configs} configuratie-CSV-bestand(en) zijn geopend en toegepast."
+msgid "{transactions} transaction file(s) and {configs} configuration CSV file(s) were opened and applied."
+msgstr "{transactions} transactiebestand(en) en {configs} configuratie-CSV-bestand(en) geopend en toegepast."
 
 msgid "{count} transaction CSV file(s) were opened and imported."
 msgstr "{count} transactie-CSV-bestand(en) geopend en geïmporteerd."
@@ -796,11 +796,11 @@ msgstr "{count} transactie-CSV-bestand(en) geopend en geïmporteerd."
 msgid "{count} configuration CSV file(s) were opened and applied."
 msgstr "{count} configuratie-CSV-bestand(en) geopend en toegepast."
 
-msgid "No CSV files were opened."
-msgstr "Er zijn geen CSV-bestanden geopend."
+msgid "No supported bank files were opened."
+msgstr "Er zijn geen ondersteunde bankbestanden geopend."
 
-msgid " {count} file(s) skipped because they were not CSV files."
-msgstr " {count} bestand(en) overgeslagen omdat het geen CSV-bestanden waren."
+msgid " {count} file(s) skipped because they were not supported bank files."
+msgstr " {count} bestand(en) overgeslagen omdat ze geen ondersteunde bankbestanden waren."
 
 msgid "Import canceled: the background task stopped unexpectedly."
 msgstr "Import afgebroken: de achtergrondtaak is onverwacht gestopt."
@@ -811,14 +811,14 @@ msgstr "Overzicht bijgewerkt."
 msgid "Current data reloaded."
 msgstr "Huidige data herladen."
 
-msgid "All CSV data reloaded."
-msgstr "Alle CSV-data herladen."
+msgid "All bank data reloaded."
+msgstr "Alle bankdata opnieuw geladen."
 
 msgid "Quick reloading current data..."
 msgstr "Huidige data snel herladen..."
 
-msgid "Reloading all CSV data..."
-msgstr "Alle CSV-data herladen..."
+msgid "Reloading all bank data..."
+msgstr "Alle bankdata wordt opnieuw geladen..."
 
 msgid "Updated"
 msgstr "Bijgewerkt"
@@ -967,8 +967,8 @@ msgstr "Drop bevat geen leesbare bestanden: {error}"
 msgid "Could not read drop: {error}"
 msgstr "Kon drop niet lezen: {error}"
 
-msgid "{count} CSV file(s) copied, but reload failed: {error}"
-msgstr "{count} CSV-bestand(en) gekopieerd, maar herladen mislukte: {error}"
+msgid "{count} bank file(s) copied, but reload failed: {error}"
+msgstr "{count} bankbestand(en) gekopieerd, maar herladen is mislukt: {error}"
 
 msgid "{name} was unloaded. The original CSV remains where you chose it."
 msgstr "{name} is ontladen. De originele CSV blijft staan waar je die gekozen hebt."
@@ -1168,8 +1168,8 @@ msgstr "{amount} boven jaarbudget"
 msgid "No period"
 msgstr "Geen periode"
 
-msgid "Choose CSV files or drop bank files onto the window to print monthly and yearly overviews."
-msgstr "Kies CSV’s of sleep bankbestanden naar het venster om maand- en jaaroverzichten te printen."
+msgid "Choose bank files or drop them onto the window to print monthly and yearly overviews."
+msgstr "Kies bankbestanden of sleep ze naar het venster om maand- en jaaroverzichten af te drukken."
 
 msgid "Monthly trend, yearly comparison, and budget room."
 msgstr "Maandtrend, jaarvergelijking en budgetruimte."
@@ -1309,8 +1309,8 @@ msgstr "Credit"
 msgid "Budget codes"
 msgstr "Budgetcodes"
 
-msgid "Import CSV files to print budgets and categories."
-msgstr "Importeer CSV-bestanden om budgetten en categorieën te printen."
+msgid "Import bank files to print budgets and categories."
+msgstr "Importeer bankbestanden om budgetten en categorieën af te drukken."
 
 msgid "Map CSV Field"
 msgstr "CSV-veld koppelen"
@@ -1513,8 +1513,8 @@ msgstr "Categorietransacties"
 msgid "Transactions for this category and year."
 msgstr "Transacties voor deze categorie en dit jaar."
 
-msgid "No CSV files opened. Choose CSV files or drop bank files onto the window."
-msgstr "Geen CSV-bestanden geopend. Kies CSV-bestanden of sleep bankbestanden naar het venster."
+msgid "No bank files opened. Choose bank files or drop them onto the window."
+msgstr "Geen bankbestanden geopend. Kies bankbestanden of sleep ze naar het venster."
 
 msgid "{count} stored CSV file(s): {files}"
 msgstr "{count} opgeslagen CSV-bestand(en): {files}"
@@ -1723,11 +1723,11 @@ msgstr "Deze pagina wordt voorbereid. Grote CSV-bestanden kunnen even duren."
 msgid "Loading data..."
 msgstr "Gegevens laden..."
 
-msgid "Loading saved CSV files..."
-msgstr "Opgeslagen CSV-bestanden laden..."
+msgid "Loading saved bank files..."
+msgstr "Opgeslagen bankbestanden worden geladen..."
 
-msgid "Saved CSV files loaded."
-msgstr "Opgeslagen CSV-bestanden geladen."
+msgid "Saved bank files loaded."
+msgstr "Opgeslagen bankbestanden geladen."
 
 msgid "Saving rule..."
 msgstr "Regel opslaan..."
@@ -1997,8 +1997,8 @@ msgstr "Kies de maand en het jaar voor budgetten en uitgaven."
 msgid "Choose a month and year to see budget room and spending for that period."
 msgstr "Kies een maand en jaar om budgetruimte en uitgaven voor die periode te zien."
 
-msgid "Import CSV files first. Then budgets and spending appear here as graphical rows."
-msgstr "Importeer eerst CSV-bestanden. Daarna verschijnen budgetten en uitgaven hier als grafische rijen."
+msgid "Import bank files first. Then budgets and spending appear here as graphical rows."
+msgstr "Importeer eerst bankbestanden. Daarna verschijnen budgetten en uitgaven hier als grafische rijen."
 
 msgid "Monthly Spending"
 msgstr "Maanduitgaven"
@@ -2172,8 +2172,8 @@ msgstr "{count} transacties in {year}."
 msgid "No transactions in this year"
 msgstr "Geen transacties in dit jaar"
 
-msgid "Choose another year or import CSV files for this period."
-msgstr "Kies een ander jaar of importeer CSV-bestanden voor deze periode."
+msgid "Choose another year or import bank files for this period."
+msgstr "Kies een ander jaar of importeer bankbestanden voor deze periode."
 
 msgid "Configuration"
 msgstr "Configuratie"
@@ -2937,8 +2937,8 @@ msgstr "Kon budgetten niet lezen: {error}"
 
 # Read-only storage and managed preferences
 
-msgid "CSV storage is read-only."
-msgstr "CSV-opslag is alleen-lezen."
+msgid "Bank file storage is read-only."
+msgstr "Bankbestandsopslag is alleen-lezen."
 
 msgid "Configuration storage is read-only."
 msgstr "Configuratieopslag is alleen-lezen."
@@ -3010,65 +3010,65 @@ msgstr "Alleen gegevens"
 msgid "Data and analytics"
 msgstr "Gegevens en analyse"
 
-msgid "Open CSV Files"
-msgstr "CSV-bestanden openen"
+msgid "Open Bank Files"
+msgstr "Bankbestanden openen"
 
-msgid "Choose whether opened CSV data is forgotten after this session, remembered as data, or remembered with reusable analysis cache."
-msgstr "Kies of geopende CSV-gegevens na deze sessie worden vergeten, als gegevens worden onthouden, of met herbruikbare analysecache worden onthouden."
+msgid "Choose whether opened bank files are forgotten after this session, remembered as data, or remembered with reusable analysis cache."
+msgstr "Kies of geopende bankbestanden na deze sessie worden vergeten, als data worden onthouden, of met herbruikbare analysecache worden onthouden."
 
-msgid "Forget opens CSVs live for this session. Data only remembers copied CSVs. Data and analytics also keeps a reusable processed cache."
-msgstr "Vergeten opent CSV-bestanden live voor deze sessie. Alleen gegevens onthoudt gekopieerde CSV-bestanden. Gegevens en analyse bewaart ook een herbruikbare verwerkte cache."
+msgid "Forget opens bank files live for this session. Data only remembers copied bank files. Data and analytics also keeps a reusable processed cache."
+msgstr "Vergeten opent bankbestanden alleen live voor deze sessie. Alleen data onthoudt gekopieerde bankbestanden. Data en analyse bewaart ook een herbruikbare verwerkte cache."
 
-msgid "Open CSV files live for this session only."
-msgstr "Open CSV-bestanden alleen live voor deze sessie."
+msgid "Open bank files live for this session only."
+msgstr "Open bankbestanden alleen live voor deze sessie."
 
-msgid "Remember copied CSV files and configuration."
-msgstr "Onthoud gekopieerde CSV-bestanden en configuratie."
+msgid "Remember copied bank files and configuration."
+msgstr "Onthoud gekopieerde bankbestanden en configuratie."
 
-msgid "Remember copied CSV files and reusable analysis data."
-msgstr "Onthoud gekopieerde CSV-bestanden en herbruikbare analysegegevens."
+msgid "Remember copied bank files and reusable analysis data."
+msgstr "Onthoud gekopieerde bankbestanden en herbruikbare analysedata."
 
-msgid "Opening the file portal for CSV files..."
-msgstr "Bestandsportaal voor CSV-bestanden openen..."
+msgid "Opening the file portal for bank files..."
+msgstr "Bestandsportaal voor bankbestanden wordt geopend..."
 
-msgid "Opening CSV files..."
-msgstr "CSV-bestanden openen..."
+msgid "Opening bank files..."
+msgstr "Bankbestanden worden geopend..."
 
-msgid "CSV files received. Opening files..."
-msgstr "CSV-bestanden ontvangen. Bestanden openen..."
+msgid "Bank files received. Opening files..."
+msgstr "Bankbestanden ontvangen. Bestanden worden geopend..."
 
-msgid "CSV drop received. Opening files..."
-msgstr "CSV-sleepactie ontvangen. Bestanden openen..."
+msgid "Dropped bank files. Opening files..."
+msgstr "Bankbestanden neergezet. Bestanden worden geopend..."
 
-msgid "CSV storage is read-only. Opening local CSV files live for this session."
-msgstr "CSV-opslag is alleen-lezen. Lokale CSV-bestanden worden live voor deze sessie geopend."
+msgid "Bank file storage is read-only. Opening local files live for this session."
+msgstr "Bankbestandsopslag is alleen-lezen. Lokale bestanden worden live voor deze sessie geopend."
 
-msgid "No local CSV files found. Live opening needs readable .csv files."
-msgstr "Geen lokale CSV-bestanden gevonden. Live openen heeft leesbare .csv-bestanden nodig."
+msgid "No local bank files found. Live opening needs readable CSV, Excel, or Calc files."
+msgstr "Geen lokale bankbestanden gevonden. Live openen vereist leesbare CSV-, Excel- of Calc-bestanden."
 
-msgid "{count} live transaction CSV file(s) opened for this session."
-msgstr "{count} live transactie-CSV-bestand(en) geopend voor deze sessie."
+msgid "{count} live transaction file(s) opened for this session."
+msgstr "{count} live transactiebestand(en) voor deze sessie geopend."
 
-msgid " {count} file(s) skipped because they were not local CSV files."
-msgstr " {count} bestand(en) overgeslagen omdat het geen lokale CSV-bestanden waren."
+msgid " {count} file(s) skipped because they were not local bank files."
+msgstr " {count} bestand(en) overgeslagen omdat het geen lokale bankbestanden waren."
 
-msgid "{count} transaction CSV file(s) were opened and remembered."
-msgstr "{count} transactie-CSV-bestand(en) geopend en onthouden."
+msgid "{count} transaction file(s) were opened and remembered."
+msgstr "{count} transactiebestand(en) geopend en onthouden."
 
-msgid "No CSV files found. Only files with the .csv extension are opened."
-msgstr "Geen CSV-bestanden gevonden. Alleen bestanden met de extensie .csv worden geopend."
+msgid "No supported bank files found. Open CSV, Excel, or Calc files."
+msgstr "Geen ondersteunde bankbestanden gevonden. Open CSV-, Excel- of Calc-bestanden."
 
-msgid "Open CSV error: {error}"
-msgstr "CSV openen mislukt: {error}"
+msgid "Open bank file error: {error}"
+msgstr "Fout bij openen van bankbestand: {error}"
 
-msgid "Open CSV canceled: the background task stopped unexpectedly."
-msgstr "CSV openen geannuleerd: de achtergrondtaak stopte onverwacht."
+msgid "Bank file opening canceled: the background task stopped unexpectedly."
+msgstr "Openen van bankbestand geannuleerd: de achtergrondtaak is onverwacht gestopt."
 
-msgid "Could not open live CSV files: {error}"
-msgstr "Kon live CSV-bestanden niet openen: {error}"
+msgid "Could not open live bank files: {error}"
+msgstr "Live bankbestanden konden niet worden geopend: {error}"
 
-msgid "Live CSV opening canceled: the background task stopped unexpectedly."
-msgstr "Live CSV openen geannuleerd: de achtergrondtaak stopte onverwacht."
+msgid "Live bank file opening canceled: the background task stopped unexpectedly."
+msgstr "Live openen van bankbestanden geannuleerd: de achtergrondtaak is onverwacht gestopt."
 
 msgid "Applying Remember preference..."
 msgstr "Voorkeur Onthouden toepassen..."
@@ -3094,17 +3094,17 @@ msgstr " Gegevens- en analysecache bijgewerkt."
 msgid " Data and analytics cache was skipped: {error}"
 msgstr " Gegevens- en analysecache overgeslagen: {error}"
 
-msgid "Force reload live CSV"
-msgstr "Live CSV geforceerd herladen"
+msgid "Force reload live bank file"
+msgstr "Live bankbestand geforceerd herladen"
 
-msgid "Forget live CSV for this session"
-msgstr "Live CSV voor deze sessie vergeten"
+msgid "Forget live bank file for this session"
+msgstr "Live bankbestand vergeten voor deze sessie"
 
-msgid "{name} was reloaded from the live CSV file."
-msgstr "{name} is opnieuw geladen uit het live CSV-bestand."
+msgid "{name} was reloaded from the live bank file."
+msgstr "{name} is opnieuw geladen uit het live bankbestand."
 
-msgid "{name} was forgotten for this session. The CSV file was not changed."
-msgstr "{name} is voor deze sessie vergeten. Het CSV-bestand is niet gewijzigd."
+msgid "{name} was forgotten for this session. The bank file was not changed."
+msgstr "{name} is vergeten voor deze sessie. Het bankbestand is niet gewijzigd."
 
 msgid "CSV removed from this session. Updating the overview..."
 msgstr "CSV uit deze sessie verwijderd. Overzicht bijwerken..."
@@ -3118,8 +3118,8 @@ msgstr "CSV verwijderen geannuleerd: de achtergrondtaak stopte onverwacht."
 msgid "{count} open CSV file(s): {files}"
 msgstr "{count} geopende CSV-bestand(en): {files}"
 
-msgid "These are remembered app copies or live CSV files for this session. Removing a live CSV only forgets it for this session."
-msgstr "Dit zijn onthouden appkopieën of live CSV-bestanden voor deze sessie. Een live CSV verwijderen vergeet die alleen voor deze sessie."
+msgid "These are remembered app copies or live bank files for this session. Removing a live file only forgets it for this session."
+msgstr "Dit zijn onthouden app-kopieën of live bankbestanden voor deze sessie. Een live bestand verwijderen vergeet het alleen voor deze sessie."
 
 msgid "Search filters"
 msgstr "Zoekfilters"
@@ -3500,3 +3500,6 @@ msgstr "Neptransacties ({count})"
 
 msgid "Processing queue ({count})"
 msgstr "Verwerkingswachtrij ({count})"
+
+msgid "Bank files"
+msgstr "Bankbestanden"

@@ -44,7 +44,7 @@ pub(super) fn force_reload_csv_file(
                     &ui_for_reload,
                     &trf(
                         if source_is_live {
-                            "{name} was reloaded from the live CSV file."
+                            "{name} was reloaded from the live bank file."
                         } else {
                             "{name} was reloaded from app storage."
                         },
@@ -135,7 +135,7 @@ pub(super) fn forget_or_unload_csv_file(
                     &ui_for_unload,
                     &trf(
                         if source_is_live {
-                            "{name} was forgotten for this session. The CSV file was not changed."
+                            "{name} was forgotten for this session. The bank file was not changed."
                         } else {
                             "{name} was unloaded. The original CSV remains where you chose it."
                         },

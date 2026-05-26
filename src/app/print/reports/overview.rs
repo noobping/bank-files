@@ -25,7 +25,7 @@ pub(super) fn overview_print_report(
     if data.transactions.is_empty() {
         sections.push(PrintSection::Paragraph {
             title: "No transactions yet".to_string(),
-            body: "Choose CSV files or drop bank files onto the window to print monthly and yearly overviews.".to_string(),
+            body: "Choose bank files or drop them onto the window to print monthly and yearly overviews.".to_string(),
         });
     } else {
         sections.push(monthly_print_table(&dashboard.monthly));

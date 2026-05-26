@@ -34,7 +34,7 @@
     <key name="remember-mode" type="s">
       <default>'data-and-analytics'</default>
       <summary>Remember</summary>
-      <description>How opened CSV data is remembered: forget for live session files, data-only for copied CSV storage, or data-and-analytics for copied CSV storage plus processed cache.</description>
+      <description>How opened bank files are remembered: forget for live session files, data-only for copied storage, or data-and-analytics for copied storage plus processed cache.</description>
     </key>
     <key name="dedupe-enabled" type="b">
       <default>true</default>

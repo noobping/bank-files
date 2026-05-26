@@ -2,7 +2,7 @@
 
 A local GTK app for testing money decisions against your real bank-file history. Add temporary fake transactions to see what happens if you buy something, take on a new cost, receive salary, or solve a problem with the money you have.
 
-Bank Files can also be used as a simple bank CSV viewer. It opens bank files locally, keeps remembered history so older imports are not lost, and lets you turn that off when you only want to inspect files for the current session.
+Bank Files can also be used as a simple bank-file viewer. It opens CSV, Excel, and Calc bank files locally, keeps remembered history so older imports are not lost, and lets you turn that off when you only want to inspect files for the current session.
 
 Duplicate filtering keeps repeated downloads from changing results, so you can import bank exports whenever you feel like it. The app keeps the overview easy and warns you when spending, budgets, or missing rules need attention.
 
@@ -11,7 +11,7 @@ Duplicate filtering keeps repeated downloads from changing results, so you can i
 ## Features
 
 - Add fake transactions to preview purchases, salary changes, refunds, transfers, recurring costs, and other what-if choices without editing the original bank files.
-- Open bank transaction CSVs through **Choose CSV Files**, drag-and-drop, **Open With**, or the app data folder.
+- Open bank transaction CSV, Excel, and Calc files through **Choose Bank Files**, drag-and-drop, **Open With**, or the app data folder.
 - Remember opened bank files so history stays available across sessions, or use forget mode as a temporary viewer.
 - Filter duplicate rows so bank exports downloaded at random moments do not distort totals.
 - Automatic field detection for columns such as date, amount, description, counterparty, account, currency, transaction ID, debit, and credit.
@@ -67,7 +67,7 @@ meson setup build -Dcargo_variant=release -Dsetup=true
 ## Usage
 
 1. Start the app with `cargo run --release`.
-2. Click **Choose CSV Files**, drop bank CSVs onto the window, use **Open With**, or place transaction files manually in the app data folder.
+2. Click **Choose Bank Files**, drop bank CSV, Excel, or Calc files onto the window, use **Open With**, or place transaction files manually in the app data folder.
 3. Open `rules.csv`, `budgetcodes.csv`, or `field_aliases.csv` the same way to update configuration.
 4. Use **Categorization Rules**, **Budgets**, and **Normalize CSV Fields** to edit configuration inside the app.
 5. Add fake transactions from the main menu or from an existing transaction to preview what changes.

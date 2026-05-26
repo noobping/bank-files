@@ -8,11 +8,11 @@ const DESKTOP_GENERIC_NAME_DE: &str = "Persönliche Finanzvorschau";
 const DESKTOP_COMMENT_NL: &str = "Verken geldkeuzes";
 const DESKTOP_COMMENT_DE: &str = "Geldentscheidungen testen";
 const DESKTOP_KEYWORDS: &str =
-    "finance;budget;csv;bank;money;transactions;preview;what-if;transfers;refunds;";
+    "finance;budget;csv;excel;calc;spreadsheet;bank;money;transactions;preview;what-if;transfers;refunds;";
 const DESKTOP_KEYWORDS_NL: &str =
-    "financien;budget;csv;bank;geld;transacties;vooruitblik;wat-als;overschrijvingen;terugbetalingen;";
+    "financien;budget;csv;excel;calc;spreadsheet;bank;geld;transacties;vooruitblik;wat-als;overschrijvingen;terugbetalingen;";
 const DESKTOP_KEYWORDS_DE: &str =
-    "finanzen;budget;csv;bank;geld;transaktionen;vorschau;was-wenn;transfers;erstattungen;";
+    "finanzen;budget;csv;excel;calc;tabellenkalkulation;bank;geld;transaktionen;vorschau;was-wenn;transfers;erstattungen;";
 
 pub(super) fn installed_local_binary_path() -> Option<PathBuf> {
     dirs_next::executable_dir().map(|bin| bin.join(env!("CARGO_PKG_NAME")))
@@ -101,7 +101,7 @@ Exec={exec} %F
 Icon={APP_ID}
 Terminal=false
 Categories=Office;Finance;
-MimeType=text/csv;text/comma-separated-values;application/csv;application/vnd.ms-excel;
+MimeType=text/csv;text/comma-separated-values;application/csv;application/vnd.ms-excel;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.ms-excel.sheet.macroEnabled.12;application/vnd.ms-excel.sheet.binary.macroEnabled.12;application/vnd.oasis.opendocument.spreadsheet;
 Keywords={DESKTOP_KEYWORDS}
 Keywords[nl]={DESKTOP_KEYWORDS_NL}
 Keywords[de]={DESKTOP_KEYWORDS_DE}

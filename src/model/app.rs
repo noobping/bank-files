@@ -151,9 +151,9 @@ impl RememberMode {
 
     pub fn description(self) -> &'static str {
         match self {
-            Self::Forget => "Open CSV files live for this session only.",
-            Self::DataOnly => "Remember copied CSV files and configuration.",
-            Self::DataAndAnalytics => "Remember copied CSV files and reusable analysis data.",
+            Self::Forget => "Open bank files live for this session only.",
+            Self::DataOnly => "Remember copied bank files and configuration.",
+            Self::DataAndAnalytics => "Remember copied bank files and reusable analysis data.",
         }
     }
 

@@ -29,7 +29,7 @@
             <child>
               <object class="GtkButton" id="main_import_button">
                 <property name="icon-name">document-open-symbolic</property>
-                <property name="tooltip-text" translatable="yes">Open CSV files</property>
+                <property name="tooltip-text" translatable="yes">Open bank files</property>
                 <style>
                   <class name="flat"/>
                   <class name="image-button"/>

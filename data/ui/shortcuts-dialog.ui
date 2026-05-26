@@ -46,7 +46,7 @@
         <property name="title" translatable="yes">Files</property>
         <child>
           <object class="AdwShortcutsItem">
-            <property name="title" translatable="yes">Choose CSV Files</property>
+            <property name="title" translatable="yes">Choose Bank Files</property>
             <property name="action-name">app.import-csv</property>
           </object>
         </child>

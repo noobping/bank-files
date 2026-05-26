@@ -26,7 +26,7 @@ impl Default for StorageCapabilities {
 impl StorageCapabilities {
     pub fn data_write_reason(&self) -> &str {
         if self.data_reason.is_empty() {
-            "CSV storage is read-only."
+            "Bank file storage is read-only."
         } else {
             &self.data_reason
         }
@@ -43,7 +43,7 @@ impl StorageCapabilities {
 
 pub fn storage_capabilities(dirs: &AppDirs) -> StorageCapabilities {
     let (data_readable, data_writable, data_reason) =
-        directory_capability(&dirs.inbox, "CSV storage");
+        directory_capability(&dirs.inbox, "Bank file storage");
     let (config_readable, config_writable, config_reason) =
         directory_capability(&dirs.config, "Configuration storage");
     StorageCapabilities {

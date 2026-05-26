@@ -12,7 +12,7 @@ pub(super) fn append_diagnostics_metrics(
         analytics::unconfigured_expense_budget_count(&data.transactions, &data.budgets);
     let other_category_count = analytics::other_category_count(&data.transactions);
     let csv_status = if data.reports.is_empty() {
-        tr("No CSV files opened. Choose CSV files or drop bank files onto the window.")
+        tr("No bank files opened. Choose bank files or drop them onto the window.")
     } else {
         let names = data
             .reports

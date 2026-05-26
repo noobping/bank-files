@@ -34,7 +34,7 @@ pub(super) fn preferences_page_snapshot(
         "Remember",
         &[(
             "Remember",
-            "Choose whether opened CSV data is forgotten after this session, remembered as data, or remembered with reusable analysis cache.",
+            "Choose whether opened bank files are forgotten after this session, remembered as data, or remembered with reusable analysis cache.",
             "app.remember-mode",
         )],
         advanced_features,

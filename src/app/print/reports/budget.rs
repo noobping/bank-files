@@ -25,7 +25,7 @@ pub(super) fn budget_print_report(
     } else {
         sections.push(PrintSection::Paragraph {
             title: "No period".to_string(),
-            body: "Import CSV files to print budgets and categories.".to_string(),
+            body: "Import bank files to print budgets and categories.".to_string(),
         });
     }
 

@@ -3,25 +3,25 @@ use super::*;
 pub(super) fn import_status(result: data::CsvCopyResult) -> String {
     let mut message = match (result.transaction_csvs, result.config_csvs) {
         (transactions, configs) if transactions > 0 && configs > 0 => trf(
-            "{transactions} transaction CSV file(s) and {configs} configuration CSV file(s) were opened and applied.",
+            "{transactions} transaction file(s) and {configs} configuration CSV file(s) were opened and applied.",
             &[
                 ("transactions", transactions.to_string()),
                 ("configs", configs.to_string()),
             ],
         ),
         (transactions, _) if transactions > 0 => trf(
-            "{count} transaction CSV file(s) were opened and remembered.",
+            "{count} transaction file(s) were opened and remembered.",
             &[("count", transactions.to_string())],
         ),
         (_, configs) if configs > 0 => trf(
             "{count} configuration CSV file(s) were opened and applied.",
             &[("count", configs.to_string())],
         ),
-        _ => tr("No CSV files were opened."),
+        _ => tr("No supported bank files were opened."),
     };
     if result.skipped > 0 {
         message.push_str(&trf(
-            " {count} file(s) skipped because they were not CSV files.",
+            " {count} file(s) skipped because they were not supported bank files.",
             &[("count", result.skipped.to_string())],
         ));
     }

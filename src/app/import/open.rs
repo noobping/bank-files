@@ -47,7 +47,7 @@ pub(super) async fn open_uris_in_background(
     {
         show_status(
             &ui,
-            "CSV storage is read-only. Opening local CSV files live for this session.",
+            "Bank file storage is read-only. Opening local files live for this session.",
         );
     }
     let (paths, unresolved) = local_paths_from_uris(&uris);
@@ -93,7 +93,7 @@ pub(super) async fn import_and_reload_in_background<F>(
             show_status(
                 &ui,
                 &trf(
-                    "{count} CSV file(s) copied, but reload failed: {error}",
+                    "{count} bank file(s) copied, but reload failed: {error}",
                     &[("count", result.imported().to_string()), ("error", err)],
                 ),
             );
@@ -102,7 +102,7 @@ pub(super) async fn import_and_reload_in_background<F>(
         Ok(Ok((result, None))) if result.skipped > 0 => {
             show_status(
                 &ui,
-                "No CSV files found. Only files with the .csv extension are opened.",
+                "No supported bank files found. Open CSV, Excel, or Calc files.",
             );
             render_views(&state.borrow(), &ui, &state);
         }
@@ -113,14 +113,17 @@ pub(super) async fn import_and_reload_in_background<F>(
         Ok(Err(err)) => {
             show_status(
                 &ui,
-                &trf("Open CSV error: {error}", &[("error", format!("{err:#}"))]),
+                &trf(
+                    "Open bank file error: {error}",
+                    &[("error", format!("{err:#}"))],
+                ),
             );
             render_views(&state.borrow(), &ui, &state);
         }
         Err(_) => {
             show_status(
                 &ui,
-                "Open CSV canceled: the background task stopped unexpectedly.",
+                "Bank file opening canceled: the background task stopped unexpectedly.",
             );
             render_views(&state.borrow(), &ui, &state);
         }
@@ -138,7 +141,7 @@ async fn open_live_sources_in_background(
         show_status(
             &ui,
             if skipped > 0 {
-                "No local CSV files found. Live opening needs readable .csv files."
+                "No local bank files found. Live opening needs readable CSV, Excel, or Calc files."
             } else {
                 "No files chosen."
             },
@@ -166,12 +169,12 @@ async fn open_live_sources_in_background(
             render_views(&state.borrow(), &ui, &state);
             refresh_menu(&ui, &state.borrow());
             let mut message = trf(
-                "{count} live transaction CSV file(s) opened for this session.",
+                "{count} live transaction file(s) opened for this session.",
                 &[("count", opened.to_string())],
             );
             if skipped > 0 {
                 message.push_str(&trf(
-                    " {count} file(s) skipped because they were not local CSV files.",
+                    " {count} file(s) skipped because they were not local bank files.",
                     &[("count", skipped.to_string())],
                 ));
             }
@@ -181,7 +184,7 @@ async fn open_live_sources_in_background(
             show_status(
                 &ui,
                 &trf(
-                    "Could not open live CSV files: {error}",
+                    "Could not open live bank files: {error}",
                     &[("error", format!("{err:#}"))],
                 ),
             );
@@ -190,7 +193,7 @@ async fn open_live_sources_in_background(
         Err(_) => {
             show_status(
                 &ui,
-                "Live CSV opening canceled: the background task stopped unexpectedly.",
+                "Live bank file opening canceled: the background task stopped unexpectedly.",
             );
             render_views(&state.borrow(), &ui, &state);
         }

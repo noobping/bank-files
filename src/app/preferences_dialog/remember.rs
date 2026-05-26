@@ -7,7 +7,7 @@ pub(super) fn remember_preference_group(
     ui: &Rc<UiHandles>,
 ) -> Option<(adw::PreferencesGroup, SearchablePreferencesGroup)> {
     let title = "Remember";
-    let description = "Choose whether opened CSV data is forgotten after this session, remembered as data, or remembered with reusable analysis cache.";
+    let description = "Choose whether opened bank files are forgotten after this session, remembered as data, or remembered with reusable analysis cache.";
     let writable = Preferences::key_for_action("app.remember-mode")
         .map(|key| ui.preferences.is_writable(key))
         .unwrap_or(true);
@@ -40,7 +40,7 @@ fn remember_preference_row(
     let selected = remember_mode_index(ui.remember_mode.get());
     let row = adw::ComboRow::builder()
         .title(tr("Remember"))
-        .subtitle(tr("Forget opens CSVs live for this session. Data only remembers copied CSVs. Data and analytics also keeps a reusable processed cache."))
+        .subtitle(tr("Forget opens bank files live for this session. Data only remembers copied bank files. Data and analytics also keeps a reusable processed cache."))
         .model(&model)
         .selected(selected)
         .build();

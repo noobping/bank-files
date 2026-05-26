@@ -27,7 +27,7 @@ pub(in crate::app) fn connect_drop_target(
             return true;
         }
 
-        show_status(&ui_for_drop, "CSV drop received. Opening files...");
+        show_status(&ui_for_drop, "Dropped bank files. Opening files...");
 
         let state_for_import = Rc::clone(&state_for_drop);
         let ui_for_import = Rc::clone(&ui_for_drop);
@@ -45,7 +45,7 @@ pub(in crate::app) fn import_uris_into_session(
     state: Rc<RefCell<AppData>>,
     ui: Rc<UiHandles>,
 ) {
-    show_status(&ui, "CSV files received. Opening files...");
+    show_status(&ui, "Bank files received. Opening files...");
     gtk::glib::MainContext::default().spawn_local(async move {
         open_uris_in_background(uris, state, ui).await;
     });

@@ -65,7 +65,7 @@ pub(in crate::app) fn diagnostic_file_card(
     let reload_button = ui::icon_button(
         "view-refresh-symbolic",
         if live_source {
-            "Force reload live CSV"
+            "Force reload live bank file"
         } else {
             "Force reload stored CSV"
         },
@@ -75,7 +75,7 @@ pub(in crate::app) fn diagnostic_file_card(
     let unload_button = ui::icon_button(
         "user-trash-symbolic",
         if live_source {
-            "Forget live CSV for this session"
+            "Forget live bank file for this session"
         } else {
             "Unload stored CSV"
         },

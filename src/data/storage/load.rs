@@ -215,17 +215,54 @@ fn import_sources(
         return Ok((outcome, transaction_sources));
     }
 
-    let paths = sources
-        .iter()
-        .filter(|source| source.path().is_file() && is_csv(source.path()))
-        .map(|source| source.path.clone())
-        .collect::<Vec<_>>();
+    let (paths, transaction_sources) = import_source_paths(dirs, sources)?;
     let aliases = FieldAliases::load(&dirs.config)?;
     let outcome = import_files(&paths, &aliases, scope)?;
-    let transaction_sources = sources
-        .iter()
-        .filter(|source| source.path().is_file() && is_csv(source.path()))
-        .cloned()
-        .collect();
     Ok((outcome, transaction_sources))
+}
+
+fn import_source_paths(
+    dirs: &AppDirs,
+    sources: &[TransactionSource],
+) -> Result<(Vec<PathBuf>, Vec<TransactionSource>)> {
+    let mut paths = Vec::new();
+    let mut transaction_sources = Vec::new();
+    let live_spreadsheet_dir = sources
+        .iter()
+        .any(|source| source.path().is_file() && is_spreadsheet(source.path()))
+        .then(live_spreadsheet_csv_dir)
+        .transpose()?;
+
+    for source in sources {
+        if !source.path().is_file() {
+            continue;
+        }
+        if is_csv(source.path()) {
+            paths.push(source.path.clone());
+            transaction_sources.push(source.clone());
+            continue;
+        }
+        if is_spreadsheet(source.path()) {
+            let target_dir = match source.kind {
+                TransactionSourceKind::InboxFile => &dirs.inbox,
+                TransactionSourceKind::LiveFile => {
+                    live_spreadsheet_dir.as_deref().unwrap_or(&dirs.inbox)
+                }
+            };
+            let converted = convert_spreadsheet_to_csv_files(source.path(), target_dir)?;
+            for path in converted {
+                transaction_sources.push(TransactionSource {
+                    kind: source.kind,
+                    path: path.clone(),
+                });
+                paths.push(path);
+            }
+        }
+    }
+
+    paths.sort();
+    paths.dedup();
+    transaction_sources.sort_by(|left, right| left.path.cmp(&right.path));
+    transaction_sources.dedup_by(|left, right| left.path == right.path && left.kind == right.kind);
+    Ok((paths, transaction_sources))
 }
