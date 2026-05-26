@@ -32,7 +32,7 @@ pub(super) fn set_budget_forms_income_basis(forms: &[BudgetForm], basis: &str) -
 }
 
 fn budget_form_is_planned_income(form: &BudgetForm) -> bool {
-    planned_income::is_budget_code(&ui::combo_text(&form.code))
+    planned_income::is_planned_income_budget(&form.special, &ui::combo_text(&form.code))
 }
 
 pub(super) fn set_budget_forms_value_period(

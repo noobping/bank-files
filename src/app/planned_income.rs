@@ -1,4 +1,5 @@
 use super::*;
+use crate::model::BudgetCode;
 
 pub(in crate::app) const BUDGET_CODE: &str = crate::model::PLANNED_INCOME_BUDGET_CODE;
 pub(in crate::app) const NET_INCOME_REMINDER: &str =
@@ -6,6 +7,15 @@ pub(in crate::app) const NET_INCOME_REMINDER: &str =
 
 pub(in crate::app) fn is_budget_code(code: &str) -> bool {
     crate::model::is_planned_income_budget_code(code)
+}
+
+pub(in crate::app) fn is_planned_income_budget(special_config: &str, code: &str) -> bool {
+    crate::model::budget_special_kind_for_config(special_config, code).is_planned_income()
+        || is_budget_code(code)
+}
+
+pub(in crate::app) fn configured_budget_is_planned_income(budget: &BudgetCode) -> bool {
+    budget.special.is_planned_income() || is_budget_code(&budget.code)
 }
 
 pub(in crate::app) fn fixed_budget_amount_text(input: &str) -> String {
@@ -55,6 +65,13 @@ mod tests {
         assert!(is_budget_code("inc"));
         assert!(is_budget_code(" INC "));
         assert!(!is_budget_code("INC-OTHER"));
+    }
+
+    #[test]
+    fn planned_income_budget_can_be_identified_by_special_kind() {
+        assert!(is_planned_income_budget("planned-income", "SALARY"));
+        assert!(is_planned_income_budget("", "INC"));
+        assert!(!is_planned_income_budget("", "INC-OTHER"));
     }
 
     #[test]

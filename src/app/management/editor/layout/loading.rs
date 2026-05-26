@@ -1,6 +1,5 @@
 use super::super::*;
 use super::render::start_management_forms_render;
-use super::sizing::partition_planned_income_budget;
 
 pub(super) struct ManagementFormsLoad {
     pub(super) advanced_features: bool,
@@ -31,6 +30,10 @@ pub(super) struct ManagementFormsRender {
     pub(super) load: ManagementFormsLoad,
     pub(super) loaded: ManagementLoadedForms,
     pub(super) stage: ManagementFormsRenderStage,
+}
+
+fn budget_forms_queue(budgets: Vec<EditableBudget>) -> std::collections::VecDeque<EditableBudget> {
+    std::collections::VecDeque::from(budgets)
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -67,8 +70,7 @@ fn load_management_forms_data() -> ManagementLoadedForms {
             .map(std::collections::VecDeque::from)
             .map_err(|err| format!("{err:#}")),
         budgets: data::load_editable_budgets()
-            .map(ordered_management_budgets)
-            .map(std::collections::VecDeque::from)
+            .map(budget_forms_queue)
             .map_err(|err| format!("{err:#}")),
         aliases: data::load_editable_aliases()
             .map(std::collections::VecDeque::from)
@@ -76,13 +78,35 @@ fn load_management_forms_data() -> ManagementLoadedForms {
     }
 }
 
-pub(super) fn ordered_management_budgets(budgets: Vec<EditableBudget>) -> Vec<EditableBudget> {
-    let (planned_income_budget, mut regular_budgets) = partition_planned_income_budget(budgets);
-    let mut ordered =
-        Vec::with_capacity(regular_budgets.len() + usize::from(planned_income_budget.is_some()));
-    if let Some(planned_income_budget) = planned_income_budget {
-        ordered.push(planned_income_budget);
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn budget(code: &str, special: &str) -> EditableBudget {
+        EditableBudget {
+            code: code.to_string(),
+            special: special.to_string(),
+            category: code.to_string(),
+            monthly_budget: String::new(),
+            yearly_budget: String::new(),
+            direction: "expense".to_string(),
+            income_basis: "real".to_string(),
+            notes: String::new(),
+        }
     }
-    ordered.append(&mut regular_budgets);
-    ordered
+
+    #[test]
+    fn budget_forms_queue_preserves_saved_order() {
+        let queue = budget_forms_queue(vec![
+            budget("FOOD", ""),
+            budget("INC", "planned-income"),
+            budget("OTHER", ""),
+        ]);
+        let codes = queue
+            .iter()
+            .map(|budget| budget.code.as_str())
+            .collect::<Vec<_>>();
+
+        assert_eq!(codes, vec!["FOOD", "INC", "OTHER"]);
+    }
 }

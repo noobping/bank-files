@@ -93,7 +93,7 @@ pub(in crate::app) fn render_year_comparison(
     let income_budget = data
         .budgets
         .iter()
-        .find(|budget| planned_income::is_budget_code(&budget.code))
+        .find(|budget| planned_income::configured_budget_is_planned_income(budget))
         .map(|budget| (budget.code.clone(), budget.category.clone()))
         .unwrap_or_else(|| {
             (

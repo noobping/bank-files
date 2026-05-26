@@ -106,7 +106,7 @@ fn render_budget_forms_batch(render: &mut ManagementFormsRender, remaining: &mut
                     render.stage = ManagementFormsRenderStage::Aliases;
                     return true;
                 };
-                if planned_income::is_budget_code(&budget.code) {
+                if planned_income::is_planned_income_budget(&budget.special, &budget.code) {
                     append_planned_income_budget_form(
                         &render.load.budgets_list,
                         &render.load.budgets_forms,
