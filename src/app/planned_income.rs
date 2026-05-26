@@ -34,6 +34,9 @@ pub(in crate::app) fn editable_budget(
 ) -> EditableBudget {
     EditableBudget {
         code: BUDGET_CODE.to_string(),
+        special: crate::model::BudgetSpecialKind::PlannedIncome
+            .as_config()
+            .to_string(),
         category,
         monthly_budget: fixed_budget_amount_text(&monthly_budget),
         yearly_budget: fixed_budget_amount_text(&yearly_budget),

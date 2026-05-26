@@ -152,6 +152,7 @@ fn editable_budget_for_rule(rule: &EditableRule) -> EditableBudget {
     let direction = crate::model::BudgetDirection::parse(&rule.direction, code, &rule.category);
     EditableBudget {
         code: code.to_string(),
+        special: String::new(),
         category: rule.category.trim().to_string(),
         monthly_budget: "0".to_string(),
         yearly_budget: String::new(),

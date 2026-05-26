@@ -65,16 +65,46 @@ fn simple_mode_hides_rule_and_budget_editing_transaction_actions() {
 #[test]
 fn refund_rule_uses_refunding_and_refunded_codes_by_amount() {
     let expense = tx(-20, "FOOD", "Groceries");
-    let expense_rule = editable_refund_rule_for_transaction(&expense);
+    let expense_rule = editable_refund_rule_for_transaction(&expense, &[]);
     assert_eq!(expense_rule.category, tr("Refunding"));
     assert_eq!(expense_rule.budget_code, "REFUNDING");
     assert_eq!(expense_rule.direction, "expense");
 
     let income = tx(20, "INC-OTHER", "Other income");
-    let income_rule = editable_refund_rule_for_transaction(&income);
+    let income_rule = editable_refund_rule_for_transaction(&income, &[]);
     assert_eq!(income_rule.category, tr("Refunded"));
     assert_eq!(income_rule.budget_code, "REFUNDED");
     assert_eq!(income_rule.direction, "income");
+}
+
+#[test]
+fn generated_rules_use_configured_special_budget_aliases() {
+    let mut transfer_budget = budget("INTERNAL", BudgetDirection::Transfer);
+    transfer_budget.special = crate::model::BudgetSpecialKind::Transfer;
+    let transfer = editable_rule_for_transaction(
+        &tx(-20, "OTHER", "Other"),
+        Some("transfer"),
+        &[transfer_budget],
+    );
+
+    assert_eq!(transfer.budget_code, "INTERNAL");
+
+    let mut refunding_budget = budget("REFUND_OUT", BudgetDirection::Expense);
+    refunding_budget.special = crate::model::BudgetSpecialKind::Refunding;
+    let mut refunded_budget = budget("REFUND_IN", BudgetDirection::Income);
+    refunded_budget.special = crate::model::BudgetSpecialKind::Refunded;
+
+    let refunding = editable_refund_rule_for_transaction(
+        &tx(-20, "FOOD", "Groceries"),
+        &[refunding_budget.clone(), refunded_budget.clone()],
+    );
+    let refunded = editable_refund_rule_for_transaction(
+        &tx(20, "INC-OTHER", "Other income"),
+        &[refunding_budget, refunded_budget],
+    );
+
+    assert_eq!(refunding.budget_code, "REFUND_OUT");
+    assert_eq!(refunded.budget_code, "REFUND_IN");
 }
 
 #[test]

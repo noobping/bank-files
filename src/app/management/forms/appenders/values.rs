@@ -32,6 +32,7 @@ pub(super) fn rule_value(widgets: RuleValueWidgets<'_>) -> EditableRule {
 
 pub(super) struct BudgetValueWidgets<'a> {
     pub(super) code: &'a gtk::ComboBoxText,
+    pub(super) special: &'a str,
     pub(super) category: &'a gtk::ComboBoxText,
     pub(super) monthly_budget: &'a gtk::Entry,
     pub(super) yearly_budget: &'a gtk::Entry,
@@ -42,9 +43,11 @@ pub(super) struct BudgetValueWidgets<'a> {
 
 pub(super) fn budget_value(widgets: BudgetValueWidgets<'_>) -> EditableBudget {
     let code = ui::combo_text(widgets.code);
-    let planned_income = planned_income::is_budget_code(&code);
+    let special = crate::model::budget_special_kind_for_config(widgets.special, &code);
+    let planned_income = special.is_planned_income() || planned_income::is_budget_code(&code);
     EditableBudget {
         code,
+        special: special.as_config().to_string(),
         category: ui::combo_text(widgets.category),
         monthly_budget: if planned_income {
             planned_income::fixed_budget_amount_text(&widgets.monthly_budget.text())

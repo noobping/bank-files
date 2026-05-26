@@ -9,6 +9,7 @@ fn annual_budget_usage_uses_year_budget_and_previous_year() {
     ];
     let budgets = vec![BudgetCode {
         code: "FOOD".to_string(),
+        special: crate::model::BudgetSpecialKind::None,
         category: "Groceries".to_string(),
         monthly_budget: Some(BudgetAmount::Fixed(Decimal::new(100, 0))),
         yearly_budget: None,
@@ -63,6 +64,7 @@ fn category_totals_for_year_uses_only_selected_year_current_totals() {
     ];
     let budgets = vec![BudgetCode {
         code: "TRANSFER".to_string(),
+        special: crate::model::BudgetSpecialKind::None,
         category: "Savings".to_string(),
         monthly_budget: None,
         yearly_budget: None,
@@ -90,6 +92,7 @@ fn year_comparison_includes_configured_expense_budgets_without_transactions() {
     let budgets = vec![
         BudgetCode {
             code: "FOOD".to_string(),
+            special: crate::model::BudgetSpecialKind::None,
             category: "Groceries".to_string(),
             monthly_budget: Some(BudgetAmount::Fixed(Decimal::new(100, 0))),
             yearly_budget: None,
@@ -99,6 +102,7 @@ fn year_comparison_includes_configured_expense_budgets_without_transactions() {
         },
         BudgetCode {
             code: "ENT".to_string(),
+            special: crate::model::BudgetSpecialKind::None,
             category: "Subscriptions & entertainment".to_string(),
             monthly_budget: Some(BudgetAmount::IncomePercent(Decimal::new(5, 0))),
             yearly_budget: None,
@@ -138,6 +142,7 @@ fn annual_budget_usage_current_only_omits_previous_values() {
     ];
     let budgets = vec![BudgetCode {
         code: "FOOD".to_string(),
+        special: crate::model::BudgetSpecialKind::None,
         category: "Groceries".to_string(),
         monthly_budget: Some(BudgetAmount::Fixed(Decimal::new(100, 0))),
         yearly_budget: None,

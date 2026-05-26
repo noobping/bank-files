@@ -44,15 +44,9 @@ fn config_csv_headers_map_to_config_files() {
 
 #[test]
 fn editable_budgets_accept_income_percentages() {
-    let budgets = vec![EditableBudget {
-        code: "SAVE".to_string(),
-        category: "Savings".to_string(),
-        monthly_budget: "10%".to_string(),
-        yearly_budget: String::new(),
-        direction: "expense".to_string(),
-        income_basis: "planned".to_string(),
-        notes: "Income based".to_string(),
-    }];
+    let budgets = vec![editable_budget(
+        "SAVE", "", "Savings", "10%", "expense", "planned",
+    )];
 
     validate_editable_budgets(&budgets).unwrap();
     let csv = serialize_editable_budgets(&budgets).unwrap();
@@ -65,15 +59,14 @@ fn editable_budgets_accept_income_percentages() {
 
 #[test]
 fn transfer_budget_code_forces_transfer_direction() {
-    let budgets = vec![EditableBudget {
-        code: " transfer ".to_string(),
-        category: "Transfers".to_string(),
-        monthly_budget: "0".to_string(),
-        yearly_budget: String::new(),
-        direction: "expense".to_string(),
-        income_basis: "planned".to_string(),
-        notes: String::new(),
-    }];
+    let budgets = vec![editable_budget(
+        " transfer ",
+        "",
+        "Transfers",
+        "0",
+        "expense",
+        "planned",
+    )];
 
     let csv = serialize_editable_budgets(&budgets).unwrap();
     let parsed = parse_editable_budgets(&csv).unwrap();
@@ -86,24 +79,8 @@ fn transfer_budget_code_forces_transfer_direction() {
 #[test]
 fn refund_budget_codes_force_canonical_direction_and_basis() {
     let budgets = vec![
-        EditableBudget {
-            code: " refunding ".to_string(),
-            category: "Refunding".to_string(),
-            monthly_budget: "0".to_string(),
-            yearly_budget: String::new(),
-            direction: "income".to_string(),
-            income_basis: "planned".to_string(),
-            notes: String::new(),
-        },
-        EditableBudget {
-            code: " refunded ".to_string(),
-            category: "Refunded".to_string(),
-            monthly_budget: "0".to_string(),
-            yearly_budget: String::new(),
-            direction: "expense".to_string(),
-            income_basis: "planned".to_string(),
-            notes: String::new(),
-        },
+        editable_budget(" refunding ", "", "Refunding", "0", "income", "planned"),
+        editable_budget(" refunded ", "", "Refunded", "0", "expense", "planned"),
     ];
 
     let csv = serialize_editable_budgets(&budgets).unwrap();
@@ -115,6 +92,59 @@ fn refund_budget_codes_force_canonical_direction_and_basis() {
     assert_eq!(parsed[1].code, "REFUNDED");
     assert_eq!(parsed[1].direction, "income");
     assert_eq!(parsed[1].income_basis, "real");
+}
+
+#[test]
+fn special_budget_aliases_keep_custom_codes_and_force_behavior() {
+    let budgets = vec![
+        editable_budget(
+            "INTERNAL",
+            "transfer",
+            "Transfers",
+            "0",
+            "expense",
+            "planned",
+        ),
+        editable_budget(
+            "SALARY",
+            "planned-income",
+            "Income",
+            "1000",
+            "expense",
+            "planned",
+        ),
+        editable_budget(
+            "REFUND_OUT",
+            "refunding",
+            "Refunding",
+            "0",
+            "income",
+            "planned",
+        ),
+        editable_budget(
+            "REFUND_IN",
+            "refunded",
+            "Refunded",
+            "0",
+            "expense",
+            "planned",
+        ),
+    ];
+
+    let csv = serialize_editable_budgets(&budgets).unwrap();
+    let parsed = parse_editable_budgets(&csv).unwrap();
+
+    assert_eq!(parsed[0].code, "INTERNAL");
+    assert_eq!(parsed[0].special, "transfer");
+    assert_eq!(parsed[0].direction, "transfer");
+    assert_eq!(parsed[0].income_basis, "real");
+    assert_eq!(parsed[1].code, "SALARY");
+    assert_eq!(parsed[1].special, "planned-income");
+    assert_eq!(parsed[1].direction, "income");
+    assert_eq!(parsed[2].code, "REFUND_OUT");
+    assert_eq!(parsed[2].direction, "expense");
+    assert_eq!(parsed[3].code, "REFUND_IN");
+    assert_eq!(parsed[3].direction, "income");
 }
 
 #[test]
@@ -239,6 +269,26 @@ fn restore_empty_configuration_clears_rules_and_budgets() {
     );
 
     let _ = fs::remove_dir_all(root);
+}
+
+fn editable_budget(
+    code: &str,
+    special: &str,
+    category: &str,
+    monthly_budget: &str,
+    direction: &str,
+    income_basis: &str,
+) -> EditableBudget {
+    EditableBudget {
+        code: code.to_string(),
+        special: special.to_string(),
+        category: category.to_string(),
+        monthly_budget: monthly_budget.to_string(),
+        yearly_budget: String::new(),
+        direction: direction.to_string(),
+        income_basis: income_basis.to_string(),
+        notes: String::new(),
+    }
 }
 
 fn write_test_configuration(dirs: &AppDirs, rules: &str, budgets: &str, aliases: &str) {

@@ -38,6 +38,7 @@ fn tx(date: &str, amount: i64, description: &str) -> Transaction {
 fn budget(code: &str, category: &str, direction: BudgetDirection) -> crate::model::BudgetCode {
     crate::model::BudgetCode {
         code: code.to_string(),
+        special: crate::model::BudgetSpecialKind::None,
         category: category.to_string(),
         monthly_budget: None,
         yearly_budget: None,

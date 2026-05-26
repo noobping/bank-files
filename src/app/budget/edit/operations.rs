@@ -185,6 +185,7 @@ pub(in crate::app::budget::edit) fn editable_budget_for(
             (
                 EditableBudget {
                     code: code.to_string(),
+                    special: String::new(),
                     category: category.to_string(),
                     monthly_budget: "0".to_string(),
                     yearly_budget: String::new(),

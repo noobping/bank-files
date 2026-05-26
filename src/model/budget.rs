@@ -1,3 +1,4 @@
+use super::BudgetSpecialKind;
 use crate::util::{normalize_key, parse_decimal};
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
@@ -210,6 +211,7 @@ impl BudgetDirection {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct BudgetCode {
     pub code: String,
+    pub special: BudgetSpecialKind,
     pub category: String,
     pub monthly_budget: Option<BudgetAmount>,
     pub yearly_budget: Option<BudgetAmount>,

@@ -48,7 +48,10 @@ pub(super) fn partition_planned_income_budget(
     let mut planned_income_budget = None;
     let mut regular_budgets = Vec::new();
     for budget in budgets {
-        if planned_income::is_budget_code(&budget.code) {
+        if crate::model::budget_special_kind_for_config(&budget.special, &budget.code)
+            .is_planned_income()
+            || planned_income::is_budget_code(&budget.code)
+        {
             planned_income_budget.get_or_insert(budget);
         } else {
             regular_budgets.push(budget);
@@ -64,6 +67,7 @@ mod tests {
     fn budget(code: &str) -> EditableBudget {
         EditableBudget {
             code: code.to_string(),
+            special: String::new(),
             category: code.to_string(),
             monthly_budget: "0".to_string(),
             yearly_budget: String::new(),

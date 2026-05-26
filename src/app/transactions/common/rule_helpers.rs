@@ -1,4 +1,5 @@
 use super::*;
+use crate::model::BudgetCode;
 
 pub(super) fn invalid_auto_detection_rule_for_transaction(tx: &Transaction) -> EditableRule {
     replacement_direction_rule(
@@ -35,7 +36,10 @@ fn non_transfer_rule_values(tx: &Transaction) -> (String, String, &'static str) 
     }
 }
 
-pub(super) fn editable_refund_rule_for_transaction(tx: &Transaction) -> EditableRule {
+pub(super) fn editable_refund_rule_for_transaction(
+    tx: &Transaction,
+    budgets: &[BudgetCode],
+) -> EditableRule {
     let kind = refund_budget::RefundBudgetKind::for_amount(tx.amount);
     let (field, search) = transaction_rule_match(tx);
 
@@ -46,7 +50,8 @@ pub(super) fn editable_refund_rule_for_transaction(tx: &Transaction) -> Editable
         search,
         is_regex: false,
         category: kind.category(),
-        budget_code: kind.code().to_string(),
+        budget_code: configured_special_budget_code(budgets, kind.special())
+            .unwrap_or_else(|| kind.code().to_string()),
         direction: kind.direction().to_string(),
         amount_min: String::new(),
         amount_max: String::new(),
@@ -57,11 +62,12 @@ pub(super) fn editable_refund_rule_for_transaction(tx: &Transaction) -> Editable
 pub(super) fn editable_rule_for_transaction(
     tx: &Transaction,
     direction_override: Option<&str>,
+    budgets: &[BudgetCode],
 ) -> EditableRule {
-    let direction = direction_override.unwrap_or_else(|| transaction_direction_id(tx));
+    let direction = direction_override.unwrap_or_else(|| transaction_direction_id(tx, budgets));
     let (field, search) = transaction_rule_match(tx);
     let category = suggested_category(tx, Some(direction));
-    let budget_code = suggested_budget_code(tx, Some(direction));
+    let budget_code = suggested_budget_code(tx, Some(direction), budgets);
 
     EditableRule {
         priority: 140,
@@ -93,8 +99,8 @@ fn transaction_rule_match(tx: &Transaction) -> (String, String) {
     ("any".to_string(), transaction_search_text(tx))
 }
 
-pub(super) fn transaction_direction_id(tx: &Transaction) -> &'static str {
-    if crate::model::is_transfer_budget_code(&tx.budget_code) {
+pub(super) fn transaction_direction_id(tx: &Transaction, budgets: &[BudgetCode]) -> &'static str {
+    if analytics::transaction_is_transfer(tx, budgets) {
         "transfer"
     } else if tx.amount > Decimal::ZERO {
         "income"
@@ -104,15 +110,25 @@ pub(super) fn transaction_direction_id(tx: &Transaction) -> &'static str {
 }
 
 pub(super) fn suggested_category(tx: &Transaction, direction: Option<&str>) -> String {
-    match direction.unwrap_or_else(|| transaction_direction_id(tx)) {
+    match direction.unwrap_or_else(|| {
+        if tx.amount > Decimal::ZERO {
+            "income"
+        } else {
+            "expense"
+        }
+    }) {
         "transfer" => tr("Transfers"),
         "income" => non_empty_transaction_text(&tx.category).unwrap_or_else(|| tr("Other income")),
         _ => non_empty_transaction_text(&tx.category).unwrap_or_else(|| tr("Other")),
     }
 }
 
-pub(super) fn suggested_budget_code(tx: &Transaction, direction: Option<&str>) -> String {
-    let direction = direction.unwrap_or_else(|| transaction_direction_id(tx));
+pub(super) fn suggested_budget_code(
+    tx: &Transaction,
+    direction: Option<&str>,
+    budgets: &[BudgetCode],
+) -> String {
+    let direction = direction.unwrap_or_else(|| transaction_direction_id(tx, budgets));
     let current = tx.budget_code.trim();
     if !current.is_empty()
         && !matches!(current, "OTHER" | "INC-OTHER")
@@ -122,7 +138,10 @@ pub(super) fn suggested_budget_code(tx: &Transaction, direction: Option<&str>) -
         return current.to_string();
     }
     match direction {
-        "transfer" => "TRANSFER".to_string(),
+        "transfer" => {
+            configured_special_budget_code(budgets, crate::model::BudgetSpecialKind::Transfer)
+                .unwrap_or_else(|| "TRANSFER".to_string())
+        }
         "income" => "INC-OTHER".to_string(),
         _ => suggested_expense_code(tx),
     }
@@ -150,4 +169,14 @@ fn suggested_expense_code(tx: &Transaction) -> String {
 fn non_empty_transaction_text(value: &str) -> Option<String> {
     let value = value.trim();
     (!value.is_empty() && value != "Uncategorized").then(|| value.to_string())
+}
+
+fn configured_special_budget_code(
+    budgets: &[BudgetCode],
+    special: crate::model::BudgetSpecialKind,
+) -> Option<String> {
+    budgets
+        .iter()
+        .find(|budget| budget.special == special)
+        .map(|budget| budget.code.clone())
 }

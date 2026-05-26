@@ -197,28 +197,33 @@ fn set_special_budget_add_actions_enabled(
     forms: &[BudgetForm],
 ) {
     for action in actions {
-        let Some(code) = special_budget_code_for_action(action) else {
+        let Some(special) = special_budget_kind_for_action(action) else {
             continue;
         };
-        action.set_enabled(!budget_forms_contain_code(forms, code));
+        action.set_enabled(!budget_forms_contain_special(forms, special));
     }
 }
 
-fn special_budget_code_for_action(action: &gtk::gio::SimpleAction) -> Option<&'static str> {
+fn special_budget_kind_for_action(
+    action: &gtk::gio::SimpleAction,
+) -> Option<crate::model::BudgetSpecialKind> {
     match action.name().as_str() {
-        "add-planned-income-budget" => Some(planned_income::BUDGET_CODE),
-        "add-transfer-budget" => Some(transfer_budget::BUDGET_CODE),
-        "add-refunding-budget" => Some(crate::model::REFUNDING_BUDGET_CODE),
-        "add-refunded-budget" => Some(crate::model::REFUNDED_BUDGET_CODE),
+        "add-planned-income-budget" => Some(crate::model::BudgetSpecialKind::PlannedIncome),
+        "add-transfer-budget" => Some(crate::model::BudgetSpecialKind::Transfer),
+        "add-refunding-budget" => Some(crate::model::BudgetSpecialKind::Refunding),
+        "add-refunded-budget" => Some(crate::model::BudgetSpecialKind::Refunded),
         _ => None,
     }
 }
 
-fn budget_forms_contain_code(forms: &[BudgetForm], code: &str) -> bool {
-    forms
-        .iter()
-        .filter(|form| !form.deleted.get())
-        .any(|form| ui::combo_text(&form.code).eq_ignore_ascii_case(code))
+fn budget_forms_contain_special(
+    forms: &[BudgetForm],
+    special: crate::model::BudgetSpecialKind,
+) -> bool {
+    forms.iter().filter(|form| !form.deleted.get()).any(|form| {
+        crate::model::budget_special_kind_for_config(&form.special, &ui::combo_text(&form.code))
+            == special
+    })
 }
 
 pub(super) fn set_management_form_action_widgets_sensitive(

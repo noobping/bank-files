@@ -37,12 +37,13 @@ pub(super) fn transaction_detail_actions(
     let advanced_features = ui_handles.advanced_features.get();
     let auto_detected_classification =
         crate::rules::transaction_classification_is_auto_detected(tx);
-    let (markable_as_transfer, markable_as_refund, budget_move_available) = {
+    let (markable_as_transfer, markable_as_refund, budget_move_available, budgets) = {
         let data = state.borrow();
         (
             transaction_is_markable_as_transfer(tx, &data.budgets),
             !analytics::transaction_is_refund(tx, &data.budgets),
             transaction_budget_move_available(tx, &data.budgets, advanced_features),
+            data.budgets.clone(),
         )
     };
     let special_marked = !markable_as_transfer || !markable_as_refund;
@@ -155,6 +156,7 @@ pub(super) fn transaction_detail_actions(
         if let Some(enabled) = config_menu_action_enabled {
             append_mark_transfer_action(
                 tx,
+                &budgets,
                 ui_handles,
                 &primary_actions,
                 &menu,
@@ -169,6 +171,7 @@ pub(super) fn transaction_detail_actions(
         if let Some(enabled) = config_menu_action_enabled {
             append_mark_refund_action(
                 tx,
+                &budgets,
                 ui_handles,
                 &primary_actions,
                 &menu,
@@ -239,7 +242,10 @@ pub(super) fn transaction_detail_actions(
                     ) {
                         return;
                     }
-                    let code = suggested_budget_code(&tx_for_budget, None);
+                    let code = {
+                        let data = state_for_budget.borrow();
+                        suggested_budget_code(&tx_for_budget, None, &data.budgets)
+                    };
                     let category = suggested_category(&tx_for_budget, None);
                     show_budget_edit_dialog(&code, &category, &state_for_budget, &ui_for_budget);
                 },

@@ -24,6 +24,7 @@ pub(in crate::app) struct BudgetForm {
     pub(in crate::app) original_direction: Rc<RefCell<Option<BudgetDirection>>>,
     pub(in crate::app) auto_code: Rc<Cell<bool>>,
     pub(in crate::app) code: gtk::ComboBoxText,
+    pub(in crate::app) special: String,
     pub(in crate::app) category: gtk::ComboBoxText,
     pub(in crate::app) monthly_budget: gtk::Entry,
     pub(in crate::app) yearly_budget: gtk::Entry,
@@ -153,8 +154,9 @@ pub(in crate::app) fn rule_form_matches(form: &RuleForm, filter: &SearchFilter) 
 
 pub(in crate::app) fn budget_form_matches(form: &BudgetForm, filter: &SearchFilter) -> bool {
     filter.matches(&format!(
-        "{} {} {} {} {} {} {} {}",
+        "{} {} {} {} {} {} {} {} {}",
         ui::combo_text(&form.code),
+        form.special.as_str(),
         ui::combo_text(&form.category),
         form.monthly_budget.text(),
         form.yearly_budget.text(),

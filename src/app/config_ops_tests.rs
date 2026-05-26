@@ -14,6 +14,7 @@ fn rule(search: &str, code: &str) -> EditableRule {
 fn budget(code: &str) -> EditableBudget {
     EditableBudget {
         code: code.to_string(),
+        special: String::new(),
         category: "Household".to_string(),
         direction: "expense".to_string(),
         ..EditableBudget::new_default()

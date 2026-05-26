@@ -1,6 +1,9 @@
 use super::defaults::{localized_default_budgets, localized_default_rules, parse_bool};
 use super::Rule;
-use crate::model::{BudgetAmount, BudgetCode, BudgetDirection, BudgetIncomeBasis};
+use crate::model::{
+    budget_special_kind_for_config, BudgetAmount, BudgetCode, BudgetDirection, BudgetIncomeBasis,
+    BudgetSpecialKind,
+};
 use crate::util::parse_decimal;
 
 use anyhow::{Context, Result};
@@ -66,16 +69,25 @@ pub fn load_budget_codes(config_dir: &Path) -> Result<Vec<BudgetCode>> {
         if code.trim().is_empty() {
             continue;
         }
+        let special = budget_special_kind_for_config(&budget_special_cell(&headers, &row), &code);
         let category = non_empty(cell(&headers, &row, "category"), "Uncategorized");
-        let direction =
-            BudgetDirection::parse(&cell(&headers, &row, "direction"), &code, &category);
+        let direction = budget_direction_for_load(
+            &cell(&headers, &row, "direction"),
+            &code,
+            &category,
+            special,
+        );
         codes.push(BudgetCode {
             code,
+            special,
             category,
             monthly_budget: BudgetAmount::parse_optional(&cell(&headers, &row, "monthly_budget")),
             yearly_budget: BudgetAmount::parse_optional(&cell(&headers, &row, "yearly_budget")),
             direction,
-            income_basis: BudgetIncomeBasis::parse(&cell(&headers, &row, "income_basis")),
+            income_basis: budget_income_basis_for_load(
+                &cell(&headers, &row, "income_basis"),
+                special,
+            ),
             notes: cell(&headers, &row, "notes"),
         });
     }
@@ -97,5 +109,36 @@ fn non_empty(value: String, fallback: &str) -> String {
         fallback.to_string()
     } else {
         value
+    }
+}
+
+fn budget_special_cell(headers: &[String], row: &csv::StringRecord) -> String {
+    let special = cell(headers, row, "special");
+    if special.trim().is_empty() {
+        cell(headers, row, "kind")
+    } else {
+        special
+    }
+}
+
+fn budget_direction_for_load(
+    input: &str,
+    code: &str,
+    category: &str,
+    special: BudgetSpecialKind,
+) -> BudgetDirection {
+    match special {
+        BudgetSpecialKind::PlannedIncome | BudgetSpecialKind::Refunded => BudgetDirection::Income,
+        BudgetSpecialKind::Transfer => BudgetDirection::Transfer,
+        BudgetSpecialKind::Refunding => BudgetDirection::Expense,
+        BudgetSpecialKind::None => BudgetDirection::parse(input, code, category),
+    }
+}
+
+fn budget_income_basis_for_load(input: &str, special: BudgetSpecialKind) -> BudgetIncomeBasis {
+    if matches!(special, BudgetSpecialKind::None) {
+        BudgetIncomeBasis::parse(input)
+    } else {
+        BudgetIncomeBasis::RealIncome
     }
 }

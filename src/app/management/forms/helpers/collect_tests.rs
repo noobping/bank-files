@@ -27,6 +27,7 @@ fn planned_income_budget_code_is_reserved() {
 fn refund_budget_codes_are_reserved_for_canonical_fields() {
     let budget = refund_budget::normalize_editable_budget(EditableBudget {
         code: " refunded ".to_string(),
+        special: String::new(),
         category: "Returned".to_string(),
         monthly_budget: "10%".to_string(),
         yearly_budget: String::new(),
@@ -44,6 +45,7 @@ fn refund_budget_codes_are_reserved_for_canonical_fields() {
 fn transfer_budget_code_is_reserved_for_canonical_fields() {
     let budget = transfer_budget::normalize_editable_budget(EditableBudget {
         code: " transfer ".to_string(),
+        special: String::new(),
         category: "Internal".to_string(),
         monthly_budget: "10%".to_string(),
         yearly_budget: String::new(),

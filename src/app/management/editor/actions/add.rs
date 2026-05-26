@@ -135,12 +135,12 @@ enum SpecialBudgetAdd {
 }
 
 impl SpecialBudgetAdd {
-    fn code(self) -> &'static str {
+    fn kind(self) -> crate::model::BudgetSpecialKind {
         match self {
-            Self::PlannedIncome => planned_income::BUDGET_CODE,
-            Self::Transfer => transfer_budget::BUDGET_CODE,
-            Self::Refunding => crate::model::REFUNDING_BUDGET_CODE,
-            Self::Refunded => crate::model::REFUNDED_BUDGET_CODE,
+            Self::PlannedIncome => crate::model::BudgetSpecialKind::PlannedIncome,
+            Self::Transfer => crate::model::BudgetSpecialKind::Transfer,
+            Self::Refunding => crate::model::BudgetSpecialKind::Refunding,
+            Self::Refunded => crate::model::BudgetSpecialKind::Refunded,
         }
     }
 
@@ -205,7 +205,7 @@ fn connect_special_budget_add_action(
         if !action.is_enabled() {
             return;
         }
-        if special_budget_form_exists(&budgets_forms.borrow(), special.code()) {
+        if special_budget_form_exists(&budgets_forms.borrow(), special.kind()) {
             status.set_text(&special.already_exists_message());
             action.set_enabled(false);
             return;
@@ -247,11 +247,14 @@ fn append_special_budget_form(
     }
 }
 
-fn special_budget_form_exists(forms: &[BudgetForm], code: &str) -> bool {
-    forms
-        .iter()
-        .filter(|form| !form.deleted.get())
-        .any(|form| ui::combo_text(&form.code).eq_ignore_ascii_case(code))
+fn special_budget_form_exists(
+    forms: &[BudgetForm],
+    special: crate::model::BudgetSpecialKind,
+) -> bool {
+    forms.iter().filter(|form| !form.deleted.get()).any(|form| {
+        crate::model::budget_special_kind_for_config(&form.special, &ui::combo_text(&form.code))
+            == special
+    })
 }
 
 fn scroll_budget_forms_to_bottom(scrolled_window: &gtk::ScrolledWindow) {

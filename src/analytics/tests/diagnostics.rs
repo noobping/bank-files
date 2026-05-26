@@ -12,6 +12,7 @@ fn unconfigured_expense_budget_count_matches_transaction_filter_predicate() {
     let budgets = vec![
         BudgetCode {
             code: "FOOD".to_string(),
+            special: crate::model::BudgetSpecialKind::None,
             category: "Groceries".to_string(),
             monthly_budget: Some(BudgetAmount::Fixed(Decimal::new(100, 0))),
             yearly_budget: None,
@@ -21,6 +22,7 @@ fn unconfigured_expense_budget_count_matches_transaction_filter_predicate() {
         },
         BudgetCode {
             code: "SAVE".to_string(),
+            special: crate::model::BudgetSpecialKind::None,
             category: "Savings".to_string(),
             monthly_budget: None,
             yearly_budget: None,

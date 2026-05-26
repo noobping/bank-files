@@ -179,6 +179,7 @@ mod tests {
     fn configured_yearly_budget(code: &str, yearly: i64) -> BudgetCode {
         BudgetCode {
             code: code.to_string(),
+            special: crate::model::BudgetSpecialKind::None,
             category: "Travel".to_string(),
             monthly_budget: None,
             yearly_budget: Some(BudgetAmount::Fixed(Decimal::new(yearly, 0))),

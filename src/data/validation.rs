@@ -26,6 +26,8 @@ pub(in crate::data) fn validate_editable_budgets(budgets: &[EditableBudget]) -> 
             .with_context(|| format!("Budget {} has an invalid monthly budget", index + 1))?;
         validate_budget_amount(&budget.yearly_budget)
             .with_context(|| format!("Budget {} has an invalid yearly budget", index + 1))?;
+        validate_budget_special(&budget.special)
+            .with_context(|| format!("Budget {} has an invalid special kind", index + 1))?;
         validate_budget_direction(&budget.direction)
             .with_context(|| format!("Budget {} has an invalid direction", index + 1))?;
         validate_budget_income_basis(&budget.income_basis)
@@ -39,6 +41,14 @@ pub(in crate::data) fn validate_budget_amount(input: &str) -> Result<()> {
         Ok(())
     } else {
         anyhow::bail!("Invalid budget amount: {input}")
+    }
+}
+
+pub(in crate::data) fn validate_budget_special(input: &str) -> Result<()> {
+    if crate::model::budget_special_kind_is_valid_config(input) {
+        Ok(())
+    } else {
+        anyhow::bail!("Invalid budget special kind: {input}")
     }
 }
 

@@ -45,5 +45,6 @@ use detail_state::{
 use list::{transaction_detail_rows, TransactionDetailRow};
 #[cfg(test)]
 use rule_helpers::{
-    editable_refund_rule_for_transaction, invalid_auto_detection_rule_for_transaction,
+    editable_refund_rule_for_transaction, editable_rule_for_transaction,
+    invalid_auto_detection_rule_for_transaction,
 };

@@ -45,9 +45,11 @@ pub(in crate::app) fn collect_budget_forms(forms: &[BudgetForm]) -> Vec<Editable
 
 fn editable_budget_from_form(form: &BudgetForm) -> EditableBudget {
     let code = ui::combo_text(&form.code);
-    let planned_income = budget_code_is_planned_income(&code);
+    let special = crate::model::budget_special_kind_for_config(&form.special, &code);
+    let planned_income = special.is_planned_income() || budget_code_is_planned_income(&code);
     EditableBudget {
         code,
+        special: special.as_config().to_string(),
         category: ui::combo_text(&form.category),
         monthly_budget: budget_amount_text_for_save(&form.monthly_budget.text(), planned_income),
         yearly_budget: budget_amount_text_for_save(&form.yearly_budget.text(), planned_income),

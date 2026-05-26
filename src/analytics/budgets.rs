@@ -43,10 +43,11 @@ pub fn budget_usage(
 
     let mut rows = Vec::new();
     let mut configured_codes = HashMap::new();
-    for budget in budgets
-        .iter()
-        .filter(|budget| budget.direction.is_expense() && !is_refund_budget_code(&budget.code))
-    {
+    for budget in budgets.iter().filter(|budget| {
+        budget.direction.is_expense()
+            && !budget.special.is_refund()
+            && !is_refund_budget_code(&budget.code)
+    }) {
         configured_codes.insert(budget.code.clone(), ());
         let actual = actual_by_code
             .get(&budget.code)

@@ -46,13 +46,17 @@ pub(in crate::app) fn show_budget_edit_dialog(
     } else {
         editable_budget_for(code, fallback_category)
     };
-    if planned_income::is_budget_code(&initial.code) {
+    let initial_special = initial.special.clone();
+    let initial_special_kind =
+        crate::model::budget_special_kind_for_config(&initial_special, &initial.code);
+    if initial_special_kind.is_planned_income() || planned_income::is_budget_code(&initial.code) {
         show_planned_income_budget_edit_dialog(initial, can_delete_budget, state, ui_handles);
         return;
     }
 
     let advanced_features = ui_handles.advanced_features.get();
-    let is_special_neutral_budget = budget_is_special_neutral(&initial.code);
+    let is_special_neutral_budget =
+        initial_special_kind.is_neutral() || budget_is_special_neutral(&initial.code);
     let hide_special_controls =
         budget_special_controls_are_hidden(advanced_features, is_special_neutral_budget);
     let dialog_title = budget_dialog_title(creating_budget, advanced_features);
@@ -160,6 +164,7 @@ pub(in crate::app) fn show_budget_edit_dialog(
     let code_for_save = initial.code.clone();
     let category_for_save = initial.category.clone();
     let direction_for_save = initial.direction.clone();
+    let special_for_save = initial_special.clone();
     let status_for_save = status.clone();
     let delete_button_for_save = if creating_budget {
         None
@@ -195,6 +200,7 @@ pub(in crate::app) fn show_budget_edit_dialog(
         let budget = refund_budget::normalize_editable_budget(
             transfer_budget::normalize_editable_budget(EditableBudget {
                 code: code_text,
+                special: special_for_save.clone(),
                 category: category_text,
                 monthly_budget: monthly_budget.text().trim().to_string(),
                 yearly_budget: yearly_budget.text().trim().to_string(),
@@ -256,6 +262,7 @@ fn budget_dialog_title(creating_budget: bool, advanced_features: bool) -> &'stat
 fn new_budget_template() -> EditableBudget {
     EditableBudget {
         code: String::new(),
+        special: String::new(),
         category: String::new(),
         monthly_budget: "0".to_string(),
         yearly_budget: String::new(),

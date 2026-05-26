@@ -7,7 +7,10 @@ pub(super) fn show_transaction_rule_dialog(
     ui_handles: &Rc<UiHandles>,
     direction_override: Option<&str>,
 ) {
-    let initial = editable_rule_for_transaction(tx, direction_override);
+    let initial = {
+        let data = state.borrow();
+        editable_rule_for_transaction(tx, direction_override, &data.budgets)
+    };
     show_rule_enqueue_dialog(
         initial,
         RuleDialogSpec {

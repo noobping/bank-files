@@ -71,19 +71,23 @@ fn simple_rule_summary(widgets: RuleSummaryWidgets<'_>) -> (String, String) {
     )
 }
 
-pub(super) fn budget_summary(
-    code: &gtk::ComboBoxText,
-    category: &gtk::ComboBoxText,
-    monthly_budget: &gtk::Entry,
-    yearly_budget: &gtk::Entry,
-    direction: &gtk::ComboBoxText,
-    income_basis: &gtk::ComboBoxText,
-    show_code: bool,
-) -> (String, String) {
-    let code_text = ui::combo_text(code);
-    let category_text = ui::combo_text(category);
-    let planned_income = planned_income::is_budget_code(&code_text);
-    let title = if show_code {
+pub(super) struct BudgetSummaryWidgets<'a> {
+    pub(super) code: &'a gtk::ComboBoxText,
+    pub(super) category: &'a gtk::ComboBoxText,
+    pub(super) monthly_budget: &'a gtk::Entry,
+    pub(super) yearly_budget: &'a gtk::Entry,
+    pub(super) direction: &'a gtk::ComboBoxText,
+    pub(super) income_basis: &'a gtk::ComboBoxText,
+    pub(super) special: &'a str,
+    pub(super) show_code: bool,
+}
+
+pub(super) fn budget_summary(widgets: BudgetSummaryWidgets<'_>) -> (String, String) {
+    let code_text = ui::combo_text(widgets.code);
+    let category_text = ui::combo_text(widgets.category);
+    let special = crate::model::budget_special_kind_for_config(widgets.special, &code_text);
+    let planned_income = special.is_planned_income() || planned_income::is_budget_code(&code_text);
+    let title = if widgets.show_code {
         format!(
             "{} · {}",
             entry_summary_text(&code_text, "No code"),
@@ -93,30 +97,33 @@ pub(super) fn budget_summary(
         entry_summary_text(&category_text, "Uncategorized")
     };
     let mut parts = vec![
-        combo_display_text(direction),
+        combo_display_text(widgets.direction),
         format!(
             "{} {}",
             tr("monthly"),
             if planned_income {
-                entry_summary_fixed_budget(monthly_budget, "-")
+                entry_summary_fixed_budget(widgets.monthly_budget, "-")
             } else {
-                entry_summary(monthly_budget, "-")
+                entry_summary(widgets.monthly_budget, "-")
             }
         ),
         format!(
             "{} {}",
             tr("yearly"),
             if planned_income {
-                entry_summary_fixed_budget(yearly_budget, "-")
+                entry_summary_fixed_budget(widgets.yearly_budget, "-")
             } else {
-                entry_summary(yearly_budget, "-")
+                entry_summary(widgets.yearly_budget, "-")
             }
         ),
     ];
     if !planned_income
-        && budget_values_use_percentage(&monthly_budget.text(), &yearly_budget.text())
+        && budget_values_use_percentage(
+            &widgets.monthly_budget.text(),
+            &widgets.yearly_budget.text(),
+        )
     {
-        parts.push(combo_display_text(income_basis));
+        parts.push(combo_display_text(widgets.income_basis));
     }
     (title, parts.join(" · "))
 }

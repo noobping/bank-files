@@ -7,10 +7,11 @@ pub(in crate::app::budget::edit) fn show_planned_income_budget_edit_dialog(
     ui_handles: &Rc<UiHandles>,
 ) {
     let advanced_features = ui_handles.advanced_features.get();
+    let budget_code = initial.code.clone();
     let header = ui::cancelable_dialog_header(
         "Edit Planned Income",
         if advanced_features {
-            planned_income::BUDGET_CODE
+            budget_code.as_str()
         } else {
             "Planned income"
         },
@@ -33,7 +34,7 @@ pub(in crate::app::budget::edit) fn show_planned_income_budget_edit_dialog(
     page.append(&ui::section_title(
         "Planned Income",
         if advanced_features {
-            "Set fixed monthly and yearly planned income for the INC budget code."
+            "Set fixed monthly and yearly planned income for this budget code."
         } else {
             "Set fixed monthly and yearly planned income."
         },
@@ -44,12 +45,7 @@ pub(in crate::app::budget::edit) fn show_planned_income_budget_edit_dialog(
 
     let grid = ui::form_grid();
     if advanced_features {
-        ui::add_labeled(
-            &grid,
-            0,
-            "Budget code",
-            &ui::wrapped_label(planned_income::BUDGET_CODE),
-        );
+        ui::add_labeled(&grid, 0, "Budget code", &ui::wrapped_label(&budget_code));
     }
     let category = ui::text_combo(&initial.category, app_category_values(&state.borrow()));
     let monthly_budget = ui::entry(
@@ -96,6 +92,7 @@ pub(in crate::app::budget::edit) fn show_planned_income_budget_edit_dialog(
     let dialog_for_save = dialog.clone();
     let status_for_save = status.clone();
     let delete_button_for_save = delete_button.clone();
+    let budget_code_for_save = budget_code.clone();
     save_button.connect_clicked(move |button| {
         let category_text = ui::combo_text(&category);
         if category_text.is_empty() {
@@ -104,12 +101,16 @@ pub(in crate::app::budget::edit) fn show_planned_income_budget_edit_dialog(
             return;
         }
 
-        let budget = planned_income::editable_budget(
+        let mut budget = planned_income::editable_budget(
             category_text,
             monthly_budget.text().trim().to_string(),
             yearly_budget.text().trim().to_string(),
             notes.text().trim().to_string(),
         );
+        budget.code = budget_code_for_save.clone();
+        budget.special = crate::model::BudgetSpecialKind::PlannedIncome
+            .as_config()
+            .to_string();
         save_budget_with_reload(
             budget,
             BudgetSaveUi {
@@ -129,7 +130,7 @@ pub(in crate::app::budget::edit) fn show_planned_income_budget_edit_dialog(
         save_button: &save_button,
         status: &status,
         dialog: &dialog,
-        code: planned_income::BUDGET_CODE.to_string(),
+        code: budget_code,
         state: Rc::clone(state),
         ui_handles: Rc::clone(ui_handles),
     });

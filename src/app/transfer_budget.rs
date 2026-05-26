@@ -9,6 +9,9 @@ pub(in crate::app) fn is_budget_code(code: &str) -> bool {
 pub(in crate::app) fn editable_budget(notes: String) -> EditableBudget {
     EditableBudget {
         code: BUDGET_CODE.to_string(),
+        special: crate::model::BudgetSpecialKind::Transfer
+            .as_config()
+            .to_string(),
         category: tr("Transfers"),
         monthly_budget: "0".to_string(),
         yearly_budget: String::new(),
@@ -19,8 +22,14 @@ pub(in crate::app) fn editable_budget(notes: String) -> EditableBudget {
 }
 
 pub(in crate::app) fn normalize_editable_budget(mut budget: EditableBudget) -> EditableBudget {
-    if is_budget_code(&budget.code) {
-        budget.code = BUDGET_CODE.to_string();
+    let special = crate::model::budget_special_kind_for_config(&budget.special, &budget.code);
+    if special.is_transfer() || is_budget_code(&budget.code) {
+        if is_budget_code(&budget.code) {
+            budget.code = BUDGET_CODE.to_string();
+        }
+        budget.special = crate::model::BudgetSpecialKind::Transfer
+            .as_config()
+            .to_string();
         budget.direction = "transfer".to_string();
         budget.income_basis = "real".to_string();
     }
@@ -67,6 +76,9 @@ mod tests {
     fn transfer_budget_normalization_keeps_user_text_but_forces_canonical_fields() {
         let budget = normalize_editable_budget(EditableBudget {
             code: " transfer ".to_string(),
+            special: crate::model::BudgetSpecialKind::Transfer
+                .as_config()
+                .to_string(),
             category: "Internal".to_string(),
             monthly_budget: "10%".to_string(),
             yearly_budget: String::new(),
@@ -78,6 +90,26 @@ mod tests {
         assert_eq!(budget.code, BUDGET_CODE);
         assert_eq!(budget.category, "Internal");
         assert_eq!(budget.monthly_budget, "10%");
+        assert_eq!(budget.direction, "transfer");
+        assert_eq!(budget.income_basis, "real");
+    }
+
+    #[test]
+    fn transfer_budget_normalization_keeps_alias_code() {
+        let budget = normalize_editable_budget(EditableBudget {
+            code: "INTERNAL".to_string(),
+            special: crate::model::BudgetSpecialKind::Transfer
+                .as_config()
+                .to_string(),
+            category: "Internal".to_string(),
+            monthly_budget: "0".to_string(),
+            yearly_budget: String::new(),
+            direction: "expense".to_string(),
+            income_basis: "planned".to_string(),
+            notes: String::new(),
+        });
+
+        assert_eq!(budget.code, "INTERNAL");
         assert_eq!(budget.direction, "transfer");
         assert_eq!(budget.income_basis, "real");
     }

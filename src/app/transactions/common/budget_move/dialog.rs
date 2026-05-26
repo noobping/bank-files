@@ -12,7 +12,10 @@ pub(in crate::app::transactions::common) fn show_transaction_budget_code_dialog(
     state: &Rc<RefCell<AppData>>,
     ui_handles: &Rc<UiHandles>,
 ) {
-    let initial = editable_rule_for_transaction(tx, None);
+    let initial = {
+        let data = state.borrow();
+        editable_rule_for_transaction(tx, None, &data.budgets)
+    };
     let advanced_features = ui_handles.advanced_features.get();
 
     let dialog_title = if advanced_features {

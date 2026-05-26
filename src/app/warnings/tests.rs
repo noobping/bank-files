@@ -60,6 +60,7 @@ fn budget(
 ) -> BudgetCode {
     BudgetCode {
         code: code.to_string(),
+        special: crate::model::BudgetSpecialKind::None,
         category: category.to_string(),
         monthly_budget: Some(BudgetAmount::Fixed(dec(monthly_budget))),
         yearly_budget: None,
@@ -72,6 +73,7 @@ fn budget(
 fn yearly_budget(code: &str, category: &str, yearly_budget: i64) -> BudgetCode {
     BudgetCode {
         code: code.to_string(),
+        special: crate::model::BudgetSpecialKind::None,
         category: category.to_string(),
         monthly_budget: None,
         yearly_budget: Some(BudgetAmount::Fixed(dec(yearly_budget))),

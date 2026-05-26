@@ -56,14 +56,20 @@ pub fn transaction_is_transfer(tx: &Transaction, budgets: &[BudgetCode]) -> bool
     }
     !code.is_empty()
         && budgets.iter().any(|budget| {
-            !is_refund_budget_code(&budget.code)
-                && budget.direction.is_transfer()
+            !budget.special.is_refund()
+                && !is_refund_budget_code(&budget.code)
+                && (budget.special.is_transfer() || budget.direction.is_transfer())
                 && budget.code.trim().eq_ignore_ascii_case(code)
         })
 }
 
-pub fn transaction_is_refund(tx: &Transaction, _budgets: &[BudgetCode]) -> bool {
-    is_refund_budget_code(&tx.budget_code)
+pub fn transaction_is_refund(tx: &Transaction, budgets: &[BudgetCode]) -> bool {
+    let code = tx.budget_code.trim();
+    is_refund_budget_code(code)
+        || (!code.is_empty()
+            && budgets.iter().any(|budget| {
+                budget.special.is_refund() && budget.code.trim().eq_ignore_ascii_case(code)
+            }))
 }
 
 pub fn transaction_is_budget_neutral(tx: &Transaction, budgets: &[BudgetCode]) -> bool {

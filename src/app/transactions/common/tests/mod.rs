@@ -31,6 +31,7 @@ pub(super) fn tx(amount: i64, budget_code: &str, category: &str) -> Transaction 
 pub(super) fn budget(code: &str, direction: BudgetDirection) -> BudgetCode {
     BudgetCode {
         code: code.to_string(),
+        special: crate::model::BudgetSpecialKind::None,
         category: code.to_string(),
         monthly_budget: None,
         yearly_budget: None,

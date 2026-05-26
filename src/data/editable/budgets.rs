@@ -1,7 +1,7 @@
 use super::*;
 use crate::model::{
-    canonical_special_budget_code, is_planned_income_budget_code, is_refund_budget_code,
-    is_transfer_budget_code, BudgetDirection, BudgetIncomeBasis,
+    budget_special_kind_for_config, canonical_special_budget_code, BudgetDirection,
+    BudgetIncomeBasis, BudgetSpecialKind,
 };
 
 pub(in crate::data) fn parse_editable_budgets(contents: &str) -> Result<Vec<EditableBudget>> {
@@ -20,16 +20,22 @@ pub(in crate::data) fn parse_editable_budgets(contents: &str) -> Result<Vec<Edit
     for row in rdr.records() {
         let row = row?;
         let code = budget_code_for_config(&csv_cell(&headers, &row, "code"));
+        let special = budget_special_kind_for_config(&budget_special_cell(&headers, &row), &code);
         if code.trim().is_empty() {
             continue;
         }
         let category = non_empty(csv_cell(&headers, &row, "category"), "Uncategorized");
-        let direction =
-            budget_direction_for_config(&csv_cell(&headers, &row, "direction"), &code, &category);
+        let direction = budget_direction_for_config(
+            &csv_cell(&headers, &row, "direction"),
+            &code,
+            &category,
+            special,
+        );
         let income_basis =
-            budget_income_basis_for_config(&csv_cell(&headers, &row, "income_basis"), &code);
+            budget_income_basis_for_config(&csv_cell(&headers, &row, "income_basis"), special);
         budgets.push(EditableBudget {
             code,
+            special: special.as_config().to_string(),
             category,
             monthly_budget: csv_cell(&headers, &row, "monthly_budget"),
             yearly_budget: csv_cell(&headers, &row, "yearly_budget"),
@@ -42,34 +48,40 @@ pub(in crate::data) fn parse_editable_budgets(contents: &str) -> Result<Vec<Edit
     Ok(budgets)
 }
 
+fn budget_special_cell(headers: &[String], row: &csv::StringRecord) -> String {
+    let special = csv_cell(headers, row, "special");
+    if special.trim().is_empty() {
+        csv_cell(headers, row, "kind")
+    } else {
+        special
+    }
+}
+
 fn budget_code_for_config(code: &str) -> String {
     canonical_special_budget_code(code)
         .unwrap_or_else(|| code.trim())
         .to_string()
 }
 
-fn budget_income_basis_for_config(input: &str, code: &str) -> BudgetIncomeBasis {
-    if is_planned_income_budget_code(code)
-        || is_transfer_budget_code(code)
-        || is_refund_budget_code(code)
-    {
+fn budget_income_basis_for_config(input: &str, special: BudgetSpecialKind) -> BudgetIncomeBasis {
+    if !matches!(special, BudgetSpecialKind::None) {
         BudgetIncomeBasis::RealIncome
     } else {
         BudgetIncomeBasis::parse(input)
     }
 }
 
-fn budget_direction_for_config(input: &str, code: &str, category: &str) -> BudgetDirection {
-    if is_planned_income_budget_code(code) {
-        BudgetDirection::Income
-    } else if is_transfer_budget_code(code) {
-        BudgetDirection::Transfer
-    } else if crate::model::is_refunded_budget_code(code) {
-        BudgetDirection::Income
-    } else if crate::model::is_refunding_budget_code(code) {
-        BudgetDirection::Expense
-    } else {
-        BudgetDirection::parse(input, code, category)
+fn budget_direction_for_config(
+    input: &str,
+    code: &str,
+    category: &str,
+    special: BudgetSpecialKind,
+) -> BudgetDirection {
+    match special {
+        BudgetSpecialKind::PlannedIncome | BudgetSpecialKind::Refunded => BudgetDirection::Income,
+        BudgetSpecialKind::Transfer => BudgetDirection::Transfer,
+        BudgetSpecialKind::Refunding => BudgetDirection::Expense,
+        BudgetSpecialKind::None => BudgetDirection::parse(input, code, category),
     }
 }
 
@@ -77,6 +89,7 @@ pub(in crate::data) fn serialize_editable_budgets(budgets: &[EditableBudget]) ->
     let mut wtr = csv::WriterBuilder::new().from_writer(Vec::new());
     wtr.write_record([
         "code",
+        "special",
         "category",
         "monthly_budget",
         "yearly_budget",
@@ -89,11 +102,13 @@ pub(in crate::data) fn serialize_editable_budgets(budgets: &[EditableBudget]) ->
         .iter()
         .filter(|budget| !budget.code.trim().is_empty())
     {
+        let special = budget_special_kind_for_config(&budget.special, &budget.code);
         let direction =
-            budget_direction_for_config(&budget.direction, &budget.code, &budget.category);
-        let income_basis = budget_income_basis_for_config(&budget.income_basis, &budget.code);
+            budget_direction_for_config(&budget.direction, &budget.code, &budget.category, special);
+        let income_basis = budget_income_basis_for_config(&budget.income_basis, special);
         wtr.write_record([
             budget_code_for_config(&budget.code),
+            special.as_config().to_string(),
             budget.category.trim().to_string(),
             budget.monthly_budget.trim().to_string(),
             budget.yearly_budget.trim().to_string(),

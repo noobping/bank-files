@@ -4,7 +4,7 @@ use super::state::{
     attach_details_grid, connect_budget_delete_button, connect_combo_summary,
     connect_entry_summary, set_summary,
 };
-use super::summaries::budget_summary;
+use super::summaries::{budget_summary, BudgetSummaryWidgets};
 use super::values::{budget_value, BudgetValueWidgets};
 
 pub(in crate::app) fn append_planned_income_budget_form(
@@ -13,15 +13,14 @@ pub(in crate::app) fn append_planned_income_budget_form(
     budget: EditableBudget,
     advanced_features: bool,
 ) {
+    let special_config = budget.special.clone();
+    let original_code = budget.code.trim().to_string();
     let card = collapsible_form_card("Planned Income", "", "Delete planned income budget");
     enable_budget_card_reorder(container, forms, &card, advanced_features);
 
     let grid = form_grid();
-    let code = ui::text_combo(
-        planned_income::BUDGET_CODE,
-        [planned_income::BUDGET_CODE.to_string()],
-    );
-    code.set_sensitive(false);
+    let code = ui::text_combo(&budget.code, editable_budget_code_values());
+    code.set_sensitive(advanced_features);
     let category = ui::text_combo(&budget.category, editable_category_values());
     let monthly_budget = entry(
         &planned_income::fixed_budget_amount_text(&budget.monthly_budget),
@@ -65,21 +64,24 @@ pub(in crate::app) fn append_planned_income_budget_form(
         let yearly_budget = yearly_budget.clone();
         let direction = direction.clone();
         let income_basis = income_basis.clone();
+        let special_for_summary = special_config.clone();
         Rc::new(move || {
             set_summary(
                 &row,
-                budget_summary(
-                    &code,
-                    &category,
-                    &monthly_budget,
-                    &yearly_budget,
-                    &direction,
-                    &income_basis,
-                    advanced_features,
-                ),
+                budget_summary(BudgetSummaryWidgets {
+                    code: &code,
+                    category: &category,
+                    monthly_budget: &monthly_budget,
+                    yearly_budget: &yearly_budget,
+                    direction: &direction,
+                    income_basis: &income_basis,
+                    special: &special_for_summary,
+                    show_code: advanced_features,
+                }),
             );
         })
     };
+    connect_combo_summary(&code, &update_summary);
     connect_combo_summary(&category, &update_summary);
     connect_entry_summary(&monthly_budget, &update_summary);
     connect_entry_summary(&yearly_budget, &update_summary);
@@ -87,6 +89,7 @@ pub(in crate::app) fn append_planned_income_budget_form(
 
     let original_budget = budget_value(BudgetValueWidgets {
         code: &code,
+        special: &special_config,
         category: &category,
         monthly_budget: &monthly_budget,
         yearly_budget: &yearly_budget,
@@ -108,6 +111,7 @@ pub(in crate::app) fn append_planned_income_budget_form(
             revert_button.set_sensitive(
                 budget_value(BudgetValueWidgets {
                     code: &code,
+                    special: &original_budget.special,
                     category: &category,
                     monthly_budget: &monthly_budget,
                     yearly_budget: &yearly_budget,
@@ -118,6 +122,7 @@ pub(in crate::app) fn append_planned_income_budget_form(
             );
         })
     };
+    connect_combo_summary(&code, &update_revert_state);
     connect_combo_summary(&category, &update_revert_state);
     connect_entry_summary(&monthly_budget, &update_revert_state);
     connect_entry_summary(&yearly_budget, &update_revert_state);
@@ -126,11 +131,13 @@ pub(in crate::app) fn append_planned_income_budget_form(
 
     let update_for_revert = Rc::clone(&update_summary);
     let update_revert_for_revert = Rc::clone(&update_revert_state);
+    let code_for_revert = code.clone();
     let category_for_revert = category.clone();
     let monthly_budget_for_revert = monthly_budget.clone();
     let yearly_budget_for_revert = yearly_budget.clone();
     let notes_for_revert = notes.clone();
     card.revert_button.connect_clicked(move |_| {
+        set_text_combo(&code_for_revert, &original_budget.code);
         set_text_combo(&category_for_revert, &original_budget.category);
         monthly_budget_for_revert.set_text(&original_budget.monthly_budget);
         yearly_budget_for_revert.set_text(&original_budget.yearly_budget);
@@ -145,10 +152,11 @@ pub(in crate::app) fn append_planned_income_budget_form(
     forms.borrow_mut().push(BudgetForm {
         form_box: card.form_box,
         deleted,
-        original_code: Rc::new(RefCell::new(planned_income::BUDGET_CODE.to_string())),
+        original_code: Rc::new(RefCell::new(original_code)),
         original_direction: Rc::new(RefCell::new(Some(BudgetDirection::Income))),
         auto_code: Rc::new(Cell::new(false)),
         code,
+        special: special_config,
         category,
         monthly_budget,
         yearly_budget,

@@ -4,7 +4,7 @@ use super::state::{
     attach_details_grid, connect_budget_delete_button, connect_combo_summary,
     connect_entry_summary, set_option_combo, set_summary,
 };
-use super::summaries::budget_summary;
+use super::summaries::{budget_summary, BudgetSummaryWidgets};
 use super::values::{budget_value, BudgetValueWidgets};
 
 pub(in crate::app) fn append_budget_form(
@@ -15,7 +15,10 @@ pub(in crate::app) fn append_budget_form(
     advanced_autofill: &Rc<Cell<bool>>,
     advanced_features: bool,
 ) {
-    let is_special_neutral_budget = budget_is_special_neutral(&budget.code);
+    let special_config = budget.special.clone();
+    let special_kind = crate::model::budget_special_kind_for_config(&special_config, &budget.code);
+    let is_special_neutral_budget =
+        special_kind.is_neutral() || budget_is_special_neutral(&budget.code);
     let hide_special_controls =
         budget_special_controls_are_hidden(advanced_features, is_special_neutral_budget);
     let original_direction = persisted
@@ -99,18 +102,20 @@ pub(in crate::app) fn append_budget_form(
         let yearly_budget = yearly_budget.clone();
         let direction = direction.clone();
         let income_basis = income_basis.clone();
+        let special_for_summary = special_config.clone();
         Rc::new(move || {
             set_summary(
                 &row,
-                budget_summary(
-                    &code,
-                    &category,
-                    &monthly_budget,
-                    &yearly_budget,
-                    &direction,
-                    &income_basis,
-                    advanced_features,
-                ),
+                budget_summary(BudgetSummaryWidgets {
+                    code: &code,
+                    category: &category,
+                    monthly_budget: &monthly_budget,
+                    yearly_budget: &yearly_budget,
+                    direction: &direction,
+                    income_basis: &income_basis,
+                    special: &special_for_summary,
+                    show_code: advanced_features,
+                }),
             );
         })
     };
@@ -124,6 +129,7 @@ pub(in crate::app) fn append_budget_form(
 
     let original_budget = budget_value(BudgetValueWidgets {
         code: &code,
+        special: &special_config,
         category: &category,
         monthly_budget: &monthly_budget,
         yearly_budget: &yearly_budget,
@@ -145,6 +151,7 @@ pub(in crate::app) fn append_budget_form(
             revert_button.set_sensitive(
                 budget_value(BudgetValueWidgets {
                     code: &code,
+                    special: &original_budget.special,
                     category: &category,
                     monthly_budget: &monthly_budget,
                     yearly_budget: &yearly_budget,
@@ -204,6 +211,7 @@ pub(in crate::app) fn append_budget_form(
             !advanced_features && !persisted && !is_special_neutral_budget,
         )),
         code,
+        special: special_config,
         category,
         monthly_budget,
         yearly_budget,

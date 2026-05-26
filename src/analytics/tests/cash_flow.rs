@@ -57,6 +57,7 @@ fn cash_flow_breakdown_adds_planned_income_and_expense_segments() {
     let budgets = vec![
         BudgetCode {
             code: "INC".to_string(),
+            special: crate::model::BudgetSpecialKind::None,
             category: "Salary".to_string(),
             monthly_budget: Some(BudgetAmount::Fixed(Decimal::new(1000, 0))),
             yearly_budget: None,
@@ -66,6 +67,7 @@ fn cash_flow_breakdown_adds_planned_income_and_expense_segments() {
         },
         BudgetCode {
             code: "FOOD".to_string(),
+            special: crate::model::BudgetSpecialKind::None,
             category: "Groceries".to_string(),
             monthly_budget: Some(BudgetAmount::Fixed(Decimal::new(100, 0))),
             yearly_budget: None,
@@ -110,6 +112,7 @@ fn cash_flow_planned_expense_percent_can_use_planned_income() {
     let budgets = vec![
         BudgetCode {
             code: "INC".to_string(),
+            special: crate::model::BudgetSpecialKind::None,
             category: "Salary".to_string(),
             monthly_budget: Some(BudgetAmount::Fixed(Decimal::new(1000, 0))),
             yearly_budget: None,
@@ -119,6 +122,7 @@ fn cash_flow_planned_expense_percent_can_use_planned_income() {
         },
         BudgetCode {
             code: "SAVE".to_string(),
+            special: crate::model::BudgetSpecialKind::None,
             category: "Savings".to_string(),
             monthly_budget: Some(BudgetAmount::IncomePercent(Decimal::new(10, 0))),
             yearly_budget: None,
@@ -149,6 +153,7 @@ fn cash_flow_planned_expense_percent_uses_real_income_not_planned_income() {
     let budgets = vec![
         BudgetCode {
             code: "INC".to_string(),
+            special: crate::model::BudgetSpecialKind::None,
             category: "Salary".to_string(),
             monthly_budget: Some(BudgetAmount::Fixed(Decimal::new(1000, 0))),
             yearly_budget: None,
@@ -158,6 +163,7 @@ fn cash_flow_planned_expense_percent_uses_real_income_not_planned_income() {
         },
         BudgetCode {
             code: "SAVE".to_string(),
+            special: crate::model::BudgetSpecialKind::None,
             category: "Savings".to_string(),
             monthly_budget: Some(BudgetAmount::IncomePercent(Decimal::new(10, 0))),
             yearly_budget: None,

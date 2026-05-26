@@ -47,6 +47,7 @@ impl EditableRule {
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct EditableBudget {
     pub code: String,
+    pub special: String,
     pub category: String,
     pub monthly_budget: String,
     pub yearly_budget: String,
@@ -59,6 +60,7 @@ impl EditableBudget {
     pub fn new_default() -> Self {
         Self {
             code: "NEW".to_string(),
+            special: String::new(),
             category: "New category".to_string(),
             monthly_budget: "0".to_string(),
             yearly_budget: String::new(),

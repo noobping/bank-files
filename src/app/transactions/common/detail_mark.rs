@@ -3,21 +3,22 @@ use super::detail_state::{
     transaction_detail_config_action_blocked,
 };
 use super::rule_helpers::{editable_refund_rule_for_transaction, editable_rule_for_transaction};
-use super::rule_ops::{apply_refund_rule, apply_transaction_direction_rule};
 use super::*;
+use crate::model::BudgetCode;
 
 pub(super) fn append_mark_transfer_action(
     tx: &Transaction,
+    budgets: &[BudgetCode],
     ui_handles: &Rc<UiHandles>,
     primary_actions: &gtk::Box,
     menu: &gtk::gio::Menu,
     menu_actions: &gtk::gio::SimpleActionGroup,
     enabled: bool,
 ) {
-    let tx_for_transfer = tx.clone();
+    let rule_for_transfer = editable_rule_for_transaction(tx, Some("transfer"), budgets);
     let ui_for_transfer = Rc::clone(ui_handles);
     let operation = queued_rule_operation_kind(
-        editable_rule_for_transaction(tx, Some("transfer")),
+        editable_rule_for_transaction(tx, Some("transfer"), budgets),
         OperationSource::MarkTransfer,
     );
     let action = append_transaction_detail_menu_action(
@@ -33,7 +34,12 @@ pub(super) fn append_mark_transfer_action(
             ) {
                 return;
             }
-            apply_transaction_direction_rule(&tx_for_transfer, "transfer", &ui_for_transfer);
+            enqueue_rule_operation(
+                &ui_for_transfer,
+                rule_for_transfer.clone(),
+                true,
+                OperationSource::MarkTransfer,
+            );
         },
     );
     register_operation_queue_menu_action(ui_handles, primary_actions, &action, operation);
@@ -41,16 +47,17 @@ pub(super) fn append_mark_transfer_action(
 
 pub(super) fn append_mark_refund_action(
     tx: &Transaction,
+    budgets: &[BudgetCode],
     ui_handles: &Rc<UiHandles>,
     primary_actions: &gtk::Box,
     menu: &gtk::gio::Menu,
     menu_actions: &gtk::gio::SimpleActionGroup,
     enabled: bool,
 ) {
-    let tx_for_refund = tx.clone();
+    let rule_for_refund = editable_refund_rule_for_transaction(tx, budgets);
     let ui_for_refund = Rc::clone(ui_handles);
     let operation = queued_rule_operation_kind(
-        editable_refund_rule_for_transaction(tx),
+        editable_refund_rule_for_transaction(tx, budgets),
         OperationSource::MarkRefund,
     );
     let action = append_transaction_detail_menu_action(
@@ -66,7 +73,12 @@ pub(super) fn append_mark_refund_action(
             ) {
                 return;
             }
-            apply_refund_rule(&tx_for_refund, &ui_for_refund);
+            enqueue_rule_operation(
+                &ui_for_refund,
+                rule_for_refund.clone(),
+                true,
+                OperationSource::MarkRefund,
+            );
         },
     );
     register_operation_queue_menu_action(ui_handles, primary_actions, &action, operation);

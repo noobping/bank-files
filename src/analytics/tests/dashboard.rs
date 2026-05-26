@@ -75,6 +75,7 @@ fn direct_period_totals_use_transactions_for_requested_scope() {
     ];
     let budgets = vec![BudgetCode {
         code: "TRANSFER".to_string(),
+        special: crate::model::BudgetSpecialKind::None,
         category: "Savings".to_string(),
         monthly_budget: None,
         yearly_budget: None,

@@ -134,6 +134,7 @@ pub(in crate::app) fn show_new_budget_dialog(request: NewBudgetDialogRequest<'_>
         let budget = refund_budget::normalize_editable_budget(
             transfer_budget::normalize_editable_budget(EditableBudget {
                 code: code_text,
+                special: String::new(),
                 category: category_text,
                 monthly_budget: monthly_budget.text().trim().to_string(),
                 yearly_budget: yearly_budget.text().trim().to_string(),
