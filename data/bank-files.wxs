@@ -16,6 +16,8 @@
 
         <MajorUpgrade DowngradeErrorMessage="A newer version is already installed." />
         <MediaTemplate EmbedCab="yes" />
+        <Icon Id="ApplicationIcon" SourceFile="$(var.BundleDir)\$(var.ExecutableName).exe" />
+        <Property Id="ARPPRODUCTICON" Value="ApplicationIcon" />
         <Property Id="WixShellExecTarget" Value="[#bank-files.exe]" />
         <CustomAction
             Id="LaunchApplication"
@@ -37,7 +39,8 @@
                         Name="$(var.ProductName)"
                         Description="Launch $(var.ProductName)"
                         Target="[INSTALLDIR]$(var.ExecutableName).exe"
-                        WorkingDirectory="INSTALLDIR" />
+                        WorkingDirectory="INSTALLDIR"
+                        Icon="ApplicationIcon" />
                     <RemoveFolder Id="CleanUpStartMenu" Directory="ApplicationProgramsFolder" On="uninstall" />
                     <RegistryValue
                         Root="HKCU"

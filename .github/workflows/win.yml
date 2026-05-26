@@ -136,6 +136,24 @@ jobs:
             Copy-Item $etcDir (Join-Path $bundleDir 'etc') -Recurse -Force
           }
 
+          $iconsDir = Join-Path $shareDir 'icons'
+          New-Item -ItemType Directory -Path $iconsDir -Force | Out-Null
+          foreach ($theme in @('Adwaita', 'hicolor')) {
+            $themeSource = Join-Path $mingwRoot "share\icons\$theme"
+            if (Test-Path $themeSource) {
+              Copy-Item $themeSource (Join-Path $iconsDir $theme) -Recurse -Force
+            }
+          }
+
+          $gtkUpdateIconCache = Join-Path $mingwBin 'gtk-update-icon-cache.exe'
+          if (Test-Path $gtkUpdateIconCache) {
+            Get-ChildItem $iconsDir -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+              if (Test-Path (Join-Path $_.FullName 'index.theme')) {
+                & $gtkUpdateIconCache -q -f $_.FullName
+              }
+            }
+          }
+
           $pixbufRoot = Join-Path $bundleDir 'lib\gdk-pixbuf-2.0\2.10.0'
           $pixbufLoadersDir = Join-Path $pixbufRoot 'loaders'
           New-Item -ItemType Directory -Path $pixbufLoadersDir -Force | Out-Null
