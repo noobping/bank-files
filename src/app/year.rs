@@ -17,54 +17,8 @@ pub(in crate::app) fn render_year_comparison(
         .append(&year_selector_row(&years, selected_year, ui_handles, state));
 
     let totals = analytics::totals_for_year(&data.transactions, &data.budgets, selected_year);
-    let state_for_balance = Rc::clone(state);
-    let ui_for_balance = Rc::clone(ui_handles);
-    let state_for_income = Rc::clone(state);
-    let ui_for_income = Rc::clone(ui_handles);
-    let state_for_expenses = Rc::clone(state);
-    let ui_for_expenses = Rc::clone(ui_handles);
     ui_handles.overview.append(&ui::metric_grid(
-        vec![
-            ui::activatable_metric_card(
-                &trf("Balance {year}", &[("year", selected_year.to_string())]),
-                &signed_money(totals.balance),
-                &trf(
-                    "{count} transactions",
-                    &[("count", totals.count.to_string())],
-                ),
-                move || {
-                    show_transactions_filter(
-                        &state_for_balance,
-                        &ui_for_balance,
-                        TransactionFilter::year(selected_year),
-                    );
-                },
-            ),
-            ui::activatable_metric_card(
-                "Income",
-                &money(totals.income),
-                &selected_year.to_string(),
-                move || {
-                    show_transactions_filter(
-                        &state_for_income,
-                        &ui_for_income,
-                        TransactionFilter::income_for_year(selected_year),
-                    );
-                },
-            ),
-            ui::activatable_metric_card(
-                "Expenses",
-                &money(totals.expenses),
-                &selected_year.to_string(),
-                move || {
-                    show_transactions_filter(
-                        &state_for_expenses,
-                        &ui_for_expenses,
-                        TransactionFilter::expenses_for_year(selected_year),
-                    );
-                },
-            ),
-        ],
+        financial_metric_cards_for_year(&totals, selected_year, state, ui_handles),
         3,
     ));
 
@@ -155,4 +109,67 @@ pub(in crate::app) fn render_year_comparison(
     ui_handles.overview.append(&cash_flow_section);
 
     Some(selected_year)
+}
+fn financial_metric_cards_for_year(
+    totals: &analytics::Totals,
+    selected_year: i32,
+    state: &Rc<RefCell<AppData>>,
+    ui_handles: &Rc<UiHandles>,
+) -> Vec<gtk::Box> {
+    financial_metric_order()
+        .into_iter()
+        .map(|metric| match metric {
+            FinancialMetric::Income => {
+                let state_for_income = Rc::clone(state);
+                let ui_for_income = Rc::clone(ui_handles);
+                ui::activatable_metric_card(
+                    "Income",
+                    &money(totals.income),
+                    &selected_year.to_string(),
+                    move || {
+                        show_transactions_filter(
+                            &state_for_income,
+                            &ui_for_income,
+                            TransactionFilter::income_for_year(selected_year),
+                        );
+                    },
+                )
+            }
+            FinancialMetric::Expenses => {
+                let state_for_expenses = Rc::clone(state);
+                let ui_for_expenses = Rc::clone(ui_handles);
+                ui::activatable_metric_card(
+                    "Expenses",
+                    &money(totals.expenses),
+                    &selected_year.to_string(),
+                    move || {
+                        show_transactions_filter(
+                            &state_for_expenses,
+                            &ui_for_expenses,
+                            TransactionFilter::expenses_for_year(selected_year),
+                        );
+                    },
+                )
+            }
+            FinancialMetric::Balance => {
+                let state_for_balance = Rc::clone(state);
+                let ui_for_balance = Rc::clone(ui_handles);
+                ui::activatable_metric_card(
+                    &trf("Balance {year}", &[("year", selected_year.to_string())]),
+                    &signed_money(totals.balance),
+                    &trf(
+                        "{count} transactions",
+                        &[("count", totals.count.to_string())],
+                    ),
+                    move || {
+                        show_transactions_filter(
+                            &state_for_balance,
+                            &ui_for_balance,
+                            TransactionFilter::year(selected_year),
+                        );
+                    },
+                )
+            }
+        })
+        .collect()
 }

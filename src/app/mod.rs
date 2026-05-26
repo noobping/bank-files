@@ -40,6 +40,7 @@ mod filters;
 mod form_autofill;
 mod import;
 mod management;
+mod metric_order;
 mod money;
 mod operation_queue;
 mod overview;
@@ -119,6 +120,7 @@ use import::{
     reload_state_with_status, set_dedupe_enabled, set_remember_mode,
 };
 use management::show_management_dialog;
+use metric_order::{financial_metric_order, FinancialMetric};
 use money::{
     annual_budget_previous_state, annual_budget_progress_detail, budget_display_title,
     budget_progress_detail, category_transaction_detail, file_size, format_size, fraction,

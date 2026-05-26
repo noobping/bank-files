@@ -102,52 +102,14 @@ pub(in crate::app) fn render_budget_page(
         .cloned()
         .collect::<Vec<_>>();
     let mut has_search_results = false;
-    let state_for_expenses = Rc::clone(state);
-    let ui_for_expenses = Rc::clone(ui_handles);
-    let state_for_income = Rc::clone(state);
-    let ui_for_income = Rc::clone(ui_handles);
-    let state_for_balance = Rc::clone(state);
-    let ui_for_balance = Rc::clone(ui_handles);
-
     ui_handles.categories.append(&ui::metric_grid(
-        vec![
-            ui::activatable_metric_card(
-                "Expenses",
-                &money(month_totals.expenses),
-                &month_label,
-                move || {
-                    show_transactions_filter(
-                        &state_for_expenses,
-                        &ui_for_expenses,
-                        TransactionFilter::expenses_for_month(selected_month),
-                    );
-                },
-            ),
-            ui::activatable_metric_card(
-                "Income",
-                &money(month_totals.income),
-                &month_label,
-                move || {
-                    show_transactions_filter(
-                        &state_for_income,
-                        &ui_for_income,
-                        TransactionFilter::income_for_month(selected_month),
-                    );
-                },
-            ),
-            ui::activatable_metric_card(
-                "Balance",
-                &signed_money(month_totals.balance),
-                &month_label,
-                move || {
-                    show_transactions_filter(
-                        &state_for_balance,
-                        &ui_for_balance,
-                        TransactionFilter::month(selected_month),
-                    );
-                },
-            ),
-        ],
+        financial_metric_cards_for_month(
+            &month_totals,
+            selected_month,
+            &month_label,
+            state,
+            ui_handles,
+        ),
         3,
     ));
 
@@ -212,4 +174,65 @@ pub(super) fn category_summary_matches(
         money(category.totals.expenses),
         signed_money(category.totals.balance),
     ))
+}
+fn financial_metric_cards_for_month(
+    totals: &analytics::Totals,
+    month: MonthKey,
+    month_label: &str,
+    state: &Rc<RefCell<AppData>>,
+    ui_handles: &Rc<UiHandles>,
+) -> Vec<gtk::Box> {
+    financial_metric_order()
+        .into_iter()
+        .map(|metric| match metric {
+            FinancialMetric::Income => {
+                let state_for_income = Rc::clone(state);
+                let ui_for_income = Rc::clone(ui_handles);
+                ui::activatable_metric_card(
+                    "Income",
+                    &money(totals.income),
+                    month_label,
+                    move || {
+                        show_transactions_filter(
+                            &state_for_income,
+                            &ui_for_income,
+                            TransactionFilter::income_for_month(month),
+                        );
+                    },
+                )
+            }
+            FinancialMetric::Expenses => {
+                let state_for_expenses = Rc::clone(state);
+                let ui_for_expenses = Rc::clone(ui_handles);
+                ui::activatable_metric_card(
+                    "Expenses",
+                    &money(totals.expenses),
+                    month_label,
+                    move || {
+                        show_transactions_filter(
+                            &state_for_expenses,
+                            &ui_for_expenses,
+                            TransactionFilter::expenses_for_month(month),
+                        );
+                    },
+                )
+            }
+            FinancialMetric::Balance => {
+                let state_for_balance = Rc::clone(state);
+                let ui_for_balance = Rc::clone(ui_handles);
+                ui::activatable_metric_card(
+                    "Balance",
+                    &signed_money(totals.balance),
+                    month_label,
+                    move || {
+                        show_transactions_filter(
+                            &state_for_balance,
+                            &ui_for_balance,
+                            TransactionFilter::month(month),
+                        );
+                    },
+                )
+            }
+        })
+        .collect()
 }
