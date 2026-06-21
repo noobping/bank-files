@@ -1,6 +1,6 @@
 [package]
 name = "bank-files"
-version = "0.1.4"
+version = "0.8.0"
 edition = "2021"
 authors = ["Nick"]
 license = "MIT"

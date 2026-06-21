@@ -96,7 +96,7 @@
   </screenshots>
 
   <releases>
-    <release version="0.1.0" date="2026-05-17">
+    <release version="0.8.0" date="2026-05-17">
       <description>
         <p>Initial release with fake transactions, local bank-file import, remembered history, duplicate filtering, editable budgets and rules, transaction filters, and printable reports.</p>
         <p xml:lang="nl">Eerste release met neptransacties, lokale import van bankbestanden, bewaarde geschiedenis, ontdubbelen, bewerkbare budgetten en regels, transactiefilters en afdrukbare rapporten.</p>
