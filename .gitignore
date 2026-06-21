@@ -1,0 +1,14 @@
+!data/resources.xml
+**/*.rs.bk
+**/mutants.out*/
+*.gresource
+*.lock
+*.log
+*.pdb
+.flatpak-builder
+.flatpak/
+.vscode/
+_build/
+debug
+resources.xml
+target
