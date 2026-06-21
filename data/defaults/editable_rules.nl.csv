@@ -1,0 +1,7 @@
+priority,active,field,pattern,category,budget_code,direction,amount_min,amount_max,notes
+100,true,any,"(?i)boodschap|supermarkt|grocery|supermarket|whole foods|trader joe|aldi|lidl|jumbo|picnic|dirk",Boodschappen,FOOD,expense,,,Voorbeeldregel boodschappen
+95,true,any,"(?i)netflix|spotify|disney|hbo|youtube|videoland",Abonnementen en entertainment,ENT,expense,,,Streaming en media
+90,true,any,"(?i)shell|esso|bp|trein|bus|metro|taxi|uber|parkeren|parking",Vervoer,TRAN,expense,,,Vervoer en parkeren
+88,true,any,"(?i)misbeheer|mismanagement|verlies|loss|boete|fine|fee|roodstand|overdraft|incassokosten|collection costs|casino|gok|gambling",Verlies en kosten,LOSS,expense,,,Boetes, roodstand en verliezen
+85,true,any,"(?i)huur|hypotheek|rent|mortgage|housing|vve|hoa",Wonen,HOME,expense,,,Wonen
+80,true,any,"(?i)salaris|loon|salary|payroll|wages",Inkomen,INC,income,,,Inkomen

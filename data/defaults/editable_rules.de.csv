@@ -1,0 +1,7 @@
+priority,active,field,pattern,category,budget_code,direction,amount_min,amount_max,notes
+100,true,any,"(?i)lebensmittel|supermarkt|rewe|edeka|aldi|lidl|kaufland|netto|penny|dm|rossmann|grocery|supermarket|jumbo|picnic|dirk",Lebensmittel,FOOD,expense,,,Beispielregel Lebensmittel
+95,true,any,"(?i)netflix|spotify|disney|hbo|youtube|prime|videoland",Abonnements & Unterhaltung,ENT,expense,,,Streaming und Medien
+90,true,any,"(?i)shell|esso|bp|bahn|zug|bus|metro|taxi|uber|parken|parkhaus|parking",Verkehr,TRAN,expense,,,Verkehr und Parken
+88,true,any,"(?i)missmanagement|mismanagement|verlust|loss|bußgeld|bussgeld|strafe|fine|gebühr|gebuehr|fee|überziehung|ueberziehung|overdraft|inkasso|collection costs|casino|glücksspiel|gluecksspiel|gambling",Verluste & Gebühren,LOSS,expense,,,Bußgelder, Überziehungen und Verluste
+85,true,any,"(?i)miete|hypothek|rent|mortgage|wohnen|housing|weg|hoa",Wohnen,HOME,expense,,,Wohnen
+80,true,any,"(?i)gehalt|lohn|salary|payroll|wages",Einkommen,INC,income,,,Einkommen

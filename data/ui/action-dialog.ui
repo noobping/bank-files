@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.6"/>
+  <requires lib="Adw" version="1.0"/>
+  <object class="GtkBox" id="action_root">
+    <property name="orientation">vertical</property>
+    <property name="spacing">0</property>
+    <child>
+      <object class="AdwHeaderBar" id="action_header">
+        <property name="show-start-title-buttons">False</property>
+        <property name="show-end-title-buttons">True</property>
+        <property name="title-widget">
+          <object class="AdwWindowTitle" id="action_title"/>
+        </property>
+        <child type="start">
+          <object class="GtkStack" id="action_start_stack">
+            <property name="transition-type">crossfade</property>
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">search</property>
+                <property name="child">
+                  <object class="GtkButton" id="action_search_button">
+                    <property name="icon-name">edit-find-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Search</property>
+                    <style>
+                      <class name="flat"/>
+                      <class name="image-button"/>
+                    </style>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">back</property>
+                <property name="child">
+                  <object class="GtkButton" id="action_back_button">
+                    <property name="icon-name">go-previous-symbolic</property>
+                    <property name="tooltip-text" translatable="yes">Back</property>
+                    <style>
+                      <class name="flat"/>
+                      <class name="image-button"/>
+                    </style>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkStackPage">
+                <property name="name">empty</property>
+                <property name="child">
+                  <object class="GtkBox" id="action_empty_start">
+                    <property name="width-request">1</property>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkBox" id="action_end_box">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkButton" id="action_submit_button">
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+                <property name="child">
+                  <object class="AdwButtonContent" id="action_submit_content">
+                    <property name="icon-name">document-save-symbolic</property>
+                    <property name="label">Save</property>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSearchBar" id="action_search_bar">
+        <property name="show-close-button">True</property>
+        <property name="search-mode-enabled">False</property>
+        <child>
+          <object class="GtkBox" id="action_search_box">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">0</property>
+            <property name="margin-top">8</property>
+            <property name="margin-bottom">8</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <child>
+              <object class="GtkSearchEntry" id="action_search_entry">
+                <property name="hexpand">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkStack" id="action_stack">
+        <property name="transition-type">slide-left-right</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">False</property>
+      </object>
+    </child>
+  </object>
+</interface>

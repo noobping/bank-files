@@ -1,0 +1,20 @@
+<gresources>
+  <gresource prefix="/io/github/noobping/BankFiles">
+    <file>scalable/apps/io.github.noobping.BankFiles.svg</file>
+    <file>symbolic/apps/io.github.noobping.BankFiles-symbolic.svg</file>
+    <file>symbolic/actions/document-save-symbolic.svg</file>
+    <file>css/style.css</file>
+    <file>ui/action-dialog.ui</file>
+    <file>ui/fake-transactions-dialog.ui</file>
+    <file>ui/loading-placeholder.ui</file>
+    <file>ui/management-dialog.ui</file>
+    <file>ui/operation-queue-dialog.ui</file>
+    <file>ui/partial-load-notice.ui</file>
+    <file>ui/rule-search-chips.ui</file>
+    <file>ui/main-window.ui</file>
+    <file>ui/settings-dialog.ui</file>
+    <file>ui/shortcuts-dialog.ui</file>
+    <file>ui/status-history-dialog.ui</file>
+    <file>ui/status-bar.ui</file>
+  </gresource>
+</gresources>

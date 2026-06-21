@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.6"/>
+  <requires lib="Adw" version="1.0"/>
+  <object class="GtkBox" id="status_bar">
+    <property name="orientation">horizontal</property>
+    <property name="spacing">8</property>
+    <property name="margin-start">6</property>
+    <style>
+      <class name="toolbar"/>
+    </style>
+    <child>
+      <object class="GtkImage" id="status_icon">
+        <property name="icon-name">dialog-information-symbolic</property>
+        <style>
+          <class name="dim-label"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="AdwSpinner" id="status_spinner">
+        <property name="visible">False</property>
+        <style>
+          <class name="dim-label"/>
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkLabel" id="status_label">
+        <property name="hexpand">True</property>
+        <property name="xalign">0</property>
+        <property name="wrap">True</property>
+        <property name="wrap-mode">word-char</property>
+        <property name="selectable">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="status_action_group">
+        <property name="orientation">horizontal</property>
+        <property name="spacing">0</property>
+        <style>
+          <class name="linked"/>
+          <class name="status-bar-actions"/>
+        </style>
+        <child>
+          <object class="GtkButton" id="status_history_button">
+            <property name="icon-name">document-open-recent-symbolic</property>
+            <property name="has-frame">False</property>
+            <property name="focus-on-click">False</property>
+            <style>
+              <class name="flat"/>
+              <class name="image-button"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="status_search_preset_button">
+            <property name="icon-name">edit-find-symbolic</property>
+            <property name="has-frame">False</property>
+            <property name="focus-on-click">False</property>
+            <property name="visible">False</property>
+            <style>
+              <class name="flat"/>
+              <class name="image-button"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="status_page_actions_button">
+            <property name="icon-name">view-more-symbolic</property>
+            <property name="has-frame">False</property>
+            <property name="focus-on-click">False</property>
+            <style>
+              <class name="flat"/>
+              <class name="image-button"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="status_hide_button">
+            <property name="icon-name">window-close-symbolic</property>
+            <property name="has-frame">False</property>
+            <property name="focus-on-click">False</property>
+            <style>
+              <class name="flat"/>
+              <class name="image-button"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

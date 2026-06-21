@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.6"/>
+  <requires lib="Adw" version="1.0"/>
+  <menu id="management_rule_bulk_menu">
+    <item>
+      <attribute name="label" translatable="yes">Group Compatible Rules</attribute>
+      <attribute name="action">management-rules.group-rules</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Combine Compatible Rules</attribute>
+      <attribute name="action">management-rules.combine-rules</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Clean Orphaned Rules</attribute>
+      <attribute name="action">management-rules.clean-orphaned-rules</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Back Up Configuration</attribute>
+      <attribute name="action">management-config.back-up-configuration</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Restore Latest Backup</attribute>
+      <attribute name="action">management-config.restore-latest-backup</attribute>
+    </item>
+  </menu>
+  <menu id="management_budget_bulk_menu">
+    <item>
+      <attribute name="label" translatable="yes">Set planned income</attribute>
+      <attribute name="action">management-budgets.add-planned-income-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Set transfers</attribute>
+      <attribute name="action">management-budgets.add-transfer-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Set outgoing refunds</attribute>
+      <attribute name="action">management-budgets.add-refunding-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Set incoming refunds</attribute>
+      <attribute name="action">management-budgets.add-refunded-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Move Budget Code</attribute>
+      <attribute name="action">management-budgets.move-budget-code</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Use Real Income</attribute>
+      <attribute name="action">management-budgets.use-real-income</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Use Planned Income</attribute>
+      <attribute name="action">management-budgets.use-planned-income</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Use Monthly Values</attribute>
+      <attribute name="action">management-budgets.use-monthly-values</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Use Yearly Values</attribute>
+      <attribute name="action">management-budgets.use-yearly-values</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Back Up Configuration</attribute>
+      <attribute name="action">management-config.back-up-configuration</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Restore Latest Backup</attribute>
+      <attribute name="action">management-config.restore-latest-backup</attribute>
+    </item>
+  </menu>
+  <menu id="management_simple_budget_bulk_menu">
+    <item>
+      <attribute name="label" translatable="yes">Set planned income</attribute>
+      <attribute name="action">management-budgets.add-planned-income-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Set transfers</attribute>
+      <attribute name="action">management-budgets.add-transfer-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Set outgoing refunds</attribute>
+      <attribute name="action">management-budgets.add-refunding-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Set incoming refunds</attribute>
+      <attribute name="action">management-budgets.add-refunded-budget</attribute>
+      <attribute name="hidden-when">action-disabled</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Use Real Income</attribute>
+      <attribute name="action">management-budgets.use-real-income</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Use Planned Income</attribute>
+      <attribute name="action">management-budgets.use-planned-income</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Back Up Configuration</attribute>
+      <attribute name="action">management-config.back-up-configuration</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Restore Latest Backup</attribute>
+      <attribute name="action">management-config.restore-latest-backup</attribute>
+    </item>
+  </menu>
+  <menu id="management_config_menu">
+    <item>
+      <attribute name="label" translatable="yes">Back Up Configuration</attribute>
+      <attribute name="action">management-config.back-up-configuration</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">Restore Latest Backup</attribute>
+      <attribute name="action">management-config.restore-latest-backup</attribute>
+    </item>
+  </menu>
+  <object class="AdwViewSwitcher" id="management_switcher">
+    <property name="policy">wide</property>
+  </object>
+  <object class="GtkBox" id="management_root">
+    <property name="orientation">vertical</property>
+    <property name="spacing">0</property>
+    <child>
+      <object class="AdwHeaderBar" id="management_header">
+        <property name="show-start-title-buttons">False</property>
+        <property name="show-end-title-buttons">True</property>
+        <child type="start">
+          <object class="GtkBox" id="management_header_actions">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">0</property>
+            <child>
+              <object class="GtkButton" id="management_add_button">
+                <property name="icon-name">list-add-symbolic</property>
+                <style>
+                  <class name="flat"/>
+                  <class name="image-button"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuButton" id="management_rule_bulk_menu_button">
+                <property name="icon-name">view-more-symbolic</property>
+                <property name="focus-on-click">False</property>
+                <style>
+                  <class name="flat"/>
+                  <class name="image-button"/>
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuButton" id="management_budget_bulk_menu_button">
+                <property name="icon-name">view-more-symbolic</property>
+                <property name="focus-on-click">False</property>
+                <style>
+                  <class name="flat"/>
+                  <class name="image-button"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkButton" id="management_save_button">
+            <style>
+              <class name="suggested-action"/>
+            </style>
+            <property name="child">
+              <object class="AdwButtonContent" id="management_save_content">
+                <property name="icon-name">document-save-symbolic</property>
+                <property name="label" translatable="yes">Save</property>
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSearchBar" id="management_filter_search_bar">
+        <property name="show-close-button">True</property>
+        <property name="search-mode-enabled">False</property>
+        <child>
+          <object class="GtkBox" id="management_filter_row">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">0</property>
+            <property name="margin-top">8</property>
+            <property name="margin-bottom">8</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <child>
+              <object class="GtkSearchEntry" id="management_filter_entry">
+                <property name="hexpand">True</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwViewStack" id="management_stack">
+        <property name="vexpand">True</property>
+        <child>
+          <object class="AdwViewStackPage">
+            <property name="name">rules</property>
+            <property name="title" translatable="yes">Rules</property>
+            <property name="icon-name">document-edit-symbolic</property>
+            <property name="child">
+              <object class="GtkScrolledWindow" id="management_rules_scroll">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="hscrollbar-policy">never</property>
+                <child>
+                  <object class="AdwClamp" id="management_rules_clamp">
+                    <property name="maximum-size">1080</property>
+                    <property name="tightening-threshold">640</property>
+                    <property name="child">
+                      <object class="GtkBox" id="management_rules_box">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">18</property>
+                        <property name="margin-top">18</property>
+                        <property name="margin-bottom">18</property>
+                        <property name="margin-start">18</property>
+                        <property name="margin-end">18</property>
+                        <child>
+                          <object class="GtkBox" id="management_rules_title_box">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">3</property>
+                            <child>
+                              <object class="GtkLabel" id="management_rules_title">
+                                <property name="label" translatable="yes">Categorization Rules</property>
+                                <property name="xalign">0</property>
+                                <property name="width-chars">1</property>
+                                <property name="max-width-chars">40</property>
+                                <property name="wrap">True</property>
+                                <property name="wrap-mode">word-char</property>
+                                <style>
+                                  <class name="title-3"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="management_rules_subtitle">
+                                <property name="label" translatable="yes">Create rules with plain search text, or turn on Regex for patterns.</property>
+                                <property name="xalign">0</property>
+                                <property name="width-chars">1</property>
+                                <property name="max-width-chars">64</property>
+                                <property name="wrap">True</property>
+                                <property name="wrap-mode">word-char</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="management_rules_list">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">8</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">10</property>
+                                <property name="margin-top">8</property>
+                                <property name="margin-bottom">8</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="valign">center</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                                <child>
+                                  <object class="AdwSpinner">
+                                    <property name="width-request">18</property>
+                                    <property name="height-request">18</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="label" translatable="yes">Loading rules...</property>
+                                    <property name="xalign">0</property>
+                                    <property name="wrap">True</property>
+                                    <property name="wrap-mode">word-char</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwPreferencesGroup">
+                            <property name="margin-top">4</property>
+                            <property name="margin-bottom">4</property>
+                            <property name="margin-start">4</property>
+                            <property name="margin-end">4</property>
+                            <child>
+                              <object class="AdwActionRow" id="management_add_rule_row">
+                                <property name="title" translatable="yes">New Rule</property>
+                                <property name="tooltip-text" translatable="yes">Create a new rule</property>
+                                <property name="activatable">True</property>
+                                <child type="prefix">
+                                  <object class="GtkImage">
+                                    <property name="icon-name">list-add-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwViewStackPage">
+            <property name="name">budgets</property>
+            <property name="title" translatable="yes">Budgets</property>
+            <property name="icon-name">view-list-symbolic</property>
+            <property name="child">
+              <object class="GtkScrolledWindow" id="management_budgets_scroll">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="hscrollbar-policy">never</property>
+                <child>
+                  <object class="AdwClamp" id="management_budgets_clamp">
+                    <property name="maximum-size">1080</property>
+                    <property name="tightening-threshold">640</property>
+                    <property name="child">
+                      <object class="GtkBox" id="management_budgets_box">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">18</property>
+                        <property name="margin-top">18</property>
+                        <property name="margin-bottom">18</property>
+                        <property name="margin-start">18</property>
+                        <property name="margin-end">18</property>
+                        <child>
+                          <object class="GtkBox" id="management_budgets_title_box">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">3</property>
+                            <child>
+                              <object class="GtkLabel" id="management_budgets_title">
+                                <property name="xalign">0</property>
+                                <property name="width-chars">1</property>
+                                <property name="max-width-chars">40</property>
+                                <property name="wrap">True</property>
+                                <property name="wrap-mode">word-char</property>
+                                <style>
+                                  <class name="title-3"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="management_budgets_subtitle">
+                                <property name="xalign">0</property>
+                                <property name="width-chars">1</property>
+                                <property name="max-width-chars">64</property>
+                                <property name="wrap">True</property>
+                                <property name="wrap-mode">word-char</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="management_budgets_list">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">8</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">10</property>
+                                <property name="margin-top">8</property>
+                                <property name="margin-bottom">8</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="valign">center</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                                <child>
+                                  <object class="AdwSpinner">
+                                    <property name="width-request">18</property>
+                                    <property name="height-request">18</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="management_budgets_loading_label">
+                                    <property name="xalign">0</property>
+                                    <property name="wrap">True</property>
+                                    <property name="wrap-mode">word-char</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwPreferencesGroup">
+                            <property name="margin-top">4</property>
+                            <property name="margin-bottom">4</property>
+                            <property name="margin-start">4</property>
+                            <property name="margin-end">4</property>
+                            <child>
+                              <object class="AdwActionRow" id="management_add_budget_row">
+                                <property name="title" translatable="yes">New Budget</property>
+                                <property name="tooltip-text" translatable="yes">Create a new budget</property>
+                                <property name="activatable">True</property>
+                                <child type="prefix">
+                                  <object class="GtkImage">
+                                    <property name="icon-name">list-add-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwViewStackPage">
+            <property name="name">aliases</property>
+            <property name="title" translatable="yes">Normalize</property>
+            <property name="icon-name">format-justify-left-symbolic</property>
+            <property name="child">
+              <object class="GtkScrolledWindow" id="management_aliases_scroll">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="hscrollbar-policy">never</property>
+                <child>
+                  <object class="AdwClamp" id="management_aliases_clamp">
+                    <property name="maximum-size">1080</property>
+                    <property name="tightening-threshold">640</property>
+                    <property name="child">
+                      <object class="GtkBox" id="management_aliases_box">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">18</property>
+                        <property name="margin-top">18</property>
+                        <property name="margin-bottom">18</property>
+                        <property name="margin-start">18</property>
+                        <property name="margin-end">18</property>
+                        <child>
+                          <object class="GtkBox" id="management_aliases_title_box">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">3</property>
+                            <child>
+                              <object class="GtkLabel" id="management_aliases_title">
+                                <property name="label" translatable="yes">Normalize CSV Fields</property>
+                                <property name="xalign">0</property>
+                                <property name="width-chars">1</property>
+                                <property name="max-width-chars">40</property>
+                                <property name="wrap">True</property>
+                                <property name="wrap-mode">word-char</property>
+                                <style>
+                                  <class name="title-3"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="management_aliases_subtitle">
+                                <property name="label" translatable="yes">Map bank columns to fixed fields such as date, amount, and description.</property>
+                                <property name="xalign">0</property>
+                                <property name="width-chars">1</property>
+                                <property name="max-width-chars">64</property>
+                                <property name="wrap">True</property>
+                                <property name="wrap-mode">word-char</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="management_aliases_list">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">8</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">10</property>
+                                <property name="margin-top">8</property>
+                                <property name="margin-bottom">8</property>
+                                <property name="margin-start">4</property>
+                                <property name="margin-end">4</property>
+                                <property name="valign">center</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                                <child>
+                                  <object class="AdwSpinner">
+                                    <property name="width-request">18</property>
+                                    <property name="height-request">18</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="label" translatable="yes">Loading field names...</property>
+                                    <property name="xalign">0</property>
+                                    <property name="wrap">True</property>
+                                    <property name="wrap-mode">word-char</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwPreferencesGroup">
+                            <property name="margin-top">4</property>
+                            <property name="margin-bottom">4</property>
+                            <property name="margin-start">4</property>
+                            <property name="margin-end">4</property>
+                            <child>
+                              <object class="AdwActionRow" id="management_add_alias_row">
+                                <property name="title" translatable="yes">New Field Name</property>
+                                <property name="tooltip-text" translatable="yes">Create a new field name</property>
+                                <property name="activatable">True</property>
+                                <child type="prefix">
+                                  <object class="GtkImage">
+                                    <property name="icon-name">list-add-symbolic</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwViewSwitcherBar" id="management_switcher_bar">
+        <property name="reveal">False</property>
+      </object>
+    </child>
+  </object>
+</interface>

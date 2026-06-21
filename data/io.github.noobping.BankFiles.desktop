@@ -1,0 +1,20 @@
+[Desktop Entry]
+Name=Bank Files
+Name[nl]=Bankbestanden
+Name[de]=Bankdateien
+GenericName=Personal Finance Preview
+GenericName[nl]=Persoonlijke geldplanner
+GenericName[de]=Persönliche Finanzvorschau
+Comment=Preview money decisions
+Comment[nl]=Verken geldkeuzes
+Comment[de]=Geldentscheidungen testen
+Exec=bank-files %F
+Icon=io.github.noobping.BankFiles
+Terminal=false
+Type=Application
+Categories=Office;Finance;
+MimeType=text/csv;text/comma-separated-values;application/csv;application/vnd.ms-excel;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;application/vnd.ms-excel.sheet.macroEnabled.12;application/vnd.ms-excel.sheet.binary.macroEnabled.12;application/vnd.oasis.opendocument.spreadsheet;
+Keywords=finance;budget;bank;money;transactions;csv;spreadsheet;excel;
+Keywords[nl]=financien;budget;bank;geld;transacties;csv;spreadsheet;excel;
+Keywords[de]=finanzen;budget;bank;geld;transaktionen;csv;tabellenkalkulation;excel;
+StartupNotify=true

@@ -1,0 +1,90 @@
+flowboxchild:hover,
+flowboxchild:selected,
+flowboxchild:active,
+flowboxchild:focus,
+flowboxchild:focus-visible {
+    background: transparent;
+    box-shadow: none;
+    outline: none;
+}
+
+.action-card {
+    transition: outline-color 120ms ease-out, opacity 120ms ease-out;
+}
+
+.action-card:hover {
+    outline: 1px solid alpha(currentColor, 0.22);
+    outline-offset: -1px;
+}
+
+.action-card:active {
+    opacity: 0.88;
+}
+
+.warning-card {
+    background: alpha(@warning_color, 0.12);
+    box-shadow: inset 0 0 0 1px alpha(@warning_color, 0.55);
+}
+
+
+.status-bar-actions > button,
+.status-bar-actions > menubutton > button {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.status-bar-actions > button:hover,
+.status-bar-actions > menubutton > button:hover {
+    background: alpha(currentColor, 0.08);
+}
+
+.status-bar-actions > button:active,
+.status-bar-actions > button:checked,
+.status-bar-actions > menubutton > button:active,
+.status-bar-actions > menubutton > button:checked {
+    background: alpha(currentColor, 0.14);
+}
+
+.status-bar-actions > button.suggested-action {
+    background: @accent_bg_color;
+    color: @accent_fg_color;
+}
+
+.status-bar-actions > button.suggested-action:hover {
+    background: shade(@accent_bg_color, 1.08);
+}
+
+.status-bar-actions > button.suggested-action:active,
+.status-bar-actions > button.suggested-action:checked {
+    background: shade(@accent_bg_color, 0.92);
+}
+
+.status-bar-actions > button:disabled,
+.status-bar-actions > menubutton > button:disabled {
+    background: transparent;
+}
+
+button.drag-handle {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 0;
+    opacity: 0.62;
+}
+
+button.drag-handle:hover,
+button.drag-handle:active,
+button.drag-handle:checked {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    opacity: 1;
+}
+
+button.drag-handle:disabled {
+    background: transparent;
+    opacity: 0.38;
+}
