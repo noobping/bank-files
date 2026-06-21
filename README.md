@@ -1,3 +1,8 @@
+
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+[![Windows Build](https://github.com/noobping/bank-files/actions/workflows/win.yml/badge.svg)](https://github.com/noobping/bank-files/actions/workflows/win.yml)
+[![Get it for Windows](https://img.shields.io/badge/Get%20it%20on-Windows-blue)](https://github.com/noobping/bank-files/releases/latest/download/bank-files.msi)
+
 # Bank Files
 
 A local GTK app for testing money decisions against your real bank-file history. Add temporary fake transactions to see what happens if you buy something, take on a new cost, receive salary, or solve a problem with the money you have.
