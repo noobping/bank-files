@@ -1,5 +1,6 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
+[![Linux](https://github.com/noobping/bank-files/actions/workflows/linux.yml/badge.svg)](https://github.com/noobping/bank-files/actions/workflows/linux.yml)
 [![Windows Build](https://github.com/noobping/bank-files/actions/workflows/win.yml/badge.svg)](https://github.com/noobping/bank-files/actions/workflows/win.yml)
 [![Get it for Windows](https://img.shields.io/badge/Get%20it%20on-Windows-blue)](https://github.com/noobping/bank-files/releases/latest/download/bank-files.msi)
 
