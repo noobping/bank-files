@@ -1,0 +1,31 @@
+on:
+  pre-commit: [check]
+  pre-push: [check]
+  pre-receive: [check]
+
+pipelines:
+  check:
+    jobs:
+      just:
+        just: check-just
+      format:
+        just: check-format
+      whitespace:
+        just: check-whitespace
+  lint:
+    needs: [check]
+    jobs:
+      clippy:
+        just: clippy
+  test:
+    needs: [check]
+    jobs:
+      unit-tests:
+        just: unit-tests
+  build:
+    needs: [check]
+    jobs:
+      package:
+        just: package
+  ci:
+    needs: [lint, test, build]
