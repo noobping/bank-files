@@ -1,6 +1,6 @@
 project(
   'bank-files',
-  version: '0.8.0',
+  version: '0.8.1',
   meson_version: '>=1.1.0',
 )
 
